@@ -1,0 +1,15 @@
+{
+  "id": "val-session-cli-suite",
+  "title": "Session CLI transport suite",
+  "command": "cargo test -p session-cli",
+  "detail": "Session CLI transport suite: nested `session workflow ...` hierarchy plus flat compatibility aliases, worktree check-in/lookup, query, peek, and move round-trips.",
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f",
+      "6b2dc497-188c-44f5-9106-bf35deecb7a1"
+    ]
+  }
+}

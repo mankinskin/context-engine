@@ -1,0 +1,20 @@
+{
+  "id": "val-session-run-lineage",
+  "title": "Durable workspace and distinct run lineage",
+  "command": "cargo test -p session-api run_lineage",
+  "detail": "Validate one durable workspace session can span distinct predecessor-linked run IDs and rejects accidental outgoing-run reuse.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "709f067a-21b6-41b6-8879-3cacef4bacaf",
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "acceptance_criterion_ids": [
+      "2"
+    ],
+    "ticket_ids": [
+      "412964a3-e1c3-47da-94ad-268ff20441c0",
+      "0647a212-9d2e-4943-9627-f854ce3f14c4"
+    ]
+  }
+}

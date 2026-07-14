@@ -1,0 +1,28 @@
+{
+  "id": "exec-val-session-init-idempotency-20260714",
+  "validation_spec_id": "val-session-init-idempotency",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T14:25:11.246419200Z",
+  "detail": "cargo test -p session-api — 90 lib tests passed. Init/resume idempotency covered by context_schema_init_is_idempotent_without_forcing_a_new_run and context_pin_unpin_is_idempotent_and_persistent; load-or-create preserves pins and lineage. Re-recorded after an earlier prune_execution_runs side-effect removed this run; runtime lineage updates now also acquire the mutation lock.",
+  "links": {
+    "spec_ids": [
+      "709f067a-21b6-41b6-8879-3cacef4bacaf",
+      "8c880efc-7083-4e1d-bf06-96b8254be913"
+    ],
+    "acceptance_criterion_ids": [
+      "1",
+      "2"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f",
+      "412964a3-e1c3-47da-94ad-268ff20441c0"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store_tests.rs",
+    "domain": "session-api",
+    "operation": "init-idempotency",
+    "transport": "cli",
+    "run_id": "audit-remediation-20260714"
+  }
+}

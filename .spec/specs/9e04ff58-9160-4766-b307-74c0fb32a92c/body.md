@@ -1,63 +1,60 @@
-<!-- aligned-structure:v1 -->
+<!-- aligned-structure:v2 -->
 
 # Summary
 
-Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session handoffs that help a new session resume a specific implementation track quickly.
+Define generated `/handoff` and `/handoff-tickets` prompts that persist and render compact, reference-centric handoffs for durable session workspaces.
 
-## Behavior Story
+## Motivation ("why")
 
-Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session handoffs that help a new session resume a specific implementation track quickly.
+Conversation summaries alone do not provide stable session identity or an authoritative restart point. Every handoff must carry the durable workspace, run lineage, roadmap status, and exact resume operation without replaying raw transcripts.
 
-## Provided Surface Contracts
+## Dependent expectation
 
-- Define provided contracts for this behavior slice.
+If this spec is implemented, dependents can rely on `/handoff` persisting a structured handoff record before rendering; always emitting `workspace_session_id`, outgoing `run_id`, handoff ID, and exact resume command; and instructing the receiver to reuse the workspace ID with a new linked run ID.
 
-## Required Validation
+## Guards
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+- `val-session-handoff-continuity`.
+- `val-handoff-prompt-rule-sync`.
+- `val-handoff-reference-completeness`.
 
-## Related Implementation Tickets
+## Positions
 
-- No related implementation ticket is linked yet.
-- [.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml](.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml)
-- [.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml](.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml)
-- [.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml](.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml)
-- [.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml](.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml)
+- Existing generated handoff prompt: `implemented` at `.agents/prompts/handoff.prompt.md`; requires durable session identity and persisted handoff input via canonical rule `084fd4e6-660b-4227-a13e-514edf44e393`.
+- Existing generated handoff-tickets prompt: `partial` at `.agents/prompts/handoff-tickets.prompt.md`.
+- Durable handoff core: `implemented` at `memory-api/crates/session-api/src/store.rs`; validated by `exec-val-session-handoff-continuity-20260714`.
+- Prompt contract update: `implemented` in `.rule/rules/084fd4e6-660b-4227-a13e-514edf44e393/body.md` and generated `.agents/prompts/handoff.prompt.md`; validated by `exec-val-handoff-prompt-rule-sync-20260714` and `exec-val-handoff-reference-completeness-20260714`.
 
-## Background Knowledge References
+## Governing-rule requirement
 
-- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+Generated prompt changes are governed by canonical rule entries and `rule-targets/30-agents-prompts.yaml`; generated files are never edited directly.
 
-## Legacy Content (Preserved)
+# Contract
 
-# Goal
-Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session handoffs that help a new session resume a specific implementation track quickly.
-
-# Scope
-- add root prompt targets for `/handoff` and `/handoff-tickets`
-- create canonical rule entries for both generated prompt files
-- generate prompt outputs through the existing rule-target workflow
-- make `/handoff` produce a short, paragraph-style, reference-centric jumpstart prompt for a specific implementation track
-- make `/handoff` carry high-value current-session context, including findings, decisions, blockers, suggested next steps, entity references, and first validation checks, while avoiding generic workflow noise the next session can retrieve from referenced instructions
-- make `/handoff-tickets` follow the same handoff format and additionally create or match the tickets or tracker tickets needed to formalize the handoff track
-- align the prompt guidance with ticket workflow, board awareness, and existing `session-api` session capture behavior
+- Handoff persists a structured record before rendering prompt text.
+- Every output includes durable workspace ID, outgoing run ID, handoff-record ID, exact resume command, pinned entities, workflow status, blockers, and required validation state.
+- The receiver reuses `workspace_session_id` and creates a distinct new `run_id` linked to the outgoing run.
+- Raw transcript content remains a pointer unless a finding cannot be represented durably.
+- `/handoff-tickets` follows the same identity/resume contract and creates or matches durable ticket work without duplication.
+- Outputs remain compact, reference-centric, and compliant with clickable reference policy.
 
 # Non-goals
-- changing the existing `session-api` storage model or Stop-hook persistence path
-- introducing a new first-class session coordination primitive in this slice
-- implementing board automation beyond the current ticket workflow tools
+
+- Implementing session persistence in generated prompt text.
+- Reusing one capture run ID across multiple agent executions.
+- Replaying full transcripts by default.
 
 # Acceptance Criteria
-1. `rule-targets/30-agents-prompts.yaml` defines targets for `.agents/prompts/handoff.prompt.md` and `.agents/prompts/handoff-tickets.prompt.md`.
-2. Canonical rule entries exist for both prompts with `.prompt` metadata and matching path scopes.
-3. The generated `/handoff` prompt instructs the agent to return a short, paragraph-style, reference-centric handoff for a specific implementation track.
-4. The generated `/handoff` prompt requires current-session findings, decisions, blockers, suggested next steps, entity references, and first validation checks when available, and explicitly suppresses generic workflow noise that the next session can retrieve from referenced instructions.
-5. The generated `/handoff-tickets` prompt instructs the agent to produce the same style of handoff and create or match the necessary ticket or tracker ticket follow-up items without duplicating existing tickets.
-6. Rule target generation and `--check` validation pass for both outputs.
+
+1. Both generated prompts are sourced from canonical rule entries and pass synchronization checks.
+2. `/handoff` always contains the durable ID and exact resume command from a persisted handoff record.
+3. Receiver instructions create a new linked run rather than reusing the outgoing run ID.
+4. Roadmap status, blockers, pins, and validation state are represented compactly.
+5. All entity references resolve and no placeholder identity remains undeclared.
 
 # Traceability
-- Ticket: [46d89aa2 Add handoff workflow prompts](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/46d89aa2-043a-4c94-8213-2f365aa2d517/ticket.toml)
-- Parent spec: [96dc0068 workflow guidance generation and session capture scaffolding](C:/Users/linus/git/graph_app/context-engine/.spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml)
 
-# Validation
-- `cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets/30-agents-prompts.yaml --check` verifies the generated prompt outputs remain synchronized with their canonical rule entries.
+- Durable workflow spec: `c677182e-90da-4ac3-8b94-9e2e97c825cf`.
+- Core handoff ticket: `0647a212-9d2e-4943-9627-f854ce3f14c4`.
+- Prompt update ticket: `9577b114-ec11-431b-8740-c488bef05fc9`.
+- Original generated prompt ticket: `46d89aa2-043a-4c94-8213-2f365aa2d517`.

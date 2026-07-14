@@ -1,5 +1,5 @@
-- repo and index paths
+- target context and repo or index paths
 - sync counters
 - metric summaries
-- one line per finding
-- indented `fix:` lines for each finding-specific instruction
+- `Findings`: one line per finding with severity, scope or path, and failing signal
+- `Recommendations`: deduplicated remediation actions, including finding-specific `fix:` guidance when present

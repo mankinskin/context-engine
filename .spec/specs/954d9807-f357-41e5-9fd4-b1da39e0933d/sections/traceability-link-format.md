@@ -8,7 +8,7 @@ When mentioning a ticket in chat output, spec prose, or generated documentation,
 <!-- spec-api:entry id=cc4936df-940c-480f-b49b-7950c0d23fa7 slug=context-engine/recurring-principles/traceability-link-format/ticket-traceability-link-format/required-form/l5 -->
 ## Required form
 
-`[<short-id> <title>](<canonical ticket folder path>/ticket.toml)`
+Render references per the Clickable Reference Policy in `AGENTS.md`.
 
 <!-- spec-api:entry id=08ade94d-1202-4f78-bfa7-3135418c2170 slug=context-engine/recurring-principles/traceability-link-format/ticket-traceability-link-format/required-form/l9 -->
 - `<short-id>` is the first 8 characters of the authoritative ticket id.

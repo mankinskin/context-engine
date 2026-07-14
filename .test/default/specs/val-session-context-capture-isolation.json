@@ -1,0 +1,18 @@
+{
+  "id": "val-session-context-capture-isolation",
+  "title": "Session context and capture artifact isolation",
+  "command": "cargo test -p session-api context_capture_isolation",
+  "detail": "Validate context mutations leave capture artifacts byte-identical and capture persistence leaves runtime context byte-identical.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "709f067a-21b6-41b6-8879-3cacef4bacaf"
+    ],
+    "acceptance_criterion_ids": [
+      "6"
+    ],
+    "ticket_ids": [
+      "412964a3-e1c3-47da-94ad-268ff20441c0"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "exec-val-session-workflow-rendering-20260714",
+  "validation_spec_id": "val-session-workflow-rendering",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T13:34:13.562280100Z",
+  "detail": "cargo test -p session-api — 101 passed. Deterministic, escaped, read-only terminal and Mermaid rendering coverage.",
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f",
+      "cc4b0289-b6fd-412f-a97a-497f05f572f4"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store_tests.rs",
+    "domain": "session-api",
+    "operation": "workflow-rendering",
+    "transport": "cli",
+    "run_id": "77c3f3b4-7330-49d2-a74a-b04a57a10e47"
+  }
+}

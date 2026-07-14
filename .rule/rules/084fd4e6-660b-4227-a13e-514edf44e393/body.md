@@ -18,17 +18,21 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 1. Read the slash-command text and infer the implementation track, ticket, finding set, or current workstream to hand off.
 2. Always carry forward the high-value session context as relative file references:
 - target working directory to start from
+- durable `workspace_session_id` and outgoing `run_id` from the persisted handoff record
+- persisted `handoff_id` and the exact resume command (`session-cli resume --workspace-session-id <id> --predecessor-run-id <run-id>`)
 - findings, decisions, and motivations from the current session
 - concrete long-horizon goal, suggested next steps, including the first concrete action and first validation check
 	- entity references: tickets, specs, rule ids, sessions, audits, generated files, source files, logs, validation evidence, and blockers
 	- session-audit selectors, schema-versioned session artifacts, and report fields when the handoff track depends on persisted session evidence
 - board ownership, expected check-in or check-out actions, related active or previous sessions
 - persisted `session-api` history captured by the Stop hook
+- persisted handoff record fields: workspace identity, run lineage, pinned entities, workflow status, blockers, validation state, and finish readiness
 3. Prefer authoritative references over summaries, but briefly explain why each referenced item matters so the next agent can act without reconstructing the conversation.
 4. Treat persisted session history as diagnostic evidence, not default prompt material:
 - prefer durable findings, blockers, and next actions over raw transcript replay
 - mention upstream request-shaping issues such as repeated state checks, oversized tool output, or routine-action reasoning when they matter to the restart path
 - keep large transcript or log artifacts as pointers with a short reason they matter
+- generate handoff content from persisted handoff/session state first; conversation summarization is secondary and must not replace authoritative handoff fields
 5. Keep reusable workflow noise out of the handoff paragraph. Do not restate ordinary ticket/spec workflow, tool manuals, or generic validation doctrine unless a specific exception, blocker, or required command from this session matters.
 6. Ticket references are strict:
 - use exact full ticket UUIDs for all ticket mentions in the handoff
@@ -56,6 +60,7 @@ Return:
 - a `Shorthand And Placeholder Legend` section near the top that defines all shorthand and placeholders used later in the handoff, if any
 - a ticket legend section mapping any shorthand labels used in the handoff to exact full UUID + canonical ticket title
 - one epic ticket if available or alternatively a long-horizon goal we are working towards
+- a dedicated `Durable Session Identity` subsection containing `workspace_session_id`, outgoing `run_id`, `handoff_id`, and the exact resume command
 - the next actions in execution order
 - a completion status section for follow-up handoffs covering each next action (`not-started`, `in-progress`, `completed`, or `blocked`) with a short note
 - a definition of done

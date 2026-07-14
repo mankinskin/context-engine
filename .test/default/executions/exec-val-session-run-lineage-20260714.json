@@ -1,0 +1,27 @@
+{
+  "id": "exec-val-session-run-lineage-20260714",
+  "validation_spec_id": "val-session-run-lineage",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T14:25:11.315550500Z",
+  "detail": "cargo test -p session-api — 90 lib tests passed. Run lineage covered by run_lineage_init_resume_creates_distinct_linked_run: resume produces a distinct run_id linked via predecessor_run_id. finished_workspace_rejects_resume_run_creation additionally proves lineage is immutable after finish. Re-recorded after an earlier prune_execution_runs side-effect removed this run.",
+  "links": {
+    "spec_ids": [
+      "709f067a-21b6-41b6-8879-3cacef4bacaf",
+      "8c880efc-7083-4e1d-bf06-96b8254be913"
+    ],
+    "acceptance_criterion_ids": [
+      "2"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f",
+      "412964a3-e1c3-47da-94ad-268ff20441c0"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store_tests.rs",
+    "domain": "session-api",
+    "operation": "run-lineage",
+    "transport": "cli",
+    "run_id": "audit-remediation-20260714"
+  }
+}

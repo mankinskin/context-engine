@@ -1,0 +1,21 @@
+{
+  "id": "val-session-handoff-continuity",
+  "title": "Durable session handoff and resume continuity",
+  "command": "cargo test -p session-api handoff",
+  "detail": "Validate persist-before-render ordering, durable workspace reuse, distinct predecessor-linked run IDs, handoff payload completeness, and exact resume command generation.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf",
+      "9e04ff58-9160-4766-b307-74c0fb32a92c"
+    ],
+    "acceptance_criterion_ids": [
+      "1",
+      "5"
+    ],
+    "ticket_ids": [
+      "0647a212-9d2e-4943-9627-f854ce3f14c4",
+      "9577b114-ec11-431b-8740-c488bef05fc9"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "exec-val-session-handoff-continuity-20260714",
+  "validation_spec_id": "val-session-handoff-continuity",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T13:34:21.217335900Z",
+  "detail": "cargo test -p session-api — 101 passed. Handoff persists before render, exposes resume command, and resume links a new run via predecessor_run_id.",
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f",
+      "0647a212-9d2e-4943-9627-f854ce3f14c4"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store_tests.rs",
+    "domain": "session-api",
+    "operation": "handoff-continuity",
+    "transport": "cli",
+    "run_id": "77c3f3b4-7330-49d2-a74a-b04a57a10e47"
+  }
+}

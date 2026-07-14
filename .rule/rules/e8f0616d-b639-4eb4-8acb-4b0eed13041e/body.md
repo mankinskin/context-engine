@@ -1,1 +1,1 @@
-Prefer JSON output for automation and agent workflows. Prefer text output for local inspection.
+Prefer structured output for automation and agent workflows so the run can be summarized canonically from the returned report. Prefer text output only for quick local inspection.

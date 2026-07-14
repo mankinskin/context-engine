@@ -1,0 +1,18 @@
+{
+  "id": "val-session-workflow-rendering",
+  "title": "Session workflow terminal and Mermaid rendering",
+  "command": "cargo test -p session-api workflow_render",
+  "detail": "Validate deterministic equivalent terminal and Mermaid representations, safe label escaping, and read-only rendering.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "acceptance_criterion_ids": [
+      "4"
+    ],
+    "ticket_ids": [
+      "cc4b0289-b6fd-412f-a97a-497f05f572f4"
+    ]
+  }
+}

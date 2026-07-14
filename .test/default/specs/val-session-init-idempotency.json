@@ -1,0 +1,20 @@
+{
+  "id": "val-session-init-idempotency",
+  "title": "Runtime session initialization and resume idempotency",
+  "command": "cargo test -p session-api context_init",
+  "detail": "Validate load-or-create semantics preserve pins and lineage across repeated initialization and resume.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "8c880efc-7083-4e1d-bf06-96b8254be913",
+      "709f067a-21b6-41b6-8879-3cacef4bacaf"
+    ],
+    "acceptance_criterion_ids": [
+      "1",
+      "2"
+    ],
+    "ticket_ids": [
+      "412964a3-e1c3-47da-94ad-268ff20441c0"
+    ]
+  }
+}

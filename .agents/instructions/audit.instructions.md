@@ -11,7 +11,7 @@ applyTo: "crates/audit-api/**,tools/cli/audit-cli/**,tools/mcp/audit-mcp/**,.aud
 <!-- rule-api:entry id=2243078a-2ede-46dd-8268-62e3c97ebc1f slug=shared/instructions/audit/audit-guidance/purpose/l8 -->
 ## Purpose
 
-`audit` is the repository quality audit tool for this workspace.
+`audit` is the repository quality audit tool for this workspace. When audit guidance applies, execute the audit tool against the target context, surface the report's concrete findings, and summarize the required follow-up work in a canonical findings-and-recommendations format.
 
 <!-- rule-api:entry id=98c0628f-6588-4dc4-9fb9-d4be7bfb3c79 slug=shared/instructions/audit/audit-guidance/purpose/l12 -->
 - Core library crate: `audit-api`
@@ -39,7 +39,7 @@ One audit run:
 6. returns raw metrics plus actionable findings and deduplicated fix instructions
 
 <!-- rule-api:entry id=e8f0616d-b639-4eb4-8acb-4b0eed13041e slug=shared/instructions/audit/audit-guidance/purpose/l32 -->
-Prefer JSON output for automation and agent workflows. Prefer text output for local inspection.
+Prefer structured output for automation and agent workflows so the run can be summarized canonically from the returned report. Prefer text output only for quick local inspection.
 
 <!-- rule-api:entry id=cc2ed220-69be-4ac6-bfee-b78b212a2062 slug=shared/instructions/audit/audit-guidance/cli-usage/l34 -->
 ## CLI Usage
@@ -48,7 +48,7 @@ Basic audit:
 
 <!-- rule-api:entry id=c94cae90-a606-4f6e-bc56-a2fc96cf7104 slug=shared/instructions/audit/audit-guidance/cli-usage/l38 -->
 ```bash
-cargo run -p audit-cli --bin audit -- run .
+cargo run -p audit-cli --bin audit -- run <target-context>
 ```
 
 <!-- rule-api:entry id=06e37556-0516-4c4f-91be-3ea19a20b86a slug=shared/instructions/audit/audit-guidance/cli-usage/l42 -->
@@ -56,7 +56,7 @@ Machine-readable output:
 
 <!-- rule-api:entry id=2d083360-1fd8-4fbb-93f5-3b29064fdf04 slug=shared/instructions/audit/audit-guidance/cli-usage/l44 -->
 ```bash
-cargo run -p audit-cli --bin audit -- --json run .
+cargo run -p audit-cli --bin audit -- --json run <target-context>
 ```
 
 <!-- rule-api:entry id=e0241e95-5a78-43c2-9cac-81f60c64e849 slug=shared/instructions/audit/audit-guidance/cli-usage/l48 -->
@@ -64,7 +64,7 @@ Override thresholds for a stricter audit:
 
 <!-- rule-api:entry id=6a68252e-b548-4df6-863b-383bdb0233a4 slug=shared/instructions/audit/audit-guidance/cli-usage/l50 -->
 ```bash
-cargo run -p audit-cli --bin audit -- run . \
+cargo run -p audit-cli --bin audit -- run <target-context> \
   --max-file-lines 300 \
   --max-cyclomatic-complexity 10 \
   --coverage-warn-below 85
@@ -94,7 +94,7 @@ Tool input example:
 <!-- rule-api:entry id=eadd5af7-2033-426b-ab51-c7d75d7eab52 slug=shared/instructions/audit/audit-guidance/mcp-usage/l73 -->
 ```json
 {
-  "repo_root": ".",
+  "repo_root": "<target-context>",
   "max_file_lines": 350,
   "max_cyclomatic_complexity": 10,
   "coverage_warn_below": 85.0
@@ -102,7 +102,7 @@ Tool input example:
 ```
 
 <!-- rule-api:entry id=9513e68c-52d7-4b30-9d19-b1cc686b08a5 slug=shared/instructions/audit/audit-guidance/mcp-usage/l82 -->
-The MCP tool always returns the full structured `AuditReport` payload. Use it as the single synchronized read for repository quality state.
+The MCP tool always returns the full structured `AuditReport` payload. Use it as the single synchronized read for the target context's quality state and as the source for the canonical findings and recommendations summary.
 
 <!-- rule-api:entry id=184e9ac3-8b61-4d2b-a1ce-16def714557a slug=shared/instructions/audit/audit-guidance/repo-config/l84 -->
 ## Repo Config
@@ -123,25 +123,33 @@ paths = ["target", "node_modules"]
 
 ## Rule Audit Manual
 
-Use this pass when maintaining prompt or instruction quality in the rule system.
+Use this pass when maintaining prompt or instruction quality in the rule system. Apply the same pattern to any other target context you audit.
 
-1. Run a baseline audit:
+1. Resolve the target context to audit.
 
-```bash
-audit run .
-```
-
-2. For compact structured output in this repository, prefer:
+2. Run the audit on that target context. For a baseline CLI run:
 
 ```bash
-rtk audit --toon run .
+audit run <target-context>
 ```
 
-3. Check the human summary line `Rule overlap: ...` or inspect structured `rule_overlap` findings.
+3. For compact structured output in this repository, prefer:
 
-4. When overlap is high, treat it as a dedup/refactor signal:
+```bash
+rtk audit --toon run <target-context>
+```
+
+4. Read structured `findings` first, then the deduplicated repair `instructions`.
+
+5. Summarize the run in this canonical format:
+- `Findings`
+- one bullet per finding with severity, scope or path, and the failing signal
+- `Recommendations`
+- one bullet per remediation action, deduplicated when several findings share the same fix
+
+6. When overlap is high, treat `rule_overlap` findings as a dedup/refactor signal:
 - identify the overlapping rule ids or file scopes
 - keep one canonical owner for repeated guidance
 - remove duplicated wording from secondary rules and regenerate targets
 
-5. After edits, rerun `audit run .` to confirm overlap findings were reduced or resolved.
+7. After edits, rerun the audit on the same target context to confirm findings were reduced or resolved.

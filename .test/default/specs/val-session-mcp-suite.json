@@ -1,0 +1,15 @@
+{
+  "id": "val-session-mcp-suite",
+  "title": "Session MCP transport suite",
+  "command": "cargo test -p session-mcp",
+  "detail": "Session MCP transport suite: finish, handoff, and workflow tool surfaces backed by the same authoritative session-api store.",
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "ticket_ids": [
+      "6b1edff1-bc32-40c7-b3a9-fb1292b0213f",
+      "6b2dc497-188c-44f5-9106-bf35deecb7a1"
+    ]
+  }
+}

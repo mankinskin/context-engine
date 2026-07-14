@@ -1,1 +1,1 @@
-Use `findings` when you need to drive follow-up remediation work. Use `instructions` when you need a deduplicated repair checklist across the whole run.
+Use `findings` to report what is wrong in the target context. Use `instructions` to build the `Recommendations` section as a deduplicated repair checklist across the whole run.

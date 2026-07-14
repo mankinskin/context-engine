@@ -2,89 +2,72 @@
 
 # Summary
 
-Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
+Turn `session-api` from capture/archive-only storage into a durable runtime workspace with selective pinned context, an evolving workflow roadmap, structured handoff continuity, and explicit completion gates.
 
 ## Motivation ("why")
 
-Store discovery found ~60 specs with no positions, guards, or motivation, which over-bloats the reasoning context of every agent session. This spec defines a dynamic session bootstrap that shrinks static instruction load by enabling agent-targeted selective loading of rule and spec entities on demand.
+Always-on instruction loading and transcript replay consume model context without telling a resumed agent what work remains. Durable session state must preserve active knowledge and execution intent while keeping ticket state authoritative in the ticket store.
 
 ## Dependent expectation
 
-If this spec is implemented, dependents can rely on `session_context.json` holding `pinned_entities` as URNs `ce://<workspace>/<store>/<uuid>` and calling `session_init`, `session_pin`, `session_unpin`, and `session_view` to manage the cognitive workspace.
+If this spec is implemented, dependents can rely on a durable `workspace_session_id` spanning distinct linked run IDs; pinned entity URNs; a mutable ticket-backed workflow; terminal and Mermaid views; structured handoff/resume; and graph-gated finish.
 
 ## Guards
 
-The verification of this specification contract is gated by:
-- `val-session-bootstrap-schema-validation` (validates `session_context.json` conforms to schema with URN references)
-- `val-session-init-idempotency` (asserts calling `session_init` repeatedly on an existing session does not overwrite previous pin state)
+- `val-session-bootstrap-schema-validation`.
+- `val-session-init-idempotency`.
+- `val-session-workflow-persistence`.
+- `val-session-handoff-continuity`.
+- `val-session-workflow-finish`.
 
 ## Positions
 
-- `session_context.json` schema: `implemented` at [./memory-api/crates/session-api/src/model.rs](./memory-api/crates/session-api/src/model.rs#L10)
-- `session_init` endpoint: `implemented` at [./memory-api/crates/session-api/src/endpoints.rs](./memory-api/crates/session-api/src/endpoints.rs#L50)
-- Cascade agent automation: `not-implemented` at [./memory-api/crates/session-api/src/cascade.rs](./memory-api/crates/session-api/src/cascade.rs)
+- Capture/archive store: `implemented` at `memory-api/crates/session-api/src/store.rs`.
+- Capture models: `implemented` at `memory-api/crates/session-api/src/model.rs`.
+- Runtime pinned context: `implemented` at `memory-api/crates/session-api/src/store.rs`; delivered by ticket `412964a3-e1c3-47da-94ad-268ff20441c0`.
+- Durable workflow persistence: `implemented` at `memory-api/crates/session-api/src/store.rs`; delivered by ticket `70cd7056-c342-4433-ad60-5bc798f61aa6`.
+- Terminal/Mermaid rendering: `implemented` at `memory-api/crates/session-api/src/store.rs`; delivered by ticket `cc4b0289-b6fd-412f-a97a-497f05f572f4`.
+- Structured handoff/resume and finish: `implemented` at `memory-api/crates/session-api/src/store.rs`; delivered by ticket `0647a212-9d2e-4943-9627-f854ce3f14c4`.
+- CLI/MCP bootstrap surfaces: `implemented` at `memory-api/tools/cli/session-cli/src/lib.rs` and `memory-api/tools/mcp/session-mcp/src/server.rs`; delivered by ticket `6b2dc497-188c-44f5-9106-bf35deecb7a1`.
+- Hard-link cascade: `not-implemented`; planned by ticket `d8f76965-1ff3-4a0a-bb24-773b9637fae4`.
 
 ## Governing-rule requirement
 
-This specification is governed and introduced by:
-- [shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52](shared/instructions/spec-system/spec-system-guidance/spec-authoring-workflow/structure-the-spec/l52)
+This contract is governed by `.agents/instructions/spec-system.instructions.md` and its aligned-structure v2 requirement.
 
-## Legacy Content (Preserved)
+# Contract
 
-# Goal
-Turn `session-api` from a capture/archive-only store into a runtime "cognitive workspace" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) across stores, and pin only what the current task needs — so per-turn static instruction load shrinks dramatically and entity usage is curated over time.
-
-Source design: `DESIGN_SESSION_BOOTSTRAPPING.md`.
-
-# Problem
-Today every turn drags ~1,190 lines (~8-10k tokens) of always-on guidance (four `applyTo: "**"` instruction files plus `AGENTS.md` and copilot-instructions), regardless of task. `session-api` only records transcripts after the fact; there is no proactive session state, no selective context surface, and no usage/quality signal, even though Tantivy search already exists (`rule_search`, `spec_search`, ticket search). This causes context dilution, state amnesia, full metacognition cost on trivial prompts, and no way to learn which entities are actually useful.
-
-# Resolved Decisions (frozen)
-1. **D1 — Session identity & resume.** The agent carries the `session_id`; the runtime context is persisted in the existing capture session directory under a well-known filename (`session_context.json`). `session_init` is **load-or-create and idempotent**: the first turn creates it, later turns resume the same session and keep mutating it. Rationale: the MCP server is stateless across turns, so the id the agent already holds is the only stable handle.
-2. **D2 — Cross-store references are a hard prerequisite.** Pinned entities live in different stores (`.rule`, `.spec`, `.ticket`, nested workspaces). References are stored as **URNs** `ce://<workspace>/<store>/<entity>` and resolved through the cross-store resolver. The cascade's "hard links" are sourced from spec↔ticket cross-entity edges. Rationale: the cascade cannot pull related entities until cross-store resolution is robust. This gates implementation (see Dependencies).
-3. **D3 — Client-side rendering.** `session_view` returns structured data; the agent injects it into its own prompt. The server never rewrites instruction files. Rationale: keeps the filesystem clean and avoids race conditions between parallel agents.
-4. **D4 — File-backed persistence.** Every mutating call flushes `session_context.json` to disk before returning; `session_init` creates the session directory if absent. Rationale: crash-safe under server restarts; the JSON is tiny so IO cost is negligible.
-5. **D5 — Cascade aggressiveness.** Auto-pin **only hard ID-linked** entities; semantic matches stay agent-driven. Rationale: a vague query (e.g. "fix the button") must not auto-pin 50 loosely matching rules.
-6. **D6 — Headers-only rendering.** Pins and `session_view` carry only **short entity headers** (urn/id, type, title or slug, relation, reason). Full bodies are fetched explicitly by the agent via existing get/peek tools when needed. Rationale: prevents re-bloating the context we are trying to shrink.
-7. **D7 — Remove always-on generated instructions.** Only a minimal **bootstrapper** instruction stays always-on. All other guidance becomes **discoverable rule entries** that the agent gathers (search), pins, and renders into its own per-session instruction set. Rule *filters/scopes* may be pinned; individual rule bodies are fetched on demand. Rationale: eliminate the per-turn metacognition load at its source.
-8. **D8 — No mode field.** There is no `current_mode`. Every session performs a bootstrap; general chat passes a **minimal bootstrap** with zero pinned entities. Rationale: a coarse mode flag is unnecessary once a uniform, cheap bootstrap path exists.
-9. **D9 — Usage counting & feedback.** Each pin records a **usage event** (frequency) against the entity. Before responding, agents may attach a **rating** (`helpful`/`mixed`/`not-helpful`) and optional note to pinned entities. The capability is **generic over entity type** in memory-api (specs and rules now; tickets supported by the same model later). Rationale: curate frequently-useful entities and detect obsolete low-value ones to improve rules and specs.
-
-# Scope
-- Runtime session contract: `session_context.json` holding `pinned_entities` for tickets, specs, and rules as URNs with `relation`/`reason`, plus timestamps.
-- Bootstrap surface: `session_init`, `session_pin`, `session_unpin`, `session_view` (core lib + CLI + MCP), all headers-only.
-- Cascade: given a ticket at `session_init`, auto-pin only hard ID-linked entities as suggestions, resolved via URNs.
-- Usage + feedback hooks: pin → usage event; end-of-session rating on pinned entities.
-- Preserve the existing capture/archive/worktree path unchanged; the runtime path is additive.
+- Client-side rendering consumes structured session views; runtime code does not rewrite instruction files.
+- File-backed mutations flush before returning.
+- Entity references use cross-store URNs and hard links; semantic search never silently auto-pins.
+- `workspace_session_id` is durable across handoff; every execution creates a distinct `run_id` with predecessor linkage.
+- Pinned context and workflow state survive resume without transcript replay.
+- Ticket nodes resolve current state live; session-only nodes may represent discovered actions and later be promoted to tickets.
+- Handoff records persist before prompt rendering and always supply an exact resume command.
+- Finish is explicit and requires all required nodes and validation gates to be satisfied.
+- Feedback usage/rating emission is optional through an adapter and cannot block context or workflow operations.
 
 # Non-goals
-- Replacing or rewriting the existing capture/transcript/worktree workflow.
-- Semantic auto-pinning of vague matches (agent-driven only).
-- A server-resident, stateful MCP process (assume the server may restart between turns).
-- Building the full heavyweight `feedback-api` ingestion/search/SLO program — the runtime path consumes only the lightweight per-entity usage+rating capability.
 
-# Dependencies (must land before session-bootstrap implementation)
-- **Cross-store references (robust):** URN model + resolver and recursive multi-store discovery.
-  - default store: [82d6ada4 URN cross-store reference model and resolver](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml), [6bd67a7a dynamic multi-store discovery and cross-store references](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/6bd67a7a-2a76-4dd7-a897-b4d325476621/ticket.toml) (program tracker [671d4e47](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml)).
-  - hard-link source (memory-api store, **cannot be graph-edged from this store yet** — recorded textually): [b03be2d5 cross-entity edges spec↔ticket](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/b03be2d5-5293-4dc7-ad11-cca2dbf32c8b/ticket.toml), [f00291a3 ticket↔spec integration](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/f00291a3-bd61-469e-a737-c44cb3911e3b/ticket.toml).
-- **Feedback ratings + usage counting (core):** rule-entry feedback (done) + direct spec feedback ([29bf9628](C:/Users/linus/git/graph_app/context-engine/memory-api/.ticket/tickets/29bf9628-1dc5-4bb4-ae00-b7410dd52db5/ticket.toml), memory-api store) + a new generic usage-counting capability (see epic).
+- Replacing ticket-api as workflow authority.
+- Copying ticket lifecycle state into session files.
+- Gating core session functionality on the full feedback program.
+- Semantic auto-pinning from vague text matches.
 
 # Acceptance Criteria
-1. A frozen `session_context.json` schema (URN refs, no `current_mode`) is referenced by every child spec.
-2. `session_init`/`pin`/`unpin`/`view` signatures are defined headers-only and implemented verbatim by CLI and MCP.
-3. Pinning records a usage event and supports a per-entity rating before session end, using the generic memory-api feedback model.
-4. The existing capture/archive path has a regression test proving runtime additions do not change its on-disk output.
-5. Cross-store entity references are stored and resolved as URNs.
+
+1. Durable context initializes and resumes idempotently under one workspace ID across distinct runs.
+2. Pinned entities and workflow nodes/edges persist independently of transcript capture.
+3. Agents can add discovered work during execution and promote temporary nodes to tickets.
+4. Terminal and Mermaid views deterministically represent the same roadmap.
+5. Handoff always persists and carries workspace ID, run lineage, blockers, validation state, and exact resume command.
+6. Finish rejects incomplete required work and accepts a validated complete workflow.
+7. Existing capture artifacts remain backward compatible.
 
 # Traceability
-- Epic: [effba966 session-bootstrap epic](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml)
-- Design/owner: [afa00b5c bootstrap contract & ADRs](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml)
-- Runtime model: [412964a3 runtime session-context model](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)
-- Cascade: [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
-- CLI/MCP: [6b2dc497 init/pin/unpin/view surfaces](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml)
-- Rule rendering: [b4a8dc5e minimal bootstrapper + selective loading](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml)
 
-# Related Specs
-- `memory-api/session-api/persistence-writer` (existing capture write path that must stay intact)
-- `memory-api/session-api/hook-ingestion-read-query` (existing read/query surface to reuse)
-- `context-engine/session-worktree-default-workflow` (worktree check-in that init must compose with)
+- Epic: `effba966-f0a8-4d7d-b289-b7feba826cf8`.
+- Runtime context child: `709f067a-21b6-41b6-8879-3cacef4bacaf`.
+- Durable workflow child: `c677182e-90da-4ac3-8b94-9e2e97c825cf`.
+- Cascade child: `fda5c915-5c37-432f-acf1-8b20c6219fdc`.
+- Selective-loading child: `a28a88db-2b41-49d2-897c-6dbcdb313255`.

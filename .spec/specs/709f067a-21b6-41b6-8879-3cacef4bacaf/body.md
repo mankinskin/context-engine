@@ -1,85 +1,66 @@
-<!-- aligned-structure:v1 -->
+<!-- aligned-structure:v2 -->
 
 # Summary
 
-Extend `session-api` (`memory-api/crates/session-api`) with a runtime "cognitive workspace": a `session_context.json` document and core operations to create/resume it, pin/unpin entities (as cross-store URNs), render short headers, and record pin usage — without disturbing the existing capture/transcript/worktree path.
+Add the durable runtime context foundation for pinned entities and workspace/run identity without disturbing capture/archive storage.
 
-## Behavior Story
+## Motivation ("why")
 
-Extend `session-api` (`memory-api/crates/session-api`) with a runtime "cognitive workspace": a `session_context.json` document and core operations to create/resume it, pin/unpin entities (as cross-store URNs), render short headers, and record pin usage — without disturbing the existing capture/transcript/worktree path.
+A transcript does not preserve active attention state in a compact, mutable form. Agents need to resume the same logical workspace, retain selected entities, and start a distinct linked run without replaying prior turns.
 
-## Provided Surface Contracts
+## Dependent expectation
 
-- Define provided contracts for this behavior slice.
+If this spec is implemented, dependents can rely on idempotent workspace initialization/resume, durable pinned entity URNs, distinct linked run IDs, immediate file-backed persistence, headers-only views, and optional non-blocking feedback emission.
 
-## Required Validation
+## Guards
 
-- Triangulate behavior with executable checks, natural-language clauses, and code/schema/API references when available.
+- `val-session-bootstrap-schema-validation`.
+- `val-session-init-idempotency`.
+- `val-session-context-capture-isolation`.
+- `val-session-run-lineage`.
 
-## Related Implementation Tickets
+## Positions
 
-- No related implementation ticket is linked yet.
+- Existing capture models: `implemented` at `memory-api/crates/session-api/src/model.rs`.
+- Existing capture persistence: `implemented` at `memory-api/crates/session-api/src/store.rs`.
+- Runtime context model and operations: `implemented` at `memory-api/crates/session-api/src/model.rs` and `memory-api/crates/session-api/src/store.rs`; validated by `exec-val-session-init-idempotency-20260714`, `exec-val-session-run-lineage-20260714`, and `exec-val-session-context-capture-isolation-20260714`.
 
-## Background Knowledge References
+## Governing-rule requirement
 
-- Prefer entity references and context rendering over embedding fully expanded payloads in this spec body.
+This contract is governed by `.agents/instructions/spec-system.instructions.md` and its aligned-structure v2 requirement.
 
-## Legacy Content (Preserved)
+# Contract
 
-# Goal
-Extend `session-api` (`memory-api/crates/session-api`) with a runtime "cognitive workspace": a `session_context.json` document and core operations to create/resume it, pin/unpin entities (as cross-store URNs), render short headers, and record pin usage — without disturbing the existing capture/transcript/worktree path.
-
-# Problem
-`SessionStoreConfig` today only writes `session.json` (manifest) and `transcript.json` (append-only) and reads/queries them. There is no per-session mutable attention state, so an agent cannot record "these are the rules/specs/tickets I am actively working against," cannot resume that state across turns, and produces no usage signal.
-
-# Scope
-- Add a `session_context.json` document persisted under the session directory, alongside the existing `session.json`/`transcript.json`.
-- Core operations on `SessionStoreConfig`:
-  - `init_context(session_id)` — **load-or-create**; creates the session directory if absent; idempotent (re-init resumes and never clobbers existing pins).
-  - `pin(session_id, entity)` / `unpin(session_id, entity)` — add/remove an entity (by URN) from `pinned_entities`; pinning the same URN twice is a no-op (no duplicates); each successful `pin` emits a **usage event** for that entity.
-  - `read_context(session_id)` — return the parsed context.
-  - `render_view(session_id)` — return pinned entities as **short headers only** (urn, type, title|slug, relation, reason); never full bodies.
-- File-backed persistence: every mutating call flushes `session_context.json` to disk before returning.
-- The archive/capture path (`persist_capture`, `read_session`, `query_sessions`, worktree check-in) is untouched; `session_context.json` is additive and ignored by those paths.
-
-# session_context.json schema (frozen for this slice)
-```jsonc
-{
-  "session_id": "string",              // matches the capture session id (D1)
-  "schema_version": 1,
-  "created_at": "RFC3339",
-  "updated_at": "RFC3339",             // bumped on every mutation (resume activity)
-  "pinned_entities": {
-    "tickets": [{ "urn": "ce://<ws>/<store>/<id>", "relation": "primary_focus|blocked_by|related", "reason": "string?" }],
-    "specs":   [{ "urn": "ce://<ws>/<store>/<id>", "section": "string?", "reason": "string?" }],
-    "rules":   [{ "urn": "ce://<ws>/<store>/<id>", "filter": "string?", "reason": "string?" }]
-  }
-}
-```
-Notes: no `current_mode` (D8). Entity references are URNs (D2). A general-chat session is a valid context with all three buckets empty (D8).
+- `workspace_session_id` identifies a durable logical workspace.
+- Every agent execution has a distinct `run_id` and optional `predecessor_run_id`.
+- Initialization is load-or-create and never clobbers pins or lineage.
+- Pinned tickets, specs, and rules are cross-store URNs with relation/reason metadata.
+- Mutations flush before returning.
+- Read/view returns short headers and metadata, never full entity bodies.
+- Duplicate pin and missing unpin are idempotent no-ops.
+- Feedback usage emission is optional through an injected sink; sink absence or failure cannot corrupt or reject a successful pin.
+- Existing capture manifests and transcripts remain byte-identical when context mutates, and context remains byte-identical when capture persists.
 
 # Non-goals
-- The cascade auto-pin logic (separate child spec).
-- CLI/MCP surfaces (separate child spec; this spec is the core lib contract they call).
-- The usage/feedback storage backend itself — this slice **emits** usage events into the generic memory-api usage/feedback model; it does not implement that model.
-- Resolving entity bodies — `render_view` returns headers only; body fetch is the agent's explicit follow-up.
 
-# Acceptance Criteria (test-validatable)
-1. `init_context` on a fresh session creates the session directory and `session_context.json` with `schema_version`, empty `pinned_entities`, and timestamps. *(unit test asserts dir + file exist + parsed fields)*
-2. `init_context` called twice for the same session resumes the existing context and preserves any pins added between calls (no clobber); `updated_at` is non-decreasing. *(unit test pins then re-inits, asserts pin survives)*
-3. `pin` adds an entity to the correct bucket by URN and persists immediately; re-pinning the same URN does not create a duplicate. *(unit test asserts len==1 after double pin)*
-4. Each successful `pin` emits exactly one usage event for the entity URN. *(unit test asserts one event recorded via the injected usage sink)*
-5. `unpin` removes a previously pinned URN and persists; unpinning a missing URN is a no-op without error. *(unit test)*
-6. `render_view` returns short headers (urn, type, title|slug, relation, reason) for each pinned entity and **never** includes full bodies. *(unit test asserts header fields present and body field absent)*
-7. Persisting a capture for the same session (`persist_capture`) leaves `session_context.json` byte-identical, and writing `session_context.json` leaves `session.json`/`transcript.json` byte-identical. *(regression unit test)*
-8. All new behavior is covered by focused `cargo test -p session-api` unit tests against a `TempDir`.
+- Workflow graph persistence, rendering, handoff, and finish, owned by `c677182e-90da-4ac3-8b94-9e2e97c825cf`.
+- Cascade auto-pinning.
+- CLI/MCP transport.
+- Full-body entity resolution.
+
+# Acceptance Criteria
+
+1. Fresh initialization creates durable context with workspace ID, schema version, timestamps, empty pins, and initial run lineage.
+2. Resume preserves pins and adds a distinct linked run without reusing the outgoing run ID.
+3. Pin/unpin is idempotent and immediately persistent.
+4. Headers-only view never includes full bodies.
+5. Optional feedback sink receives successful pin usage when configured and cannot block persistence.
+6. Capture/context byte-isolation regressions pass.
+7. Focused `cargo test -p session-api` coverage validates the contract.
 
 # Traceability
-- Parent: `memory-api/session-api/dynamic-session-bootstrapping`
-- Ticket: [412964a3 runtime session-context model](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml)
-- Depends on (cross-store): [82d6ada4 URN resolver](C:/Users/linus/git/graph_app/context-engine/.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml)
-- Consumed by: [6b2dc497 init/pin/unpin/view surfaces](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml), [d8f76965 cascade context gathering](C:/Users/linus/git/graph_app/context-engine/memory-api/memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml)
 
-# Validation
-- ValidationSpec: focused `session-api` unit tests for context create/resume/pin/unpin/view, usage emission, and capture-path regression.
-- ValidationExecution (planned): `cargo test -p session-api`.
+- Parent spec: `8c880efc-7083-4e1d-bf06-96b8254be913`.
+- Implementation ticket: `412964a3-e1c3-47da-94ad-268ff20441c0`.
+- Downstream workflow ticket: `70cd7056-c342-4433-ad60-5bc798f61aa6`.
+- Downstream transport ticket: `6b2dc497-188c-44f5-9106-bf35deecb7a1`.

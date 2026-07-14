@@ -1,0 +1,18 @@
+{
+  "id": "val-handoff-prompt-rule-sync",
+  "title": "Generated handoff prompt rule synchronization",
+  "command": "cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets/30-agents-prompts.yaml --check",
+  "detail": "Validate generated /handoff and /handoff-tickets prompt outputs match canonical rule entries.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "9e04ff58-9160-4766-b307-74c0fb32a92c"
+    ],
+    "acceptance_criterion_ids": [
+      "1"
+    ],
+    "ticket_ids": [
+      "9577b114-ec11-431b-8740-c488bef05fc9"
+    ]
+  }
+}

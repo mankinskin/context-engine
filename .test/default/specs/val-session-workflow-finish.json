@@ -1,0 +1,18 @@
+{
+  "id": "val-session-workflow-finish",
+  "title": "Session workflow finish gates",
+  "command": "cargo test -p session-api workflow_finish",
+  "detail": "Validate finish rejection for incomplete required nodes or non-passing required validation, optional-node deferral rules, idempotency, and terminal success recording.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    ],
+    "acceptance_criterion_ids": [
+      "6"
+    ],
+    "ticket_ids": [
+      "0647a212-9d2e-4943-9627-f854ce3f14c4"
+    ]
+  }
+}
