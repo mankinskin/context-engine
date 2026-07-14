@@ -1,0 +1,25 @@
+{
+  "id": "exec-workspace-relocated-active-refs-20260714",
+  "validation_spec_id": "val-workspace-relocated-active-refs",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T22:36:23.334182200Z",
+  "detail": "All six old package directories are absent and canonical destinations exist. Exact active-reference search found no operational references to removed paths. Remaining matches are intentionally historical ticket descriptions, immutable rule history, or generated historical catalog content. Canonical rules and 88 generated targets were synchronized earlier in this run.",
+  "links": {
+    "spec_ids": [
+      "0d205a9e-3add-40e7-a148-b7e2e65b260f"
+    ],
+    "acceptance_criterion_ids": [
+      "active-references",
+      "historical-exclusion"
+    ],
+    "ticket_ids": [
+      "6ded2540-206b-4ffd-bdb6-23459a16ab1d"
+    ]
+  },
+  "provenance": {
+    "domain": "workspace-ownership",
+    "operation": "active-reference-scan",
+    "transport": "in-process",
+    "run_id": "viewer-peek-relocation-20260714"
+  }
+}

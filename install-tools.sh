@@ -29,8 +29,8 @@ tool_names=(
 tool_path() {
     case "$1" in
         viewer-ctl) printf '%s\n' "viewer-api/viewer-ctl" ;;
-        doc-viewer) printf '%s\n' "tools/viewer/doc-viewer" ;;
-        log-viewer) printf '%s\n' "tools/viewer/log-viewer" ;;
+        doc-viewer) printf '%s\n' "memory-viewers/doc-viewer" ;;
+        log-viewer) printf '%s\n' "memory-viewers/log-viewer" ;;
         spec-viewer) printf '%s\n' "memory-viewers/spec-viewer" ;;
         ticket-viewer) printf '%s\n' "memory-viewers/ticket-viewer" ;;
         copilot-capture-hook) printf '%s\n' "memory-api/crates/session-api" ;;

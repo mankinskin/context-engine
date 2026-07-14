@@ -1,6 +1,6 @@
 ---
 description: "Use when editing agent workflow guidance, CLI output handling, or file inspection patterns. Covers compact-by-default output, TOON vs JSON, bounded inspection, and differential patching."
-applyTo: "AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,tools/cli/peek-cli/**,tools/mcp/compact-terminal-mcp/**"
+applyTo: "AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,memory-api/tools/cli/peek-cli/**,memory-api/tools/mcp/compact-terminal-mcp/**"
 ---
 
 <!-- rule-api:file generated=true -->
@@ -51,7 +51,7 @@ Preferred pattern:
 3. Open a bounded line window with explicit start/end coordinates.
 4. Only escalate to a full-file read when the bounded window is genuinely insufficient.
 
-Use the `peek` CLI tool (`tools/cli/peek-cli`) for bounded reads from the terminal:
+Use the `peek` CLI tool (`memory-api/tools/cli/peek-cli`) for bounded reads from the terminal:
 
 ```bash
 # Step 1: learn file size
@@ -127,7 +127,7 @@ When editing files, always use the narrowest applicable edit operation:
 
 ### Compact Terminal Expectations
 
-The `rtk` proxy and the compact-terminal MCP tool (`tools/mcp/compact-terminal-mcp`) truncate long outputs automatically. Long outputs are stored in a transient file and can be inspected via bounded search/read tools:
+The `rtk` proxy and the compact-terminal MCP tool (`memory-api/tools/mcp/compact-terminal-mcp`) truncate long outputs automatically. Long outputs are stored in a transient file and can be inspected via bounded search/read tools:
 
 ```bash
 # Long output: rtk returns a summary + transient file path

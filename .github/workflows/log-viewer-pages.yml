@@ -6,7 +6,7 @@ on:
     paths:
       - 'crates/**'
       - 'tools/log-viewer/**'
-      - 'tools/viewer/log-viewer/frontend/viewer-api-frontend/**'
+      - 'memory-viewers/log-viewer/frontend/viewer-api-frontend/**'
       - '.github/workflows/log-viewer-pages.yml'
   workflow_dispatch:
     inputs:
@@ -57,7 +57,7 @@ jobs:
         run: bash tools/log-viewer/scripts/generate-demo-logs.sh
 
       - name: Install shared viewer-api frontend dependencies
-        working-directory: tools/viewer/log-viewer/frontend/viewer-api-frontend
+        working-directory: memory-viewers/log-viewer/frontend/viewer-api-frontend
         run: npm install
 
       - name: Install log-viewer frontend dependencies

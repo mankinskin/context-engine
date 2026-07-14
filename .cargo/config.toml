@@ -96,8 +96,8 @@
 
 [alias]
 # Start the log-viewer server (http://localhost:3000)
-log-viewer = "run --manifest-path tools/viewer/log-viewer/Cargo.toml -- --dev"
-doc-viewer = "run --manifest-path tools/viewer/doc-viewer/Cargo.toml"
+log-viewer = "run --manifest-path memory-viewers/log-viewer/Cargo.toml -- --dev"
+doc-viewer = "run --manifest-path memory-viewers/doc-viewer/Cargo.toml"
 # Start the ticket-viewer server after both viewer and backend builds succeed
 ticket-viewer = "run --manifest-path memory-viewers/ticket-viewer/Cargo.toml -- --auto-start-backend --build-backend-first"
 spec-viewer = "run --manifest-path memory-viewers/spec-viewer/Cargo.toml"

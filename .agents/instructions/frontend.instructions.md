@@ -18,7 +18,7 @@ applyTo: "**/frontend/**,packages/context-types/**"
 <!-- rule-api:entry id=8f4e4254-c36d-4146-b2a6-f4cae61ad592 slug=shared/instructions/frontend/frontend-guidance/shared-frontend-package-usage/l14 -->
 ## Shared Frontend Package Usage
 
-- Shared TS UI/style primitives currently live under `tools/viewer/log-viewer/frontend/viewer-api-frontend/`.
+- Shared TS UI/style primitives currently live under `memory-viewers/log-viewer/frontend/viewer-api-frontend/`.
 - Shared Dioxus viewer primitives and test helpers live under `viewer-api/viewer-api/frontend/dioxus/`.
 - Place cross-viewer reusable components in the shared package, not copied per tool.
 - Keep tool-specific behavior in each tool frontend and shared behavior in viewer-api frontend.

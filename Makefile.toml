@@ -269,11 +269,11 @@ args = ["vscode-ext", "install"]
 #   npm run test:e2e:release
 #
 # Doc-viewer shared smoke runs from:
-#   tools/viewer/doc-viewer/e2e
+#   memory-viewers/doc-viewer/e2e
 #   npm test
 #
 # Log-viewer shared smoke runs from:
-#   tools/viewer/log-viewer/e2e
+#   memory-viewers/log-viewer/e2e
 #   npm run test:managed
 #
 # Ticket-viewer release E2E still runs from:
@@ -291,11 +291,11 @@ args = ["/c", "pushd memory-viewers\\spec-viewer\\frontend\\dioxus && npm instal
 
 [tasks.e2e-install.linux]
 command = "bash"
-args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm install && popd >/dev/null"]
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm install && popd >/dev/null && pushd memory-viewers/doc-viewer/e2e >/dev/null && npm install && popd >/dev/null && pushd memory-viewers/log-viewer/e2e >/dev/null && npm install && popd >/dev/null"]
 
 [tasks.e2e-install.mac]
 command = "bash"
-args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm install && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm install && popd >/dev/null"]
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm install && popd >/dev/null && pushd memory-viewers/doc-viewer/e2e >/dev/null && npm install && popd >/dev/null && pushd memory-viewers/log-viewer/e2e >/dev/null && npm install && popd >/dev/null"]
 
 [tasks.test-e2e]
 description = "Run Playwright E2E tests for spec-viewer plus shared doc/log smoke suites"
@@ -304,9 +304,9 @@ args = ["/c", "pushd memory-viewers\\spec-viewer\\frontend\\dioxus && npm run te
 
 [tasks.test-e2e.linux]
 command = "bash"
-args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm run test:e2e:release && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm test && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm run test:managed && popd >/dev/null"]
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm run test:e2e:release && popd >/dev/null && pushd memory-viewers/doc-viewer/e2e >/dev/null && npm test && popd >/dev/null && pushd memory-viewers/log-viewer/e2e >/dev/null && npm run test:managed && popd >/dev/null"]
 
 [tasks.test-e2e.mac]
 command = "bash"
-args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm run test:e2e:release && popd >/dev/null && pushd tools/viewer/doc-viewer/e2e >/dev/null && npm test && popd >/dev/null && pushd tools/viewer/log-viewer/e2e >/dev/null && npm run test:managed && popd >/dev/null"]
+args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && npm run test:e2e:release && popd >/dev/null && pushd memory-viewers/doc-viewer/e2e >/dev/null && npm test && popd >/dev/null && pushd memory-viewers/log-viewer/e2e >/dev/null && npm run test:managed && popd >/dev/null"]
 

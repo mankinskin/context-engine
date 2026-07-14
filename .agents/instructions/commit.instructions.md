@@ -172,7 +172,7 @@ For non-trivial commits, add a body after a blank line:
 ```
 feat(token-efficiency): add peek-cli — token-bounded file inspection utility
 
-- tools/cli/peek-cli/: new CLI crate with --start/--end/--window/--head/--tail/--grep/--count/--skeleton/--all
+- memory-api/tools/cli/peek-cli/: new CLI crate with --start/--end/--window/--head/--tail/--grep/--count/--skeleton/--all
 - --skeleton mode strips function bodies, returns signatures only (Rust, Python, generic)
 - Wire into Cargo.toml workspace members
 ```

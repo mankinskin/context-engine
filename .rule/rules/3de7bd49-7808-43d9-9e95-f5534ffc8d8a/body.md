@@ -1,7 +1,7 @@
 ---
 name: "Implement Agent"
 description: "Use for surgical implementation once the target slice is clear and ready to change."
-tools: [vscode/memory, vscode/runCommand, execute, read, edit, search, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/askQuestions, edit, read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementation scope."
 user-invocable: true
 ---

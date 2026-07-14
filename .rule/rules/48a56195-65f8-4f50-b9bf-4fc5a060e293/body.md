@@ -1,7 +1,7 @@
 ---
 name: "Research Agent"
 description: "Use for focused repository research before ticketing, spec updates, or implementation."
-tools: [vscode/memory, vscode/runCommand, vscode/askQuestions, execute, read, search, web, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [edit, read, search, execute, vscode/askQuestions, todo, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Topic, code path, feature, or ticket scope to investigate."
 user-invocable: true
 ---

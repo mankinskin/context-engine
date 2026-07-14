@@ -1,6 +1,6 @@
 ---
 description: "Use when editing viewer-api-driven tools (viewer-api, log-viewer, doc-viewer, ticket-viewer). Covers frontend conventions and integration boundaries with context-api, ticket-api, and filesystem-backed sources."
-applyTo: "tools/viewer/viewer-api/**,tools/viewer/log-viewer/**,tools/viewer/doc-viewer/**,tools/viewer/ticket-viewer/**"
+applyTo: "tools/viewer/viewer-api/**,memory-viewers/log-viewer/**,memory-viewers/doc-viewer/**,tools/viewer/ticket-viewer/**"
 ---
 
 <!-- rule-api:file generated=true -->
@@ -41,7 +41,7 @@ Applies to viewer-api-driven HTTP/SPA tools and shared frontend packages.
 <!-- rule-api:entry id=888100f3-1b66-4c3b-b7ef-23196f6768ef slug=shared/instructions/viewer-api-tools/viewer-api-tools-guidance/frontend-rules/l34 -->
 ## Frontend Rules
 
-- Reuse shared TS UI primitives/styles from `tools/viewer/log-viewer/frontend/viewer-api-frontend` where applicable.
+- Reuse shared TS UI primitives/styles from `memory-viewers/log-viewer/frontend/viewer-api-frontend` where applicable.
 - Reuse shared Dioxus viewer primitives and test helpers from `viewer-api/viewer-api/frontend/dioxus` for WASM viewers.
 - Keep viewer-specific features modular; avoid duplicating shared components.
 - Prefer explicit loading/error/empty states for all async data views.

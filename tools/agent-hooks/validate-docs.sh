@@ -6,7 +6,7 @@
 # Referenced by: .github/hooks/hooks.json, .clinerules/hooks/hooks.json
 
 # Path patterns for matching (Unix and Windows style)
-DOC_VIEWER_SRC_UNIX="tools/viewer/doc-viewer/src/"
+DOC_VIEWER_SRC_UNIX="memory-viewers/doc-viewer/src/"
 DOC_VIEWER_SRC_WIN="tools\\viewer\\doc-viewer\\src\\"
 
 # Read JSON input from stdin (non-blocking)

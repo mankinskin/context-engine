@@ -1,0 +1,26 @@
+{
+  "id": "exec-workspace-relocated-viewers-browser-20260714",
+  "validation_spec_id": "val-workspace-relocated-viewers-browser",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T22:36:23.374972900Z",
+  "detail": "Fresh release binaries were installed and started via viewer-ctl. Log-viewer resolved context-stack test logs (exists=true) and workspace root under context-engine; doc-viewer resolved target/logs, agents, crates, and tools under context-engine. External Chromium and Playwright screenshots verified nonblank rendering at 1280x800 and 390x844. Evidence: target/tmp/viewer-relocation/{doc-viewer,log-viewer}-{desktop,mobile}.png plus doc-viewer-mobile-closed.png. Existing doc mobile open-drawer close hitbox behavior is a UI risk unrelated to relocation; DOM close handler produced a clean settled state.",
+  "links": {
+    "spec_ids": [
+      "0d205a9e-3add-40e7-a148-b7e2e65b260f"
+    ],
+    "acceptance_criterion_ids": [
+      "managed-viewers",
+      "browser-validation"
+    ],
+    "ticket_ids": [
+      "6ded2540-206b-4ffd-bdb6-23459a16ab1d"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-viewers",
+    "domain": "workspace-ownership",
+    "operation": "managed-viewer-browser-smoke",
+    "transport": "http",
+    "run_id": "viewer-peek-relocation-20260714"
+  }
+}

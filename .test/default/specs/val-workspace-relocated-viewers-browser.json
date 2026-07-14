@@ -1,0 +1,18 @@
+{
+  "id": "val-workspace-relocated-viewers-browser",
+  "title": "Relocated viewers deploy and render in Chromium",
+  "command": "viewer-ctl prepare <viewer> && viewer-ctl install <viewer> --kind server && viewer-ctl start <viewer> --foreground",
+  "detail": "Checks fresh release deployment, corrected workspace roots, nonblank rendering, and screenshots at desktop 1280x800 and mobile 390x844 for doc-viewer and log-viewer.",
+  "links": {
+    "spec_ids": [
+      "0d205a9e-3add-40e7-a148-b7e2e65b260f"
+    ],
+    "acceptance_criterion_ids": [
+      "managed-viewers",
+      "browser-validation"
+    ],
+    "ticket_ids": [
+      "6ded2540-206b-4ffd-bdb6-23459a16ab1d"
+    ]
+  }
+}

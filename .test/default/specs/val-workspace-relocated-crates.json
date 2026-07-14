@@ -1,0 +1,20 @@
+{
+  "id": "val-workspace-relocated-crates",
+  "title": "Relocated crates resolve and pass focused checks",
+  "command": "cargo metadata --no-deps --format-version 1 && cargo test -p doc-viewer -p log-viewer -p peek-api -p peek-cli -p peek-mcp -p compact-terminal-mcp",
+  "detail": "Confirms canonical package resolution and native behavior for all six relocated packages. Frontend WASM and TypeScript builds are included as supporting migration evidence.",
+  "links": {
+    "spec_ids": [
+      "0d205a9e-3add-40e7-a148-b7e2e65b260f"
+    ],
+    "acceptance_criterion_ids": [
+      "canonical-destinations",
+      "package-identity",
+      "workspace-resolution",
+      "focused-validation"
+    ],
+    "ticket_ids": [
+      "6ded2540-206b-4ffd-bdb6-23459a16ab1d"
+    ]
+  }
+}

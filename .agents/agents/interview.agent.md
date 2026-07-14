@@ -1,7 +1,7 @@
 ---
 name: "Interview Agent"
 description: "Use for requirement interviews that refine specs, tickets, and acceptance criteria before implementation."
-tools: [vscode/memory, vscode/askQuestions, vscode/runCommand, execute, read, search, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/askQuestions, edit, read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Topic, feature, or ticket scope that needs clarification."
 user-invocable: true
 ---

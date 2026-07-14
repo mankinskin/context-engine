@@ -1,0 +1,27 @@
+{
+  "id": "exec-workspace-relocated-crates-20260714",
+  "validation_spec_id": "val-workspace-relocated-crates",
+  "outcome": "passed",
+  "executed_at": "2026-07-14T22:36:23.304641500Z",
+  "detail": "cargo metadata succeeded from canonical destinations. Final six-package native regression passed 96 tests across 12 suites. Both Dioxus frontends compiled for wasm32; log frontend Vitest passed 18 tests; both TypeScript frontends built successfully.",
+  "links": {
+    "spec_ids": [
+      "0d205a9e-3add-40e7-a148-b7e2e65b260f"
+    ],
+    "acceptance_criterion_ids": [
+      "canonical-destinations",
+      "package-identity",
+      "workspace-resolution",
+      "focused-validation"
+    ],
+    "ticket_ids": [
+      "6ded2540-206b-4ffd-bdb6-23459a16ab1d"
+    ]
+  },
+  "provenance": {
+    "domain": "workspace-ownership",
+    "operation": "relocated-crate-regression",
+    "transport": "cli",
+    "run_id": "viewer-peek-relocation-20260714"
+  }
+}

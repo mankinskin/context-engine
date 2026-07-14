@@ -1,7 +1,7 @@
 ---
 name: "Testing Agent"
 description: "Use for focused validation planning, shallow coverage, and evidence tracking with test-api, doc-api, and log-api concepts."
-tools: [vscode/memory, vscode/runCommand, execute, read, edit, search, browser, 'spec-mcp/*', 'ticket-mcp/*', todo]
+tools: [read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id, failing behavior, or test scope."
 user-invocable: true
 ---
