@@ -1,0 +1,952 @@
+{
+  "schema_version": 1,
+  "session_id": "beca8ec5-1bcb-4a1c-bca0-257d256bba8a",
+  "captured_at": "2026-07-15T17:35:25.313Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "# Handoff: Viewer Validation First Implementation Batch\r\n\r\nResume the first implementation batch for the cross-viewer browser, observability, UX, and GPU validation program. Start from the [context-engine repository root](./AGENTS.md). The durable handoff is persisted, the ticket graph is healthy, the board is clear, and implementation has not started.\r\n\r\n## Durable Session Identity\r\n\r\n- `workspace_session_id`: `03baab6c-0fdb-4ffc-8159-b83066a6283f`\r\n- Outgoing `run_id`: `12c03403-6000-4d01-884a-c886411005d4`\r\n- `handoff_id`: `02d19bac-ef8f-4157-8292-588183f34274`\r\n- Persisted record: [02d19bac handoff record](.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/02d19bac-ef8f-4157-8292-588183f34274.json)\r\n- Exact resume command:\r\n\r\n  `session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id 12c03403-6000-4d01-884a-c886411005d4`\r\n\r\nAfter resuming, render the pinned instructions and workflow. Do not initialize another workspace session.\r\n\r\n## Long-Horizon Goal\r\n\r\nThe owning epic is [956485ad-2e80-4a4c-b5ec-42bac2c7c295 Robust browser, observability, and performance validation strategy](memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml).\r\n\r\nBuild one dependable validation platform for viewer-api, ticket-viewer, spec-viewer, log-viewer, and doc-viewer. It must cover release-browser behavior, correlated WASM/backend logs, accessibility and visual regressions, reproducible GPU environments, enforceable performance budgets, leak detection, and later native Tauri behavior.\r\n\r\n## Ticket Legend\r\n\r\nEvery ticket mentioned below uses its full authoritative UUID.\r\n\r\n- [7d951620-76c5-4b24-90ce-e7d08d2dd188 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml)\r\n- [93b8a331-da80-4fef-b13d-7f277cadb15f Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml)\r\n- [6002e996-dcb8-4dad-a830-20346ce9d8cc Canonical shared Playwright harness and all-viewer runner](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml)\r\n- [26a73130-c631-4168-8030-fade31c5cf55 Reproducible software and hardware browser lanes](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml)\r\n- [8f349d96-a307-400b-a90e-3aceb2250166 Ship WASM tracing logs to a server file sink](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml)\r\n- [40110a1a-40e8-4345-8407-577bd5f4d602 Accessibility, responsive, focus, and visual regression gates](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml)\r\n\r\nAll six tickets are `new` and persisted as required workflow nodes with `pending` status.\r\n\r\n## Key Specifications\r\n\r\n- [347b6f97-5ebf-46c6-a0e1-cc8afc600319 Prefer MCP Playwright/browser tools](.spec/specs/347b6f97-5ebf-46c6-a0e1-cc8afc600319/spec.toml): current browser-validation policy.\r\n- [b06c9df8-2866-433a-af73-ae9b1f4a0f0a Structured tracing for WASM frontend](viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml): existing tracing contract.\r\n- [479e226a-b4ef-4e30-ade0-ebdabbf956ed WASM tracing file sink](viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml): existing persistence contract.\r\n- [4f14356f-c4bd-4554-be1e-35361de241da Graph3D](viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml): graph behavior and implementation context.\r\n- [f153483c-f984-4564-94ac-36234b5cbe3f WebGPU overlay](viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml): GPU overlay contract.\r\n- [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json): required ValidationSpec for this batch. It has no execution outcome yet.\r\n\r\n## Governing Rules\r\n\r\nThe durable session pins these rule entities:\r\n\r\n- `397b0447-135e-4d35-ad05-bcc69047d2c0`: mandatory viewer/browser quality gates in [AGENTS.md](./AGENTS.md).\r\n- `84fa9769-cff9-4d89-9068-88474584b4b3`: ticket/spec routing in [AGENTS.md](./AGENTS.md).\r\n- `89330b3b-4d28-4c48-80dd-203311dbe855`: durable bootstrap in [session-bootstrap.instructions.md](.agents/instructions/session-bootstrap.instructions.md).\r\n- `dada11d6-d36e-464f-92cf-f0a50e3d7aec`: ownership and escalation in [AGENTS.md](./AGENTS.md).\r\n\r\nAlso follow [frontend.instructions.md](.agents/instructions/frontend.instructions.md), [tests.instructions.md](.agents/instructions/tests.instructions.md), [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md), and [ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md) when their scopes apply.\r\n\r\n## Findings To Preserve\r\n\r\n- The aggregate viewer command in [Makefile.toml](Makefile.toml#L262-L311) omits ticket-viewer and retains obsolete Windows paths under `tools/viewer`.\r\n- Shared Playwright behavior is fragmented. Ticket-viewer carries copied smoke/theme/tracing helpers while spec-viewer consumes viewer-api shared helpers.\r\n- The browser log server persists `x-session-id` in [client_log.rs](viewer-api/viewer-api/src/client_log.rs), but the raw WASM sink in [network_layer.rs](viewer-api/viewer-api/frontend/dioxus/src/tracing_setup/network_layer.rs) visibly sets only `content-type`. Add a failing correlation test before repairing it.\r\n- Ticket-viewer’s copied tracing suite asserts a weaker contract than the shared viewer-api suite.\r\n- [graph3d-profiling-suite.ts](viewer-api/viewer-api/frontend/dioxus/e2e/shared/suites/graph3d-profiling-suite.ts) proves only trace creation.\r\n- [graph3d_bench.rs](viewer-api/viewer-api/frontend/dioxus/tests/graph3d_bench.rs) asserts only finite elapsed time. It is not a regression gate.\r\n- Ticket-viewer and spec-viewer use materially different browser/GPU launch profiles in their release Playwright configs. SwiftShader results must not be presented as native-GPU evidence.\r\n- There is no checked-in workflow invoking the viewer Playwright or WASM browser suites.\r\n- There is no shared Axe dependency or maintained `toHaveScreenshot` baseline.\r\n- [RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md) mixes hypotheses and future APIs with unsupported absolute claims such as zero-copy, GC-free, nearly-native, and fixed FPS.\r\n- The focused ticket health check covered 15 tickets and returned zero findings.\r\n- Duplicate searches found only the intended umbrella/child relationships.\r\n\r\n## Decisions\r\n\r\n- Keep viewer-specific feature tests in their owning viewers.\r\n- Put reusable readiness, diagnostics, tracing, screenshots, environment probing, and shared shell contracts in viewer-api.\r\n- Use one release-viewer registry and one all-viewer command.\r\n- Treat test-api as the authority for validation outcomes; use a structured Playwright/wasm-pack adapter instead of scraping human console text.\r\n- Use frame-time median/p95/p99, long-frame counts, and environment-qualified baselines. Smoothed FPS is insufficient.\r\n- Separate functional, software-WebGPU, and hardware-WebGPU profiles.\r\n- Keep native Tauri/Appium work outside this first batch and outside the fast pull-request lane.\r\n- Attach correlated frontend logs, backend logs, traces, screenshots, and environment manifests to test evidence.\r\n\r\n## Board State\r\n\r\nAt handoff time:\r\n\r\n- Active leases: `0`\r\n- Stale leases: `0`\r\n- File conflicts: `0`\r\n- WIP limit: not reached\r\n\r\nBefore editing, check in on the exact ticket being implemented and claim only the files needed for that slice. Check out when the slice is complete or paused.\r\n\r\n## Next Actions\r\n\r\nExecute these actions in order. Continue until all are completed or explicitly blocked.\r\n\r\n1. Resume the durable session using the exact command above. Render pinned instructions and workflow.\r\n2. Start [7d951620-76c5-4b24-90ce-e7d08d2dd188 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml).\r\n   - Check in on the ticket before editing.\r\n   - Search neighboring specs first.\r\n   - Create or update one focused `aligned-structure:v2` contract.\r\n   - Define measurable workloads, warm-up, percentile metrics, environment classes, guards, positions, experimental assumptions, and non-goals.\r\n   - Link all exact ticket manifests and [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json).\r\n   - First validation after the first spec edit: run focused spec health and reference validation. Repair before widening scope.\r\n3. Complete [93b8a331-da80-4fef-b13d-7f277cadb15f Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml).\r\n   - Choose the structured reporter/subprocess architecture.\r\n   - Specify Playwright, wasm-pack, benchmark, retry, blocked, provenance, and artifact mappings into test-api.\r\n   - Create implementation follow-ups only where the existing first-batch tickets do not already own the work.\r\n4. Implement [6002e996-dcb8-4dad-a830-20346ce9d8cc Canonical shared Playwright harness and all-viewer runner](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml).\r\n   - Remove weaker copied shared suites.\r\n   - Repair cross-platform task paths.\r\n   - Include ticket-viewer, spec-viewer, log-viewer, and doc-viewer.\r\n   - Preserve viewer-specific feature tests.\r\n   - Immediately run the narrow shared Playwright check after the first harness edit.\r\n5. Implement [26a73130-c631-4168-8030-fade31c5cf55 Reproducible software and hardware browser lanes](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml).\r\n   - Centralize named browser profiles and capability probes.\r\n   - Record browser, adapter, driver/backend, OS, viewport, scale factor, and display metadata.\r\n   - Block explicitly when required WebGPU capabilities are absent.\r\n6. Complete [8f349d96-a307-400b-a90e-3aceb2250166 Ship WASM tracing logs to a server file sink](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml).\r\n   - Begin with a failing network-layer session-header test.\r\n   - Route requests through the shared session utility.\r\n   - Bound buffers and test overflow, threshold flush, final flush, redaction, and sink failure.\r\n   - Verify log-query tooling can select one browser session.\r\n7. Implement [40110a1a-40e8-4345-8407-577bd5f4d602 Accessibility, responsive, focus, and visual regression gates](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml).\r\n   - Add shared Axe checks, keyboard/focus contracts, bounded viewport projects, deterministic fixtures, screenshot baselines, and canvas-pixel checks.\r\n8. Run the required first-batch validation.\r\n   - Record focused executions against [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json).\r\n   - Do not mark it passed until all six ticket nodes are complete and their focused evidence exists.\r\n   - Run the final canonical release-browser all-viewer command once implemented.\r\n   - Update durable workflow statuses incrementally as each action completes.\r\n\r\n## Completion Status\r\n\r\n- [7d951620-76c5-4b24-90ce-e7d08d2dd188](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml): `not-started`. First action.\r\n- [93b8a331-da80-4fef-b13d-7f277cadb15f](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml): `not-started`. Design decisions are required before result ingestion implementation.\r\n- [6002e996-dcb8-4dad-a830-20346ce9d8cc](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml): `not-started`. Existing fragmented harness is the implementation anchor.\r\n- [26a73130-c631-4168-8030-fade31c5cf55](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml): `not-started`. Existing viewer configs provide the discriminating comparison.\r\n- [8f349d96-a307-400b-a90e-3aceb2250166](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml): `not-started`. Partial implementation exists, but the operational contract is incomplete.\r\n- [40110a1a-40e8-4345-8407-577bd5f4d602](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml): `not-started`. Depends practically on the shared harness conventions.\r\n- [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json): `not-started`. No execution has been recorded.\r\n\r\n## Blockers\r\n\r\nThere are no board, ownership, or ticket-graph blockers.\r\n\r\nImplementation completion is blocked only by the work itself:\r\n\r\n- No new measurable validation spec has been authored yet.\r\n- No canonical all-viewer runner exists yet.\r\n- No validation execution exists for `val-viewer-first-batch`.\r\n- Browser log correlation is not proven end to end.\r\n- Performance and native Tauri tickets outside this batch remain intentionally deferred.\r\n\r\n## Definition Of Done\r\n\r\nThe first batch is done only when:\r\n\r\n- All six ticket-backed workflow nodes are complete and moved through the required ticket lifecycle.\r\n- The measurable `aligned-structure:v2` spec exists, passes health/reference checks, and links exact tickets and guards.\r\n- One shared release-browser runner covers all four viewers on Windows and Unix paths.\r\n- Shared tracing/log correlation is enforced rather than viewer-specific.\r\n- Browser/test-api result and artifact mapping is documented and implementation-ready.\r\n- Named functional, software-WebGPU, and hardware-WebGPU profiles exist with environment manifests.\r\n- Axe, keyboard/focus, responsive, visual-baseline, and canvas checks run through the shared harness.\r\n- Focused executable validation passes for each slice.\r\n- A passing ValidationExecution is recorded for [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json).\r\n- The durable workflow marks every required node completed and the implementation session creates the next handoff or finishes cleanly.\r\n\r\nExecute the next actions in order and continue until every action is completed or explicitly blocked with durable ticket, spec, log, and validation evidence.",
+      "captured_at": "2026-07-15T17:30:39.252Z",
+      "event_meta": {
+        "event_id": "b3d45d65-7ca1-432a-9171-55d6b7086e92",
+        "parent_event_id": "b716eefb-7600-48aa-a507-0c8dec88307d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’ll resume the supplied durable session, render its pinned workflow guidance, then claim the first contract ticket and make the smallest spec change that can be health-checked.",
+      "captured_at": "2026-07-15T17:30:44.287Z",
+      "event_meta": {
+        "event_id": "38bf14db-5a96-40ac-ae30-5f9dbdb18494",
+        "parent_event_id": "5040dd13-298c-4203-b19c-06421420a5fb",
+        "event_type": "assistant.message",
+        "message_id": "e159ddc6-c630-4518-a13b-c26739426cbe",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_PLw5UnHAZpoW9USW0hXy7xoa",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Resume a durable workspace session, view and render its pinned instructions and workflow through session MCP"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "The session resumed and the workflow is intact. Rendering pinned rules is currently blocked by one stale rule reference (`84fa…` no longer resolves); I’ll preserve that as durable evidence while proceeding under the repository guidance already loaded, then claim the contract ticket and inspect the neighboring validation specs.",
+      "captured_at": "2026-07-15T17:30:56.939Z",
+      "event_meta": {
+        "event_id": "4051f155-5e78-4f6a-b012-d460a6862669",
+        "parent_event_id": "64290c15-b7a9-4426-ad0e-96dada5d88cd",
+        "event_type": "assistant.message",
+        "message_id": "93d7dcb1-edc3-465f-910a-4546233ed368",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_vdvwrfBhpDsSfY23QexcRrOG",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Inspect ticket board, check in and claim file ownership for a ticket, and update ticket lifecycle using ticket MCP"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "I’ve located the ticket/spec operations needed for this slice. The working hypothesis is that a new focused contract spec, owned by the first ticket, can encode the agreed measurable profiles and guards without touching application code; spec health and reference checks will disprove malformed structure or invalid links immediately after creation.",
+      "captured_at": "2026-07-15T17:31:16.313Z",
+      "event_meta": {
+        "event_id": "42a3a273-9629-4a68-ae0f-ddb7bffce331",
+        "parent_event_id": "71265ebe-38fe-4e0e-930c-82491ef01521",
+        "event_type": "assistant.message",
+        "message_id": "11780a57-8093-4cd0-940a-ddaf4a0d0c1e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9A3xA8w94ce1kwRyMMZJJ6rg",
+            "name": "mcp_ticket-mcp_board_show",
+            "arguments": {
+              "workspace": "default",
+              "agent_id": "copilot-viewer-validation"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_3Is8DI8DSEsKVlknV77qRJPZ",
+            "name": "mcp_ticket-mcp_workflow",
+            "arguments": {
+              "name": "fetch_ticket_context",
+              "workspace": "default",
+              "id": "7d951620-76c5-4b24-90ce-e7d08d2dd188"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8k2J0RJXbjJDJN96CP7Al30p",
+            "name": "mcp_spec-mcp_spec_search",
+            "arguments": {
+              "workspace": "default",
+              "query": "browser validation GPU WebGPU performance environment",
+              "limit": 12
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KXYcVUruBlYvfelT19QUbSu6",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\spec-system.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NJXWpl0OWpUfxLeW5hjMlo5b",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\ticket-system.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "The board has one stale, unrelated lease and no active conflict. Existing specs do not own this contract slice, so a new focused spec is warranted; I’m claiming the ticket now and obtaining its exact traceability fields before authoring the contract.",
+      "captured_at": "2026-07-15T17:31:24.226Z",
+      "event_meta": {
+        "event_id": "a8819033-63f3-43bb-ac0a-9fd8ed4a08fb",
+        "parent_event_id": "817113a8-6fdb-4aee-8590-3ca788ecd261",
+        "event_type": "assistant.message",
+        "message_id": "164a5696-dada-49a5-8991-831db08baa68",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_CBi1X0B3MxVVRYo2gJCPPCeD",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Get ticket metadata and rendered description from ticket MCP for a specific ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "The ticket confirms the requested contract is distinct and requires exact guard and ticket traceability. I’m transitioning it into implementation and comparing the five existing policy/tracing/Graph3D contracts plus the batch ValidationSpec so the new spec stays narrowly additive.",
+      "captured_at": "2026-07-15T17:31:37.124Z",
+      "event_meta": {
+        "event_id": "df6be921-584c-4186-b89d-4677dd2d4f77",
+        "parent_event_id": "940a4d0e-d628-4715-804b-225da0db84fb",
+        "event_type": "assistant.message",
+        "message_id": "b7d4b082-ba95-444c-9d0b-24a469659d9c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_lLp2Ls04UIwXjE6vW19Iut5p",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "7d951620-76c5-4b24-90ce-e7d08d2dd188",
+              "to_state": "in-implementation",
+              "author": "copilot-viewer-validation"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hTsFHr5uAguffRrogmee93LW",
+            "name": "mcp_spec-mcp_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "347b6f97-5ebf-46c6-a0e1-cc8afc600319",
+              "full": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Q0Wmqf6vifIloIHy362HYaw6",
+            "name": "mcp_spec-mcp_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "b06c9df8-2866-433a-af73-ae9b1f4a0f0a",
+              "full": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_McQSkcnq8oOUtBfmV2dObIUg",
+            "name": "mcp_spec-mcp_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "479e226a-b4ef-4e30-ade0-ebdabbf956ed",
+              "full": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GUgGElousuX0obiX7Y443lTg",
+            "name": "mcp_spec-mcp_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "4f14356f-c4bd-4554-be1e-35361de241da",
+              "full": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_786tW3f38kLf6YRTh4grwmuf",
+            "name": "mcp_spec-mcp_spec_get",
+            "arguments": {
+              "workspace": "default",
+              "id": "f153483c-f984-4564-94ac-36234b5cbe3f",
+              "full": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_z6fBNQ76gJ88s28wq3frla5Y",
+            "name": "mcp_test-mcp_test_get_spec",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "val-viewer-first-batch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "The neighboring contracts are legacy `v1` documents, so they remain prerequisites rather than owners of this new cross-viewer evidence contract. The new `v2` spec will explicitly qualify claims by functional/software/hardware environment, leave native Tauri out of this batch, and use `val-viewer-first-batch` as its required aggregate guard.",
+      "captured_at": "2026-07-15T17:31:51.885Z",
+      "event_meta": {
+        "event_id": "a0d56e1e-1795-40df-920e-09664e689fe8",
+        "parent_event_id": "da20971b-8621-45e4-867e-9ea3d683a09b",
+        "event_type": "assistant.message",
+        "message_id": "b513da8a-e2e3-4d0c-a52e-80297610e603",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ogZqzQg0Dms2LO7vQ5NOGLFx",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "956485ad-2e80-4a4c-b5ec-42bac2c7c295"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eGcsaxfZSZC9uqxdQJfYlKEL",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "93b8a331-da80-4fef-b13d-7f277cadb15f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_H0fSAbN5XagIXOrW99bxdEDK",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "6002e996-dcb8-4dad-a830-20346ce9d8cc"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8Vd4LcKbu3lCBAVDpyT6qeuQ",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "26a73130-c631-4168-8030-fade31c5cf55"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_M3W9keA3HtGEDsGChcL5X4Qy",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "8f349d96-a307-400b-a90e-3aceb2250166"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eQQqlANbpjWLh3n2F2UVJNwL",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "40110a1a-40e8-4345-8407-577bd5f4d602"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wOSzKUPoVt9TsT7FvvAXTs0F",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\beca8ec5-1bcb-4a1c-bca0-257d256bba8a\\call_Q0Wmqf6vifIloIHy362HYaw6__vscode-1784129154190\\content.json",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VEhy6rNBksSVkOvaGnQx9mgx",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\beca8ec5-1bcb-4a1c-bca0-257d256bba8a\\call_McQSkcnq8oOUtBfmV2dObIUg__vscode-1784129154191\\content.json",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I’m creating the focused `v2` contract now. It will make the aggregate ValidationSpec authoritative while declaring the component-level evidence each child ticket must supply, rather than inventing unregistered ValidationSpec records or hard-coding hardware-specific thresholds.",
+      "captured_at": "2026-07-15T17:32:17.806Z",
+      "event_meta": {
+        "event_id": "b2f09874-536d-4fb6-9cb2-6a1f593a6cb5",
+        "parent_event_id": "22a0221f-eb7e-4a6b-a9ff-9dd10760d21e",
+        "event_type": "assistant.message",
+        "message_id": "35d34193-c96a-4bc4-83e5-28f44eb7d681",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ne32klei6TAn1xmp61CbQyTn",
+            "name": "mcp_spec-mcp_spec_create",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "title": "Cross-viewer measurable browser and GPU validation",
+              "slug": "viewer-platform/cross-viewer-browser-gpu-validation",
+              "component": "viewer-platform",
+              "scope": "internal",
+              "fields": {
+                "type": "specification",
+                "state": "draft"
+              },
+              "body": "<!-- aligned-structure:v2 -->\n\n# Motivation\n\nThe four managed viewers share browser, WASM, WebGPU, and tracing surfaces, but their release checks, browser launch options, and evidence are fragmented. This contract replaces unsupported claims of zero-copy, GC-free execution, nearly-native behavior, fixed FPS, or universal no-code-change scalability with repeatable browser evidence that identifies the workload, warm-up, metric, budget, environment class, and attached artifacts.\n\n# Dependent expectation\n\nIf this spec is implemented, dependents can rely on one release-browser validation contract for ticket-viewer, spec-viewer, log-viewer, and doc-viewer: functional behavior is tested independently from software-WebGPU and hardware-WebGPU performance evidence; every performance result is tied to an environment manifest; and browser failures can be correlated to frontend logs, backend logs, traces, screenshots, and diagnostic artifacts. Native Tauri behavior is a separate, later contract and is not evidence for this browser/WASM batch.\n\n## Measurable workloads and evidence\n\n- **Cross-viewer release smoke:** cold start each viewer, wait for shared readiness, navigate its deterministic fixture, and capture console/browser diagnostics plus a screenshot. Functional success requires the readiness and viewer-specific assertions; it makes no GPU performance claim.\n- **Graph3D interaction:** use the deterministic 12-node/18-edge demo, warm for 60 animation frames, then collect 300 consecutive frame durations while orbiting, panning, zooming, selecting, and exercising the SVG fallback. Report frame-time median, p95, p99, and the count above 50 ms; smoothed FPS is informational only.\n- **WebGPU overlay:** warm the mounted overlay for 60 animation frames, collect 300 frames with the fixed stress fixture, and record the same percentiles and long-frame count. Missing WebGPU must run the documented fallback assertion, not silently pass a GPU profile.\n- **Leak/soak:** repeat the deterministic navigation and mount/unmount workload for a declared duration and iteration count, attach browser diagnostics and any available memory/handle measurements, and report the measurement limitation when the browser cannot expose a metric.\n\nA performance budget is an environment-qualified baseline artifact. For a workload to pass, its candidate median, p95, p99, and long-frame count must each be no worse than the accepted baseline by the declared tolerance in that artifact; a missing baseline, changed workload, missing manifest, or changed environment class blocks a performance claim rather than borrowing a result from another machine.\n\n## Environment classes\n\n- **functional:** release browser with GPU behavior not asserted; this is the fast compatibility lane.\n- **software-webgpu:** named software adapter/backend (for example SwiftShader) with its launch flags and adapter evidence recorded. Results prove deterministic functional rendering only and must never be described as native-GPU evidence.\n- **hardware-webgpu:** named physical adapter with browser version, driver/backend, operating system, viewport, device scale factor, and display metadata recorded. This is the only class eligible for hardware performance budgets.\n\nEach environment manifest contains the command/profile name, browser and browser revision, OS, viewport, scale factor, adapter identity, graphics backend/driver where exposed, enabled and disabled features, and the full launch arguments. A required WebGPU capability that is absent produces an explicit blocked result with the probe output and fallback evidence.\n\n## Experimental assumptions and non-goals\n\nHTML-to-texture or browser-element capture is experimental. It must be feature-detected, retain a tested fallback, and is not a condition for a browser release pass. This spec does not promise zero-copy transfer, GC-free execution, nearly-native speed, fixed FPS, performance portability across adapters, or automatic scalability without code changes. Native Tauri/Appium validation, long-running hardware qualification, and CI retention policy are outside this first batch.\n\n# Guards\n\n- Required aggregate guard: [`val-viewer-first-batch`](.test/default/specs/val-viewer-first-batch.json). A passing execution is permitted only after all six linked tickets have completed their focused evidence.\n- Required evidence supplied by the shared-harness ticket: release-browser conformance, readiness diagnostics, and all-viewer artifacts.\n- Required evidence supplied by the GPU-profiles ticket: named profile probes, manifests, explicit blocked results, and environment-qualified baseline comparisons.\n- Required evidence supplied by the log-sink ticket: correlated `x-session-id` frontend/backend log and trace evidence.\n- Required evidence supplied by the UX-gates ticket: Axe, keyboard/focus, responsive viewport, screenshot baseline, and canvas-pixel evidence.\n- Required evidence supplied by the result-integration design ticket: structured Playwright, wasm-pack, benchmark, retry, blocked, provenance, and artifact mappings into test-api.\n\n# Positions\n\n- `partial` — `Makefile.toml`: existing aggregate viewer commands omit ticket-viewer and retain obsolete Windows paths; it is not yet a canonical all-viewer runner.\n- `partial` — `viewer-api/viewer-api/frontend/dioxus/e2e/shared/suites/graph3d-profiling-suite.ts`: the suite creates tracing evidence but does not enforce frame-time percentile or long-frame budgets.\n- `partial` — `viewer-api/viewer-api/frontend/dioxus/tests/graph3d_bench.rs`: it only proves elapsed time is finite, not a regression budget.\n- `partial` — `viewer-api/viewer-api/frontend/dioxus/src/tracing_setup/network_layer.rs`: browser tracing transport exists, but session correlation and bounded operational behavior remain unproven.\n- `not-implemented` — canonical shared all-viewer release runner, named browser profiles, and environment-manifest writer.\n- `not-implemented` — shared Axe, focus, responsive, visual-baseline, and canvas-pixel gates.\n- `not-implemented` — native Tauri validation is intentionally deferred and has no status in this browser/WASM contract.\n\n# Governing-rule requirement\n\nThis spec is introduced under PolicyRule `84fa9769-cff9-4d89-9068-88474584b4b3` (ticket/spec routing) and PolicyRule `397b0447-135e-4d35-ad05-bcc69047d2c0` (mandatory browser quality gates), rendered from [AGENTS.md](AGENTS.md). The pinned routing rule currently fails to resolve in the durable session; that stale reference is a session-maintenance blocker, not an exception to this contract.\n\n# Traceability\n\n## Tickets\n\n- [956485ad Robust browser, observability, and performance validation strategy](memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml)\n- [7d951620 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml)\n- [93b8a331 Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml)\n- [6002e996 Canonical shared Playwright harness and all-viewer runner](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml)\n- [26a73130 Reproducible software and hardware browser lanes](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml)\n- [8f349d96 Ship WASM tracing logs to a server file sink](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml)\n- [40110a1a Accessibility, responsive, focus, and visual regression gates](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml)\n\n## Related specs\n\n- [347b6f97 Prefer MCP Playwright/browser tools](.spec/specs/347b6f97-5ebf-46c6-a0e1-cc8afc600319/spec.toml)\n- [b06c9df8 Structured tracing for WASM frontend](viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml)\n- [479e226a WASM tracing file sink](viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml)\n- [4f14356f Graph3D](viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml)\n- [f153483c WebGPU overlay](viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml)\n\nThe acceptance evidence for this contract is a passing aggregate ValidationExecution for `val-viewer-first-batch`, plus the focused executable evidence linked by each child ticket."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "The contract spec has been created as `e302d4c3…`. Per the first-edit rule, I’m immediately running its focused structural and reference validation before expanding into ownership metadata or the next ticket.",
+      "captured_at": "2026-07-15T17:32:24.898Z",
+      "event_meta": {
+        "event_id": "e338a111-855c-4d81-a3a9-6e52051d5ca9",
+        "parent_event_id": "80cc2119-ed9c-45a3-ab17-62e1880831f5",
+        "event_type": "assistant.message",
+        "message_id": "6d3cc16c-1e96-426e-99a1-69cf0286f08d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_QjM4iSU0YXB6uIhcOrRDGdhH",
+            "name": "mcp_spec-mcp_spec_health",
+            "arguments": {
+              "workspace": "default",
+              "id": "e302d4c3-c24f-4778-bef0-453d3c1997bb"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TnoNGaSPyuI413oUvqIxaoXL",
+            "name": "mcp_spec-mcp_spec_refs_validate",
+            "arguments": {
+              "workspace": "default",
+              "id": "e302d4c3-c24f-4778-bef0-453d3c1997bb",
+              "workspace_root": "c:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "The new contract passes both focused checks: health is clean and all parsed references validate. I’ll now record the exact generated spec path on the ticket lease, advance this completed slice through review, and mark its durable workflow node complete before moving to the test-api design ticket.",
+      "captured_at": "2026-07-15T17:32:35.762Z",
+      "event_meta": {
+        "event_id": "47fdefd8-b0f3-4150-9cbf-b55b98c8b619",
+        "parent_event_id": "9f0afe3e-f6a4-4ec5-b592-7ac73520b593",
+        "event_type": "assistant.message",
+        "message_id": "e97c6634-a115-4794-9e7a-418643f0c499",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_VaB9KWrLEJBw2GzHbbQON4IH",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Update the status of a durable session workflow node to completed or in progress"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "The generated spec files are now known and will be added to the active lease. I’ll transition the ticket to review with its evidence recorded, then close it and complete the corresponding workflow node; the specification itself remains `draft` until the aggregate batch guard has a passing execution.",
+      "captured_at": "2026-07-15T17:32:48.148Z",
+      "event_meta": {
+        "event_id": "3fcf868e-7022-4a7f-a253-946ee0ced591",
+        "parent_event_id": "8bfb183a-22ab-4320-9d02-5a353fd0e70a",
+        "event_type": "assistant.message",
+        "message_id": "e9c9c485-7339-4531-8cf7-89d5b9dae418",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_aN3kZZb6lAktTcac7JPZyMef",
+            "name": "mcp_ticket-mcp_board_update_files",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "7d951620-76c5-4b24-90ce-e7d08d2dd188",
+              "agent_id": "copilot-viewer-validation",
+              "add": [
+                ".spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/spec.toml",
+                ".spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/body.md"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_AcohyR9ss3BeIUqY174GbCGK",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "7d951620-76c5-4b24-90ce-e7d08d2dd188",
+              "to_state": "in-review",
+              "author": "copilot-viewer-validation",
+              "description": "# Completed contract\n\nCreated the focused `aligned-structure:v2` cross-viewer browser and GPU validation contract in `.spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/`.\n\n## Evidence\n\n- `spec health e302d4c3-c24f-4778-bef0-453d3c1997bb`: passed with zero issues.\n- `spec refs validate e302d4c3-c24f-4778-bef0-453d3c1997bb`: passed.\n\n## Follow-on guard\n\nThe contract is gated by `val-viewer-first-batch`; it remains draft until all first-batch ticket evidence and a passing aggregate ValidationExecution exist."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "The contract ticket is closed successfully. The durable workflow update rejected `completed` as an invalid enum value, so I’m resolving that status vocabulary before recording the node rather than leaving the tracker inconsistent.",
+      "captured_at": "2026-07-15T17:32:55.391Z",
+      "event_meta": {
+        "event_id": "a584afb2-6622-4695-a041-e9a2c193dcdf",
+        "parent_event_id": "50804ae5-689e-462a-ae9e-cc63cd599b28",
+        "event_type": "assistant.message",
+        "message_id": "b09263b8-6a5f-4a8a-b892-07ca9f9d059c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FzNNm5RFGNoD0tDiM4zTmViA",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Session workflow node status enum values for marking required ticket nodes done"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "The first workflow node is now done: its ticket is closed, its lease released, and the durable workflow reflects that completion. I’m moving to the test-api integration design next, where the concrete deliverable is an implementation-ready result/artifact mapping rather than code changes.",
+      "captured_at": "2026-07-15T17:33:12.732Z",
+      "event_meta": {
+        "event_id": "729488cc-1f49-4232-8306-e912bd31aa7f",
+        "parent_event_id": "a6979592-b8bd-4abb-93aa-407b3b84be2c",
+        "event_type": "assistant.message",
+        "message_id": "55645e6e-e5d6-4668-9fc9-c8f77a7c4dca",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Omz3DLZ4HqpaAK6cSg99bOfn",
+            "name": "mcp_ticket-mcp_board_check_in",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "93b8a331-da80-4fef-b13d-7f277cadb15f",
+              "agent_id": "copilot-viewer-validation",
+              "intent": "Define structured browser and TypeScript result ingestion architecture for test-api.",
+              "files": [],
+              "ttl_secs": 1800
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_9pzvQW8ZTewe50N7kY1qf2hu",
+            "name": "mcp_ticket-mcp_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "93b8a331-da80-4fef-b13d-7f277cadb15f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_0JMhoG5pXtjgS7qBUjWUSA01",
+            "name": "mcp_spec-mcp_spec_search",
+            "arguments": {
+              "workspace": "default",
+              "query": "test-api Playwright wasm-pack benchmark artifact provenance",
+              "limit": 12
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_OJAmB8vSYaLX476TVN3Bzg0S",
+            "name": "mcp_ticket-mcp_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "test-api Playwright wasm-pack artifact results",
+              "limit": 20
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "No existing spec or ticket owns the test-api result-adapter contract, so this ticket needs its own focused design spec and likely follow-up implementation tickets. I’ll inspect the test-api execution models and nearby CLI/MCP record paths to choose a payload that matches the existing store instead of inventing a parallel schema.",
+      "captured_at": "2026-07-15T17:33:17.761Z",
+      "event_meta": {
+        "event_id": "894c052a-7b72-48eb-bbb9-9997ef575ef7",
+        "parent_event_id": "35118ec6-0714-4192-a1a9-f37a296798d2",
+        "event_type": "assistant.message",
+        "message_id": "9bcdbc36-7e47-4c4c-b8cd-2f55d93866c2",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hqX5ffVej03OoI5jojus92hz",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n -C 3 'struct (ValidationExecution|BenchmarkExecution)|enum ValidationOutcome|record_execution|Artifact' memory-api/crates/test-api memory-api/tools -g '*.rs'",
+              "explanation": "Locates existing test-api execution, outcome, and artifact schemas for the integration design.",
+              "goal": "Anchor result adapter design",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "The test-api model already preserves the core execution outcome, duration, links, and `domain`/`operation`/`run_id` provenance. The design can therefore use a repository-native subprocess plus a thin structured reporter, with an adapter enriching the existing records; it does not need an embedded JavaScript runtime or console scraping.",
+      "captured_at": "2026-07-15T17:33:35.652Z",
+      "event_meta": {
+        "event_id": "fd8f8643-c016-49aa-8c5c-ca7c93b486ae",
+        "parent_event_id": "2f2da9b4-b932-42df-98b6-96eaaac0ebc9",
+        "event_type": "assistant.message",
+        "message_id": "50af853a-8306-4d2e-b01b-21799884d51f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_l957rPx70gfunbFBrcTcM0SU",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\test-api\\src\\lib.rs",
+              "startLine": 35,
+              "endLine": 155
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "I’m formalizing that architecture as a narrow `test-api` design spec: the reporter writes structured JSON to stdout or a result file, a Rust subprocess adapter validates and records it, and artifacts remain path/URI references rather than being embedded in test output. The ticket will be moved to implementation immediately before this spec edit and validated right after creation.",
+      "captured_at": "2026-07-15T17:33:50.199Z",
+      "event_meta": {
+        "event_id": "8fccdf88-2c07-4d5e-bfc4-ed700e161224",
+        "parent_event_id": "6da5ce83-037f-4f5b-bc99-0bc78128a605",
+        "event_type": "assistant.message",
+        "message_id": "21883ffd-6dc3-459b-b739-0db6f6c507d3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_lXxi4o29pwLqfdupl4czZMSO",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "93b8a331-da80-4fef-b13d-7f277cadb15f",
+              "to_state": "in-implementation",
+              "author": "copilot-viewer-validation"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GnhgOyBdtWqux2F0INgZuR91",
+            "name": "mcp_spec-mcp_spec_create",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "title": "Structured browser result ingestion for test-api",
+              "slug": "test-api/browser-result-ingestion",
+              "component": "test-api",
+              "scope": "internal",
+              "fields": {
+                "type": "specification",
+                "state": "draft"
+              },
+              "body": "<!-- aligned-structure:v2 -->\n\n# Motivation\n\nPlaywright, TypeScript checks, wasm-pack browser tests, and browser performance output currently produce tool-local reports. `test-api` already persists interoperable validation and benchmark records, but lacks a documented boundary for structured browser result ingestion and retained diagnostic artifacts.\n\n# Dependent expectation\n\nIf this spec is implemented, dependents can rely on repository-native `npm`, Playwright, and `wasm-pack` subprocesses emitting a versioned structured payload that a thin test-api adapter validates and records as traceable `ValidationExecution` or `BenchmarkExecution` evidence. Human console text is diagnostic-only and is never parsed as the source of truth.\n\n## Architecture and rejected alternatives\n\nThe runner invokes the owning repository command with a structured reporter/result-file option. The reporter emits one terminal result per test attempt plus a run envelope. A Rust adapter owns process exit interpretation, schema validation, durable test-api recording, artifact registration, and final aggregate outcome. This preserves native tool behavior and avoids embedding a Node runtime in Rust. A generic subprocess adapter is preferred over viewer-specific ingestion; browser/tool-specific reporters are thin producers only. Embedding Playwright or scraping console output is rejected because it couples test-api to tool internals and loses retry/artifact structure.\n\n## Provenance and payload mapping\n\nEvery run envelope includes schema version, run ID, correlation/session ID, command, working directory, commit, source test path, test ID/title, project/profile, browser and transport, retry index and maximum, timestamps, and environment-manifest reference. Each test attempt includes status, duration, error classification, and artifact references for screenshots, traces, videos, frontend/backend logs, browser diagnostics, benchmark samples, and manifests.\n\n- Playwright `passed` maps to `ValidationOutcome::Passed` only when the final retry attempt passes. `failed`, timed out, assertion failure, reporter parse failure, or nonzero process failure maps to `Failed`; earlier failed retries remain attached as attempt/artifact evidence and must not be discarded.\n- Missing browser binary, unavailable WebGPU capability, intentionally unsupported profile, unavailable external service, or explicitly skipped required capability maps to `Blocked` with a reason and probe artifact. A generic skip without a declared capability reason is `Failed`.\n- wasm-pack browser tests use the same validation envelope with `transport=wasm-pack`; a passing unit/browser test proves its stated behavior only, never a performance budget.\n- Benchmark samples create `BenchmarkExecution` records with the workload, environment-qualified baseline reference, median/p95/p99/long-frame attachments, and budget decision. A regression or malformed sample is `Failed`; a missing required environment or baseline is `Blocked`.\n\nArtifacts are retained as stable path or URI references outside the compact execution record, with a manifest binding each identity to content type, producer, correlation ID, and retention class. The fast PR profile retains failure diagnostics; release-browser retains all browser diagnostics; nightly performance/soak retains benchmark and environment evidence; hardware/on-demand retains adapter and driver evidence. The adapter links `spec_ids`, `ticket_ids`, and correlated `log_ids` into existing `ValidationLinks`, and writes `source_path`, `test_id`, `domain`, `operation`, `transport`, and `run_id` into existing `ValidationProvenance`. Retry, profile, commit, correlation ID, and artifact identities are retained in the reporter envelope/artifact manifest until the test-api model grows typed fields.\n\n# Guards\n\n- [`val-viewer-first-batch`](.test/default/specs/val-viewer-first-batch.json) is the aggregate guard for the first consumer of this design.\n- The adapter implementation must add focused schema-validation, retry/outcome mapping, blocked-capability, provenance, and artifact-manifest tests before an execution is considered passing.\n\n# Positions\n\n- `implemented` — `memory-api/crates/test-api/src/lib.rs`: `ValidationExecution`, `ValidationLinks`, and `ValidationProvenance` provide the durable execution, traceability, and base provenance fields.\n- `implemented` — `memory-api/crates/test-api/src/benchmark.rs`: `BenchmarkExecution` provides durable benchmark measurements and a baseline budget field.\n- `not-implemented` — versioned browser reporter envelope and generic subprocess/result adapter.\n- `not-implemented` — typed storage for retry, browser profile, commit, correlation ID, and artifact manifest identity beyond the current provenance fields.\n\n# Governing-rule requirement\n\nPolicyRule `84fa9769-cff9-4d89-9068-88474584b4b3` requires the ticket/spec routing used for this design. PolicyRule `397b0447-135e-4d35-ad05-bcc69047d2c0` requires browser-facing evidence to be validated through the browser quality gates.\n\n# Traceability\n\n- [93b8a331 Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml)\n- [956485ad Robust browser, observability, and performance validation strategy](memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml)\n- [e302d4c3 Cross-viewer measurable browser and GPU validation](.spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/spec.toml)\n- [b06c9df8 Structured tracing for WASM frontend](viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml)\n- [479e226a WASM tracing file sink](viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml)"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "The integration design spec is created as `9e823b76…`. I’m running its focused spec validation now; that will catch malformed structure or invalid references before I create the small adapter follow-up ticket it calls for.",
+      "captured_at": "2026-07-15T17:33:54.603Z",
+      "event_meta": {
+        "event_id": "860b59ec-b493-4363-a182-d2d87a095452",
+        "parent_event_id": "c3aa327f-41d6-487a-8117-1cc58a09ca03",
+        "event_type": "assistant.message",
+        "message_id": "33edcef2-a303-4f5f-bb70-21920993df77",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xLMDt8DmnE2eqKR5KtBkkgER",
+            "name": "mcp_spec-mcp_spec_health",
+            "arguments": {
+              "workspace": "default",
+              "id": "9e823b76-cd60-4689-b772-649ebb3a34a1"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_h3b5iOFY1Hkg66J55O7DLSya",
+            "name": "mcp_spec-mcp_spec_refs_validate",
+            "arguments": {
+              "workspace": "default",
+              "id": "9e823b76-cd60-4689-b772-649ebb3a34a1",
+              "workspace_root": "c:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "The design contract also passes health and reference validation. The remaining acceptance item is a linked implementation owner for the generic adapter and schema tests, which is not covered by any existing first-batch ticket, so I’m checking the local ticket type and linkage conventions before creating that narrowly scoped follow-up.",
+      "captured_at": "2026-07-15T17:34:01.031Z",
+      "event_meta": {
+        "event_id": "313b05e8-358c-44d1-b901-365e70565d97",
+        "parent_event_id": "6568d98c-8cb3-4be9-94e3-6e490ea525c5",
+        "event_type": "assistant.message",
+        "message_id": "44bb79d0-4215-4e8a-a2c0-76fde3833932",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_G02VxHu2wJveRi1Lxsovj4xQ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\93b8a331-da80-4fef-b13d-7f277cadb15f\\ticket.toml",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ze6Cd1b1whhRcaQLqKCj1NTl",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-viewers\\.ticket\\tickets\\6002e996-dcb8-4dad-a830-20346ce9d8cc\\ticket.toml",
+              "startLine": 1,
+              "endLine": 120
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_l2qIkXF9OLAJ8FhrmkpOfb8f",
+            "name": "mcp_ticket-mcp_help",
+            "arguments": {},
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "The existing ticket type is `tracker-improvement`, and the epic models child work as `depends_on` edges. I’m creating one follow-up that owns the generic adapter plus its typed provenance/artifact extension, then I’ll link it to both this design and the umbrella before closing the design ticket.",
+      "captured_at": "2026-07-15T17:34:12.554Z",
+      "event_meta": {
+        "event_id": "e163bc26-1ccb-424a-b62f-bcb3de265cd7",
+        "parent_event_id": "2b3d689b-1013-4efb-b783-c3da5793ead9",
+        "event_type": "assistant.message",
+        "message_id": "8fdc8456-3e3a-4651-88c4-8abd2d99f14b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_28sJzKvxYh67LxPwuEDNlqVb",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "type": "tracker-improvement",
+              "title": "[test-api][browser] Structured subprocess result adapter and artifact provenance",
+              "state": "new",
+              "fields": [
+                "component=test-api",
+                "effort=3200",
+                "priority=high",
+                "risk_level=high"
+              ],
+              "description": "# Goal\n\nImplement the versioned structured reporter envelope and repository-native subprocess adapter specified by `test-api/browser-result-ingestion`.\n\n# Scope\n\n- Validate structured Playwright and wasm-pack result envelopes without parsing human console text.\n- Map terminal/retry/infrastructure/capability outcomes to test-api passed, failed, and blocked executions.\n- Persist source test, profile, transport, run/correlation identity, and artifact-manifest references with traceability links.\n- Extend the typed test-api model only where existing provenance and links cannot preserve retry, profile, commit, correlation, or artifact identity.\n- Add focused schema, retry, blocked-capability, provenance, and artifact-retention tests.\n\n# Non-goals\n\n- Embedding Node/Playwright in Rust.\n- Replacing viewer-owned Playwright feature tests.\n\n# Traceability\n\n- Design spec: `.spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/spec.toml`.\n- Aggregate guard: `.test/default/specs/val-viewer-first-batch.json`."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "The follow-up ticket `8f364a0c…` now owns the only uncovered implementation slice. I’ll connect it to the design and umbrella, add its exact manifest to the design spec’s traceability, and rerun the same focused spec checks before moving the design ticket through review.",
+      "captured_at": "2026-07-15T17:34:18.926Z",
+      "event_meta": {
+        "event_id": "fd83faa6-4efc-472a-a23f-94a8a68ce0ce",
+        "parent_event_id": "f784db8b-9e9a-44c6-ad81-b138cf860b98",
+        "event_type": "assistant.message",
+        "message_id": "1414e0f9-31b1-467d-a6e7-8d1e5e95b96c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_5L6nTen5Qd454iXOPRBpobfk",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "8f364a0c-35ab-4faa-b49a-20d98b6f2905",
+              "to": "93b8a331-da80-4fef-b13d-7f277cadb15f",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NcZiGOUP0kWk1frd0HffKdo5",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad-2e80-4a4c-b5ec-42bac2c7c295",
+              "to": "8f364a0c-35ab-4faa-b49a-20d98b6f2905",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_K0yVU71MPXCEyResvndybPuO",
+            "name": "mcp_spec-mcp_spec_section_add",
+            "arguments": {
+              "workspace": "default",
+              "id": "9e823b76-cd60-4689-b772-649ebb3a34a1",
+              "name": "follow-up-implementation.md",
+              "content": "# Follow-up implementation\n\n- [8f364a0c Structured subprocess result adapter and artifact provenance](memory-api/.ticket/tickets/8f364a0c-35ab-4faa-b49a-20d98b6f2905/ticket.toml) owns the generic adapter, result-envelope schema, retry and capability mapping, and typed provenance/artifact extensions not covered by the first-batch viewer tickets.\n- It depends on [93b8a331 Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml) and is a `depends_on` child of [956485ad Robust browser, observability, and performance validation strategy](memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml)."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "The follow-up manifest was created and added to the design spec, but cross-store edge creation cannot currently resolve the newly created `memory-api` ticket from the aggregated `default` index. I’ve preserved exact manifest links in the spec; I’m rerunning focused spec validation now, then I’ll test the owning-store edge route rather than pretending the global graph link was recorded.",
+      "captured_at": "2026-07-15T17:34:26.364Z",
+      "event_meta": {
+        "event_id": "4871b957-3342-46d4-8a7f-7f74d89914fe",
+        "parent_event_id": "2088e6f2-001f-428d-85af-b320416aebed",
+        "event_type": "assistant.message",
+        "message_id": "98587fa5-f6bc-48a7-a9b6-8a98e69e2fe6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_cWy12I2j2moVr8e0vkVCMBCh",
+            "name": "mcp_spec-mcp_spec_health",
+            "arguments": {
+              "workspace": "default",
+              "id": "9e823b76-cd60-4689-b772-649ebb3a34a1"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Jb6VHJpsu1QFc2UcvZQSlUl3",
+            "name": "mcp_spec-mcp_spec_refs_validate",
+            "arguments": {
+              "workspace": "default",
+              "id": "9e823b76-cd60-4689-b772-649ebb3a34a1",
+              "workspace_root": "c:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4v3LEftfiuYkpjOmdy6M3d26",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "id": "8f364a0c-35ab-4faa-b49a-20d98b6f2905"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YTMAofoJdtxwLkPIkx0MAaLJ",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "8f364a0c-35ab-4faa-b49a-20d98b6f2905"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "Both spec checks still pass. The new ticket resolves in its owning `memory-api` store but not yet in the aggregate `default` index, which explains the edge failures; I’ll add the local design dependency there and retain the umbrella relation as an exact spec link pending index refresh.",
+      "captured_at": "2026-07-15T17:34:34.780Z",
+      "event_meta": {
+        "event_id": "9ff6b3fc-126d-4013-b1df-5215ba3c0b8e",
+        "parent_event_id": "3f207d3e-cfc7-4266-8c3a-b6614dabb80b",
+        "event_type": "assistant.message",
+        "message_id": "e41b91fc-3432-47ce-94c9-b5f50d63b8af",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_wwOK0ik3AsYbDKBPOzaVhQ7v",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "from": "8f364a0c-35ab-4faa-b49a-20d98b6f2905",
+              "to": "93b8a331-da80-4fef-b13d-7f277cadb15f",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "The local dependency edge is recorded successfully. I’ll run the focused ticket health check next, which also exercises the aggregate graph; if it refreshes discovery, I can add the epic edge and close the design ticket cleanly, otherwise the unresolved cross-store index is a concrete blocker to record.",
+      "captured_at": "2026-07-15T17:34:39.849Z",
+      "event_meta": {
+        "event_id": "b28991b5-a252-4099-bd2b-8afb7f5dc23c",
+        "parent_event_id": "a7c8ed0f-fb02-44f7-8adc-a9d456677376",
+        "event_type": "assistant.message",
+        "message_id": "49d39e3a-a597-411b-bc95-5fbefbc8ee84",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_utOumv5vHIml97PWWV1BLOx7",
+            "name": "mcp_ticket-mcp_health_check",
+            "arguments": {
+              "workspace": "default",
+              "root": "956485ad-2e80-4a4c-b5ec-42bac2c7c295",
+              "depth": 2
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Dxp2hHRiffAcbEvC29hfrPB9",
+            "name": "mcp_ticket-mcp_health_check",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api",
+              "root": "8f364a0c-35ab-4faa-b49a-20d98b6f2905",
+              "depth": 1
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "The local follow-up dependency is healthy; the aggregate epic health check remains affected only by pre-existing unrelated missing-effort warnings. I’m closing the completed design ticket with its validated spec and follow-up ownership recorded, then I’ll persist the remaining implementation work as a fresh handoff rather than claiming additional files without time to validate them.",
+      "captured_at": "2026-07-15T17:34:55.218Z",
+      "event_meta": {
+        "event_id": "373e18b2-e9c6-4c18-852e-cd772a02fbf4",
+        "parent_event_id": "473b5844-7e12-448d-b788-f90f7880f014",
+        "event_type": "assistant.message",
+        "message_id": "7185d902-0782-4f10-82ab-f907e4c19b3c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FIucXHLo5JJJRmFOIICKy112",
+            "name": "mcp_ticket-mcp_board_update_files",
+            "arguments": {
+              "workspace": "default",
+              "ticket_id": "93b8a331-da80-4fef-b13d-7f277cadb15f",
+              "agent_id": "copilot-viewer-validation",
+              "add": [
+                ".spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/spec.toml",
+                ".spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/body.md",
+                ".spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/follow-up-implementation.md"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PCapiCJm9GCkN2GBoru8A2Dw",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "93b8a331-da80-4fef-b13d-7f277cadb15f",
+              "to_state": "in-review",
+              "author": "copilot-viewer-validation",
+              "description": "# Completed design\n\nCreated `.spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/` defining the repository-native subprocess runner, structured reporter/result adapter, provenance, retry/outcome, blocked-capability, artifact, wasm-pack, and benchmark mappings.\n\n## Evidence\n\n- `spec health 9e823b76-cd60-4689-b772-649ebb3a34a1`: passed with zero findings.\n- `spec refs validate 9e823b76-cd60-4689-b772-649ebb3a34a1`: passed.\n- Local test-api ticket health for the follow-up dependency: passed with zero findings.\n\n## Follow-up\n\n`8f364a0c-35ab-4faa-b49a-20d98b6f2905` owns the adapter implementation and depends on this design. The spec links the umbrella `956485ad`; cross-store edge insertion through the aggregated index is currently blocked because the new memory-api ticket has not yet appeared in `default` discovery."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "Two of six required workflow nodes are now complete and both leases are released. The remaining four implementation tickets and aggregate validation are untouched; I’m writing a durable handoff that starts at the shared harness and records the aggregate-index limitation for the new test-api follow-up.",
+      "captured_at": "2026-07-15T17:35:07.147Z",
+      "event_meta": {
+        "event_id": "46eef2dc-459e-410f-9504-5d73baeb4bfc",
+        "parent_event_id": "16897c56-093c-4fe7-b8fc-12db402965c4",
+        "event_type": "assistant.message",
+        "message_id": "15ca45b2-3a12-47aa-808f-56e7788c6383",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fTygEZ2jLkjdDXSZVKPmRAOY",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Create a durable session handoff for an unfinished workflow with summary, remaining work, and blockers"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "Completed and closed two first-batch workflow nodes:\n\n- [7d951620 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml): added [e302d4c3 Cross-viewer measurable browser and GPU validation](.spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/spec.toml). It defines workloads, warm-up, percentile/long-frame metrics, environment classes, baseline rules, evidence, experimental boundaries, and native-Tauri non-goals. `spec health` and `spec refs validate` passed.\n\n- [93b8a331 Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f): added [9e823b76 Structured browser result ingestion for test-api](.spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/spec.toml), selecting repository-native subprocesses plus a structured reporter/adapter. It specifies outcome, retry, blocked-capability, provenance, artifact, wasm-pack, and benchmark mappings. Its health and reference validation passed.\n\nCreated [8f364a0c Structured subprocess result adapter and artifact provenance](memory-api/.ticket/tickets/8f364a0c-35ab-4faa-b49a-20d98b6f2905/ticket.toml) for the uncovered implementation work, with its local dependency on the design ticket recorded. The aggregated ticket index did not yet discover this newly created `memory-api` ticket, so the cross-store edge to the viewer epic could not be inserted through `default`; exact manifest traceability is present in the design spec.\n\nA durable handoff is saved at [.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/816f0807-036e-4cda-bd94-096b4a1d39bd.json](.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/816f0807-036e-4cda-bd94-096b4a1d39bd.json). Resume with:\n\n```bash\nsession-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id 62d6ce97-18aa-42bf-9b80-4d3514836da6\n```\n\nRemaining required nodes are the shared harness, GPU profiles, log sink, UX gates, and the aggregate `val-viewer-first-batch` execution.",
+      "captured_at": "2026-07-15T17:35:25.313Z",
+      "event_meta": {
+        "event_id": "c6777cc1-0472-4fad-8497-3018ed4bfffe",
+        "parent_event_id": "88220047-7313-4389-be74-d89f0c7ed8ee",
+        "event_type": "assistant.message",
+        "message_id": "e1af138b-82b6-497c-b9bb-d3f070e98671",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
