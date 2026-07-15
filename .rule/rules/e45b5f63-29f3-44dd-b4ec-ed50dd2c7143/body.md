@@ -4,8 +4,3 @@ description: Describe what this custom agent does and when to use it.
 argument-hint: The inputs this agent expects, e.g., "a task to implement" or "a question to answer".
 tools: [execute, read, agent, edit, search, web, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 ---
-
-<!-- rule-api:file generated=true -->
-
-<!-- rule-api:entry id=e45b5f63-29f3-44dd-b4ec-ed50dd2c7143 slug=context-engine/.agents/agents/default -->
-

@@ -62,3 +62,10 @@ folders:
         nodes:
         - name: roast-agent
           section: roast-agent
+    - name: default.agent.md
+      target:
+        name: context-engine-agent-default
+        path_scope: .agents/agents/Default.agent.md
+        nodes:
+        - name: default-agent
+          section: default-agent
