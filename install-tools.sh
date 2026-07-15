@@ -24,6 +24,30 @@ tool_names=(
     spec-cli
     audit-cli
     rule-cli
+    context-mcp
+    ticket-mcp
+    spec-mcp
+    test-mcp
+    feedback-mcp
+    session-mcp
+    peek-mcp
+    rule-mcp
+    audit-mcp
+    compact-terminal-mcp
+)
+
+mcp_tool_names=(
+    context-mcp
+    ticket-mcp
+    spec-mcp
+    test-mcp
+    feedback-mcp
+    session-mcp
+    peek-mcp
+    rule-mcp
+    audit-mcp
+    compact-terminal-mcp
+    log-viewer
 )
 
 tool_path() {
@@ -38,6 +62,16 @@ tool_path() {
         spec-cli) printf '%s\n' "memory-api/tools/cli/spec-cli" ;;
         audit-cli) printf '%s\n' "memory-api/tools/cli/audit-cli" ;;
         rule-cli) printf '%s\n' "memory-api/tools/cli/rule-cli" ;;
+        context-mcp) printf '%s\n' "context-stack/tools/mcp/context-mcp" ;;
+        ticket-mcp) printf '%s\n' "memory-api/tools/mcp/ticket-mcp" ;;
+        spec-mcp) printf '%s\n' "memory-api/tools/mcp/spec-mcp" ;;
+        test-mcp) printf '%s\n' "memory-api/tools/mcp/test-mcp" ;;
+        feedback-mcp) printf '%s\n' "memory-api/tools/mcp/feedback-mcp" ;;
+        session-mcp) printf '%s\n' "memory-api/tools/mcp/session-mcp" ;;
+        peek-mcp) printf '%s\n' "memory-api/tools/mcp/peek-mcp" ;;
+        rule-mcp) printf '%s\n' "memory-api/tools/mcp/rule-mcp" ;;
+        audit-mcp) printf '%s\n' "memory-api/tools/mcp/audit-mcp" ;;
+        compact-terminal-mcp) printf '%s\n' "memory-api/tools/mcp/compact-terminal-mcp" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -57,6 +91,16 @@ tool_bin() {
         spec-cli) printf '%s\n' "spec" ;;
         audit-cli) printf '%s\n' "audit" ;;
         rule-cli) printf '%s\n' "rule" ;;
+        context-mcp) printf '%s\n' "context-mcp" ;;
+        ticket-mcp) printf '%s\n' "ticket-mcp" ;;
+        spec-mcp) printf '%s\n' "spec-mcp" ;;
+        test-mcp) printf '%s\n' "test-mcp" ;;
+        feedback-mcp) printf '%s\n' "feedback-mcp" ;;
+        session-mcp) printf '%s\n' "session-mcp" ;;
+        peek-mcp) printf '%s\n' "peek-mcp" ;;
+        rule-mcp) printf '%s\n' "rule-mcp" ;;
+        audit-mcp) printf '%s\n' "audit-mcp" ;;
+        compact-terminal-mcp) printf '%s\n' "compact-terminal-mcp" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -76,6 +120,7 @@ toolchain dependencies are handled by ./install-deps.sh.
 Options:
   --tool <name>       Install one tool; repeatable.
   --tools <a,b,c>     Install a comma-separated list of tools.
+    --mcp               Install all MCP binaries configured for VS Code.
   --all               Install all supported tools.
   --list              Print supported tools and exit.
   --dry-run           Print the cargo install commands without running them.
@@ -93,6 +138,16 @@ Supported tools:
   spec-cli
   audit-cli
   rule-cli
+    context-mcp
+    ticket-mcp
+    spec-mcp
+    test-mcp
+    feedback-mcp
+    session-mcp
+    peek-mcp
+    rule-mcp
+    audit-mcp
+    compact-terminal-mcp
 
 Environment:
   INSTALL_TOOLS       Comma-separated tool list used when no tools are passed.
@@ -103,6 +158,7 @@ Examples:
   ./install-tools.sh --tool viewer-ctl --tool ticket-cli
   ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
   ./install-tools.sh --tool audit-cli --tool rule-cli
+    ./install-tools.sh --mcp
   INSTALL_TOOLS="rule-cli,spec-cli" ./install-tools.sh --dry-run
 EOF
 }
@@ -156,6 +212,14 @@ append_csv_tools() {
     done
 }
 
+append_mcp_tools() {
+    local tool
+
+    for tool in "${mcp_tool_names[@]}"; do
+        append_tool "$tool"
+    done
+}
+
 selected_tools=()
 installed_tools=()
 failed_tools=()
@@ -182,7 +246,13 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             selected_tools=()
-            append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,copilot-capture-hook,ticket-cli,spec-cli,audit-cli,rule-cli"
+            for tool in "${tool_names[@]}"; do
+                append_tool "$tool"
+            done
+            shift
+            ;;
+        --mcp)
+            append_mcp_tools
             shift
             ;;
         --list)
@@ -225,7 +295,9 @@ if [[ ${#selected_tools[@]} -eq 0 && -n "${INSTALL_TOOLS:-}" ]]; then
 fi
 
 if [[ ${#selected_tools[@]} -eq 0 ]]; then
-    append_csv_tools "viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,copilot-capture-hook,ticket-cli,spec-cli,audit-cli,rule-cli"
+    for tool in "${tool_names[@]}"; do
+        append_tool "$tool"
+    done
 fi
 
 install_one() {
@@ -256,7 +328,8 @@ install_one() {
 
     if ! (
         cd "$repo_root"
-        run_filtered_command "$tool" "${command[@]}"
+        CARGO_TARGET_DIR="$repo_root/target/install-tools" \
+            run_filtered_command "$tool" "${command[@]}"
     ); then
         failed=1
     fi

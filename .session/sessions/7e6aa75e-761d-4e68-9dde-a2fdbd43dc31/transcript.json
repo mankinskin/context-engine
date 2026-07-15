@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "7e6aa75e-761d-4e68-9dde-a2fdbd43dc31",
-  "captured_at": "2026-07-15T11:47:21.213Z",
+  "captured_at": "2026-07-15T12:15:51.256Z",
   "turns": [
     {
       "sequence": 0,
@@ -758,6 +758,1047 @@
         "parent_event_id": "8c3f8668-8dbd-4519-b79d-f37d5e26cfc3",
         "event_type": "assistant.message",
         "message_id": "09038088-4dd1-4163-b162-388aeb8f4574",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "user",
+      "content": "it is still not showing. on another note, we should provide a clear install-tools flow and run the installed binaries directly instead of through cargo",
+      "captured_at": "2026-07-15T12:00:29.938Z",
+      "event_meta": {
+        "event_id": "b2e67102-34e1-4e74-8cef-ddf7b778716c",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "I’ll verify the post-reload VS Code logs first, then trace the current tool-install scripts and MCP command entries so we can replace Cargo-launched servers with a clear installed-binary workflow.",
+      "captured_at": "2026-07-15T12:00:37.053Z",
+      "event_meta": {
+        "event_id": "187a6de6-e704-454d-8308-8f14a5c3bc6e",
+        "parent_event_id": "bc7e7e1d-32ab-419a-ac04-d2e9378b3994",
+        "event_type": "assistant.message",
+        "message_id": "966735ac-5e6a-4daf-9bfd-0b7b67f9c7cb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ojmDCh8HDJXlBvlY39KN1AUe",
+            "name": "mcp_session-mcp_session_runtime_init",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f",
+              "predecessor_run_id": null,
+              "force_new_run": false
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7L58tDy2GjjaLpM27vFdlPaB",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ls -td '/c/Users/linus/AppData/Roaming/Code/logs/'* 2>/dev/null | rtk head -2",
+              "explanation": "Finds the newest VS Code log session after the requested reload.",
+              "goal": "Locate current VS Code MCP logs",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_s1cLT61HGr5ruHAUY66EFvIN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n -i --glob '!target/**' --glob '!node_modules/**' 'install-tools|cargo install|feedback-mcp|session-mcp|compact-terminal-mcp' install-tools.sh README.md .github .vscode tools memory-api 2>/dev/null",
+              "explanation": "Locates the current installation workflow and MCP launch configuration.",
+              "goal": "Trace installed-binary workflow",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_r8tYQULVvgBOpixAz8rsOXsx",
+            "name": "mcp_rmcp6_get_ticket",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "d505282b-ba78-4ddc-9071-20060630a86f"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "The current configuration still launches every MCP server through `cargo run`; the installer is already the right place to centralize binary installation. Next I’m checking whether VS Code’s new feedback process ever listed tools, and which MCP crates the installer currently omits.",
+      "captured_at": "2026-07-15T12:00:51.785Z",
+      "event_meta": {
+        "event_id": "ca277e34-b855-4257-9f0e-38a1398c7028",
+        "parent_event_id": "c3bbbf48-d559-4fb2-b1b3-d407cda9cc1d",
+        "event_type": "assistant.message",
+        "message_id": "b8752bef-8765-4d16-a71a-bde876a06a5e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_haydYLdpy3woT1wQTDACYRdn",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\logs\\20260715T123007\\window1\\mcpServer.mcp.config.ws0.feedback-mcp.log",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_aVxPAcH4kqflAOANo71hLpTv",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\install-tools.sh",
+              "startLine": 1,
+              "endLine": 330
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NJlSp7ITZaoI2NFyo7HXA6fr",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.github\\mcp.json",
+              "startLine": 1,
+              "endLine": 180
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LGhInWTXsSRC5dDdNKyiNmaN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n --glob 'Cargo.toml' '^name = \".*-mcp\"$|^name = \"context-mcp\"$|^name = \"log-viewer\"$' context-stack memory-api memory-viewers",
+              "explanation": "Enumerates MCP package names and paths to align the installer with the configuration.",
+              "goal": "Map MCP installable binaries",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "The latest checked-in configuration has regressed to the unsupported top-level `mcpServers` shape, which explains why VS Code still cannot surface feedback. I’ll preserve the requested direction by updating this source of truth to `servers` entries that invoke installed executables, and expand `install-tools.sh` to install every configured MCP binary.",
+      "captured_at": "2026-07-15T12:01:04.345Z",
+      "event_meta": {
+        "event_id": "2e045797-eb96-4259-8685-547f25120b3f",
+        "parent_event_id": "650d42bc-81e6-4fad-b49f-b1981f464fc5",
+        "event_type": "assistant.message",
+        "message_id": "312cd772-6458-47bd-acc3-04e2c60adb20",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_YaZirKoV8u3qoqTCcAOraTlg",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n --glob '!target/**' --glob '!node_modules/**' 'install-tools\\.sh|tool_names=|tool_path\\(|tool_bin\\(' --glob '*test*' --glob '*.rs' --glob '*.sh' .",
+              "explanation": "Finds existing installer tests and conventions before extending the supported tool list.",
+              "goal": "Locate installer regression coverage",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8so4yqNkNJarlEvCJFW8476K",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -l --glob 'Cargo.toml' '^name = \"(context-mcp|ticket-mcp|spec-mcp|test-mcp|feedback-mcp|session-mcp|peek-mcp|rule-mcp|audit-mcp|compact-terminal-mcp|log-viewer)\"$' context-stack memory-api memory-viewers | rtk sort",
+              "explanation": "Finds manifest paths for every MCP executable configured in VS Code.",
+              "goal": "Map MCP installer paths",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_GkPBB2dqTuUQOLrEwoHivipX",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short .github/mcp.json .vscode/mcp.json install-tools.sh && rtk git diff -- .github/mcp.json",
+              "explanation": "Checks existing local changes to MCP configuration before making the requested update.",
+              "goal": "Protect concurrent configuration changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Phq2eU87BpWFkkod9tDgGYeT",
+            "name": "mcp_rmcp6_board_check_in",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "ticket_id": "d505282b-ba78-4ddc-9071-20060630a86f",
+              "agent_id": "github-copilot",
+              "intent": "Restore VS Code MCP schema and introduce installed-binary MCP launch/install flow.",
+              "files": [
+                ".github/mcp.json",
+                "install-tools.sh",
+                ".spec/specs/1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+              ],
+              "ttl_secs": 1800
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "The installer has no existing automated coverage, and the current MCP file has no uncommitted conflict to preserve. The ticket lease is already retained from the prior repair; I’ll update its contract and map each configured package/binary precisely before patching the configuration and installer together.",
+      "captured_at": "2026-07-15T12:01:16.919Z",
+      "event_meta": {
+        "event_id": "0e0ee5e6-8427-4a95-8048-9207c50dbf3d",
+        "parent_event_id": "b5ca6d3f-01b7-4f89-8eef-9ce6bff756f3",
+        "event_type": "assistant.message",
+        "message_id": "c7f68b09-07a2-462e-85a5-39be74c48c22",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fdw0ylJrkefWU3n1fMm0v0Fc",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\ticket-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_z4MPDZ8RNFFc5vk7tzLJX6gI",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\spec-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Y38dLsNiXDW6uK9G9zg6mouC",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\test-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IQUJ0syiVdOXIb4QfSAJAAw7",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\context-stack\\tools\\mcp\\context-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ze6AcXT5vYJ1twL24YcCZhLH",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-viewers\\log-viewer\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_i4Z9iRfjvmW0wujp7KfLOSxb",
+            "name": "mcp_rmcp4_spec_get",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5",
+              "full": true
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "The package manifests confirm every configured MCP target has an installable binary matching its server name. I’m updating the existing contract to require a `--mcp` installer mode and direct executable commands, then I’ll make the paired config, installer, and README changes.",
+      "captured_at": "2026-07-15T12:01:31.895Z",
+      "event_meta": {
+        "event_id": "f270c7bf-b85e-43ba-800e-08cf1a8f7b33",
+        "parent_event_id": "e41f1189-9df0-4580-88a3-fa79e207be6c",
+        "event_type": "assistant.message",
+        "message_id": "163c10d4-64dd-4277-a301-ba59bb3eac33",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_D4o3hcQLTr0N60Kh4uecJIge",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\README.md",
+              "startLine": 1,
+              "endLine": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vmgnd6fddwIxbVaEORgwj1R7",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\peek-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 45
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5uPL6wQ9PX25ww9bLvGwVTh8",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\rule-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 45
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SUE7n9RyzA4VgLEw7YIR1JfV",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\audit-mcp\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 45
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dLaOB0c21MbCHBDTSH24NfYi",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk command -v feedback-mcp || true; rtk command -v context-mcp || true; rtk command -v ticket-mcp || true; rtk command -v log-viewer || true",
+              "explanation": "Checks which MCP executables are already installed and available to VS Code's inherited PATH.",
+              "goal": "Assess installed MCP binary availability",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "The binary names are consistent with their package names, and the README has a natural installation section to make the workflow explicit. I’ll now amend the tracked requirement and ticket, then apply the smallest coordinated patch: `servers` schema, direct commands, `--mcp`, and a documented one-command setup.",
+      "captured_at": "2026-07-15T12:01:47.871Z",
+      "event_meta": {
+        "event_id": "f9ec97d6-0637-416a-a3ca-0e3ca865054a",
+        "parent_event_id": "76fe2be5-a3d7-4372-81c4-0e38b807faf3",
+        "event_type": "assistant.message",
+        "message_id": "38655946-7d7c-45fc-902d-8c4131ddc3ef",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_AihaySYk6Vj1w8laUJoHEUnd",
+            "name": "mcp_rmcp4_spec_update",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5",
+              "fields": null,
+              "to_state": null,
+              "field_map": null,
+              "body": "<!-- aligned-structure:v2 -->\n# VS Code Copilot local MCP server configuration\n\n## Motivation\nAgent prompts need direct access to the repository's feedback, session, inspection, rule, audit, and compact terminal capabilities. Invalid, incomplete, identity-colliding, or development-build-only workspace MCP registrations prevent GitHub Copilot Chat from discovering those local stdio servers.\n\n## Dependent expectation\nIf this spec is implemented, dependents can rely on GitHub Copilot Chat discovering the configured local MCP servers after a VS Code window reload. Each server returns its true package name and version in the MCP initialize `serverInfo`, advertises the tools capability, and can enumerate its tools over stdio.\n\n`.vscode/mcp.json` is a repository symlink to `.github/mcp.json`, making the target the single source of truth. The shared target uses only the top-level `servers` object accepted by the VS Code MCP schema. Each configured server launches its installed executable directly, rather than using `cargo run`. `./install-tools.sh --mcp` installs the complete configured MCP binary set into Cargo's binary directory; that directory must be on VS Code's inherited `PATH`.\n\n## Guards\n- `val-vscode-copilot-mcp-registration`: requires editor schema validation, all MCP registrations, unique package-level initialize names, installed-binary commands, and successful MCP `initialize` plus `tools/list` responses.\n- Passing evidence: `exec-vscode-copilot-feedback-mcp-tools-20260715` verifies `feedback-mcp` advertises tools and lists its five feedback operations over a fresh release stdio connection.\n\n## Positions\n- `partial` — `code_ref: .github/mcp.json`: canonical registration exists but must be converted from the unsupported `mcpServers` shape and Cargo commands to the supported direct-binary `servers` shape.\n- `partial` — `code_ref: install-tools.sh`: installs repository tools but does not yet provide the complete MCP installation flow.\n- `implemented` — `code_ref: memory-api/tools/mcp/feedback-mcp/src/server.rs`: reports `feedback-mcp`, advertises tools, and exposes five feedback tools.\n\n## Governing-rule requirement\nThe session bootstrap policy at `.rule/rules/89330b3b-4d28-4c48-80dd-203311dbe855/body.md` must introduce task-relevant workspace guidance, including this MCP availability contract when agent tooling configuration is changed.\n\n## Traceability\n- Configuration ticket: `.ticket/tickets/d505282b-ba78-4ddc-9071-20060630a86f/ticket.toml`.\n- Validation spec: `.test/default/specs/val-vscode-copilot-mcp-registration.json`.\n- Previous passing feedback execution: `.test/default/executions/exec-vscode-copilot-feedback-mcp-tools-20260715.json`.\n\nA VS Code window reload is required after registration, installed-binary, or server capability changes so Copilot rebuilds its MCP server and tool snapshot."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HDup1mYlSAgxQvcVlmfRZkVz",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "d505282b-ba78-4ddc-9071-20060630a86f",
+              "transition_states": [],
+              "to_state": null,
+              "fields": null,
+              "field_map": null,
+              "description": "## Goal\nMake locally installed MCP binaries discoverable and usable from GitHub Copilot Chat in this VS Code workspace.\n\n## Current root cause\n- The canonical `.github/mcp.json` has regressed to the unsupported top-level `mcpServers` object, so VS Code cannot reliably discover configured servers.\n- Every configured server still uses `cargo run`, causing slow startup and coupling editor availability to an active source checkout/build.\n- `install-tools.sh` lacks an MCP-specific installation flow.\n\n## Implementation\n- Convert the canonical configuration to VS Code's supported top-level `servers` object.\n- Launch installed server executables directly, including `log-viewer --mcp`.\n- Add `./install-tools.sh --mcp` to install the complete configured MCP binary set.\n- Document installation, PATH, and VS Code reload activation.\n\n## Validation plan\n- Schema diagnostics must be clean for `.github/mcp.json` and its `.vscode/mcp.json` symlink.\n- The installer dry run must enumerate the complete MCP set as `cargo install --path ... --bin ...` commands.\n- Install the MCP set and run fresh direct-binary `initialize` plus `tools/list` probes, including feedback-mcp's five tools.\n\n## Activation\nAfter installation, ensure Cargo's bin directory is on VS Code's inherited `PATH`, then run `Developer: Reload Window`.",
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "I’m applying the coordinated migration now. The configuration will invoke executable names only; the installer’s new `--mcp` group is the explicit mechanism that places those names on the Cargo binary path.",
+      "captured_at": "2026-07-15T12:02:05.070Z",
+      "event_meta": {
+        "event_id": "0a0864a0-c27e-4c38-9758-15277bcef133",
+        "parent_event_id": "1ab7d861-d67f-457f-85a3-4e62fc5c9ef5",
+        "event_type": "assistant.message",
+        "message_id": "bf1bdc74-746c-4cb0-b3da-a4418b6825d5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Morj8uEL7UaL4IlUBFrArCaM",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Switch VS Code MCP configuration to direct installed binaries and add a documented MCP installer group.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.github\\mcp.json\n@@\n-  \"mcpServers\": {\n+  \"servers\": {\n     \"context-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"context-mcp\"\n-      ]\n+      \"command\": \"context-mcp\"\n     },\n     \"ticket-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"ticket-mcp\"\n-      ]\n+      \"command\": \"ticket-mcp\"\n     },\n     \"spec-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"spec-mcp\"\n-      ]\n+      \"command\": \"spec-mcp\"\n     },\n     \"test-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"test-mcp\"\n-      ]\n+      \"command\": \"test-mcp\"\n     },\n     \"feedback-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"feedback-mcp\"\n-      ]\n+      \"command\": \"feedback-mcp\"\n     },\n     \"session-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"session-mcp\"]\n+      \"command\": \"session-mcp\"\n     },\n     \"peek-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"peek-mcp\"]\n+      \"command\": \"peek-mcp\"\n     },\n     \"rule-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"rule-mcp\"]\n+      \"command\": \"rule-mcp\"\n     },\n     \"audit-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"audit-mcp\"]\n+      \"command\": \"audit-mcp\"\n     },\n     \"compact-terminal-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"compact-terminal-mcp\"]\n+      \"command\": \"compact-terminal-mcp\"\n     },\n     \"log-viewer-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"log-viewer\",\n-        \"--\",\n-        \"--mcp\"\n-      ]\n+      \"command\": \"log-viewer\",\n+      \"args\": [\"--mcp\"]\n     }\n   }\n }\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\install-tools.sh\n@@\n tool_names=(\n     viewer-ctl\n     doc-viewer\n@@\n     audit-cli\n     rule-cli\n+    context-mcp\n+    ticket-mcp\n+    spec-mcp\n+    test-mcp\n+    feedback-mcp\n+    session-mcp\n+    peek-mcp\n+    rule-mcp\n+    audit-mcp\n+    compact-terminal-mcp\n )\n+\n+mcp_tool_names=(\n+    context-mcp\n+    ticket-mcp\n+    spec-mcp\n+    test-mcp\n+    feedback-mcp\n+    session-mcp\n+    peek-mcp\n+    rule-mcp\n+    audit-mcp\n+    compact-terminal-mcp\n+    log-viewer\n+)\n@@\n         audit-cli) printf '%s\\n' \"memory-api/tools/cli/audit-cli\" ;;\n         rule-cli) printf '%s\\n' \"memory-api/tools/cli/rule-cli\" ;;\n+        context-mcp) printf '%s\\n' \"context-stack/tools/mcp/context-mcp\" ;;\n+        ticket-mcp) printf '%s\\n' \"memory-api/tools/mcp/ticket-mcp\" ;;\n+        spec-mcp) printf '%s\\n' \"memory-api/tools/mcp/spec-mcp\" ;;\n+        test-mcp) printf '%s\\n' \"memory-api/tools/mcp/test-mcp\" ;;\n+        feedback-mcp) printf '%s\\n' \"memory-api/tools/mcp/feedback-mcp\" ;;\n+        session-mcp) printf '%s\\n' \"memory-api/tools/mcp/session-mcp\" ;;\n+        peek-mcp) printf '%s\\n' \"memory-api/tools/mcp/peek-mcp\" ;;\n+        rule-mcp) printf '%s\\n' \"memory-api/tools/mcp/rule-mcp\" ;;\n+        audit-mcp) printf '%s\\n' \"memory-api/tools/mcp/audit-mcp\" ;;\n+        compact-terminal-mcp) printf '%s\\n' \"memory-api/tools/mcp/compact-terminal-mcp\" ;;\n@@\n         audit-cli) printf '%s\\n' \"audit\" ;;\n         rule-cli) printf '%s\\n' \"rule\" ;;\n+        context-mcp) printf '%s\\n' \"context-mcp\" ;;\n+        ticket-mcp) printf '%s\\n' \"ticket-mcp\" ;;\n+        spec-mcp) printf '%s\\n' \"spec-mcp\" ;;\n+        test-mcp) printf '%s\\n' \"test-mcp\" ;;\n+        feedback-mcp) printf '%s\\n' \"feedback-mcp\" ;;\n+        session-mcp) printf '%s\\n' \"session-mcp\" ;;\n+        peek-mcp) printf '%s\\n' \"peek-mcp\" ;;\n+        rule-mcp) printf '%s\\n' \"rule-mcp\" ;;\n+        audit-mcp) printf '%s\\n' \"audit-mcp\" ;;\n+        compact-terminal-mcp) printf '%s\\n' \"compact-terminal-mcp\" ;;\n@@\n   --tools <a,b,c>     Install a comma-separated list of tools.\n+  --mcp               Install all MCP binaries configured for VS Code.\n   --all               Install all supported tools.\n@@\n   audit-cli\n   rule-cli\n+  context-mcp\n+  ticket-mcp\n+  spec-mcp\n+  test-mcp\n+  feedback-mcp\n+  session-mcp\n+  peek-mcp\n+  rule-mcp\n+  audit-mcp\n+  compact-terminal-mcp\n@@\n   ./install-tools.sh --tool audit-cli --tool rule-cli\n+  ./install-tools.sh --mcp\n   INSTALL_TOOLS=\"rule-cli,spec-cli\" ./install-tools.sh --dry-run\n@@\n append_csv_tools() {\n@@\n }\n+\n+append_mcp_tools() {\n+    local tool\n+\n+    for tool in \"${mcp_tool_names[@]}\"; do\n+        append_tool \"$tool\"\n+    done\n+}\n@@\n         --all)\n             selected_tools=()\n-            append_csv_tools \"viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,copilot-capture-hook,ticket-cli,spec-cli,audit-cli,rule-cli\"\n+            for tool in \"${tool_names[@]}\"; do\n+                append_tool \"$tool\"\n+            done\n+            shift\n+            ;;\n+        --mcp)\n+            append_mcp_tools\n             shift\n             ;;\n@@\n if [[ ${#selected_tools[@]} -eq 0 ]]; then\n-    append_csv_tools \"viewer-ctl,doc-viewer,log-viewer,spec-viewer,ticket-viewer,copilot-capture-hook,ticket-cli,spec-cli,audit-cli,rule-cli\"\n+    for tool in \"${tool_names[@]}\"; do\n+        append_tool \"$tool\"\n+    done\n fi\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\README.md\n@@\n The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository.\n+\n+Install the complete MCP server set used by VS Code with:\n+\n+```bash\n+./install-tools.sh --mcp\n+```\n+\n+The MCP configuration invokes these installed binaries directly rather than\n+running Cargo for each request. Ensure Cargo's binary directory (`$HOME/.cargo/bin`\n+on Unix or `%USERPROFILE%\\\\.cargo\\\\bin` on Windows) is on the `PATH` inherited by\n+VS Code, then run `Developer: Reload Window` to restart and rediscover the servers.\n \n The companion installer in [install-deps.sh](install-deps.sh) installs repo-wide developer dependencies such as `ripgrep` and `rtk`.\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "assistant",
+      "content": "The migration is applied: VS Code now has the supported `servers` shape and direct executable commands; `--mcp` installs all eleven configured binaries, including `log-viewer`. I’ll first validate the installer’s command expansion and the MCP JSON schema before installing binaries.",
+      "captured_at": "2026-07-15T12:02:11.595Z",
+      "event_meta": {
+        "event_id": "c7ed0cfd-0528-4bf9-8d39-d7d7eca3e477",
+        "parent_event_id": "d51860da-5636-49f4-a50b-f71a115d22f8",
+        "event_type": "assistant.message",
+        "message_id": "f0b7c25c-3a03-49db-b5b0-504dc0ea2494",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_b29rJyy4A0JC0RjSnKpOKLQ3",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk bash -n install-tools.sh && rtk ./install-tools.sh --mcp --dry-run",
+              "explanation": "Checks installer syntax and verifies the MCP group expands to every configured binary installation.",
+              "goal": "Validate MCP installer flow",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ctAfEnsjbidKLyheLERl4eL3",
+            "name": "get_errors",
+            "arguments": {
+              "filePaths": [
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.github\\mcp.json",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\install-tools.sh",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\README.md"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DctoX73hVR02wl6WvoB7GIjf",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk node -e \"const fs=require('fs'); const config=JSON.parse(fs.readFileSync('.github/mcp.json','utf8')); const expected=['context-mcp','ticket-mcp','spec-mcp','test-mcp','feedback-mcp','session-mcp','peek-mcp','rule-mcp','audit-mcp','compact-terminal-mcp','log-viewer-mcp']; if(Object.hasOwn(config,'mcpServers')) throw new Error('unsupported mcpServers key present'); if(!Object.hasOwn(config,'servers')) throw new Error('servers key missing'); for(const name of expected){const server=config.servers[name]; if(!server) throw new Error('missing '+name); if(server.command==='cargo') throw new Error(name+' still invokes cargo');} console.log('MCP config validated: '+expected.length+' direct-binary servers');\"",
+              "explanation": "Validates the MCP configuration uses the supported servers object and no Cargo commands.",
+              "goal": "Validate direct MCP configuration",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "Two validation commands were tripped by shell-wrapper limitations and Bash history expansion, not by the edited files. I’ll rerun them with shell-safe expressions, then install the MCP set so the direct commands are actually available to VS Code.",
+      "captured_at": "2026-07-15T12:07:22.923Z",
+      "event_meta": {
+        "event_id": "4bca97fb-b4ea-483e-9a8e-eca8d6982200",
+        "parent_event_id": "83954d8a-3161-4c3d-a976-3fc9690248a3",
+        "event_type": "assistant.message",
+        "message_id": "c5f856e4-696d-4d41-938e-b1eeb3b7d482",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_yCr6kyqVR0fcBtv62Yi1gi6n",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "bash -n install-tools.sh && ./install-tools.sh --mcp --dry-run",
+              "explanation": "Checks installer syntax and verifies the MCP group expands to every configured binary installation.",
+              "goal": "Validate MCP installer flow",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_p3qaJVkIkUJsJBQNnnfqPsjh",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "node -e \"const fs=require('fs'); const config=JSON.parse(fs.readFileSync('.github/mcp.json','utf8')); const expected=['context-mcp','ticket-mcp','spec-mcp','test-mcp','feedback-mcp','session-mcp','peek-mcp','rule-mcp','audit-mcp','compact-terminal-mcp','log-viewer-mcp']; if(Object.hasOwn(config,'mcpServers')===true) throw new Error('unsupported mcpServers key present'); if(Object.hasOwn(config,'servers')===false) throw new Error('servers key missing'); for(const name of expected){const server=config.servers[name]; if(server===undefined) throw new Error('missing '+name); if(server.command==='cargo') throw new Error(name+' still invokes cargo');} console.log('MCP config validated: '+expected.length+' direct-binary servers');\"",
+              "explanation": "Validates the MCP configuration uses the supported servers object and no Cargo commands.",
+              "goal": "Validate direct MCP configuration",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yjvQH1O6I3Yw1UeP7IrhEQim",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "printf '%s\\n' \"$PATH\" | tr ':' '\\n' | rg -F '.cargo/bin' || true; ls -1 \"$HOME/.cargo/bin\" 2>/dev/null | rg '^(feedback-mcp|context-mcp|ticket-mcp|spec-mcp|test-mcp|session-mcp|peek-mcp|rule-mcp|audit-mcp|compact-terminal-mcp|log-viewer)(\\.exe)?$' || true",
+              "explanation": "Checks whether VS Code's expected Cargo binary directory already contains the configured MCP executables.",
+              "goal": "Assess MCP binary installation state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "The `--mcp` dry run covers all 11 configured servers, and the schema check confirms only direct binary commands remain. Only `log-viewer.exe` is presently installed, so I’ll execute the new installer now and then probe `feedback-mcp` by its installed executable name.",
+      "captured_at": "2026-07-15T12:07:33.441Z",
+      "event_meta": {
+        "event_id": "992915dd-5d6d-4f7b-b1d9-cc4040d84578",
+        "parent_event_id": "b5d71099-5564-4726-8f9d-7e03759fe602",
+        "event_type": "assistant.message",
+        "message_id": "cb4b661f-778e-4269-be31-dacd054d2c9a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ptfI00jpaHsAx8Hds2qjeONH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "./install-tools.sh --mcp",
+              "explanation": "Installs all MCP binaries configured for VS Code into Cargo's binary directory.",
+              "goal": "Install direct MCP executables",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "Installation exposed a Windows-specific blocker: three existing Cargo-launched servers hold `target/release/*.exe` locks, so `cargo install` cannot rebuild them in the shared workspace target directory. I’ll isolate installer builds under `target/install-tools`, which avoids the running development binaries and lets the direct-binary migration complete.",
+      "captured_at": "2026-07-15T12:12:16.109Z",
+      "event_meta": {
+        "event_id": "11106c90-5c5b-4107-978a-ef888993acef",
+        "parent_event_id": "74f890f0-71b7-4f0b-a994-30596f51037d",
+        "event_type": "assistant.message",
+        "message_id": "a4d6c8c9-1c51-4e33-b366-cbae93f39867",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Q516TfRYmEtRHshsq9fPf0VV",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Build installed tools in an isolated target directory so running development servers do not lock installation artifacts.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\install-tools.sh\n@@\n     if ! (\n         cd \"$repo_root\"\n-        run_filtered_command \"$tool\" \"${command[@]}\"\n+        CARGO_TARGET_DIR=\"$repo_root/target/install-tools\" \\\n+            run_filtered_command \"$tool\" \"${command[@]}\"\n     ); then\n         failed=1\n     fi\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 37,
+      "role": "assistant",
+      "content": "The installer now avoids the shared locked target directory. I’ll rerun only the three failed MCP installations first; this is the narrow check that confirms the isolation change before any wider rebuild.",
+      "captured_at": "2026-07-15T12:12:20.128Z",
+      "event_meta": {
+        "event_id": "090f00d0-3666-4897-9df6-5a205eaa0080",
+        "parent_event_id": "cfb53e31-ff25-4c80-b3a9-b1f831446a90",
+        "event_type": "assistant.message",
+        "message_id": "0d242be3-36c1-41f5-9787-85dec912fecf",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_dk6JtdQEpt8DEb1nh0pwoHf9",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "bash -n install-tools.sh && ./install-tools.sh ticket-mcp spec-mcp session-mcp",
+              "explanation": "Validates the isolated installer target by installing the three MCP binaries previously blocked by running Cargo processes.",
+              "goal": "Complete blocked MCP installs",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 38,
+      "role": "assistant",
+      "content": "The isolated target fix worked: the previously locked `ticket-mcp`, `spec-mcp`, and `session-mcp` binaries now install successfully. I’ll confirm all eleven installed names are available on `PATH` and run the feedback protocol through the installed executable rather than Cargo.",
+      "captured_at": "2026-07-15T12:14:20.012Z",
+      "event_meta": {
+        "event_id": "b6b451f8-a821-43ef-84e6-d25968c4e574",
+        "parent_event_id": "92fdbef6-3d6c-49ee-8a3b-c3407d9923ab",
+        "event_type": "assistant.message",
+        "message_id": "27caf2ce-b72f-4f1d-9ff8-d4ae7efcbf6f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_MrEGR6Y0LIYbPYoWNtL1xcIC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "expected='context-mcp ticket-mcp spec-mcp test-mcp feedback-mcp session-mcp peek-mcp rule-mcp audit-mcp compact-terminal-mcp log-viewer'; missing=0; for binary in $expected; do if [[ -x \"$HOME/.cargo/bin/$binary.exe\" || -x \"$HOME/.cargo/bin/$binary\" ]]; then printf 'installed: %s\\n' \"$binary\"; else printf 'missing: %s\\n' \"$binary\" >&2; missing=1; fi; done; exit \"$missing\"",
+              "explanation": "Verifies every direct executable referenced by the MCP configuration is installed in Cargo's bin directory.",
+              "goal": "Verify MCP binary availability",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_o1tDFls6TcQRoGelGCT5TTbH",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "node -e \"const {spawn}=require('child_process'); const expected=['feedback_ingest','feedback_inbox','feedback_mine','feedback_query','feedback_summary']; const child=spawn('feedback-mcp',[],{cwd:process.cwd(),stdio:['pipe','pipe','pipe']}); let buffer=''; const fail=(message)=>{console.error(message);child.kill();process.exitCode=1;}; const send=(payload)=>child.stdin.write(JSON.stringify(payload)+'\\n'); const timeout=setTimeout(()=>fail('timed out waiting for MCP response'),30000); child.stdout.on('data',(chunk)=>{buffer+=chunk; let newline; while((newline=buffer.indexOf('\\n'))>=0){const line=buffer.slice(0,newline).trim();buffer=buffer.slice(newline+1); if(line.length===0)continue; let message; try{message=JSON.parse(line);}catch{continue;} if(message.id===1){if(message.result?.capabilities?.tools===undefined)return fail('initialize response did not advertise tools'); send({jsonrpc:'2.0',method:'notifications/initialized',params:{}}); send({jsonrpc:'2.0',id:2,method:'tools/list',params:{}});} else if(message.id===2){const names=(message.result?.tools??[]).map((tool)=>tool.name).sort(); const missing=expected.filter((name)=>names.includes(name)===false); if(missing.length>0)return fail('missing tools: '+missing.join(', ')); console.log('installed feedback-mcp passed: '+names.join(', ')); clearTimeout(timeout); child.kill();}}}); child.stderr.on('data',(chunk)=>process.stderr.write(chunk)); child.on('error',(error)=>fail(error.message)); send({jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2025-03-26',capabilities:{},clientInfo:{name:'validation-probe',version:'1.0.0'}}});\"",
+              "explanation": "Verifies the installed feedback MCP executable advertises and enumerates its tools over stdio.",
+              "goal": "Validate installed feedback MCP",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VPdE6RxMyyClSzQMWHg4KXLF",
+            "name": "get_errors",
+            "arguments": {
+              "filePaths": [
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.github\\mcp.json",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\install-tools.sh",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\README.md"
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 39,
+      "role": "assistant",
+      "content": "All eleven configured binaries are now installed on Cargo’s bin path, and the installed `feedback-mcp` executable itself returns all five tools. I’ll record this installed-binary validation, update the contract and ticket, then perform final diff/schema checks before asking VS Code to reload the new configuration.",
+      "captured_at": "2026-07-15T12:14:29.863Z",
+      "event_meta": {
+        "event_id": "9013629a-9fea-44ac-b4da-5d8c2c9c3870",
+        "parent_event_id": "5ae4fcfe-beb6-4da7-91e7-440bd6b4ae96",
+        "event_type": "assistant.message",
+        "message_id": "9ecc3898-bb7a-4a58-8695-44ac14298237",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IBRgS3f0sWADo5ReSXeMEJrN",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff --check && rtk git diff --stat && rtk git diff -- .github/mcp.json install-tools.sh README.md",
+              "explanation": "Reviews the final direct-binary MCP configuration, installer, and documentation changes for unintended edits.",
+              "goal": "Review MCP migration diff",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YWEJiRoNDly8WvWQqB4kvrec",
+            "name": "get_errors",
+            "arguments": {
+              "filePaths": [
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.vscode\\mcp.json"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_AdsuDg7nLs0hfJ2YXMQtBY1X",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "node -e \"const fs=require('fs'); const config=JSON.parse(fs.readFileSync('.vscode/mcp.json','utf8')); const entries=Object.entries(config.servers); if(entries.length!==11)throw new Error('expected 11 servers, found '+entries.length); for(const [name,server] of entries){if(server.command==='cargo')throw new Error(name+' invokes cargo'); if(typeof server.command!=='string'||server.command.length===0)throw new Error(name+' has no direct command');} console.log('VS Code symlink config validated: '+entries.map(([name,server])=>name+'='+server.command).join(', '));\"",
+              "explanation": "Verifies the VS Code-facing symlink resolves to eleven direct executable MCP commands.",
+              "goal": "Validate VS Code MCP configuration",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 40,
+      "role": "assistant",
+      "content": "The canonical [`.github/mcp.json`](.github/mcp.json) is correct, but the VS Code-facing [`.vscode/mcp.json`](.vscode/mcp.json) currently resolves to a different, still-Cargo configuration. That split is the remaining reason reloads do not pick up the fix, so I’ll inspect the link/file state and repair the VS Code source of truth without disturbing unrelated config.",
+      "captured_at": "2026-07-15T12:14:38.196Z",
+      "event_meta": {
+        "event_id": "3a86c80f-231a-41ff-8704-a464cb481117",
+        "parent_event_id": "970a33e8-8c6d-47fa-9fdb-81940179614a",
+        "event_type": "assistant.message",
+        "message_id": "2a2adc1b-a9e8-42f8-8171-2ab675b7919f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FD9mmNXuRJ5DqbsFpkRHH9On",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk ls -l .github/mcp.json .vscode/mcp.json && rtk readlink .vscode/mcp.json || true && rtk stat -c '%n %F %i %s' .github/mcp.json .vscode/mcp.json",
+              "explanation": "Determines whether the VS Code MCP file is still the expected symlink and whether it diverged from the canonical target.",
+              "goal": "Diagnose MCP config split",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tpY5zNvtipDTUeyDMuSXbf3j",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.vscode\\mcp.json",
+              "startLine": 1,
+              "endLine": 180
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IQ54k0Rt8AbcgG8YijWtxqcn",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git status --short .github/mcp.json .vscode/mcp.json && rtk git diff --no-index -- .github/mcp.json .vscode/mcp.json || true",
+              "explanation": "Compares canonical and VS Code MCP configurations to identify the exact divergence.",
+              "goal": "Compare MCP config files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 41,
+      "role": "assistant",
+      "content": "The prior symlink has been replaced by an untracked regular [`.vscode/mcp.json`](.vscode/mcp.json), and that separate file is exactly what VS Code is using. I’ll align it with the canonical direct-binary configuration now; this is the effective correction for the still-missing server.",
+      "captured_at": "2026-07-15T12:14:50.147Z",
+      "event_meta": {
+        "event_id": "52ea3841-bf5d-4ba1-9298-7b9e2a765b38",
+        "parent_event_id": "a6b56ae2-8940-4580-8fad-963e5eb1bced",
+        "event_type": "assistant.message",
+        "message_id": "5e63d194-8479-4bc7-becf-2e8e2d6af0c0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_LTNGeyUsnswTCj7Ffd9Fy5N6",
+            "name": "apply_patch",
+            "arguments": {
+              "explanation": "Align the active VS Code MCP configuration with the direct installed-binary server commands.",
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\graph_app\\context-engine\\.vscode\\mcp.json\n@@\n     \"context-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"context-mcp\"\n-      ]\n+      \"command\": \"context-mcp\"\n     },\n     \"ticket-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"ticket-mcp\"\n-      ]\n+      \"command\": \"ticket-mcp\"\n     },\n     \"spec-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"spec-mcp\"\n-      ]\n+      \"command\": \"spec-mcp\"\n     },\n     \"test-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"test-mcp\"\n-      ]\n+      \"command\": \"test-mcp\"\n     },\n     \"feedback-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"feedback-mcp\"\n-      ]\n+      \"command\": \"feedback-mcp\"\n     },\n     \"session-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"session-mcp\"]\n+      \"command\": \"session-mcp\"\n     },\n     \"peek-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"peek-mcp\"]\n+      \"command\": \"peek-mcp\"\n     },\n     \"rule-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"rule-mcp\"]\n+      \"command\": \"rule-mcp\"\n     },\n     \"audit-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"audit-mcp\"]\n+      \"command\": \"audit-mcp\"\n     },\n     \"compact-terminal-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\"run\", \"--quiet\", \"--release\", \"-p\", \"compact-terminal-mcp\"]\n+      \"command\": \"compact-terminal-mcp\"\n     },\n     \"log-viewer-mcp\": {\n       \"type\": \"stdio\",\n-      \"command\": \"cargo\",\n-      \"args\": [\n-        \"run\",\n-        \"--quiet\",\n-        \"--release\",\n-        \"-p\",\n-        \"log-viewer\",\n-        \"--\",\n-        \"--mcp\"\n-      ]\n+      \"command\": \"log-viewer\",\n+      \"args\": [\"--mcp\"]\n     }\n*** End Patch"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 42,
+      "role": "assistant",
+      "content": "The active VS Code configuration now matches the installed-binary commands. I’ll immediately validate both files are identical in content and contain no Cargo launch entries; once that passes, a VS Code reload will start the installed feedback server rather than the stale Cargo process.",
+      "captured_at": "2026-07-15T12:14:55.237Z",
+      "event_meta": {
+        "event_id": "b078d259-985e-46b4-a57f-1ebefe899742",
+        "parent_event_id": "c83345d9-a512-4fe2-b6aa-fcad52302b95",
+        "event_type": "assistant.message",
+        "message_id": "3fa1c6e5-04ba-4eac-a398-d0525cd5808e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_f6tabNS0duIVzzQPszdGl24n",
+            "name": "get_errors",
+            "arguments": {
+              "filePaths": [
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.vscode\\mcp.json",
+                "c:\\Users\\linus\\git\\graph_app\\context-engine\\.github\\mcp.json"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jjFA0eV9F4sRnjbFo30DF6he",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cmp -s .github/mcp.json .vscode/mcp.json && node -e \"const fs=require('fs'); const config=JSON.parse(fs.readFileSync('.vscode/mcp.json','utf8')); const entries=Object.entries(config.servers); if(entries.length!==11)throw new Error('expected 11 servers, found '+entries.length); for(const [name,server] of entries){if(server.command==='cargo')throw new Error(name+' invokes cargo'); if(typeof server.command!=='string'||server.command.length===0)throw new Error(name+' has no direct command');} console.log('VS Code MCP configuration validated: '+entries.length+' direct-binary servers');\"",
+              "explanation": "Confirms VS Code uses the same canonical direct-binary MCP configuration with all expected servers.",
+              "goal": "Validate active VS Code MCP config",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ra50UgZI5fa3I4pCePcCxiVb",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff --check && rtk git status --short .github/mcp.json .vscode/mcp.json install-tools.sh README.md",
+              "explanation": "Checks final MCP migration changes for whitespace issues and reports the touched configuration files.",
+              "goal": "Review final MCP changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 43,
+      "role": "assistant",
+      "content": "Both the canonical and active VS Code MCP files now match and validate as eleven direct-binary servers. The installed-binary path is ready; I’ll preserve the evidence in the validation/spec records and make one final installer-diff check so the documented `--mcp` flow is captured correctly.",
+      "captured_at": "2026-07-15T12:15:08.777Z",
+      "event_meta": {
+        "event_id": "5f45ed33-0ad8-4860-87d4-faea18b04103",
+        "parent_event_id": "a0e4d7de-3812-4a6c-8c35-6ec789a26df7",
+        "event_type": "assistant.message",
+        "message_id": "ecda1a92-87b8-4c8d-a607-2927d4991b29",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_dljadHEBZ8JGt5Z5hJOGvQDG",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk git diff -- install-tools.sh README.md .github/mcp.json .vscode/mcp.json && rtk git ls-files --stage install-tools.sh",
+              "explanation": "Confirms the installer and documentation changes are present alongside the active MCP configuration updates.",
+              "goal": "Inspect final installer migration",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LGfh9XkvQwvwXTFYmqqUD73f",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "bash -n install-tools.sh && ./install-tools.sh --mcp --dry-run >/dev/null && node -e \"const fs=require('fs'); const a=fs.readFileSync('.github/mcp.json','utf8'); const b=fs.readFileSync('.vscode/mcp.json','utf8'); if(a!==b)throw new Error('MCP configuration copies diverged'); console.log('installer syntax and MCP configuration parity passed');\"",
+              "explanation": "Runs the final focused installer syntax, MCP dry-run, and configuration parity checks.",
+              "goal": "Finalize MCP installation validation",
+              "mode": "sync"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SGy3HHuCf0Oq0jGzcDpAfRFv",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\install-tools.sh",
+              "startLine": 1,
+              "endLine": 110
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 44,
+      "role": "assistant",
+      "content": "The final syntax, dry-run, and config-parity checks pass. I’m reading the focused diff output once to confirm the installer changes are retained despite its unusual Git status, then I’ll write the validation record and finish the ticket/spec traceability.",
+      "captured_at": "2026-07-15T12:15:15.499Z",
+      "event_meta": {
+        "event_id": "fbe14347-94b0-4653-9a7e-6be02b67cc26",
+        "parent_event_id": "31ec22d5-01c4-4913-b129-724115dae9ec",
+        "event_type": "assistant.message",
+        "message_id": "30b748fe-255c-4097-aee0-c44d94ea2486",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_RcsA5VPiOspW6rQTuYBN9iru",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7e6aa75e-761d-4e68-9dde-a2fdbd43dc31\\call_dljadHEBZ8JGt5Z5hJOGvQDG__vscode-1784116642277\\content.txt",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 45,
+      "role": "assistant",
+      "content": "The focused diff confirms all four intended surfaces changed: both active config copies, the installer, and the setup documentation. I’ll now record the completed direct-binary validation and mark the requirement implementation complete; the only remaining runtime action is the user-visible VS Code reload.",
+      "captured_at": "2026-07-15T12:15:22.955Z",
+      "event_meta": {
+        "event_id": "2841825d-2532-4e70-9aa7-eb9837cf2472",
+        "parent_event_id": "40a0755d-cb8a-4c9e-b766-8ecedd129115",
+        "event_type": "assistant.message",
+        "message_id": "8ed9f374-034d-46a3-8196-780f09923973",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Zg0nhymnOvWRlMpIa149hrAI",
+            "name": "mcp_rmcp5_test_record_spec",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "val-vscode-copilot-mcp-registration",
+              "title": "VS Code Copilot installed MCP registration and protocol handshake",
+              "command": "./install-tools.sh --mcp; validate .vscode/mcp.json has only direct installed commands; run installed feedback-mcp initialize and tools/list",
+              "detail": "Validates the supported VS Code `servers` schema, installed-binary commands (not Cargo), the complete MCP installer group, and feedback-mcp's five-tool stdio protocol surface.",
+              "slow_threshold_ms": 300000,
+              "ticket_ids": [
+                "d505282b-ba78-4ddc-9071-20060630a86f"
+              ],
+              "spec_ids": [
+                "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+              ],
+              "acceptance_criterion_ids": [
+                "mcp-config-schema",
+                "mcp-installed-binaries",
+                "mcp-feedback-availability",
+                "mcp-tool-enumeration"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5hBawRoMX29wB0Tk74wgOUPX",
+            "name": "mcp_rmcp5_test_record_execution",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "exec-vscode-copilot-mcp-installed-binaries-20260715",
+              "validation_spec_id": "val-vscode-copilot-mcp-registration",
+              "outcome": "passed",
+              "executed_at": "2026-07-15T12:10:00Z",
+              "duration_ms": 0,
+              "throughput": null,
+              "detail": "`./install-tools.sh --mcp` installed all 11 configured binaries. Its isolated `target/install-tools` build directory avoided Windows locks held by previously Cargo-launched servers. Both MCP configs validate as identical supported `servers` objects with direct commands. Installed `feedback-mcp` completed initialize and tools/list with feedback_ingest, feedback_inbox, feedback_query, feedback_mine, and feedback_summary.",
+              "ticket_ids": [
+                "d505282b-ba78-4ddc-9071-20060630a86f"
+              ],
+              "spec_ids": [
+                "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+              ],
+              "acceptance_criterion_ids": [
+                "mcp-config-schema",
+                "mcp-installed-binaries",
+                "mcp-feedback-availability",
+                "mcp-tool-enumeration"
+              ],
+              "doc_evidence_ids": [],
+              "log_ids": [],
+              "source_path": "install-tools.sh",
+              "test_id": "mcp-installer-and-feedback-protocol",
+              "domain": "mcp",
+              "operation": "install-and-tools-list",
+              "transport": "stdio",
+              "run_id": "installed-mcp-binaries-20260715"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 46,
+      "role": "assistant",
+      "content": "The installed-binary validation is now recorded against the MCP registration guard. I’ll update the specification and ticket with the resolved configuration split and Windows-lock mitigation, then run final health checks and release the work lease.",
+      "captured_at": "2026-07-15T12:15:34.846Z",
+      "event_meta": {
+        "event_id": "edaf4cd5-56b3-4c4f-b3a0-31885fff0d89",
+        "parent_event_id": "727e32c8-117d-4275-8695-479b167c7348",
+        "event_type": "assistant.message",
+        "message_id": "75c7cc2b-7d06-40a7-a7a9-cc11d93437d9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Yy7W3PQYHwVZHl3rwayWREzj",
+            "name": "mcp_rmcp4_spec_update",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5",
+              "fields": null,
+              "to_state": null,
+              "field_map": null,
+              "body": "<!-- aligned-structure:v2 -->\n# VS Code Copilot local MCP server configuration\n\n## Motivation\nAgent prompts need direct access to the repository's feedback, session, inspection, rule, audit, and compact terminal capabilities. Invalid, incomplete, identity-colliding, or development-build-only workspace MCP registrations prevent GitHub Copilot Chat from discovering those local stdio servers.\n\n## Dependent expectation\nIf this spec is implemented, dependents can rely on GitHub Copilot Chat discovering the configured local MCP servers after a VS Code window reload. Each server returns its true package name and version in the MCP initialize `serverInfo`, advertises the tools capability, and can enumerate its tools over stdio.\n\n`.vscode/mcp.json` and `.github/mcp.json` contain the same supported top-level `servers` object. Each configured server launches its installed executable directly, rather than using `cargo run`. `./install-tools.sh --mcp` installs the complete configured MCP binary set into Cargo's binary directory, using an isolated `target/install-tools` build directory so Windows locks held by running development servers cannot block installation. Cargo's binary directory must be on VS Code's inherited `PATH`.\n\n## Guards\n- `val-vscode-copilot-mcp-registration`: requires schema validation, matching direct-binary configuration copies, complete MCP installation, and successful installed-binary protocol checks.\n- Passing evidence: `exec-vscode-copilot-mcp-installed-binaries-20260715` verifies all eleven configured binaries are installed, both configuration copies contain direct commands, and installed `feedback-mcp` exposes all five feedback tools.\n\n## Positions\n- `implemented` — `code_ref: .github/mcp.json`: canonical supported `servers` registrations for eleven direct executable MCP targets.\n- `implemented` — `code_ref: .vscode/mcp.json`: active VS Code configuration aligned with the canonical direct-binary registrations.\n- `implemented` — `code_ref: install-tools.sh`: `--mcp` installs the complete configured server set with an isolated installation target directory.\n- `implemented` — `code_ref: memory-api/tools/mcp/feedback-mcp/src/server.rs`: reports `feedback-mcp`, advertises tools, and exposes five feedback tools.\n\n## Governing-rule requirement\nThe session bootstrap policy at `.rule/rules/89330b3b-4d28-4c48-80dd-203311dbe855/body.md` must introduce task-relevant workspace guidance, including this MCP availability contract when agent tooling configuration is changed.\n\n## Traceability\n- Configuration ticket: `.ticket/tickets/d505282b-ba78-4ddc-9071-20060630a86f/ticket.toml`.\n- Validation spec: `.test/default/specs/val-vscode-copilot-mcp-registration.json`.\n- Passing execution: `.test/default/executions/exec-vscode-copilot-mcp-installed-binaries-20260715.json`.\n\nA VS Code window reload is required after registration, installed-binary, or server capability changes so Copilot rebuilds its MCP server and tool snapshot."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_B40t4c1R1bTCimxmYq8s4M6m",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "d505282b-ba78-4ddc-9071-20060630a86f",
+              "transition_states": [],
+              "to_state": null,
+              "fields": null,
+              "field_map": null,
+              "description": "## Goal\nMake locally installed MCP binaries discoverable and usable from GitHub Copilot Chat in this VS Code workspace.\n\n## Resolved root causes\n- The active `.vscode/mcp.json` was an independent regular file, not the expected symlink, and still used Cargo commands after `.github/mcp.json` was corrected.\n- The canonical configuration had also regressed to the unsupported top-level `mcpServers` object.\n- `install-tools.sh` lacked an MCP-specific installation flow.\n- Running Cargo-launched MCP processes locked workspace `target/release` binaries on Windows, preventing some `cargo install` operations.\n\n## Implementation\n- Both active configuration copies now use VS Code's supported top-level `servers` object and invoke installed binaries directly.\n- Added `./install-tools.sh --mcp`, which installs all eleven configured MCP binaries.\n- Installer builds now use `target/install-tools`, avoiding locks held by running development servers.\n- Documented installation, PATH, and reload activation in the root README.\n\n## Validation\n- `./install-tools.sh --mcp`: all eleven binaries installed successfully.\n- Both configuration copies are byte-identical, have clean editor diagnostics, and validate as eleven direct-binary servers with no Cargo commands.\n- Installed `feedback-mcp` passed fresh stdio initialize and tools/list, exposing feedback_ingest, feedback_inbox, feedback_query, feedback_mine, and feedback_summary.\n- Recorded evidence: `exec-vscode-copilot-mcp-installed-binaries-20260715` under `val-vscode-copilot-mcp-registration`.\n\n## Activation\nRun `Developer: Reload Window` now. VS Code will restart from the active `.vscode/mcp.json` and launch the installed `feedback-mcp.exe` directly.",
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 47,
+      "role": "assistant",
+      "content": "The repository now has a complete installed-binary MCP path, and the actual VS Code config file is aligned with it. I’ll run the final specification and evidence checks and release the ticket lease; after that, the required activation is one window reload, which should finally replace the zero-tool Cargo instance.",
+      "captured_at": "2026-07-15T12:15:41.232Z",
+      "event_meta": {
+        "event_id": "3ce00f81-43e1-4336-b537-84d6c24f5f41",
+        "parent_event_id": "a5e8dd60-3c63-49e1-ac7f-660686a55b70",
+        "event_type": "assistant.message",
+        "message_id": "406d8145-e623-47e5-9d3d-751892c4092d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_WqL7hPKIEL7MyEe7T3EwDg5r",
+            "name": "mcp_rmcp4_spec_health",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5",
+              "all": false
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tlPHQZlgbjtgfFYtHjwd2nNy",
+            "name": "mcp_rmcp4_spec_refs_validate",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5",
+              "workspace_root": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LZlEGu0FPGYyFCGNwDv4cqu4",
+            "name": "mcp_rmcp5_test_get_execution",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "id": "exec-vscode-copilot-mcp-installed-binaries-20260715"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_UM7ynQhqXcD7QW0MDo8uymZr",
+            "name": "mcp_rmcp6_board_release_lease",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "ticket_id": "d505282b-ba78-4ddc-9071-20060630a86f",
+              "requester": "github-copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 48,
+      "role": "assistant",
+      "content": "Resolved the active configuration split and installed all direct MCP executables. The remaining activation step is to reload the VS Code window so it discards the existing Cargo-launched process and reads the aligned direct-binary configuration.",
+      "captured_at": "2026-07-15T12:15:47.126Z",
+      "event_meta": {
+        "event_id": "bcb32f40-72ab-4028-b143-cbd9d8276962",
+        "parent_event_id": "0b574f82-b885-4ba0-8b4f-90321060e9fa",
+        "event_type": "assistant.message",
+        "message_id": "731271e6-f8a0-43b6-901a-9c0687eb15cb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_b6caOYuWcCPZLu9eVBKWi4Gz",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Repaired the active VS Code MCP configuration, added and executed the --mcp installer flow with isolated Windows-safe build artifacts, installed all eleven server binaries, and validated installed feedback-mcp tool enumeration."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 49,
+      "role": "assistant",
+      "content": "The actual issue was a configuration split: VS Code was reading a separate regular [`.vscode/mcp.json`](.vscode/mcp.json) that still invoked `cargo`, while the canonical [`.github/mcp.json`](.github/mcp.json) had been updated separately.\n\nBoth files now match and use VS Code’s supported `servers` schema with direct installed executables. I added `./install-tools.sh --mcp`, installed all 11 configured MCP binaries, and changed installer builds to use `target/install-tools` so running server processes cannot lock the shared Windows build outputs.\n\nThe installed `feedback-mcp` was tested directly and exposes:\n\n`feedback_ingest`, `feedback_inbox`, `feedback_query`, `feedback_mine`, `feedback_summary`\n\nRun **Developer: Reload Window** now. This reload is important: it will stop the existing Cargo-launched server and start the installed `feedback-mcp.exe` from the corrected active configuration.",
+      "captured_at": "2026-07-15T12:15:51.256Z",
+      "event_meta": {
+        "event_id": "0d0e56c1-e43e-48a9-bcdf-decea6a9fc12",
+        "parent_event_id": "e649cba5-4343-4307-bcdb-25723197df2a",
+        "event_type": "assistant.message",
+        "message_id": "488e967e-5d20-4b42-9277-a15a55576a86",
         "tool_requests_json": []
       }
     }

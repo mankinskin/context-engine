@@ -1,97 +1,49 @@
 {
-  "mcpServers": {
+  "servers": {
     "context-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": [
-        "run",
-        "--quiet",
-        "--release",
-        "-p",
-        "context-mcp"
-      ]
+      "command": "context-mcp"
     },
     "ticket-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": [
-        "run",
-        "--quiet",
-        "--release",
-        "-p",
-        "ticket-mcp"
-      ]
+      "command": "ticket-mcp"
     },
     "spec-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": [
-        "run",
-        "--quiet",
-        "--release",
-        "-p",
-        "spec-mcp"
-      ]
+      "command": "spec-mcp"
     },
     "test-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": [
-        "run",
-        "--quiet",
-        "--release",
-        "-p",
-        "test-mcp"
-      ]
+      "command": "test-mcp"
     },
     "feedback-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": [
-        "run",
-        "--quiet",
-        "--release",
-        "-p",
-        "feedback-mcp"
-      ]
+      "command": "feedback-mcp"
     },
     "session-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": ["run", "--quiet", "--release", "-p", "session-mcp"]
+      "command": "session-mcp"
     },
     "peek-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": ["run", "--quiet", "--release", "-p", "peek-mcp"]
+      "command": "peek-mcp"
     },
     "rule-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": ["run", "--quiet", "--release", "-p", "rule-mcp"]
+      "command": "rule-mcp"
     },
     "audit-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": ["run", "--quiet", "--release", "-p", "audit-mcp"]
+      "command": "audit-mcp"
     },
     "compact-terminal-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": ["run", "--quiet", "--release", "-p", "compact-terminal-mcp"]
+      "command": "compact-terminal-mcp"
     },
     "log-viewer-mcp": {
       "type": "stdio",
-      "command": "cargo",
-      "args": [
-        "run",
-        "--quiet",
-        "--release",
-        "-p",
-        "log-viewer",
-        "--",
-        "--mcp"
-      ]
+      "command": "log-viewer",
+      "args": ["--mcp"]
     }
   }
 }

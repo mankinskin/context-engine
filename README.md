@@ -37,6 +37,17 @@ memory-viewers child READMEs:
 
 The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository.
 
+Install the complete MCP server set used by VS Code with:
+
+```bash
+./install-tools.sh --mcp
+```
+
+The MCP configuration invokes these installed binaries directly rather than
+running Cargo for each request. Ensure Cargo's binary directory (`$HOME/.cargo/bin`
+on Unix or `%USERPROFILE%\\.cargo\\bin` on Windows) is on the `PATH` inherited by
+VS Code, then run `Developer: Reload Window` to restart and rediscover the servers.
+
 The companion installer in [install-deps.sh](install-deps.sh) installs repo-wide developer dependencies such as `ripgrep` and `rtk`.
 
 The companion installer in [install-extensions.sh](install-extensions.sh) packages and installs the workspace's VS Code extensions into your local VS Code profile:

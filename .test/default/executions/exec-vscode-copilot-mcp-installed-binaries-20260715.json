@@ -1,0 +1,30 @@
+{
+  "id": "exec-vscode-copilot-mcp-installed-binaries-20260715",
+  "validation_spec_id": "val-vscode-copilot-mcp-registration",
+  "outcome": "passed",
+  "executed_at": "2026-07-15T12:10:00Z",
+  "duration_ms": 0,
+  "detail": "`./install-tools.sh --mcp` installed all 11 configured binaries. Its isolated `target/install-tools` build directory avoided Windows locks held by previously Cargo-launched servers. Both MCP configs validate as identical supported `servers` objects with direct commands. Installed `feedback-mcp` completed initialize and tools/list with feedback_ingest, feedback_inbox, feedback_query, feedback_mine, and feedback_summary.",
+  "links": {
+    "spec_ids": [
+      "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+    ],
+    "acceptance_criterion_ids": [
+      "mcp-config-schema",
+      "mcp-installed-binaries",
+      "mcp-feedback-availability",
+      "mcp-tool-enumeration"
+    ],
+    "ticket_ids": [
+      "d505282b-ba78-4ddc-9071-20060630a86f"
+    ]
+  },
+  "provenance": {
+    "source_path": "install-tools.sh",
+    "test_id": "mcp-installer-and-feedback-protocol",
+    "domain": "mcp",
+    "operation": "install-and-tools-list",
+    "transport": "stdio",
+    "run_id": "installed-mcp-binaries-20260715"
+  }
+}
