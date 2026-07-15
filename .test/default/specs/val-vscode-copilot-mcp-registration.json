@@ -1,0 +1,23 @@
+{
+  "id": "val-vscode-copilot-mcp-registration",
+  "title": "VS Code Copilot local MCP registration, unique identity, and protocol handshake",
+  "command": "cargo test -p feedback-mcp -p session-mcp -p peek-mcp -p rule-mcp -p audit-mcp -p compact-terminal-mcp; build release binaries; launch each binary and require serverInfo.name == package name plus successful tools/list",
+  "detail": "Validates schema discovery, package availability, six unique stdio initialize identities, and tool enumeration. feedback-mcp must initialize as feedback-mcp and expose feedback_ingest, feedback_inbox, feedback_query, feedback_mine, and feedback_summary.",
+  "slow_threshold_ms": 300000,
+  "links": {
+    "spec_ids": [
+      "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+    ],
+    "acceptance_criterion_ids": [
+      "mcp-config-schema",
+      "mcp-unique-server-identity",
+      "mcp-server-handshake",
+      "mcp-feedback-availability",
+      "mcp-tool-enumeration"
+    ],
+    "ticket_ids": [
+      "d505282b-ba78-4ddc-9071-20060630a86f",
+      "2318f63f-7113-4987-87b7-ca26afa04d11"
+    ]
+  }
+}

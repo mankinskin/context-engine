@@ -1,0 +1,30 @@
+{
+  "id": "exec-vscode-copilot-mcp-identities-20260715",
+  "validation_spec_id": "val-vscode-copilot-mcp-registration",
+  "outcome": "passed",
+  "executed_at": "2026-07-15T11:25:00Z",
+  "detail": "Focused cargo check passed for all six packages. Release binaries rebuilt after terminating five stale rmcp-identified processes. Strict stdio handshake passed: feedback-mcp@0.1.0 (5 tools), session-mcp@0.1.0 (23), peek-mcp@0.1.0 (4), rule-mcp@0.1.0 (16), audit-mcp@0.1.0 (6), compact-terminal-mcp@0.1.0 (2); six unique names and 56 tools total. Focused cargo test passed 9 tests across 19 suites. Editor diagnostics report no errors. cargo fmt --check remains blocked by unrelated pre-existing formatting drift in feedback-mcp files; the focused diff contains only 30 server_info lines.",
+  "links": {
+    "spec_ids": [
+      "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+    ],
+    "acceptance_criterion_ids": [
+      "mcp-unique-server-identity",
+      "mcp-server-handshake",
+      "mcp-feedback-availability",
+      "mcp-tool-enumeration"
+    ],
+    "ticket_ids": [
+      "d505282b-ba78-4ddc-9071-20060630a86f",
+      "2318f63f-7113-4987-87b7-ca26afa04d11"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/tools/mcp",
+    "test_id": "unique-initialize-identities-and-feedback-tools",
+    "domain": "workspace-tooling",
+    "operation": "mcp-server-identity",
+    "transport": "mcp",
+    "run_id": "mcp-identity-20260715"
+  }
+}

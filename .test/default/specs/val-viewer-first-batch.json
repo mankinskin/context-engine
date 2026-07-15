@@ -1,0 +1,25 @@
+{
+  "id": "val-viewer-first-batch",
+  "title": "Viewer platform first implementation batch",
+  "command": "Run focused spec health/reference validation and the nearest executable checks for each completed first-batch ticket; finish with the canonical release-browser all-viewer runner once implemented.",
+  "detail": "Required handoff/finish gate for tickets 7d951620, 6002e996, 93b8a331, 40110a1a, 26a73130, and 8f349d96. Record separate executions as work lands; do not mark passed until every required node is completed and its focused validation evidence is present.",
+  "slow_threshold_ms": 1800000,
+  "links": {
+    "spec_ids": [
+      "347b6f97-5ebf-46c6-a0e1-cc8afc600319",
+      "b06c9df8-2866-433a-af73-ae9b1f4a0f0a",
+      "479e226a-b4ef-4e30-ade0-ebdabbf956ed",
+      "4f14356f-c4bd-4554-be1e-35361de241da",
+      "f153483c-f984-4564-94ac-36234b5cbe3f"
+    ],
+    "ticket_ids": [
+      "956485ad-2e80-4a4c-b5ec-42bac2c7c295",
+      "7d951620-76c5-4b24-90ce-e7d08d2dd188",
+      "6002e996-dcb8-4dad-a830-20346ce9d8cc",
+      "93b8a331-da80-4fef-b13d-7f277cadb15f",
+      "40110a1a-40e8-4345-8407-577bd5f4d602",
+      "26a73130-c631-4168-8030-fade31c5cf55",
+      "8f349d96-a307-400b-a90e-3aceb2250166"
+    ]
+  }
+}

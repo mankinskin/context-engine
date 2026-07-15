@@ -1,0 +1,2698 @@
+{
+  "schema_version": 1,
+  "session_id": "7ef83488-1e8a-4db2-87ce-4d742716572c",
+  "captured_at": "2026-07-15T10:40:04.575Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "gather our current UI testing policy. we want to continue working on the viewer-api and the ticket-viewer, spec-viewer and the general visualization and operational frontend for memory-api. We need a robust end to end testing strategy for the architecture that we are aiming for, defined in RESEARCH_VIEWER_ARCHITECTURE.md. We need to be able to run all sorts of tests in the browser and gather logs from the frontend wasm app for analysis. also benchmarks for performance leak detection is planned.",
+      "captured_at": "2026-07-14T23:00:45.564Z",
+      "event_meta": {
+        "event_id": "42373749-3d33-405b-a355-76de2a122dd0",
+        "parent_event_id": "943d94ba-fdca-4764-a4c7-e6d2c1eea658",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’ll inventory the actual UI test policy, viewer test harnesses, browser logging hooks, and benchmark surfaces, then roast the gap between the architecture memo and what the repository can genuinely prove today. I’ll stay read-only and ground every finding in files and line numbers.",
+      "captured_at": "2026-07-14T23:01:03.055Z",
+      "event_meta": {
+        "event_id": "16451f97-af7c-4a0e-ba65-8ed07aafab97",
+        "parent_event_id": "8b18601c-4651-4aa8-aa12-5ab89442a7d4",
+        "event_type": "assistant.message",
+        "message_id": "2ae3d606-314c-43cb-a029-f7a2924d60d1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_CU9IudYIMKhFd8hZxDAx2Xzo",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\frontend.instructions.md",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_g5KeDpMVSguonNL7O3JnAqlx",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\tests.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4NDxY59NpIUE22p3N7qMqdbe",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\viewer-api-tools.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_iOhT0sSyLkYwR3Pu0xfS4nm4",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\RESEARCH_VIEWER_ARCHITECTURE.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eyKWlZHqsJjAPDC6mqY6Fsjg",
+            "name": "search_subagent",
+            "arguments": {
+              "query": "Find the current browser/UI end-to-end testing policy and implementations for viewer-api, ticket-viewer, spec-viewer, and memory-api operational frontends. Locate Playwright configs/tests, shared E2E suites, browser logging or WASM tracing capture, performance benchmarks, CI commands, and documentation. Return precise files and line ranges, focusing on gaps between policy and implementation.",
+              "description": "Inventory viewer testing policy",
+              "details": "Read-only architecture/testing audit. Identify authoritative policy plus concrete harnesses and scripts, with exact line locations suitable for evidence-based findings."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "<final_answer>\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\viewer-api\\\\viewer-api\\\\frontend\\\\dioxus\\\\e2e\\\\shared\\\\managed-viewers.ts:1-120\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\spec-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\shared\\\\viewers.ts:1-80\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\shared\\\\viewers.ts:1-80\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\playwright.release.config.ts:1-120\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\playwright.config.ts:1-120\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\spec-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\viewer-api-primitives.spec.ts:1-160\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\spec-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\spec-viewer.release.spec.ts:1-160\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\ticket-viewer.release.spec.ts:1-120\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\graph-detail-sidebar.spec.ts:1-180\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\workflow-sidebar.spec.ts:1-180\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\live-refresh-authority.spec.ts:1-180\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\shared\\\\common-viewer-suite.ts:1-160\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\ticket-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\shared\\\\dioxus-theme-suite.ts:1-160\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\viewer-api\\\\viewer-api\\\\frontend\\\\dioxus\\\\e2e\\\\test_apis\\\\viewer_smoke_tools.ts:1-160\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\viewer-api\\\\viewer-api\\\\frontend\\\\dioxus\\\\e2e\\\\test_apis\\\\viewer_tree_state_tools.ts:1-160\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\viewer-api\\\\viewer-api\\\\frontend\\\\dioxus\\\\e2e\\\\shared\\\\playwright-runtime.ts:1-80\nc:\\\\Users\\\\linus\\\\git\\\\graph_app\\\\context-engine\\\\memory-viewers\\\\spec-viewer\\\\frontend\\\\dioxus\\\\e2e-release\\\\shared\\\\test-apis.ts:1-160\n</final_answer>",
+      "captured_at": "2026-07-14T23:01:47.447Z",
+      "event_meta": {
+        "event_id": "e80c3cd3-2794-43fa-a3e7-c393378cd5d1",
+        "parent_event_id": "bee44441-ad56-415e-8b57-5f8ef2a0c00e",
+        "event_type": "assistant.message",
+        "message_id": "262132b5-cac2-43f0-8814-618bad89c155",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "The repository already has more than smoke-test theater: shared Playwright helpers, release-binary suites, seeded real-backend fixtures, screenshots, and a session-correlation primitive. The ugly part is fragmentation: ticket-viewer forks shared helpers, performance checks are viewer-specific, and “collect frontend WASM logs for analysis” appears to be aspiration plus a correlation ID, not yet a coherent observability pipeline.",
+      "captured_at": "2026-07-14T23:01:59.122Z",
+      "event_meta": {
+        "event_id": "8e3b758c-bd43-4ab2-bb5f-05badad95980",
+        "parent_event_id": "91645d33-6918-4f65-a947-8f52a08d57ed",
+        "event_type": "assistant.message",
+        "message_id": "119c911f-9340-49c2-b6ad-81631b107550",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_SZberTHFiqgfp8Ryo0aDr9G9",
+            "name": "grep_search",
+            "arguments": {
+              "query": "viewer-api-session-id|applyE2eSessionCorrelation|buildE2eCorrelationId|sessionStorage",
+              "isRegexp": true,
+              "includePattern": "**/*.{rs,ts,tsx,js}",
+              "maxResults": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ObN9YUHd9YSFXuFmRhhagiTb",
+            "name": "grep_search",
+            "arguments": {
+              "query": "registerGraph3dProfilingSuite|performance|memory|heap|fps|frame|benchmark",
+              "isRegexp": true,
+              "includePattern": "**/{e2e,e2e-release,tests,benches}/**/*.{rs,ts,tsx,js}",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lF2wgC2CheWq7uEHHeO1qqYl",
+            "name": "grep_search",
+            "arguments": {
+              "query": "test:e2e|playwright|e2e:release",
+              "isRegexp": true,
+              "includePattern": "**/{package.json,*.yml,*.yaml,Makefile.toml,README.md}",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WRRHQQUaPIHa2yEv05GB8zD9",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\viewer-api\\frontend\\dioxus\\e2e\\shared\\playwright-runtime.ts",
+              "startLine": 1,
+              "endLine": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jE22SlsSCf0AaKCVoL6b5JTx",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\viewer-api\\frontend\\dioxus\\e2e\\test_apis\\viewer_smoke_tools.ts",
+              "startLine": 1,
+              "endLine": 100
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Two concrete policy violations are now confirmed. The aggregate `cargo make test-e2e` advertises “all” viewer checks while omitting ticket-viewer entirely and its Windows command still points at obsolete `tools/viewer/...` paths; meanwhile the so-called micro-benchmarks explicitly refuse to enforce timing thresholds, which makes them performance diaries, not regression gates.",
+      "captured_at": "2026-07-14T23:02:16.976Z",
+      "event_meta": {
+        "event_id": "322c066f-e7a9-4186-8b3f-1cf623750990",
+        "parent_event_id": "8cda3a5a-f803-4f8d-954d-9508eea47de2",
+        "event_type": "assistant.message",
+        "message_id": "45464fdd-b0fc-4228-81f7-97f343691503",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_dKgDIEOrmcUmHEf67bEO4OvD",
+            "name": "grep_search",
+            "arguments": {
+              "query": "registerTracingConsoleSuite",
+              "isRegexp": false,
+              "includePattern": "**/*.{ts,tsx}",
+              "maxResults": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_FUI82Zpo66TbbOE98n8CJ6o4",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-viewers\\spec-viewer\\frontend\\dioxus\\playwright.release.config.ts",
+              "startLine": 1,
+              "endLine": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LTnfzhW0wGZO1Ka6nd1KyneB",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-viewers\\spec-viewer\\frontend\\dioxus\\package.json",
+              "startLine": 1,
+              "endLine": 60
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vYtOBRt9MaFrgUpOmITDEiiA",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-viewers\\ticket-viewer\\frontend\\dioxus\\package.json",
+              "startLine": 1,
+              "endLine": 60
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qt2SCnDN6wEEvHQiPaktLkCT",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\AGENTS.md",
+              "startLine": 34,
+              "endLine": 66
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "The logging story is less imaginary than first feared: shared Rust code batches WASM tracing to `/api/client-log`, and spec-viewer tests verify a test correlation header. But ticket-viewer carries a stale copy that does not assert correlation, so identical-looking suites prove different contracts. There is also no Playwright or WASM browser test invocation in `.github/workflows`, meaning the mandatory policy currently depends on humans remembering which incantation to run.",
+      "captured_at": "2026-07-14T23:02:41.123Z",
+      "event_meta": {
+        "event_id": "fcef7e7a-5ebf-4bce-940e-02639b0d3128",
+        "parent_event_id": "15406e47-5412-4bd9-b6ed-26345ae56228",
+        "event_type": "assistant.message",
+        "message_id": "e71dc7d9-5dff-4625-b394-556fa06337b4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_LvVui5MJCl3XeHpMFmxYBsGo",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\viewer-api\\src\\client_log.rs",
+              "startLine": 1,
+              "endLine": 230
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_USipnoAdQ2OtZuQw3EZWEq0F",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\viewer-api\\frontend\\dioxus\\src\\tracing_setup\\network_layer.rs",
+              "startLine": 1,
+              "endLine": 230
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_FpuF51rFgjtAjLQleWF8l9lr",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\viewer-api\\frontend\\dioxus\\e2e\\shared\\suites\\client-log-api-suite.ts",
+              "startLine": 1,
+              "endLine": 130
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1lUuflcIEC5B1dpS0nXvmwYc",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-viewers\\spec-viewer\\frontend\\dioxus\\e2e-release\\navigation.spec.ts",
+              "startLine": 1,
+              "endLine": 75
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HRSSrmd8MbOGVWvF434xvE6D",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\RESEARCH_VIEWER_ARCHITECTURE.md",
+              "startLine": 180,
+              "endLine": 335
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "A nastier defect surfaced in the observability contract: the server persists `x-session-id`, and the shared spec-viewer Playwright suite requires it, but the WASM network sink constructs headers with only `content-type`. Unless another layer mutates raw `window.fetch` requests, the correlation test and implementation disagree. That is exactly the sort of “we collect logs” claim that turns into an unqueryable JSONL swamp under parallel E2E runs.",
+      "captured_at": "2026-07-14T23:02:52.327Z",
+      "event_meta": {
+        "event_id": "9d5f2b75-5ece-4150-9a93-7ccdb9065221",
+        "parent_event_id": "65d2ef95-5e12-4f7e-bcf2-ca33de488b0c",
+        "event_type": "assistant.message",
+        "message_id": "53b93948-88d7-4976-9a68-2cac3e11a0ac",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XRgZLAbmUcDcDxoi4fLOcXMl",
+            "name": "grep_search",
+            "arguments": {
+              "query": "client_log_router|ClientLogState",
+              "isRegexp": true,
+              "includePattern": "memory-viewers/**/*.rs",
+              "maxResults": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kfPgxympEm5C9JO6JX4on00e",
+            "name": "grep_search",
+            "arguments": {
+              "query": "x-session-id|SESSION_HEADER",
+              "isRegexp": true,
+              "includePattern": "viewer-api/viewer-api/frontend/dioxus/src/**/*.rs",
+              "maxResults": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HFncnOOLtJWNR2ivLELaKVF8",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\viewer-api\\frontend\\dioxus\\src\\store\\session.rs",
+              "startLine": 1,
+              "endLine": 90
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_CsroKhcUoffWwUgOM7Qw5s31",
+            "name": "grep_search",
+            "arguments": {
+              "query": "registerGraph3dProfilingSuite",
+              "isRegexp": false,
+              "includePattern": "memory-viewers/ticket-viewer/**/*.ts",
+              "maxResults": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PEJwLdNVN0qw8CaENBXwLroj",
+            "name": "grep_search",
+            "arguments": {
+              "query": "@axe-core/playwright|axe-core",
+              "isRegexp": true,
+              "includePattern": "**/package*.json",
+              "maxResults": 50
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I’ve completed the read-only audit and assembled the current policy, implemented harnesses, architecture gaps, and the highest-leverage testing strategy. No tests were executed and no files were changed, as required by this roast-only review.",
+      "captured_at": "2026-07-14T23:03:29.633Z",
+      "event_meta": {
+        "event_id": "9e51200d-0337-4844-941a-37587d6f91ef",
+        "parent_event_id": "df4b5c18-d546-48dd-9916-ebc3e07c7363",
+        "event_type": "assistant.message",
+        "message_id": "9686d5ff-c612-450c-be88-6af33f4c13b6",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XdJz56FzDbFYptBGbp0OIimg",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Audited the repository’s UI testing policy and viewer E2E, WASM logging, profiling, benchmark, and orchestration implementations; identified concrete gaps and proposed a staged browser testing strategy."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "**Worst Crime**\n\nThe repository declares Playwright mandatory for every browser-facing change, then provides no CI workflow that runs it and ships an aggregate E2E task that omits ticket-viewer. Worse, its Windows commands reference stale `tools/viewer/...` paths even though the suites live under `memory-viewers/...` ([Makefile.toml](Makefile.toml#L262-L311)).\n\nThat is not a quality gate. It is a strongly worded suggestion attached to a broken doorbell.\n\n**Current Policy**\n\nThe authoritative policy requires:\n\n- Playwright coverage for every browser feature and server-interface change.\n- MCP browser tooling first, repository Playwright runners second.\n- External fullscreen Chromium verification, with the resolution recorded.\n- Screenshots for UI changes, including open transient surfaces.\n- Lint/typecheck, component tests, browser E2E, API contract checks, and regression assertions.\n- Loading, empty, success, and error states.\n- Keyboard navigation, deterministic focus, desktop/tablet/mobile layouts.\n- Validation results recorded in the test-result store.\n\nEvidence: [AGENTS.md](AGENTS.md#L42-L55), [frontend.instructions.md](.agents/instructions/frontend.instructions.md#L33-L47), [viewer-api-tools.instructions.md](.agents/instructions/viewer-api-tools.instructions.md#L67-L87), and [tests.instructions.md](.agents/instructions/tests.instructions.md#L92-L127).\n\n**What Exists**\n\nThere is a useful foundation beneath the procedural rubble:\n\n- Shared viewer readiness and smoke helpers detect console errors, page exceptions, and missing static assets: [viewer_smoke_tools.ts](viewer-api/viewer-api/frontend/dioxus/e2e/test_apis/viewer_smoke_tools.ts#L1-L55).\n- Ticket-viewer has mocked dev-server tests and real release-binary E2E.\n- Spec-viewer has release E2E, responsive navigation, graph interaction, shared shell checks, and screenshots.\n- Ticket-viewer seeded fixtures start isolated real backends on dynamic ports.\n- WASM tracing can batch structured events to `/api/client-log`.\n- The server persists frontend records as JSONL under `target/test-logs/` for log-viewer analysis: [client_log.rs](viewer-api/viewer-api/src/client_log.rs#L1-L30).\n- Chromium profile capture records CPU samples and `performance.measure` marks: [profiling.ts](viewer-api/viewer-api/frontend/dioxus/e2e/shared/profiling.ts#L1-L61).\n- Browser-hosted WASM micro-benchmarks cover graph math: [graph3d_bench.rs](viewer-api/viewer-api/frontend/dioxus/tests/graph3d_bench.rs#L1-L77).\n\n**Critical Gaps**\n\n1. **Frontend log correlation is broken or undocumented magic**\n\n   The server recognizes `x-session-id` and persists it ([client_log.rs](viewer-api/viewer-api/src/client_log.rs#L42-L47), [client_log.rs](viewer-api/viewer-api/src/client_log.rs#L91-L105)). The shared Playwright suite explicitly requires that header ([tracing-console-suite.ts](viewer-api/viewer-api/frontend/dioxus/e2e/shared/suites/tracing-console-suite.ts#L45-L82)).\n\n   But the WASM network sink sets only `content-type` before issuing raw `fetch` ([network_layer.rs](viewer-api/viewer-api/frontend/dioxus/src/tracing_setup/network_layer.rs#L169-L188)). The generic `with_session` helper exists, but this request does not use it.\n\n   Ticket-viewer then preserves an older copied tracing suite that does not check correlation at all. A beautiful copy-paste masterpiece: two suites with the same name proving different contracts.\n\n2. **The performance tests are not performance gates**\n\n   The graph profiling suite proudly says it only verifies that a trace file exists and that thresholds belong in micro-benchmarks ([graph3d-profiling-suite.ts](viewer-api/viewer-api/frontend/dioxus/e2e/shared/suites/graph3d-profiling-suite.ts#L6-L19)). The micro-benchmarks then explicitly avoid wall-clock thresholds and merely assert that elapsed time is finite ([graph3d_bench.rs](viewer-api/viewer-api/frontend/dioxus/tests/graph3d_bench.rs#L12-L18)).\n\n   So each layer points at the other while neither fails on a regression. A Rube Goldberg benchmark that measures performance and carefully avoids judging it.\n\n3. **The architecture memo’s example is assertion theater**\n\n   The test is titled “120 FPS,” but the actual assertion requires only 60 FPS ([RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md#L189), [RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md#L221-L227)). Bulk injection silently does nothing when `window.wasmEngine` is absent ([RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md#L203-L210)).\n\n   It then claims CI will automatically catch heap allocations ([RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md#L251)), despite neither heap telemetry nor a CI browser job being present.\n\n4. **GPU environments are inconsistent**\n\n   Spec-viewer runs headed system Chrome with SwiftShader flags ([playwright.release.config.ts](memory-viewers/spec-viewer/frontend/dioxus/playwright.release.config.ts#L21-L33)). Ticket-viewer runs headless Desktop Chrome without equivalent GPU configuration ([playwright.release.config.ts](memory-viewers/ticket-viewer/frontend/dioxus/playwright.release.config.ts#L31-L37)).\n\n   Results from these environments are not comparable, and SwiftShader numbers cannot support claims about native GPU performance.\n\n5. **Accessibility and visual regression are largely absent**\n\n   There is keyboard and responsive coverage, but no Axe dependency or automated accessibility suite in the viewer manifests ([package.json](memory-viewers/spec-viewer/frontend/dioxus/package.json#L1-L12), [package.json](memory-viewers/ticket-viewer/frontend/dioxus/package.json#L1-L15)). Screenshots are attached for inspection, but there are no maintained `toHaveScreenshot` baselines. “A human might inspect the report” is not visual regression detection.\n\n6. **The research document outruns its evidence**\n\n   Claims such as “without code changes” scaling to AAA desktop applications, “zero-copy,” and “free of GC stutter” are presented as conclusions rather than hypotheses ([RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md#L15-L28), [RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md#L43)). The document needs explicit experimental status, browser support constraints, and measurable acceptance criteria.\n\n**Recommended Strategy**\n\n1. **Canonical shared harness**\n\n   Move readiness, tracing, screenshots, seeded backend management, console/network failure collection, and viewer registration into one viewer-api Playwright package. Ticket-viewer and spec-viewer should register configurations, not fork suites.\n\n2. **PR gate**\n\n   Run release-binary Chromium E2E for ticket-viewer and spec-viewer on every frontend change. Require functional flows, API contracts, console cleanliness, accessibility, responsive viewports, screenshots, and correlated frontend logs.\n\n3. **Observability contract**\n\n   Give every test a correlation ID before navigation. Propagate it through WASM API calls, tracing records, backend spans, screenshots, traces, and test-store executions. Attach the filtered JSONL records to the Playwright report and fail on error-level records unless allowlisted.\n\n4. **Performance tiers**\n\n   - PR: deterministic WASM micro-benchmarks with broad budgets and historical comparison.\n   - Nightly: release builds on a pinned Chrome/SwiftShader environment for stable software-rendered comparisons.\n   - Hardware lane: dedicated machine with a recorded browser, adapter, driver, resolution, and refresh rate.\n   - Soak: repeated load/interact/unload cycles measuring WASM heap growth, JS heap growth, DOM count, texture/resource count, long tasks, frame-time percentiles, and dropped frames.\n\n5. **Measure frame time, not vanity FPS**\n\n   Gate on median, p95, and p99 frame duration after warm-up. Separate CPU, upload, and GPU timing where available. A smoothed FPS value sampled ten times is a weather report, not leak detection.\n\n6. **Native Tauri lane later**\n\n   Keep browser/WASM Playwright as the primary fast contract. Add WebDriver/Appium only for Tauri-specific IPC, windowing, native GPU backend, lifecycle, and packaging behavior.\n\n**Verdict**\n\nThe repository has credible ingredients but no unified testing system. The highest-leverage fix is a single shared viewer E2E runner that includes every viewer, enforces correlated WASM/backend logs, and produces durable Playwright, trace, screenshot, and benchmark artifacts in CI. Until that exists, the architecture memo’s “AAA performance guard” is premium-grade brochure copy taped over several disconnected test scripts.",
+      "captured_at": "2026-07-14T23:04:16.609Z",
+      "event_meta": {
+        "event_id": "055a92e2-6c3d-4d51-ae3b-619726739021",
+        "parent_event_id": "ea793734-e19e-4d1a-8d11-8a992dbe15c7",
+        "event_type": "assistant.message",
+        "message_id": "f8b9eb6b-6ecc-4d3c-bb0b-51643a7bfb3c",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "user",
+      "content": "map out existing tickets in this area and add new trackers and work step items to address all issues and implement the suggested strategies",
+      "captured_at": "2026-07-14T23:09:56.726Z",
+      "event_meta": {
+        "event_id": "d46c49fa-58c1-40b7-85a4-9ca9ecd33585",
+        "parent_event_id": "bdfdd395-2002-4fc0-8221-e465509c9ac6",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I’ll map the current ticket graph and actionable queue first, then inspect the relevant specs and existing viewer-testing trackers so new work lands as a coherent dependency tree rather than duplicate backlog confetti. After that I’ll create or refine the implementation-ready tickets with concrete acceptance criteria and staged work items.I’m loading the ticket/spec workflow contracts alongside the MCP surfaces now; the immediate goal is to establish the active workspace, current WIP ownership, and duplicate candidates before touching any tracker.",
+      "captured_at": "2026-07-14T23:10:10.163Z",
+      "event_meta": {
+        "event_id": "3ef41e71-a65e-4442-bbe1-b69a8004f4af",
+        "parent_event_id": "84674b60-5bf4-4414-a0ce-da5c7aa99680",
+        "event_type": "assistant.message",
+        "message_id": "4308f839-a5a7-438e-a052-413b867e479f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_egYkrKOIaapYmq5wHP6zbTcj",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\ticket-system.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PqvbQuzZjBkshumvuD7VfRRu",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\spec-system.instructions.md",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dWFqPlG8nCsgrPVQucHf2dR0",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Ticket MCP tools to list workspaces, show board, get next actionable tickets, search/list tickets, inspect tickets and descriptions, create/update tickets, and add dependency edges"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_bbNoipCsWwRil9mxwzCeKk1D",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Spec MCP tools to search, list, and inspect relevant specifications for viewer browser end-to-end testing, WASM logging, and performance benchmarks"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "The workflow rules confirm that reads are aggregated through `default`, while new viewer work should be written into the owning descendant store. I’ll now query the global queue and search across several distinct phrases so we can distinguish completed historical work, active trackers, and true gaps.",
+      "captured_at": "2026-07-14T23:10:24.827Z",
+      "event_meta": {
+        "event_id": "f5af2d5d-7531-4bf5-bd52-2ad6b5226d59",
+        "parent_event_id": "609e573f-4e36-4c34-a5e5-98daa30a8548",
+        "event_type": "assistant.message",
+        "message_id": "29e4026f-cb2e-41de-a349-c8c3f4510124",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_HL6inTvKbrXRwGmhZjeuMHF7",
+            "name": "mcp_rmcp6_list_workspaces",
+            "arguments": {},
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JOddP7g5mVFDHvqPZdWfmVas",
+            "name": "mcp_rmcp6_next_tickets",
+            "arguments": {
+              "workspace": "default",
+              "limit": 30
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PiCouBEOOYXxcevhrnsV7huN",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "Playwright viewer E2E browser testing",
+              "limit": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZpTKyKghGTCWBt0yTRr7BAFa",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "WASM frontend client log tracing correlation",
+              "limit": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tHudk7B547tIbXvJ1aU1U3dw",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "graph performance benchmark profiling leak",
+              "limit": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uKJHxHNX4WZLOtv0qUlaLAve",
+            "name": "mcp_rmcp4_spec_search",
+            "arguments": {
+              "workspace": "default",
+              "query": "viewer browser Playwright end-to-end testing WASM tracing performance",
+              "limit": 30
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "The first pass found one broad profiling tracker and no spec matching the combined contract, but the text search is clearly literal enough to miss known Playwright tickets. I’m narrowing by subsystem and loading full ticket/dependency inspection plus write tools; next I’ll inspect candidate descriptions before deciding whether to extend or split them.",
+      "captured_at": "2026-07-14T23:10:32.765Z",
+      "event_meta": {
+        "event_id": "0a4589f4-3606-4ddd-8499-c0e2b96f0101",
+        "parent_event_id": "819f4cfc-1553-4cee-b4c7-668e8ee0f9e3",
+        "event_type": "assistant.message",
+        "message_id": "1a586a34-5532-4c56-bfac-d36c8d8d010f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IJPwWcje8Q9HFmQcFxfjdKMM",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Ticket MCP board snapshot, get ticket metadata and description, inspect dependency edges/subgraph, create and update tickets, and add depends_on or blocks edges"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "The active workspace is `default`; no relevant work is currently surfaced by the narrow searches, and the existing profiling tracker is still `new`. I’m expanding the map with subsystem-specific searches and opening the tracker plus known historical tickets, while checking its dependency graph for already-planned child work.",
+      "captured_at": "2026-07-14T23:10:56.751Z",
+      "event_meta": {
+        "event_id": "1e6d9c83-76aa-42eb-9661-a21c5955aefb",
+        "parent_event_id": "905d8c21-2d13-46d6-b664-ed2f1c544aac",
+        "event_type": "assistant.message",
+        "message_id": "bb28be42-598a-4979-b53c-aa8843ad2e25",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_xWuxTK2HyVDnlfsADcHJ0O1I",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_JOddP7g5mVFDHvqPZdWfmVas__vscode-1784061506519\\content.json",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WouzAubX85mOBF6uujaI0GnC",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "ef3f4a91"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jhEerODM6gyRG5SYhpdWGoqT",
+            "name": "mcp_rmcp6_subgraph",
+            "arguments": {
+              "workspace": "default",
+              "root": "ef3f4a91",
+              "direction": "outgoing",
+              "depth": 4,
+              "limit_nodes": 100,
+              "limit_edges": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_cYOOnQUSHWzLoGTiRIY3DqKK",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "viewer-api",
+              "limit": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lqOEy8WW5ntZWD6MJ9NqT9pv",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "Playwright",
+              "limit": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SyanMCKBdqL8AkIo7zx4VIOI",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "frontend logs",
+              "limit": 100
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "The map now has two obvious anchors: the broad profiling tracker already owns five backend/performance slices, while separate viewer-api tracing tickets own the browser log sink. The missing layer is a parent strategy tracker that coordinates browser conformance, observability, performance gating, CI, accessibility/visual checks, and eventual Tauri validation without swallowing those existing tickets.",
+      "captured_at": "2026-07-14T23:11:09.301Z",
+      "event_meta": {
+        "event_id": "bdbd9bdd-ada0-4a10-af27-a0143960e244",
+        "parent_event_id": "d911f792-b8d2-4524-a5c6-f26463e76bb3",
+        "event_type": "assistant.message",
+        "message_id": "85327d51-b752-41e9-a7a5-9710977eef61",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_sbS2kbFUJ2Fsp7mD8kYuq0bk",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_cYOOnQUSHWzLoGTiRIY3DqKK__vscode-1784061506531\\content.json",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pFcAY57ZFgYqqsHemLETNPBR",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_lqOEy8WW5ntZWD6MJ9NqT9pv__vscode-1784061506532\\content.json",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LoGJ7LzbDmpp1cDYIihdd8b8",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "8f349d96"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BqZJhY1BVSGGG1KXeb7SuhUj",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "b480632a"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qstCRjgoZdjWzGdp13PDnAzs",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "099ac71e"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tIl4CZUPyTqyrDAV1QrgkhAz",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "80631f3c"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "Existing coverage tickets explain the current fragments but none owns the full cross-viewer policy. Before creating anything, I’m checking the older testing-strategy design ticket, graph E2E tracker, completed correlation work, and their actual store locations; this will determine which items are refined, linked, or superseded by new children.",
+      "captured_at": "2026-07-14T23:11:21.860Z",
+      "event_meta": {
+        "event_id": "fac41dc2-6128-43fa-ac59-88b01b511c27",
+        "parent_event_id": "afbb1074-234b-4067-99cf-81497b81d5ed",
+        "event_type": "assistant.message",
+        "message_id": "ab5cada1-fc5b-472b-8b26-e1c2e0d7b57e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_UT9jPdWRihtUDD7yzNm69f8Y",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "93b8a331"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZiJVZXQTJHEbLOb7u2QIX5E1",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "08c86dbd"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_A2xWvSPScCuMOrfXRIxwyiYA",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "363e26d6"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_0vxjYpFh29rLM05diOVeKhCn",
+            "name": "mcp_rmcp6_get_ticket_description",
+            "arguments": {
+              "workspace": "default",
+              "id": "1f39ba8f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KM7Nk7WnDMVfHWAKxBCxJ42E",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/93b8a331*/ticket.toml",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MSQnRiInpPebJGWKxJ29GYzY",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/ef3f4a91*/ticket.toml",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_cfDbAgWTwDj2cIO5s9JselLq",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/8f349d96*/ticket.toml",
+              "maxResults": 20
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "The older design ticket already owns Playwright-to-`test-api` result ingestion, and the graph E2E ticket owns interaction-specific visual coverage. I’ll preserve both. The new hierarchy will focus only on uncovered platform contracts: canonical harness/CI, log correlation and artifact retrieval, accessibility/visual baselines, enforceable performance budgets, leak/soak telemetry, reproducible GPU lanes, architecture-spec hardening, and deferred native Tauri validation.",
+      "captured_at": "2026-07-14T23:11:40.332Z",
+      "event_meta": {
+        "event_id": "81f8674a-f8b3-4c8e-8dd3-3d69755a6192",
+        "parent_event_id": "64bf52c9-54c2-442f-9392-bbf4433554cc",
+        "event_type": "assistant.message",
+        "message_id": "2ea6d58b-0709-4d5e-b003-0585cbce9ba9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_0lPA64Y6CVv9TJ1drqIn28CD",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\ef3f4a91-734f-47aa-a9cf-fdfdb60ac2db\\ticket.toml",
+              "startLine": 1,
+              "endLine": 180
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZcvqZw5xK0WQgIoCW9Fkns95",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\93b8a331-da80-4fef-b13d-7f277cadb15f\\ticket.toml",
+              "startLine": 1,
+              "endLine": 180
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5KvvMIiGmNAXoBgVHYDSztwf",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\viewer-api\\.ticket\\tickets\\8f349d96-a307-400b-a90e-3aceb2250166\\ticket.toml",
+              "startLine": 1,
+              "endLine": 180
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_bHRscQI7QCKVWKEkHJQVqam0",
+            "name": "mcp_rmcp6_list_edges",
+            "arguments": {
+              "workspace": "default",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KmXdPjybOXLC5LahFU0IpwKD",
+            "name": "mcp_rmcp4_spec_search",
+            "arguments": {
+              "workspace": "default",
+              "query": "browser frontend",
+              "limit": 30
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MBGedrORlrsPCOTNM58Mou5G",
+            "name": "mcp_rmcp4_spec_search",
+            "arguments": {
+              "workspace": "default",
+              "query": "Graph3D performance",
+              "limit": 30
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "I have enough evidence to write the hierarchy. I’m creating one memory-viewers-owned umbrella tracker first, with explicit boundaries around existing tickets and a staged definition of done; the next pass will add focused child tickets and wire dependencies to both new and existing work.",
+      "captured_at": "2026-07-14T23:12:37.196Z",
+      "event_meta": {
+        "event_id": "d58f479c-ea7c-4c42-af73-fb0ac8743f10",
+        "parent_event_id": "da6770c7-6cd8-4cd0-8d84-bc65511fc879",
+        "event_type": "assistant.message",
+        "message_id": "a7b0f1af-00f1-4edd-a338-b1b4afc88288",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_OgvSnXO3ggTGW3EtYYvUSdw6",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][testing] Robust browser, observability, and performance validation strategy",
+              "state": "new",
+              "fields": [
+                "component=viewer-platform-testing",
+                "priority=high",
+                "risk_level=high",
+                "effort=12000"
+              ],
+              "description": "# Goal\n\nEstablish one implementation-ready validation program for the shared viewer-api platform and the ticket-viewer, spec-viewer, log-viewer, and doc-viewer operational frontends. The program must prove browser behavior, API integration, WASM/frontend observability, accessibility and rendering quality, performance regressions, and eventual native Tauri behavior against the architecture direction recorded in `RESEARCH_VIEWER_ARCHITECTURE.md`.\n\n# Current evidence and boundaries\n\nExisting work must be reused rather than duplicated:\n\n- `80631f3c` moved ticket-viewer Playwright ownership into memory-viewers.\n- `363e26d6` introduced per-test browser/backend correlation primitives.\n- `8f349d96` owns the WASM tracing file sink.\n- `b480632a` owns structured WASM tracing.\n- `099ac71e` owns validation of the existing browser profile capture and WASM micro-benchmarks.\n- `08c86dbd` owns graph-improvement interaction and screenshot coverage.\n- `93b8a331` owns the design for mapping Playwright/TypeScript results and artifacts into test-api.\n- `ef3f4a91` remains the broader cross-architecture profiling and benchmark tracker.\n\nThis tracker owns the integration and missing platform contracts, not reimplementation of those slices.\n\n# Workstreams\n\n1. Define and implement a canonical shared Playwright harness and one all-viewer orchestration command.\n2. Add enforceable CI lanes with retained reports, traces, screenshots, correlated logs, and validation evidence.\n3. Harden end-to-end WASM log correlation and make per-test frontend/backend records directly queryable.\n4. Add accessibility, responsive-layout, keyboard/focus, and visual-regression gates.\n5. Turn profile capture and browser micro-benchmarks into regression budgets with machine-qualified baselines.\n6. Add soak/leak telemetry for JS/WASM heap growth, DOM/resource growth, long tasks, and frame-time drift.\n7. Define reproducible software-GPU and hardware-GPU browser lanes with explicit environment metadata.\n8. Convert architecture claims into a focused spec contract with measurable acceptance criteria and declared experimental assumptions.\n9. Add a deferred native Tauri/WebDriver lane for desktop-only IPC, lifecycle, packaging, and native GPU behavior.\n\n# Acceptance criteria\n\n- [ ] Every child workstream has a focused ticket, component, risk, implementation steps, validation plan, and clear done condition.\n- [ ] One documented command runs release-browser validation for ticket-viewer, spec-viewer, log-viewer, and doc-viewer without stale paths or omitted viewers.\n- [ ] Required CI lanes execute the browser checks and retain Playwright HTML, trace, screenshot, frontend-log, and benchmark artifacts.\n- [ ] Each browser test can be correlated to frontend WASM logs, backend logs/spans, and test-api evidence by one stable identifier.\n- [ ] Accessibility, keyboard/focus, responsive viewports, and maintained visual baselines are enforced rather than left to optional inspection.\n- [ ] Performance checks have explicit warm-up, workloads, percentile metrics, budgets, baseline comparison rules, and environment identity.\n- [ ] Leak/soak checks detect monotonic resource growth across repeated load/interact/unload cycles.\n- [ ] Software-rendered CI measurements are not presented as native-GPU performance evidence; hardware results record adapter, driver, browser, OS, viewport, and refresh rate.\n- [ ] The architecture spec labels hypotheses and experimental APIs, and replaces unsupported absolute claims with measurable contracts.\n- [ ] Native Tauri checks are isolated from fast browser/WASM validation and cover only desktop-specific behavior.\n\n# Execution order\n\n1. Architecture/spec contract and canonical harness.\n2. Correlated observability and test-api result mapping.\n3. CI orchestration and UX quality gates.\n4. Performance budgets, reproducible GPU lanes, then leak/soak runs.\n5. Native Tauri lane after the browser/WASM contract is stable.\n\n# Non-goals\n\n- Rewriting existing viewer feature tests that already provide useful coverage.\n- Treating screenshots attached for human inspection as visual-regression assertions.\n- Using smoothed FPS alone as a performance or leak metric.\n- Requiring Tauri/Appium in the fast pull-request lane."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "The umbrella tracker is now in the owning `memory-viewers` store. I’m adding the first five implementation slices now: contract/spec hardening, shared harness/orchestration, correlated log evidence, CI artifact lanes, and accessibility/visual quality gates.",
+      "captured_at": "2026-07-14T23:13:52.121Z",
+      "event_meta": {
+        "event_id": "96785ffd-cc57-47dd-b271-bfd06a77b932",
+        "parent_event_id": "3698d2a6-80af-4b92-bb3c-ec5815bad2d9",
+        "event_type": "assistant.message",
+        "message_id": "298c2ffa-cae4-4b15-b28f-88404e69173a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_pjXo0TsFHLqMjTz5WVuhpIYG",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][spec] Define measurable browser and GPU validation contract",
+              "state": "new",
+              "fields": [
+                "component=viewer-platform-spec",
+                "priority=high",
+                "risk_level=high",
+                "effort=1800"
+              ],
+              "description": "# Problem\n\n`RESEARCH_VIEWER_ARCHITECTURE.md` mixes architectural hypotheses, future APIs, example code, and absolute performance claims. It does not define a stable contract that tickets and validation evidence can prove.\n\n# Scope\n\n- Discover the owning viewer-api, Graph3D, WebGPU overlay, tracing, and browser-policy specs.\n- Create or update one focused aligned-structure:v2 specification for cross-viewer browser validation and performance evidence.\n- Classify claims as implemented, partial, experimental, or future.\n- Define supported browser/WASM and eventual Tauri/native environments.\n- Replace claims such as zero-copy, GC-free, nearly-native, fixed FPS, and no-code-change scalability with measurable dependent expectations or explicit non-goals.\n- Define ValidationSpec guards for browser conformance, log correlation, accessibility/visual checks, frame-time budgets, leak/soak behavior, and environment metadata.\n- Link the umbrella tracker and all implementation tickets created from it.\n\n# Acceptance criteria\n\n- [ ] The owning spec uses aligned-structure:v2 and contains Motivation, Dependent expectation, Guards, Positions, and Governing-rule requirement.\n- [ ] Every performance statement names workload, warm-up, metric, percentile, budget, environment class, and evidence source.\n- [ ] Experimental APIs such as HTML-to-texture/browser element capture are feature-detected and have fallback/non-goal language.\n- [ ] Browser/WASM and native Tauri contracts are separated.\n- [ ] The spec links exact ticket manifests and test-api ValidationSpec IDs.\n- [ ] `spec refs validate` and spec health pass.\n\n# Implementation steps\n\n1. Inspect neighboring specs and choose the smallest owning contract.\n2. Reconcile `RESEARCH_VIEWER_ARCHITECTURE.md` with actual viewer-api capabilities.\n3. Author measurable expectations and non-goals.\n4. Add guard IDs and positions for current implementations.\n5. Link tickets and validate spec health/references.\n\n# Done condition\n\nAnother engineer can implement and review every child ticket without relying on unsupported prose in the research memo."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jyPn84BDy9uM4Kih8WCb8NJc",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][e2e] Canonical shared Playwright harness and all-viewer runner",
+              "state": "new",
+              "fields": [
+                "component=viewer-api-e2e",
+                "priority=high",
+                "risk_level=high",
+                "effort=2600"
+              ],
+              "description": "# Problem\n\nPlaywright ownership and configuration are fragmented. Ticket-viewer forks shared suites and viewer definitions, GPU launch profiles differ, and `cargo make test-e2e` omits ticket-viewer while retaining stale Windows paths.\n\n# Scope\n\n- Make `viewer-api/viewer-api/frontend/dioxus/e2e/shared` the canonical source for viewer registration, readiness, console/network diagnostics, tracing helpers, screenshots, and seeded-server fixtures where sharing is practical.\n- Replace ticket-viewer copies of shared viewer, smoke, theme, and tracing helpers with imports or thin configuration-only adapters.\n- Define one release-viewer registry covering ticket-viewer, spec-viewer, log-viewer, and doc-viewer.\n- Repair cross-platform orchestration commands and paths.\n- Provide focused per-viewer commands plus one deterministic all-viewer command.\n- Standardize retry, timeout, output directory, trace, screenshot, and failure diagnostics policy while allowing explicit GPU-lane overrides.\n\n# Acceptance criteria\n\n- [ ] Ticket-viewer and spec-viewer consume the same canonical smoke, theme, tracing, and correlation contracts where behavior is shared.\n- [ ] No copied shared suite can silently assert a weaker contract than its sibling.\n- [ ] One command runs release-browser validation for all four managed viewers on Windows and Unix shells.\n- [ ] The all-viewer command includes ticket-viewer and contains no obsolete `tools/viewer/doc-viewer` or `tools/viewer/log-viewer` paths.\n- [ ] A failure reports viewer name, target URL, browser environment, console/page errors, failed requests, missing assets, and artifact paths.\n- [ ] Existing viewer-specific feature suites remain owned by their viewers.\n- [ ] The nearest shared and viewer release suites pass.\n\n# Implementation steps\n\n1. Inventory duplicate shared helpers and configuration deltas.\n2. Introduce a canonical viewer registry and reusable fixtures.\n3. Migrate ticket/spec registrations without moving feature-specific tests.\n4. Repair Makefile/package entrypoints and document commands.\n5. Run all viewers sequentially and record test-api evidence.\n\n# Non-goals\n\n- Forcing identical GPU flags across distinct performance lanes.\n- Moving every viewer-specific test into viewer-api."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_q2nc5g3w1FgLor4rxL6ne1UV",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][observability] Correlate and attach WASM, browser, and backend logs per test",
+              "state": "new",
+              "fields": [
+                "component=viewer-api-observability",
+                "priority=high",
+                "risk_level=high",
+                "effort=2200"
+              ],
+              "description": "# Problem\n\nThe server persists `x-session-id`, but the WASM `NetworkLayer` currently constructs its own request headers and does not visibly use the shared session helper. Ticket-viewer also carries an older tracing suite that does not enforce correlation. JSONL collection without guaranteed per-test correlation is not useful under concurrent or repeated browser runs.\n\n# Scope\n\n- Build on `b480632a`, `8f349d96`, and completed correlation ticket `363e26d6`.\n- Ensure every frontend tracing batch includes the stable Playwright-injected session ID.\n- Preserve that identifier in frontend JSONL, backend spans/logs, Playwright attachments, and test-api executions.\n- Add a shared Playwright fixture that enables the sink, flushes it deterministically, queries/filter records for the current test, and attaches the filtered artifact.\n- Fail tests on correlated frontend `error` records and uncaught exceptions unless explicitly allowlisted.\n- Define bounded buffering, flush-on-page-close/test-end behavior, dropped-record counters, redaction, and sink-failure diagnostics.\n- Verify log-viewer/log-MCP can query records by session ID.\n\n# Acceptance criteria\n\n- [ ] Network sink requests carry the exact `viewer-api-session-id` injected before navigation.\n- [ ] Server-side persisted records include the same session ID without overwriting an existing record value.\n- [ ] Ticket-viewer and spec-viewer run one canonical tracing/correlation suite.\n- [ ] Each Playwright test report can attach only its own frontend records plus pointers to matching backend logs.\n- [ ] A deliberate frontend tracing error causes the owning test to fail with the correlated record shown.\n- [ ] Disabled sink mode sends no client-log traffic.\n- [ ] Buffer overflow, failed POST, and final-flush behavior are test-covered and do not block the render loop.\n- [ ] Sensitive fields have a documented redaction contract.\n\n# Implementation steps\n\n1. Add a failing correlation test around the raw WASM network sink.\n2. Route sink headers through the shared session utility.\n3. Add deterministic flush and dropped-record telemetry.\n4. Build the Playwright correlation/artifact fixture.\n5. Verify persisted logs through log-query tooling and record evidence."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8FrJQro6aohPmm9DXabfrl51",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][ci] Enforce browser lanes and retain diagnostic artifacts",
+              "state": "new",
+              "fields": [
+                "component=viewer-platform-ci",
+                "priority=high",
+                "risk_level=high",
+                "effort=2200"
+              ],
+              "description": "# Problem\n\nRepository policy requires Playwright for browser-facing changes, but no checked-in workflow currently runs the viewer Playwright or WASM browser suites. Reports, traces, screenshots, logs, and benchmark output therefore depend on local discipline.\n\n# Scope\n\n- Add path-filtered pull-request browser validation for affected viewer-api and memory-viewers code.\n- Add scheduled/on-demand extended browser, performance, and soak lanes.\n- Invoke the canonical all-viewer runner rather than duplicating commands in workflow YAML.\n- Install and cache Rust/WASM, Trunk, viewer-ctl, Node, Playwright browser, and required GPU/software-rendering dependencies reproducibly.\n- Retain Playwright HTML reports, traces, screenshots, video when enabled, frontend/backend correlated logs, environment manifests, and test-api execution IDs.\n- Record blocked outcomes when required browser/GPU capabilities are unavailable rather than silently skipping.\n\n# Acceptance criteria\n\n- [ ] A frontend/server-interface pull request triggers the relevant release-browser lane.\n- [ ] Ticket-viewer and spec-viewer cannot be omitted from the all-viewer gate.\n- [ ] WASM browser tests run in a declared lane.\n- [ ] Nightly/on-demand jobs cover performance and leak/soak work without making the fast lane excessively slow.\n- [ ] Failed jobs upload all diagnostic artifacts with a stable retention policy.\n- [ ] Each job emits a machine-readable environment manifest and records ValidationExecution outcomes in test-api.\n- [ ] Workflow concurrency prevents stale runs from consuming shared viewer ports or artifact names.\n- [ ] Documentation names local equivalents for every CI command.\n\n# Implementation steps\n\n1. Define fast, release-browser, nightly-performance, and hardware-manual profiles.\n2. Wire path filters and the canonical runner.\n3. Add toolchain/browser caching and deterministic server lifecycle.\n4. Upload diagnostics and record test-api evidence.\n5. Prove one intentional failure retains actionable artifacts."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_53NY4Mcww7G72wQA6M5SMjiz",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][ux-test] Accessibility, responsive, focus, and visual regression gates",
+              "state": "new",
+              "fields": [
+                "component=viewer-platform-ux-validation",
+                "priority=high",
+                "risk_level=medium",
+                "effort=2400"
+              ],
+              "description": "# Problem\n\nCurrent suites include useful screenshots, keyboard checks, and isolated responsive assertions, but there is no shared accessibility scanner or maintained visual baseline. Screenshot attachments alone cannot detect regressions.\n\n# Scope\n\n- Add shared Axe-based accessibility checks for representative routes and transient surfaces.\n- Define keyboard-only and deterministic-focus contracts for navigation, drawers, dialogs, graph controls, and async route/data transitions.\n- Define desktop, tablet, and narrow-mobile viewport projects or a bounded equivalent matrix.\n- Add maintained `toHaveScreenshot` baselines for stable shared shell states and selected viewer-specific critical states.\n- Cover loading, empty, success, recoverable error, and overlay-open states.\n- Establish deterministic data, fonts, animation disabling, color profile, and screenshot masking rules to control flake.\n- Keep canvas/WebGPU validation separate: DOM accessibility plus targeted pixel/canvas assertions and screenshots.\n\n# Acceptance criteria\n\n- [ ] Ticket-viewer and spec-viewer representative routes pass the agreed Axe severity threshold with documented exceptions.\n- [ ] Shared shell keyboard/focus tests cover modal open/close, drawer navigation, route changes, and graph toolbar controls.\n- [ ] Responsive checks run at declared desktop, tablet, and mobile sizes without text overlap or inaccessible controls.\n- [ ] Visual baselines are assertions, not report-only attachments, and have a documented review/update workflow.\n- [ ] Loading, empty, success, and error states are testable through deterministic fixtures or route interception.\n- [ ] WebGPU/canvas checks verify nonblank rendered pixels where applicable and attach screenshots.\n- [ ] Flake controls and retry policy are documented; retries do not hide persistent diffs.\n\n# Implementation steps\n\n1. Select stable representative routes/states and add deterministic fixtures.\n2. Add shared Axe and focus helpers.\n3. Add bounded viewport projects.\n4. Establish initial visual baselines and canvas checks.\n5. Run in release-browser CI and record evidence."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "The first tranche is created with concrete done conditions. I’m adding the performance-specific slices next, deliberately separating stable regression budgets, long-running leak detection, reproducible GPU environments, and native Tauri checks so one flaky hardware concern cannot block ordinary browser correctness work.",
+      "captured_at": "2026-07-14T23:14:49.097Z",
+      "event_meta": {
+        "event_id": "8bb25d67-9db7-4958-ab31-ce7395a9818e",
+        "parent_event_id": "38c66bb0-3eff-43a0-8727-074768890019",
+        "event_type": "assistant.message",
+        "message_id": "31da62b7-2362-404c-aec9-29e3f55408cc",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_6r1J2CJUkUkWHuYNkvFusuQU",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][perf] Enforce browser and WASM regression budgets",
+              "state": "new",
+              "fields": [
+                "component=viewer-api-performance",
+                "priority=high",
+                "risk_level=high",
+                "effort=2600"
+              ],
+              "description": "# Problem\n\nThe current Chromium profile suite only proves that a trace file was written, while the WASM micro-benchmarks assert only that elapsed time is finite. Neither fails when performance regresses.\n\n# Scope\n\n- Build on `099ac71e` and the existing `withBrowserTrace`/`graph3d_bench.rs` implementation.\n- Define deterministic benchmark workloads for graph load, first meaningful render, camera movement, drag, selection, texture/update work, and representative API-fed graph sizes.\n- Measure warm-up separately from steady state.\n- Report frame-time median/p95/p99, long frames, dropped-frame ratio, CPU task duration, selected WASM hot-path timings, and backend latency separately.\n- Establish machine-qualified baselines and comparison tolerances rather than universal raw FPS claims.\n- Emit machine-readable benchmark results suitable for test-api benchmark execution storage and historical comparison.\n- Keep profile capture available for diagnosis when a budget fails.\n\n# Acceptance criteria\n\n- [ ] At least one WASM micro-benchmark and one release-browser workload fail against an intentionally tightened budget.\n- [ ] Results include workload version, commit, browser, OS, CPU class, GPU/adapter class, viewport, build profile, sample count, and warm-up policy.\n- [ ] Frame-time percentiles are used; smoothed FPS is not the sole gate.\n- [ ] PR budgets are broad enough for stable software-rendered comparison and nightly/hardware budgets are stored separately.\n- [ ] Baseline update requires an explicit reviewed artifact, not silent overwrite.\n- [ ] A budget failure automatically retains the Chromium trace and correlated logs.\n- [ ] Benchmark executions are queryable through the test/benchmark evidence surface.\n\n# Implementation steps\n\n1. Define benchmark schema and environment identity.\n2. Add deterministic workloads and warm-up/sample collection.\n3. Establish initial baselines on declared lanes.\n4. Implement comparison and failure diagnostics.\n5. Record benchmark evidence and document baseline review."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mXJ4vPECp6AWuhrJPUUIeJRf",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][perf] Add browser/WASM soak and resource-leak detection",
+              "state": "new",
+              "fields": [
+                "component=viewer-api-performance",
+                "priority=medium",
+                "risk_level=high",
+                "effort=3000"
+              ],
+              "description": "# Problem\n\nShort FPS samples cannot detect retained event listeners, leaked wasm-bindgen closures, unbounded tracing buffers, DOM growth, texture/resource accumulation, or gradual frame-time degradation.\n\n# Scope\n\n- Add scheduled/on-demand soak scenarios that repeat load, graph interaction, navigation, theme/effect toggles, data refresh, and unload/remount cycles.\n- Collect available JS heap, WASM linear-memory size, DOM node count, registered/observable listener proxies where feasible, WebGPU resource counters exposed by the application, client-log buffer/drop counters, long tasks, and frame-time percentiles over time.\n- Add explicit test-only telemetry APIs behind a compile-time/runtime test flag; do not expose unrestricted production internals.\n- Define stabilization windows and monotonic-growth rules that tolerate allocator high-water behavior.\n- Capture heap/DevTools traces or equivalent artifacts on failure where supported.\n- Ensure cleanup assertions cover document listeners, RAF callbacks, timers, streams, and wasm-bindgen closures.\n\n# Acceptance criteria\n\n- [ ] A bounded soak scenario runs at least 100 representative interaction/remount cycles without unbounded growth beyond declared tolerances.\n- [ ] Metrics distinguish stable high-water allocation from continued monotonic growth.\n- [ ] A deliberately retained listener/resource fixture is detected by the harness.\n- [ ] Frame-time p95/p99 drift from early to late windows is measured and budgeted.\n- [ ] Sink buffering and dropped-log counters remain bounded during the soak.\n- [ ] Failure artifacts include metric time series, environment metadata, correlated logs, and browser traces where available.\n- [ ] The soak lane is scheduled/on-demand and does not burden the fast PR lane.\n\n# Implementation steps\n\n1. Define test-only telemetry and threat model for leaks.\n2. Build deterministic repeated lifecycle scenarios.\n3. Add time-series collection and stabilization analysis.\n4. Seed a known leak to prove detection.\n5. Wire nightly execution and artifact retention."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IBYexzO0fJd3eNtHxvFKt1am",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][gpu-test] Reproducible software and hardware browser lanes",
+              "state": "new",
+              "fields": [
+                "component=viewer-api-gpu-validation",
+                "priority=medium",
+                "risk_level=high",
+                "effort=2200"
+              ],
+              "description": "# Problem\n\nSpec-viewer and ticket-viewer currently launch materially different browser/GPU configurations. SwiftShader, headless bundled Chromium, headed system Chrome, and native hardware results are not comparable, yet the architecture roadmap relies on performance evidence.\n\n# Scope\n\n- Define named browser environment profiles: functional DOM/WASM, deterministic software WebGPU, and dedicated hardware WebGPU.\n- Centralize launch arguments and capability probes in the shared harness.\n- Record browser version/channel, headless/headed mode, WebGPU availability, adapter info, driver/backend where exposed, OS, CPU, viewport, display resolution, device scale factor, and refresh rate.\n- Skip or block with an explicit reason when required capabilities are unavailable; never silently fall back for performance evidence.\n- Define which assertions are valid in each profile.\n- Provide a hardware-run playbook suitable for a dedicated runner and manual external fullscreen Chromium validation.\n\n# Acceptance criteria\n\n- [ ] Ticket-viewer and spec-viewer can run the same named functional and software-WebGPU profiles.\n- [ ] Capability probing proves a nonblank WebGPU/canvas result before GPU assertions run.\n- [ ] Software-rendered results are labeled and excluded from native-GPU claims.\n- [ ] Hardware performance evidence records adapter/driver/browser/display metadata.\n- [ ] A missing WebGPU adapter produces a blocked result with diagnostics rather than a passing skipped test.\n- [ ] Environment manifests are attached to Playwright and test-api executions.\n- [ ] Profile selection is documented and reused by CI/performance tickets.\n\n# Implementation steps\n\n1. Define profile schema and supported assertions.\n2. Centralize launch configuration and probes.\n3. Migrate viewer configs onto named profiles.\n4. Add environment manifest capture.\n5. Validate software and one hardware run."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_04Qj9pDqSfkLFp2E5GTDDHSv",
+            "name": "mcp_rmcp6_create_ticket",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "type": "tracker-improvement",
+              "title": "[viewer-platform][tauri-test] Native desktop E2E validation lane",
+              "state": "new",
+              "fields": [
+                "component=viewer-platform-tauri",
+                "priority=low",
+                "risk_level=high",
+                "effort=3200"
+              ],
+              "description": "# Goal\n\nAdd a deferred native desktop validation lane after the browser/WASM contract is stable. This lane proves only behavior that Chromium Playwright cannot establish: Tauri IPC, native window lifecycle, packaging, filesystem permissions, OS integration, and native wgpu backend behavior.\n\n# Scope\n\n- Select the supported Tauri v2 WebDriver/Appium integration for Windows first, with an explicit portability plan for other desktop platforms.\n- Reuse browser-level scenario definitions and correlation IDs where possible without pretending Playwright directly controls native internals.\n- Validate startup/shutdown, window recreation, IPC request/response and error handling, native filesystem boundaries, packaging/install launch, and native GPU adapter/backend reporting.\n- Capture native process logs, frontend logs, screenshots, environment metadata, crash artifacts, and test-api executions.\n- Keep native performance baselines distinct from browser/SwiftShader baselines.\n\n# Acceptance criteria\n\n- [ ] A packaged or release-mode Tauri application is started and controlled by an automated desktop driver.\n- [ ] At least one IPC success path, one IPC failure path, window lifecycle, and native filesystem boundary are tested.\n- [ ] Frontend and native logs share a correlation ID and are attached to the result.\n- [ ] Native GPU adapter/backend and display metadata are recorded before performance assertions.\n- [ ] The lane has deterministic cleanup and leaves no stale application processes.\n- [ ] The lane is scheduled/on-demand, not part of the fast browser PR gate.\n- [ ] Platform limitations and unsupported environments are documented as blocked, not silently skipped.\n\n# Dependencies and sequencing\n\nThis work begins only after the canonical harness, observability contract, environment profiles, and architecture spec are stable."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "All nine focused slices now exist. I’m wiring the execution graph next: the umbrella will depend on each deliverable and the existing test-api design ticket, while completed historical work and broader profiling/graph trackers remain `linked` context rather than artificial blockers.",
+      "captured_at": "2026-07-14T23:15:14.021Z",
+      "event_meta": {
+        "event_id": "328a142f-86c8-4008-930f-34224ea06ac1",
+        "parent_event_id": "dc4fa206-5b79-4f8e-a278-0a4b78b1827e",
+        "event_type": "assistant.message",
+        "message_id": "57b2995d-e543-4152-a03a-63aeca1aa652",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_kZNYvLaWLjemf2YKr5rernmV",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "7d951620",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_YOjt5dFWGTaB8hbuBKDiyjKl",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "6002e996",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_bwtQYEDPOLdf3fNIi2zvlpCj",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "9202bc21",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5UZ2P6xG6DXtJsoXjgoA6bA8",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "0556ed59",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mtbCh3cx6ibmZRkln0gRUerI",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "40110a1a",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IZ6ul5YgJJajf9LIg1anApAd",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "09bef250",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_o0ulUPch3wo7KOjeaMGz9Jxi",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "459022a5",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_4BUmKRk3NVeaHoH5JHxXXGMf",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "26a73130",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xH7tfoun4XoL1s6y0MgCuSXC",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "431707b1",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Lqc2UhHTWbRvTXRrwf403vuG",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "93b8a331",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_OohyVxTWCu2MkMUPhhpmHC5Y",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "ef3f4a91",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_a2LPTa6r7p6NNA0MwIMFgCXu",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "08c86dbd",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ADArZ29wpzMvybfGILHfJnBr",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "363e26d6",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vfZpkIDEBDP06l4q1N4dcw7o",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "80631f3c",
+              "kind": "linked"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "The tickets were created successfully, but the aggregated `default` index has not refreshed enough to resolve their new prefixes for edge writes. I’m switching edge creation to the owning `memory-viewers` store for local children first, then I’ll re-query aggregation and wire cross-store references once the new IDs are discoverable.",
+      "captured_at": "2026-07-14T23:15:37.537Z",
+      "event_meta": {
+        "event_id": "d0f2c5ac-8b60-44f1-a7ad-f1fbd1d6218d",
+        "parent_event_id": "da79a602-804a-4aac-b47f-2ef33ae7a701",
+        "event_type": "assistant.message",
+        "message_id": "3fb05d3e-ca73-4ea0-8833-0d41701741d9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_AIbA7B9sJTRkHptUweDpQN78",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "query": "Robust browser observability performance validation",
+              "limit": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_a42ix2ypErLdG3syzKn17Yxd",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "query": "viewer-platform",
+              "limit": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_clNXeSw7fISmqkmUenyIBVXB",
+            "name": "mcp_rmcp6_health_check",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "ids": [
+                "956485ad",
+                "7d951620",
+                "6002e996",
+                "9202bc21",
+                "0556ed59",
+                "40110a1a",
+                "09bef250",
+                "459022a5",
+                "26a73130",
+                "431707b1"
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "The owning store sees all ten tickets and health reports only the expected “not yet linked” warnings. I’m adding the local dependency graph now, including execution sequencing between harness, observability, CI, performance, soak, GPU, and Tauri work.",
+      "captured_at": "2026-07-14T23:16:05.742Z",
+      "event_meta": {
+        "event_id": "9b5ebff9-f5ee-420c-8870-544b758dd248",
+        "parent_event_id": "1e2d80e7-5367-43c5-9d28-e1045624f5a5",
+        "event_type": "assistant.message",
+        "message_id": "13ed52cd-82bb-4f60-9eda-5f8c787a37ad",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_gqj9wm8eoD3V2uxZ5MzCdfz6",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "7d951620",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_I8KdG03jYc7kRoWv1nqUaFaS",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "6002e996",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xk3OFsSV5yBQ0vBbzId85aLy",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "9202bc21",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vZWiUYFdvnNnrkBkjHUWJM67",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "0556ed59",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jy8tCBb970wysG4cbrQEcrX9",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "40110a1a",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_12crPzjg0O8wAeaZnW26aeCH",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "09bef250",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1VqhWhMWNAMz1AYD2Vsd5KSa",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "459022a5",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_KmGDjj2p4pJpdBSgvHLi8wB1",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "26a73130",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uBNFUqWhPlAocropyIsA3ErW",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "956485ad",
+              "to": "431707b1",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WDMiVCnkvefnwRiWDtaoECbo",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "0556ed59",
+              "to": "6002e996",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vGtkEZeejjAi6vbQk2MfeZva",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "0556ed59",
+              "to": "9202bc21",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_s7FtE0ymrS53vn5pBtpRUYtx",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "09bef250",
+              "to": "26a73130",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lqDvZQdeVDSedgzh4u9XHiSR",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "459022a5",
+              "to": "09bef250",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_cRq6MayzqDNBm4MHwKSEU2IU",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "459022a5",
+              "to": "9202bc21",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dmOWF3c95m5Ac2i2hLYqDEnk",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "431707b1",
+              "to": "7d951620",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_u5d0MUvVWWaJokw1BEQagWPw",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "431707b1",
+              "to": "6002e996",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_qlT2l2791QMymbdwTIDhQMGb",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "431707b1",
+              "to": "9202bc21",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZFf1A6YtrDfT2gpWIGtiEupb",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "from": "431707b1",
+              "to": "26a73130",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "The local dependency graph is coherent: harness and observability unblock CI; GPU profiles unblock budgets; budgets plus observability unblock soak; and Tauri waits for the browser contract, harness, logs, and environment identity. I’m now refreshing the aggregate index, linking the existing cross-store tickets, and refining the stale tracing/profiling trackers so their remaining work matches the new plan.",
+      "captured_at": "2026-07-14T23:16:36.487Z",
+      "event_meta": {
+        "event_id": "8946414c-0a3e-4fcc-85da-58259ee6bcff",
+        "parent_event_id": "855fdf0d-81a0-4b4c-8d95-6d091367c2bc",
+        "event_type": "assistant.message",
+        "message_id": "ad2496ea-9ab7-4d20-875c-c1f8ba13e9c1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_7g6Zm0jqyIUIWqgRSy8kwPpp",
+            "name": "mcp_rmcp6_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "Robust browser observability performance validation strategy",
+              "limit": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HGzIYWQ7r2WLAus4Vx7F5Ash",
+            "name": "mcp_rmcp6_subgraph",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "root": "956485ad",
+              "direction": "outgoing",
+              "depth": 4,
+              "limit_nodes": 100,
+              "limit_edges": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_njQO62wdvXHf28sH8jK1BSkj",
+            "name": "mcp_rmcp6_health_check",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/memory-viewers",
+              "root": "956485ad",
+              "depth": 5,
+              "direction": "outgoing"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "The local graph now passes ticket health with zero findings. The root aggregate still does not discover newly created descendant tickets, so cross-store edges cannot be written through MCP yet; I’m using the documented ticket CLI fallback to refresh the aggregate index, then I’ll add the existing-ticket links and validate the combined graph.",
+      "captured_at": "2026-07-14T23:16:48.983Z",
+      "event_meta": {
+        "event_id": "88f08e40-7e34-4afb-91cd-b50a65452b3b",
+        "parent_event_id": "01b7aa7a-3709-456f-a95a-8f9b5e46e136",
+        "event_type": "assistant.message",
+        "message_id": "285f50e3-bac9-40fd-b8ae-921eaa2cc71b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_qexPWlbUqW05HU3v4Ro68DXQ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe scan --force --toon",
+              "explanation": "Refresh the aggregated ticket index so newly created memory-viewers tickets can be linked to existing root, viewer-api, and memory-api tickets.",
+              "goal": "Refresh ticket aggregation",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "The aggregate refresh integrated all 1,087 tickets successfully. I’m now wiring cross-store prerequisites and contextual links, including the existing tracing, profiling, graph-E2E, ownership-migration, correlation, and test-api design tickets.",
+      "captured_at": "2026-07-14T23:17:27.625Z",
+      "event_meta": {
+        "event_id": "9154042f-5cea-48eb-b1b0-e710bd6c7496",
+        "parent_event_id": "b69b1725-9fae-4299-9e7d-89dc862968d5",
+        "event_type": "assistant.message",
+        "message_id": "11bda3e6-fbad-4bbb-85da-126393076cb0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IarawXhgS0Ztl6N1clqOBJua",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "93b8a331",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_R7O2BkhambLHUgqsK0tYWQ33",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "9202bc21",
+              "to": "8f349d96",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_idg0bjEhQQil5BB2jCysfs5a",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "9202bc21",
+              "to": "b480632a",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_iahXcBk71O1scQ1AY4G5AcuB",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "09bef250",
+              "to": "099ac71e",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_mSikcbULSCpecvZ0viZdzMBC",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "ef3f4a91",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_8M9WujnN5SbSZ7nojehRwonE",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "08c86dbd",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_iztyRifP6bnqvdaLnQLi3Prx",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "363e26d6",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_o5bbbTCsp09dMjPd7PIej0cS",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "956485ad",
+              "to": "80631f3c",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JUkaAXRU1HxbffCSyn7a1ccV",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "ef3f4a91",
+              "to": "09bef250",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lrIrxwQqdTU5d1RcsQCTIOuy",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "ef3f4a91",
+              "to": "459022a5",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_UVzfZ3ttGiTsPVorRvbsxliJ",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "ef3f4a91",
+              "to": "26a73130",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_9r0wx9Cy6hQJtE3yNc9bJYmy",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "6002e996",
+              "to": "80631f3c",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xBNWo79hoUXjE8eahJpKCDzb",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "40110a1a",
+              "to": "08c86dbd",
+              "kind": "linked"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_wGxR6sq0XJ0Y2o7sj5rUWqWQ",
+            "name": "mcp_rmcp6_add_edge",
+            "arguments": {
+              "workspace": "default",
+              "from": "9202bc21",
+              "to": "363e26d6",
+              "kind": "linked"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "Cross-store wiring is complete. I’m refining four existing anchors now so the graph is auditable from either direction: the log sink and structured tracing tickets will describe what already exists versus what remains, the profiling tracker will list the new regression/leak/GPU children, and the test-api design ticket will explicitly connect its artifact-ingestion decisions to the new viewer strategy.",
+      "captured_at": "2026-07-14T23:18:53.731Z",
+      "event_meta": {
+        "event_id": "1ea0daf0-352d-4d72-b689-cb2805a1f177",
+        "parent_event_id": "1d22e464-48d6-4a19-9f52-c1b3b9ae6ece",
+        "event_type": "assistant.message",
+        "message_id": "f13dc3a3-e9a4-48ff-b35b-78f38e22be13",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_GNfj0EkiRcUb3uz5tRCTjrIn",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "8f349d96",
+              "field_map": {
+                "component": "viewer-api-observability",
+                "priority": "high",
+                "risk_level": "high",
+                "effort": "1800"
+              },
+              "description": "# Goal\n\nShip structured tracing records from the Dioxus WASM frontend to a bounded server-side JSONL sink so browser records are queryable alongside backend logs.\n\n# Current implementation evidence\n\nThe repository already contains:\n\n- a WASM `NetworkLayer` that serializes tracing events, buffers them, and posts batches to `/api/client-log`;\n- a viewer-api `client_log_router` that validates payload size and appends JSONL under `target/test-logs/frontend-client.jsonl`;\n- ticket-viewer and spec-viewer server integration;\n- shared Playwright coverage for opt-in/opt-out behavior and endpoint payload validation.\n\nThe ticket remains open because the implementation does not yet prove the complete operational contract below. In particular, the raw network-layer request must be reconciled with the shared session header, buffering must be bounded, and final flush/query evidence must be deterministic.\n\n# Scope\n\n- Preserve console tracing while adding opt-in file persistence.\n- Guarantee stable session correlation on every sink request.\n- Bound buffered records and expose dropped-record diagnostics.\n- Flush on interval, size threshold, and page/test shutdown without blocking requestAnimationFrame.\n- Define redaction and payload limits.\n- Make client files discoverable/queryable through log-viewer/log-MCP tooling.\n- Coordinate end-to-end Playwright artifact behavior through `9202bc21` rather than duplicating its fixture work.\n\n# Acceptance criteria\n\n- [ ] Browser `info`/`warn`/`error` tracing records reach the configured JSONL sink within the documented flush interval.\n- [ ] Persisted records carry the same `viewer-api-session-id` used by the browser test and backend requests.\n- [ ] Log query tooling can select only the records for one session ID using the same structured filters as server logs.\n- [ ] Disabled sink mode sends no `/api/client-log` traffic.\n- [ ] Buffer size is capped; overflow policy and dropped-record count are test-covered.\n- [ ] Interval, threshold, and final shutdown flush paths are test-covered.\n- [ ] Sink failure is observable without recursively logging into the same failed sink.\n- [ ] Sensitive fields are redacted according to a documented rule.\n- [ ] A render-loop workload shows no regression beyond the budget established by `09bef250`.\n\n# Implementation steps\n\n1. Add failing network-layer tests for session headers and bounded buffering.\n2. Reuse the shared session utility in sink requests.\n3. Implement size-threshold/final flush and drop counters.\n4. Validate endpoint persistence and log-query discovery.\n5. Run the shared tracing suite and record test-api evidence.",
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jfUMRNdNjwiFMF2Q79L83dJv",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "b480632a",
+              "field_map": {
+                "component": "viewer-api-observability",
+                "priority": "high",
+                "risk_level": "medium",
+                "effort": "1200"
+              },
+              "description": "# Goal\n\nReplace ad-hoc browser console calls in viewer-api Dioxus/WASM code with structured tracing that supports levels, fields, spans, runtime filtering, console diagnostics, and the separate persisted sink.\n\n# Current implementation evidence\n\nThe repository contains a tracing subscriber setup, runtime filter controls, tracing-wasm console/timeline integration, and shared Playwright checks that look for the startup subscriber record. Remaining work is to audit migration completeness, validate structured field/span behavior across viewers, and record release-browser evidence.\n\n# Scope\n\n- Audit viewer-api, ticket-viewer, and spec-viewer WASM code for direct diagnostic console calls.\n- Use tracing macros and stable targets/fields for overlay bootstrap, Graph3D initialization, API operations, and errors.\n- Keep per-frame spans behind the profiling feature so normal release logging remains bounded.\n- Validate default INFO, runtime DEBUG override, and `log=off` behavior.\n- Preserve browser console output while enabling the file sink owned by `8f349d96`.\n\n# Acceptance criteria\n\n- [ ] Diagnostic direct console calls are removed or explicitly justified as non-tracing browser integration.\n- [ ] DevTools records expose level, target, structured fields, and operation spans.\n- [ ] Default level is INFO; DEBUG and OFF controls work through documented query/localStorage settings.\n- [ ] Per-frame trace volume is bounded in ordinary release builds.\n- [ ] Ticket-viewer and spec-viewer pass the same shared tracing-console suite.\n- [ ] WgpuOverlay and Graph3D startup/navigation remain functional in release-browser checks.\n- [ ] Validation executions and correlated logs are recorded.\n\n# Implementation steps\n\n1. Audit remaining direct console usage.\n2. Normalize stable tracing targets and fields.\n3. Verify runtime filters and profiling feature boundaries.\n4. Run shared release-browser tracing checks.\n5. Record evidence and hand off persistence-specific behavior to `8f349d96`/`9202bc21`.",
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_P2IwNJUjyOmRyeva8uY8aW0Q",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "ef3f4a91",
+              "field_map": {
+                "component": "performance-validation",
+                "priority": "high",
+                "risk_level": "high",
+                "effort": "9000"
+              },
+              "description": "# [profiling] Performance profiling & benchmark matrix (tracker)\n\nParent tracker for performance profiling and benchmarking across context-engine and the viewer platform. It combines native storage/transport measurement with browser/WASM rendering evidence without treating those environments as interchangeable.\n\n# Existing implementation\n\nPhase 1 landed in viewer-api Dioxus:\n\n- `profile-browser` cargo feature and zero-cost `profile_scope!` macro;\n- `graph3d::render_frame` instrumentation;\n- tracing-wasm timeline marks;\n- Playwright Chromium trace capture;\n- browser-hosted WASM graph math micro-benchmarks.\n\nCompilation checks passed previously; browser evidence remains owned by `099ac71e`.\n\n# Existing child slices\n\n- `099ac71e` validate trace capture and WASM browser benchmarks.\n- `6a19ae5f` native Criterion benchmark matrix.\n- `c37ea985` CLI/HTTP/MCP end-to-end matrix.\n- `2d59b99c` CLI/HTTP/MCP latency and throughput benchmarks.\n- `d8d18128` testing/benchmark command index.\n\n# Added viewer-platform slices\n\n- `26a73130` define reproducible software and hardware browser/GPU profiles.\n- `09bef250` turn profile capture and micro-benchmark output into machine-qualified regression budgets.\n- `459022a5` add long-running browser/WASM soak and resource-leak detection.\n\n# Acceptance criteria\n\n- [ ] Native, browser software-rendered, and browser hardware-rendered results are stored as distinct environment classes.\n- [ ] Browser measurements include warm-up, deterministic workload identity, frame-time percentiles, and environment metadata.\n- [ ] At least one browser and one native performance budget fail against an intentionally tightened threshold.\n- [ ] Soak runs detect a seeded retained resource and report metric time series.\n- [ ] Diagnostic traces and correlated logs are retained on performance failure.\n- [ ] CLI/HTTP/MCP and browser benchmark outputs are represented in the queryable test/benchmark evidence store.\n- [ ] The command/index documentation names local, CI, nightly, and hardware lanes.\n\n# Execution order\n\n1. Validate existing browser profiling pipeline and establish GPU environment identity.\n2. Add deterministic budgets and baseline review rules.\n3. Add leak/soak telemetry.\n4. Complete native and transport matrices.\n5. Publish the consolidated command/evidence index.",
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vhuwFNzt4uqhxyqiTFwO6CUU",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "93b8a331",
+              "field_map": {
+                "priority": "high",
+                "risk_level": "high",
+                "effort": "2200"
+              },
+              "description": "# [design][test] Browser and TypeScript result integration with test-api\n\n# Goal\n\nChoose and document how Playwright, TypeScript-authored checks, browser artifacts, and wasm-pack browser tests become first-class ValidationExecution and BenchmarkExecution evidence instead of remaining isolated npm/stdout reports.\n\nThis is a design ticket. Implementation belongs in follow-up tickets and the viewer-platform umbrella `956485ad`.\n\n# Decisions required\n\n- Select the runner boundary: invoke repository-native npm/Playwright/wasm-pack commands from the validation harness rather than embedding a JS runtime unless evidence demonstrates embedding is necessary.\n- Select the result adapter: prefer a thin structured reporter/adapter that emits the test-api schema over scraping human-oriented console output.\n- Define provenance for source file, test ID/title, project/browser profile, command, commit, correlation ID, transport, retry, and artifact paths.\n- Map Playwright statuses and infrastructure failures to passed/failed/blocked without turning retries into false passes.\n- Map screenshots, traces, videos, frontend/backend logs, environment manifests, and benchmark output to durable artifact references.\n- Define fast PR, release-browser, nightly performance/soak, and hardware/on-demand profiles.\n- Represent wasm-pack browser tests and benchmark samples without conflating unit-test success with performance-budget success.\n\n# Acceptance criteria\n\n- [ ] A short design note chooses the runner and adapter architecture with rationale and rejected alternatives.\n- [ ] The provenance model covers correlation ID, source test, environment profile, retry, transport, and artifact identity.\n- [ ] Playwright, wasm-pack, and benchmark outcomes have explicit mappings to test-api records.\n- [ ] Follow-up implementation tickets are created and linked to `956485ad`.\n- [ ] Artifact retention and missing-capability/blocked behavior are specified.\n- [ ] The design composes with `9202bc21` correlated logs and `0556ed59` CI lanes.\n\n# Work steps\n\n1. Inspect test-api execution/benchmark schemas and existing reporter extension points.\n2. Prototype one Playwright structured result payload and one wasm-pack payload.\n3. Compare thin reporter, generic subprocess adapter, and embedded-runtime alternatives.\n4. Specify provenance and artifact lifecycle.\n5. Create implementation tickets and link exact validation guards/specs.\n\n# Non-goals\n\n- Replacing Playwright with a custom browser driver.\n- Parsing human console output when a structured reporter is available.\n- Running all browser/performance work in the fast PR lane.",
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "The existing anchor tickets now reflect the actual remaining work rather than their stale initial descriptions. I’m doing the final consistency pass: aggregate refresh, root-scoped dependency traversal and actionable frontier, ticket health, and duplicate/conflict searches across the new titles.",
+      "captured_at": "2026-07-14T23:19:07.090Z",
+      "event_meta": {
+        "event_id": "2ef01508-6587-4864-b698-c2a49078ac53",
+        "parent_event_id": "055dba2e-eec2-47c0-99a1-254861861fe0",
+        "event_type": "assistant.message",
+        "message_id": "b5c82b54-c4b6-428a-b7b0-d29c5c227998",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FZMriyuyXV2AlTNSvta7g77G",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe scan --force --toon",
+              "explanation": "Refresh the aggregate after cross-store edge and ticket-description updates before final health and duplication checks.",
+              "goal": "Refresh updated ticket graph",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "The duplicate searches return only the intended umbrella and focused children, with the profiling tracker appearing as a related parent rather than a competing ticket. The aggregate checks are large, so I’m reading only their summaries/frontier and any findings to confirm there are no lifecycle or dependency defects.",
+      "captured_at": "2026-07-14T23:19:45.643Z",
+      "event_meta": {
+        "event_id": "f84a86fe-21a3-4a20-b89f-bba243b2851f",
+        "parent_event_id": "477be016-e973-48a3-a72c-44b26b470c9b",
+        "event_type": "assistant.message",
+        "message_id": "67605058-e8e1-4645-b810-2b6ba68aa20a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_J5BqIaFEwknFq3ewD9uw1thy",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_uPFVTTHAtS9FxqpPvGGlyKmy__vscode-1784061506621\\content.json",
+              "startLine": 1,
+              "endLine": 180
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_vs1YjaJDAZ98lhI68ZSwu2zW",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_j0wVlpUqrxNk4zlxtXDG5k7V__vscode-1784061506622\\content.json",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_usTC9w0zds5QK9eRI0PPyyV0",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_MVHRqhNE67zVJkFd6EJgWVMk__vscode-1784061506623\\content.json",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "The root frontier is sensible: spec contract, shared harness, test-api design, UX gates, GPU profiles, and the existing log sink are immediately actionable; CI, budgets, soak, observability integration, and Tauri remain blocked by their real prerequisites. Aggregate health warnings are confined to older transitive/linked tickets missing effort estimates, so I’m fixing the two directly relevant ones and running an exact-ID health check that excludes unrelated legacy epics.",
+      "captured_at": "2026-07-14T23:19:58.479Z",
+      "event_meta": {
+        "event_id": "b5aba60b-8e05-4b85-8faf-824799219f48",
+        "parent_event_id": "b3d5a76b-5333-4ed0-bfc8-eae4e8642e66",
+        "event_type": "assistant.message",
+        "message_id": "e415e80f-98ec-410e-b053-4fa269f0fa34",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_0J4zUEDLiFdnq1XWKE5wQzAn",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "099ac71e",
+              "field_map": {
+                "component": "viewer-api-performance",
+                "priority": "high",
+                "risk_level": "medium",
+                "effort": "900"
+              },
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tKLoxDWBC8O0OeG2RWe7aATQ",
+            "name": "mcp_rmcp6_update_ticket",
+            "arguments": {
+              "workspace": "default",
+              "id": "08c86dbd",
+              "field_map": {
+                "component": "viewer-api-e2e",
+                "priority": "medium",
+                "risk_level": "medium",
+                "effort": "2400"
+              },
+              "author": "GitHub Copilot"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Those two directly relevant legacy tickets now have planning metadata. I’m performing the final exact-ID validation and root-scoped next-work check once more after refresh; this is the last consistency gate before handing over the implementation order.",
+      "captured_at": "2026-07-14T23:20:05.575Z",
+      "event_meta": {
+        "event_id": "018bcc80-0d1e-44e0-ae94-b0681d77aa6a",
+        "parent_event_id": "13668c71-9b4a-4f4a-acf6-29d7174b6d6a",
+        "event_type": "assistant.message",
+        "message_id": "2e26e940-5864-47f9-9236-add31c9c34e2",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Ix0NxZPoBVPbZacm6nIXyZnP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe scan --force --toon",
+              "explanation": "Refresh the aggregate after final metadata refinements so exact health and frontier checks use current records.",
+              "goal": "Finalize ticket index",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "The ticket program is complete: one umbrella tracker, nine focused workstream tickets, cross-store dependencies to existing tracing/profiling/test-api work, and refined metadata/bodies on six legacy anchors. The exact 15-ticket validation set passes health with zero findings, and the root-scoped frontier exposes the intended first work items.",
+      "captured_at": "2026-07-14T23:21:02.948Z",
+      "event_meta": {
+        "event_id": "9e8103c1-ded8-42b1-83c4-6840d5a2c0d7",
+        "parent_event_id": "29757a00-bf11-4267-9095-38cf46737802",
+        "event_type": "assistant.message",
+        "message_id": "8f79382e-d2f7-4db7-8545-1d96fc6804c4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_0bYEb93lQLQNMT61RaVXtI7U",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Mapped existing viewer testing work, created and linked a 10-ticket browser/observability/performance validation program, refined six existing trackers, refreshed aggregation, and validated the focused graph with zero health findings."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "**Ticket Actions**\n\nCreated:\n\n- [956485ad Robust browser, observability, and performance validation strategy](memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml), the umbrella tracker.\n- [7d951620 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml).\n- [6002e996 Canonical shared Playwright harness and all-viewer runner](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml).\n- [9202bc21 Correlate and attach WASM, browser, and backend logs per test](memory-viewers/.ticket/tickets/9202bc21-b11f-4464-b66b-af19dd6e7078/ticket.toml).\n- [0556ed59 Enforce browser lanes and retain diagnostic artifacts](memory-viewers/.ticket/tickets/0556ed59-57a6-4ca1-a8a4-93fdb1549c22/ticket.toml).\n- [40110a1a Accessibility, responsive, focus, and visual regression gates](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml).\n- [09bef250 Enforce browser and WASM regression budgets](memory-viewers/.ticket/tickets/09bef250-b7a4-4ffa-91a0-52292ba907fa/ticket.toml).\n- [459022a5 Add browser/WASM soak and resource-leak detection](memory-viewers/.ticket/tickets/459022a5-3900-4f7b-8fbd-2de1fbb79bdd/ticket.toml).\n- [26a73130 Reproducible software and hardware browser lanes](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml).\n- [431707b1 Native desktop E2E validation lane](memory-viewers/.ticket/tickets/431707b1-e512-4e47-9926-01407230e6db/ticket.toml).\n\nUpdated:\n\n- [8f349d96 Ship WASM tracing logs to a server file sink](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml): correlation, bounded buffering, final flush, redaction, and log-query requirements.\n- [b480632a Structured tracing for WASM frontend](viewer-api/.ticket/tickets/b480632a-8605-4b5b-a4e8-f2988b2565a0/ticket.toml): current implementation evidence and remaining validation.\n- [ef3f4a91 Performance profiling and benchmark matrix](.ticket/tickets/ef3f4a91-734f-47aa-a9cf-fdfdb60ac2db/ticket.toml): added browser budgets, GPU profiles, and soak detection.\n- [93b8a331 Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml): structured reporter, provenance, artifact, and test-api decisions.\n- [099ac71e Validate browser profiling pipeline](.ticket/tickets/099ac71e-bffa-4a5b-89f3-2ca3bc875bac/ticket.toml): added component, risk, priority, and effort.\n- [08c86dbd Comprehensive E2E coverage for graph improvements](.ticket/tickets/08c86dbd-72b8-446b-a930-30ef3352d604/ticket.toml): added planning metadata.\n\nReviewed existing ownership migration, browser/backend correlation, graph-review E2E, and shared test-policy tickets. They remain contextual links rather than duplicate blockers.\n\n**Interview Findings**\n\nConfirmed requirements:\n\n- Browser correctness, frontend WASM logs, backend correlation, performance regression detection, leak detection, accessibility, visual regression, reproducible GPU evidence, and eventual Tauri validation all need tracked ownership.\n- Existing Playwright, tracing, and profiling work should be extended rather than replaced.\n- Software-rendered CI and native hardware performance evidence must remain separate.\n- Performance gates need frame-time percentiles and environment-qualified baselines, not sampled FPS alone.\n\nOpen questions are isolated inside the relevant tickets: final Tauri driver choice, benchmark tolerances, hardware-runner provisioning, and visual-baseline review policy.\n\n**Plan**\n\nThe dependency graph encodes this order:\n\n1. Specification contract, shared harness, test-api design, UX gates, GPU profiles, and the existing tracing sink can start now.\n2. Correlated observability waits for structured tracing and the sink.\n3. CI waits for the canonical harness and observability fixture.\n4. Performance budgets wait for profile validation and GPU environment identity.\n5. Soak/leak work waits for observability and performance metrics.\n6. Native Tauri validation waits for the contract, harness, observability, and GPU profile work.\n\nThe umbrella also links the broader profiling tracker and existing graph E2E work without making unrelated CLI/backend benchmark slices artificial blockers.\n\n**Validation**\n\n- Refreshed the aggregated ticket index twice; all 1,087 tickets reconciled with zero pruning.\n- Exact health check across the 10 new and 5 directly related tickets: **15 checked, zero findings**.\n- No invalid state transitions were made; new work remains in `new`.\n- Duplicate searches found only the intended umbrella/child relationships.\n- Every new ticket has component, priority, risk, effort, implementation steps, validation requirements, and an explicit done condition.\n- Root-scoped `ticket next` exposes a coherent actionable frontier and correctly blocks later CI, performance, soak, and Tauri work.\n\n**Next Recommended Action**\n\nStart [7d951620 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml). It establishes the measurable contract and guard IDs needed before implementation begins across the remaining workstreams.",
+      "captured_at": "2026-07-14T23:21:28.275Z",
+      "event_meta": {
+        "event_id": "68423679-b94d-4c36-bf54-a00f929ac2f7",
+        "parent_event_id": "7d283bf3-e7b2-4260-91dd-1fd066ba236e",
+        "event_type": "assistant.message",
+        "message_id": "5b9b993b-df22-43d4-8137-d32d3c5dfcef",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "user",
+      "content": "/handoff to the implementation session for the first batch",
+      "captured_at": "2026-07-15T10:32:26.693Z",
+      "event_meta": {
+        "event_id": "ca89a207-8518-4eb6-9d02-0b5bbc25fad7",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "I’ll create a durable handoff for the first implementation batch, anchored on the measurable validation spec, shared Playwright harness, test-api integration design, UX gates, GPU profiles, and log-sink prerequisites. First I’m retrieving the persisted session lineage and current ticket frontier so the resume command and execution order are authoritative.I’m loading the session-handoff contract and locating the repository’s session CLI commands before persisting anything; the goal is to avoid inventing lineage IDs or a resume command from chat context.",
+      "captured_at": "2026-07-15T10:32:43.289Z",
+      "event_meta": {
+        "event_id": "5505fa41-500f-4a33-9d19-9e1d143ea045",
+        "parent_event_id": "7e661807-a13d-42d1-8cbd-32cf5abd82c9",
+        "event_type": "assistant.message",
+        "message_id": "650a42c8-9a55-4b75-ab7c-1a82b233b28a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_9mcDUFRNBlaz1MxB4kuE89rW",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\session-optimization.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IMMX2QuOf9QzOL2bNTBEzZAE",
+            "name": "grep_search",
+            "arguments": {
+              "query": "session-cli resume|handoff_id|predecessor-run-id|workspace_session_id",
+              "isRegexp": true,
+              "includePattern": "**/*.{md,rs,toml}",
+              "maxResults": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_O5dVjJTFPvGRoGpAe9KiXf4p",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/*session-cli*/README.md",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ClwNZYCn7XOXV6gVDVVv9HS6",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/handoff*.{rs,md,toml}",
+              "maxResults": 100
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "The repository has a real persisted handoff implementation, but no session MCP tool is exposed in this chat. I’m using the canonical `session-cli` fallback and reading only its command surface plus the runtime store location so the outgoing record contains the current tracker, pins, workflow status, and exact resume lineage.",
+      "captured_at": "2026-07-15T10:32:56.505Z",
+      "event_meta": {
+        "event_id": "cbeaf831-981a-4633-81e2-4f2477a2a667",
+        "parent_event_id": "5c8fd43a-d988-404c-9103-3536656ad36f",
+        "event_type": "assistant.message",
+        "message_id": "a85dff7a-e792-418a-bfde-73e8e8061bca",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Y5ykQITAIbq2uwtS1JFip6S6",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\src\\lib.rs",
+              "startLine": 200,
+              "endLine": 380
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_bdUgJLGxnRR5gvdBegZoM0Z0",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\src\\lib.rs",
+              "startLine": 400,
+              "endLine": 640
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uca8Tz5xF2i3J7mEVtBFM9K6",
+            "name": "grep_search",
+            "arguments": {
+              "query": "\\[\\[bin\\]\\]|name = \"session|session-cli",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/session-cli/Cargo.toml",
+              "maxResults": 30
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ltCg2lYhmmG29WeOYOKYbZRg",
+            "name": "grep_search",
+            "arguments": {
+              "query": "active_workspace|runtime_root|SESSION|\\.session|store_root",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/store.rs",
+              "maxResults": 100
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "The CLI supports exactly the required lifecycle: initialize/resume, pin entities, add ticket-backed workflow nodes, set statuses, view, and persist handoff. I’m checking the active runtime context now; if none exists, I’ll initialize one for this implementation track and populate it from the validated ticket graph before creating the handoff record.",
+      "captured_at": "2026-07-15T10:33:06.810Z",
+      "event_meta": {
+        "event_id": "f5f3db38-c98a-4d52-bf88-e66990ef19a5",
+        "parent_event_id": "faa59a99-21f4-4bc2-9cb2-66dcc2308158",
+        "event_type": "assistant.message",
+        "message_id": "746a01db-5dee-4271-a37b-fede7a4e61f7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ngOM3O4onnGdMO8QCZ6cUzup",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\src\\lib.rs",
+              "startLine": 1,
+              "endLine": 200
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Io7qwrBsBLHT99OyxSV63zFB",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\cli\\session-cli\\Cargo.toml",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_CfnJfTYXUCY9MhWDf7VT9ZGs",
+            "name": "grep_search",
+            "arguments": {
+              "query": "active-workspace|active_workspace|PersistedActiveWorkspaceSession|active.json",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/store.rs",
+              "maxResults": 80
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_DLpo7R8hoMjHi16b1MGzfh40",
+            "name": "grep_search",
+            "arguments": {
+              "query": "SESSION_STORE_DIR|const SESSION_STORE_DIR",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/session-cli/src/lib.rs",
+              "maxResults": 20
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 37,
+      "role": "assistant",
+      "content": "The active workspace pointer is a small persisted JSON record under `.session`, so I’m checking it directly and viewing its context if present. This avoids creating a second durable workspace for the same conversation track.",
+      "captured_at": "2026-07-15T10:33:15.205Z",
+      "event_meta": {
+        "event_id": "85b1d39a-7f78-4a5d-97c2-3f2311170bd1",
+        "parent_event_id": "aaa0d532-be38-4f89-86b5-c43d1bb064ba",
+        "event_type": "assistant.message",
+        "message_id": "9795c839-d355-4dfc-a46b-da6a2b852f04",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_my0sUowkElPwE5qjiIRq91bx",
+            "name": "file_search",
+            "arguments": {
+              "query": ".session/**/active_workspace_session.json",
+              "maxResults": 20
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gPw660UDnJrcBd4YJ8YWZ2zs",
+            "name": "file_search",
+            "arguments": {
+              "query": ".session/**/runtime.json",
+              "maxResults": 50
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_nJxf1VHojONZIlPIcYIxsihQ",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.session"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 38,
+      "role": "assistant",
+      "content": "An active durable workspace already exists: `448a0119-dd96-4213-98e9-92bf27a444d0`. I’m viewing it before mutation to preserve any existing pins or workflow nodes, then I’ll add only the implementation-batch entities and statuses that are missing.",
+      "captured_at": "2026-07-15T10:33:37.258Z",
+      "event_meta": {
+        "event_id": "4df7d3f3-1ed3-40f2-9a7b-470312877776",
+        "parent_event_id": "58f49453-b635-4966-ab8e-02ec09b92519",
+        "event_type": "assistant.message",
+        "message_id": "64686b6a-8aa1-4951-b42d-8ff07fe9d1dc",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Nzbv4QSyjBHvvu8RGQW12r4w",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon view --workspace-session-id 448a0119-dd96-4213-98e9-92bf27a444d0",
+              "explanation": "Read the active durable session context before adding this handoff track’s pins and workflow nodes.",
+              "goal": "Inspect durable session",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 39,
+      "role": "assistant",
+      "content": "The active persisted workspace belongs to an unrelated session-bootstrap epic, so reusing it would corrupt lineage. I’m initializing a new durable workspace for the viewer validation implementation track, then I’ll pin the governing rules and first-batch tickets and encode the dependency-aware workflow statuses.",
+      "captured_at": "2026-07-15T10:33:48.029Z",
+      "event_meta": {
+        "event_id": "37c46761-ba5e-4be5-82c3-0f3b511823f1",
+        "parent_event_id": "82db7b90-63d7-40a0-a353-e36b66d432dc",
+        "event_type": "assistant.message",
+        "message_id": "de0704d0-b583-4936-878e-32cc0789c3b8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_pbJOLz0Be9fGZkRmB5fBPC2b",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon init --force-new-run",
+              "explanation": "Create a separate durable workspace and run lineage for the viewer validation implementation handoff.",
+              "goal": "Initialize implementation session",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 40,
+      "role": "assistant",
+      "content": "`--force-new-run` correctly created a new run but reused the unrelated durable workspace, because omission means “resume active.” I’m correcting that by generating and explicitly supplying a fresh workspace UUID; the accidental run contains no new pins or workflow changes, so the prior workspace’s durable state remains semantically untouched.",
+      "captured_at": "2026-07-15T10:34:01.383Z",
+      "event_meta": {
+        "event_id": "0e2579d1-2480-4ab3-936d-11399f39a81b",
+        "parent_event_id": "795ab844-3c5d-473e-a0b5-46c91c527b11",
+        "event_type": "assistant.message",
+        "message_id": "3153ac00-4273-4a77-aba4-267feb00b9b7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_48KRqgDf4Cbhwmmqi6nPtlzt",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk node -p \"crypto.randomUUID()\"",
+              "explanation": "Generate a fresh UUID for an independent viewer-validation workspace session.",
+              "goal": "Generate workspace session ID",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 41,
+      "role": "assistant",
+      "content": "The viewer-validation workspace now has clean lineage: workspace `6582e9d4-aba6-48ce-8384-5ec95212ab6a`, outgoing run `ba110fe1-ce2c-46e7-a36e-ff073eafde64`. I’m pinning the umbrella, first-batch tickets, governing rules, and relevant existing specs, then encoding the six immediately actionable nodes plus their first validation checkpoint.",
+      "captured_at": "2026-07-15T10:34:15.510Z",
+      "event_meta": {
+        "event_id": "1588cc16-1b9d-451b-aa06-cf4420e9946e",
+        "parent_event_id": "ba70d3c1-2500-41e5-850d-dc459152f54a",
+        "event_type": "assistant.message",
+        "message_id": "92679d4e-0e22-4663-8885-2acb11fc01ae",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_5IHevkkOb3K6pekhPi9VQyCY",
+            "name": "grep_search",
+            "arguments": {
+              "query": "fn parse_requirement|invalid workflow node requirement|\"required\"|\"optional\"",
+              "isRegexp": true,
+              "includePattern": "memory-api/tools/cli/session-cli/src/lib.rs",
+              "maxResults": 30
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 42,
+      "role": "assistant",
+      "content": "The durable context now contains the first-batch tickets plus the governing policy and neighboring specs. I’m adding ticket-backed workflow nodes with `pending` status; I’ll preserve the ticket graph’s real dependency semantics and put the recommended serial order in the handoff rather than inventing extra blockers.",
+      "captured_at": "2026-07-15T10:35:05.666Z",
+      "event_meta": {
+        "event_id": "e00399ca-01ec-4b1c-b9db-4e64af6a3906",
+        "parent_event_id": "293c6c5c-5b9b-4c08-b37b-5693e6346110",
+        "event_type": "assistant.message",
+        "message_id": "b5af7e47-7be2-42fa-8ad6-af79ba3adab8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_7ChRYXwF3yx5ADa81oHW3eDs",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id spec-contract --kind ticket --requirement required --title \"Define measurable browser and GPU validation contract\" --ticket-urn ce://default/ticket/7d951620-76c5-4b24-90ce-e7d08d2dd188 --cached-ticket-title \"[viewer-platform][spec] Define measurable browser and GPU validation contract\" && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id shared-harness --kind ticket --requirement required --title \"Build canonical shared Playwright harness and all-viewer runner\" --ticket-urn ce://default/ticket/6002e996-dcb8-4dad-a830-20346ce9d8cc --cached-ticket-title \"[viewer-platform][e2e] Canonical shared Playwright harness and all-viewer runner\" && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id result-integration-design --kind ticket --requirement required --title \"Design browser and TypeScript result integration with test-api\" --ticket-urn ce://default/ticket/93b8a331-da80-4fef-b13d-7f277cadb15f --cached-ticket-title \"[design][test] Browser & TypeScript automated test integration strategy (design session)\" && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id ux-gates --kind ticket --requirement required --title \"Add accessibility responsive focus and visual regression gates\" --ticket-urn ce://default/ticket/40110a1a-40e8-4345-8407-577bd5f4d602 --cached-ticket-title \"[viewer-platform][ux-test] Accessibility, responsive, focus, and visual regression gates\" && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id gpu-profiles --kind ticket --requirement required --title \"Define reproducible software and hardware browser lanes\" --ticket-urn ce://default/ticket/26a73130-c631-4168-8030-fade31c5cf55 --cached-ticket-title \"[viewer-platform][gpu-test] Reproducible software and hardware browser lanes\" && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id log-sink --kind ticket --requirement required --title \"Complete correlated bounded WASM tracing file sink\" --ticket-urn ce://default/ticket/8f349d96-a307-400b-a90e-3aceb2250166 --cached-ticket-title \"viewer-api-dioxus: ship WASM tracing logs to a server file sink\" && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon workflow add-node --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --node-id batch-validation --kind validation --requirement required --title \"Validate first-batch specs tickets and focused executable checks\"",
+              "explanation": "Persist the first implementation batch as ticket-backed workflow nodes plus a required validation checkpoint.",
+              "goal": "Create handoff workflow",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 43,
+      "role": "assistant",
+      "content": "The six first-batch tickets and a required validation checkpoint are persisted. I’m linking the checkpoint to every implementation node, then I’ll view the compact context and create the structured handoff record with current validation state marked as not yet run.",
+      "captured_at": "2026-07-15T10:35:24.298Z",
+      "event_meta": {
+        "event_id": "c1d6c261-d867-4baf-8105-b5c2a6760e4f",
+        "parent_event_id": "55ca3aac-6c7d-4367-a926-03380c14d5d0",
+        "event_type": "assistant.message",
+        "message_id": "baee8093-6686-4d61-933d-18a54a95985a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_iN7qPc2eVFNDHYM38OBAQEDd",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\model.rs",
+              "startLine": 220,
+              "endLine": 290
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_BbJtrJ3gzRLu10E0xUTWmWZk",
+            "name": "grep_search",
+            "arguments": {
+              "query": "SessionValidationGate \\{|validation_json|outcome",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/store_tests.rs",
+              "maxResults": 50
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 44,
+      "role": "assistant",
+      "content": "The persisted workflow is complete and all implementation nodes remain not started. I’m checking the live board for ownership conflicts before handoff, then I’ll persist the final record and extract its exact handoff ID, path, resume command, pins, and workflow snapshot.",
+      "captured_at": "2026-07-15T10:36:02.774Z",
+      "event_meta": {
+        "event_id": "90106f14-11af-4d49-93e4-1439f4c3a0e9",
+        "parent_event_id": "8a8831d1-3884-40e9-b5fe-95e0e6b29988",
+        "event_type": "assistant.message",
+        "message_id": "f24ce2c9-1566-4925-a9fd-8b90b46b9414",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Zuvncbkk5vRlc4BSZzqzuwT6",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/ticket.exe board show --toon",
+              "explanation": "Check active ticket leases and ownership conflicts that the receiving implementation session must respect.",
+              "goal": "Inspect implementation ownership",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 45,
+      "role": "assistant",
+      "content": "The board is clear: no active leases, stale entries, file conflicts, or WIP pressure. I’m persisting the structured handoff now with implementation validation intentionally empty, since this session created planning entities but did not execute first-batch code checks.",
+      "captured_at": "2026-07-15T10:36:13.799Z",
+      "event_meta": {
+        "event_id": "1844fffd-ade4-4844-8eda-c90e1c3eb409",
+        "parent_event_id": "0d1d0c24-c523-4775-bca7-7f304914bbe1",
+        "event_type": "assistant.message",
+        "message_id": "1a77cbf1-e229-4d22-9935-2057df955d9b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hmblcaFYGatohHTvyFYQFwVw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/session.exe --workspace \"$PWD\" --toon handoff --workspace-session-id 6582e9d4-aba6-48ce-8384-5ec95212ab6a --validation-json '[]'",
+              "explanation": "Persist the structured viewer-validation handoff record and obtain its authoritative ID, path, lineage, and resume command.",
+              "goal": "Create durable handoff",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 46,
+      "role": "assistant",
+      "content": "The handoff gate correctly rejected persistence because the required validation workflow node lacked a `validation_spec_id`. I’m repairing that local workflow definition, then I’ll rerun the same handoff command; no implementation result will be fabricated.",
+      "captured_at": "2026-07-15T10:36:25.834Z",
+      "event_meta": {
+        "event_id": "3a2072b1-154d-491b-a2a7-d4aa52955097",
+        "parent_event_id": "27314285-8cac-4145-b049-ea433c245e85",
+        "event_type": "assistant.message",
+        "message_id": "04b37f7d-1b7a-4d66-a328-b56a692cbb2b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_iuGqKHrc7x9WsQEphvYfnaJq",
+            "name": "grep_search",
+            "arguments": {
+              "query": "pub fn workflow_add_node|workflow.nodes.*push|node_id.*already",
+              "isRegexp": true,
+              "includePattern": "memory-api/crates/session-api/src/store.rs",
+              "maxResults": 30
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 47,
+      "role": "assistant",
+      "content": "The workflow API is append-only and cannot repair an existing node’s metadata, so the rejected workspace cannot produce a valid handoff. I’m creating one final clean workspace and replaying the compact pins/workflow with `validation_spec_id=val-viewer-first-batch`; this is safer than editing persisted session JSON behind the API.",
+      "captured_at": "2026-07-15T10:36:41.343Z",
+      "event_meta": {
+        "event_id": "4814d0a8-d39a-4fa5-bb67-05e274209f4e",
+        "parent_event_id": "a55ac471-42ed-4147-bd0c-cf63e89c5306",
+        "event_type": "assistant.message",
+        "message_id": "cb514405-8a54-487e-a8e5-94e3cf713fd9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IQDqk68ieAIQt4ILEWDGUrTa",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk node -p \"crypto.randomUUID()\"",
+              "explanation": "Generate a clean workspace UUID after the append-only workflow metadata error.",
+              "goal": "Generate corrected workspace ID",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 48,
+      "role": "assistant",
+      "content": "The corrected workspace has the complete pin set. I’m rebuilding the seven-node workflow now, this time with an authoritative validation-spec identifier on the checkpoint, then I’ll persist and verify the handoff record.",
+      "captured_at": "2026-07-15T10:37:27.501Z",
+      "event_meta": {
+        "event_id": "4acc6578-5a1b-4aa4-a701-f93931fc52d4",
+        "parent_event_id": "18edbc22-4e36-458a-9f7d-4b1a09f53cb9",
+        "event_type": "assistant.message",
+        "message_id": "066ed804-29c1-4e6f-a6b4-20598d57e3ff",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_KwlcyejikngvL4iXBjhxIxFX",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id spec-contract --kind ticket --requirement required --title \"Define measurable browser and GPU validation contract\" --ticket-urn ce://default/ticket/7d951620-76c5-4b24-90ce-e7d08d2dd188 --cached-ticket-title \"[viewer-platform][spec] Define measurable browser and GPU validation contract\" && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id shared-harness --kind ticket --requirement required --title \"Build canonical shared Playwright harness and all-viewer runner\" --ticket-urn ce://default/ticket/6002e996-dcb8-4dad-a830-20346ce9d8cc --cached-ticket-title \"[viewer-platform][e2e] Canonical shared Playwright harness and all-viewer runner\" && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id result-integration-design --kind ticket --requirement required --title \"Design browser and TypeScript result integration with test-api\" --ticket-urn ce://default/ticket/93b8a331-da80-4fef-b13d-7f277cadb15f --cached-ticket-title \"[design][test] Browser & TypeScript automated test integration strategy (design session)\" && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id ux-gates --kind ticket --requirement required --title \"Add accessibility responsive focus and visual regression gates\" --ticket-urn ce://default/ticket/40110a1a-40e8-4345-8407-577bd5f4d602 --cached-ticket-title \"[viewer-platform][ux-test] Accessibility, responsive, focus, and visual regression gates\" && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id gpu-profiles --kind ticket --requirement required --title \"Define reproducible software and hardware browser lanes\" --ticket-urn ce://default/ticket/26a73130-c631-4168-8030-fade31c5cf55 --cached-ticket-title \"[viewer-platform][gpu-test] Reproducible software and hardware browser lanes\" && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id log-sink --kind ticket --requirement required --title \"Complete correlated bounded WASM tracing file sink\" --ticket-urn ce://default/ticket/8f349d96-a307-400b-a90e-3aceb2250166 --cached-ticket-title \"viewer-api-dioxus: ship WASM tracing logs to a server file sink\" && rtk ./target/debug/session.exe --workspace \"$PWD\" workflow add-node --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --node-id batch-validation --kind validation --requirement required --title \"Validate first-batch contract and focused executable checks\" --validation-spec-id val-viewer-first-batch",
+              "explanation": "Persist the corrected first-batch workflow with a validation-spec-backed checkpoint.",
+              "goal": "Create corrected workflow",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 49,
+      "role": "assistant",
+      "content": "The corrected handoff persisted successfully. I’m extracting only the authoritative record fields and workflow summary from the saved command output, then I’ll format the copy-ready prompt exactly as requested.",
+      "captured_at": "2026-07-15T10:37:46.212Z",
+      "event_meta": {
+        "event_id": "41fdc224-4975-409c-94e1-90f3c25a71ae",
+        "parent_event_id": "f55d52cc-e273-4bea-a7d3-8f923b8b81a6",
+        "event_type": "assistant.message",
+        "message_id": "f3b5d729-92f8-4f52-bdbc-a4d13557a3d3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Ge6UAXvSXyULDwDWuUss00Y1",
+            "name": "grep_search",
+            "arguments": {
+              "query": "handoff_id|workspace_session_id|outgoing_run_id|resume_command|record_path|status:|node_id:|diagnostics",
+              "isRegexp": true,
+              "includePattern": "c:/Users/linus/AppData/Roaming/Code/User/workspaceStorage/85c65471aaff0b651db0ce38f3719fa7/GitHub.copilot-chat/chat-session-resources/7ef83488-1e8a-4db2-87ce-4d742716572c/call_anuFq0t3A2i6jkULI8mJbuOV__vscode-1784111409980/content.txt",
+              "maxResults": 100
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_n29E0QLZuiVlaud5J50PEyBI",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\7ef83488-1e8a-4db2-87ce-4d742716572c\\call_anuFq0t3A2i6jkULI8mJbuOV__vscode-1784111409980\\content.txt",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_RepgBOjSsiH840SwqmFjCO8h",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.session\\runtime\\active_workspace_session.json",
+              "startLine": 1,
+              "endLine": 40
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 50,
+      "role": "assistant",
+      "content": "The active pointer and workflow snapshot are correct: seven required nodes, all pending, with `val-viewer-first-batch` attached. I still need the persisted record’s final identifiers, so I’m reading the compact tail of the terminal artifact rather than replaying the handoff command.",
+      "captured_at": "2026-07-15T10:37:54.826Z",
+      "event_meta": {
+        "event_id": "a74607cb-326f-4cb7-826b-9970685d40cb",
+        "parent_event_id": "26436aba-70a2-42aa-ab5a-b6bbbc8be307",
+        "event_type": "assistant.message",
+        "message_id": "b564b027-921a-4a25-8a1f-78df6ff67b1d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_2DQcEXeazk2gynpdlxdkM5uW",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\copilot-terminal-output\\copilot-terminal-output-abd730cf-dc5e-4891-87e1-b0ad2841ea67.txt",
+              "startLine": 800,
+              "endLine": 1100
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 51,
+      "role": "assistant",
+      "content": "The second gate is now precise: the workflow references `val-viewer-first-batch`, but test-api requires that ValidationSpec to exist before handoff. I’m recording that validation contract in the authoritative test store, then rerunning handoff with no claimed execution outcome.",
+      "captured_at": "2026-07-15T10:38:01.159Z",
+      "event_meta": {
+        "event_id": "9c54ac83-9f1b-467f-9eb8-3c1dec1a3147",
+        "parent_event_id": "6fab690d-bdec-4247-bcda-d7b2241ba661",
+        "event_type": "assistant.message",
+        "message_id": "b48b11bc-6560-466c-ab38-0d81b3394a73",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_q65cnqD2tvmmi4OX5sNJl1BU",
+            "name": "tool_search",
+            "arguments": {
+              "query": "test MCP tool to record or create a ValidationSpec with id title command detail ticket IDs spec IDs and acceptance criterion IDs"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 52,
+      "role": "assistant",
+      "content": "I have the authoritative handoff IDs and resume command. I’m resolving the pinned spec manifests and validation record paths now so the final prompt contains no synthetic or unresolved links.",
+      "captured_at": "2026-07-15T10:38:42.645Z",
+      "event_meta": {
+        "event_id": "2d82c40b-68f5-4fbd-a997-8777f25c7dcc",
+        "parent_event_id": "f61494fd-d646-4f55-b839-a61d02099e8f",
+        "event_type": "assistant.message",
+        "message_id": "6cf613a3-68af-4608-bd9e-20d1352b46fe",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_s4nvf8tVMO3Y1jamRywsiZ9W",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/347b6f97-5ebf-46c6-a0e1-cc8afc600319/spec.toml",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_epGz02vRKejWYvhCrdOXo3XN",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eCeOGCx6YoDOCLm5GDWWMcTP",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TzDIFb2RTLSnUxPfNfZAulS3",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_6jxI1bqg8tVTmJrfmeaneTz9",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PzHFbQtV5IwEF0AyjTcdwb7p",
+            "name": "file_search",
+            "arguments": {
+              "query": ".test/**/val-viewer-first-batch.json",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pY75fqpgfC3VXbx4cNqs8kPE",
+            "name": "file_search",
+            "arguments": {
+              "query": ".session/**/02d19bac-ef8f-4157-8292-588183f34274.json",
+              "maxResults": 10
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 53,
+      "role": "assistant",
+      "content": "The durable handoff is finalized and verified at the recorded path, with 16 pins, seven pending workflow nodes, six dependency edges, a real `val-viewer-first-batch` ValidationSpec, and no active board conflicts.",
+      "captured_at": "2026-07-15T10:39:03.517Z",
+      "event_meta": {
+        "event_id": "fd307871-e00c-4bae-a7ab-ba781193f33a",
+        "parent_event_id": "5e689806-7cec-46a9-948a-5e89ab0ca6fb",
+        "event_type": "assistant.message",
+        "message_id": "217e350a-60bb-422f-86f4-e0a94f17efa4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ptGdbr8mVZIYwpLde7lu74nZ",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Created and verified a durable first-batch implementation handoff with authoritative session lineage, pinned tickets/specs/rules, workflow statuses, validation contract, board state, and exact resume command."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 54,
+      "role": "assistant",
+      "content": "~~~text\n# Handoff: Viewer Validation First Implementation Batch\n\nResume the first implementation batch for the cross-viewer browser, observability, UX, and GPU validation program. Start from the [context-engine repository root](./AGENTS.md). The durable handoff is persisted, the ticket graph is healthy, the board is clear, and implementation has not started.\n\n## Durable Session Identity\n\n- `workspace_session_id`: `03baab6c-0fdb-4ffc-8159-b83066a6283f`\n- Outgoing `run_id`: `12c03403-6000-4d01-884a-c886411005d4`\n- `handoff_id`: `02d19bac-ef8f-4157-8292-588183f34274`\n- Persisted record: [02d19bac handoff record](.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/02d19bac-ef8f-4157-8292-588183f34274.json)\n- Exact resume command:\n\n  `session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id 12c03403-6000-4d01-884a-c886411005d4`\n\nAfter resuming, render the pinned instructions and workflow. Do not initialize another workspace session.\n\n## Long-Horizon Goal\n\nThe owning epic is [956485ad-2e80-4a4c-b5ec-42bac2c7c295 Robust browser, observability, and performance validation strategy](memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml).\n\nBuild one dependable validation platform for viewer-api, ticket-viewer, spec-viewer, log-viewer, and doc-viewer. It must cover release-browser behavior, correlated WASM/backend logs, accessibility and visual regressions, reproducible GPU environments, enforceable performance budgets, leak detection, and later native Tauri behavior.\n\n## Ticket Legend\n\nEvery ticket mentioned below uses its full authoritative UUID.\n\n- [7d951620-76c5-4b24-90ce-e7d08d2dd188 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml)\n- [93b8a331-da80-4fef-b13d-7f277cadb15f Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml)\n- [6002e996-dcb8-4dad-a830-20346ce9d8cc Canonical shared Playwright harness and all-viewer runner](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml)\n- [26a73130-c631-4168-8030-fade31c5cf55 Reproducible software and hardware browser lanes](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml)\n- [8f349d96-a307-400b-a90e-3aceb2250166 Ship WASM tracing logs to a server file sink](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml)\n- [40110a1a-40e8-4345-8407-577bd5f4d602 Accessibility, responsive, focus, and visual regression gates](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml)\n\nAll six tickets are `new` and persisted as required workflow nodes with `pending` status.\n\n## Key Specifications\n\n- [347b6f97-5ebf-46c6-a0e1-cc8afc600319 Prefer MCP Playwright/browser tools](.spec/specs/347b6f97-5ebf-46c6-a0e1-cc8afc600319/spec.toml): current browser-validation policy.\n- [b06c9df8-2866-433a-af73-ae9b1f4a0f0a Structured tracing for WASM frontend](viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml): existing tracing contract.\n- [479e226a-b4ef-4e30-ade0-ebdabbf956ed WASM tracing file sink](viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml): existing persistence contract.\n- [4f14356f-c4bd-4554-be1e-35361de241da Graph3D](viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml): graph behavior and implementation context.\n- [f153483c-f984-4564-94ac-36234b5cbe3f WebGPU overlay](viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml): GPU overlay contract.\n- [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json): required ValidationSpec for this batch. It has no execution outcome yet.\n\n## Governing Rules\n\nThe durable session pins these rule entities:\n\n- `397b0447-135e-4d35-ad05-bcc69047d2c0`: mandatory viewer/browser quality gates in [AGENTS.md](./AGENTS.md).\n- `84fa9769-cff9-4d89-9068-88474584b4b3`: ticket/spec routing in [AGENTS.md](./AGENTS.md).\n- `89330b3b-4d28-4c48-80dd-203311dbe855`: durable bootstrap in [session-bootstrap.instructions.md](.agents/instructions/session-bootstrap.instructions.md).\n- `dada11d6-d36e-464f-92cf-f0a50e3d7aec`: ownership and escalation in [AGENTS.md](./AGENTS.md).\n\nAlso follow [frontend.instructions.md](.agents/instructions/frontend.instructions.md), [tests.instructions.md](.agents/instructions/tests.instructions.md), [spec-system.instructions.md](.agents/instructions/spec-system.instructions.md), and [ticket-system.instructions.md](.agents/instructions/ticket-system.instructions.md) when their scopes apply.\n\n## Findings To Preserve\n\n- The aggregate viewer command in [Makefile.toml](Makefile.toml#L262-L311) omits ticket-viewer and retains obsolete Windows paths under `tools/viewer`.\n- Shared Playwright behavior is fragmented. Ticket-viewer carries copied smoke/theme/tracing helpers while spec-viewer consumes viewer-api shared helpers.\n- The browser log server persists `x-session-id` in [client_log.rs](viewer-api/viewer-api/src/client_log.rs), but the raw WASM sink in [network_layer.rs](viewer-api/viewer-api/frontend/dioxus/src/tracing_setup/network_layer.rs) visibly sets only `content-type`. Add a failing correlation test before repairing it.\n- Ticket-viewer’s copied tracing suite asserts a weaker contract than the shared viewer-api suite.\n- [graph3d-profiling-suite.ts](viewer-api/viewer-api/frontend/dioxus/e2e/shared/suites/graph3d-profiling-suite.ts) proves only trace creation.\n- [graph3d_bench.rs](viewer-api/viewer-api/frontend/dioxus/tests/graph3d_bench.rs) asserts only finite elapsed time. It is not a regression gate.\n- Ticket-viewer and spec-viewer use materially different browser/GPU launch profiles in their release Playwright configs. SwiftShader results must not be presented as native-GPU evidence.\n- There is no checked-in workflow invoking the viewer Playwright or WASM browser suites.\n- There is no shared Axe dependency or maintained `toHaveScreenshot` baseline.\n- [RESEARCH_VIEWER_ARCHITECTURE.md](RESEARCH_VIEWER_ARCHITECTURE.md) mixes hypotheses and future APIs with unsupported absolute claims such as zero-copy, GC-free, nearly-native, and fixed FPS.\n- The focused ticket health check covered 15 tickets and returned zero findings.\n- Duplicate searches found only the intended umbrella/child relationships.\n\n## Decisions\n\n- Keep viewer-specific feature tests in their owning viewers.\n- Put reusable readiness, diagnostics, tracing, screenshots, environment probing, and shared shell contracts in viewer-api.\n- Use one release-viewer registry and one all-viewer command.\n- Treat test-api as the authority for validation outcomes; use a structured Playwright/wasm-pack adapter instead of scraping human console text.\n- Use frame-time median/p95/p99, long-frame counts, and environment-qualified baselines. Smoothed FPS is insufficient.\n- Separate functional, software-WebGPU, and hardware-WebGPU profiles.\n- Keep native Tauri/Appium work outside this first batch and outside the fast pull-request lane.\n- Attach correlated frontend logs, backend logs, traces, screenshots, and environment manifests to test evidence.\n\n## Board State\n\nAt handoff time:\n\n- Active leases: `0`\n- Stale leases: `0`\n- File conflicts: `0`\n- WIP limit: not reached\n\nBefore editing, check in on the exact ticket being implemented and claim only the files needed for that slice. Check out when the slice is complete or paused.\n\n## Next Actions\n\nExecute these actions in order. Continue until all are completed or explicitly blocked.\n\n1. Resume the durable session using the exact command above. Render pinned instructions and workflow.\n2. Start [7d951620-76c5-4b24-90ce-e7d08d2dd188 Define measurable browser and GPU validation contract](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml).\n   - Check in on the ticket before editing.\n   - Search neighboring specs first.\n   - Create or update one focused `aligned-structure:v2` contract.\n   - Define measurable workloads, warm-up, percentile metrics, environment classes, guards, positions, experimental assumptions, and non-goals.\n   - Link all exact ticket manifests and [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json).\n   - First validation after the first spec edit: run focused spec health and reference validation. Repair before widening scope.\n3. Complete [93b8a331-da80-4fef-b13d-7f277cadb15f Browser and TypeScript automated test integration strategy](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml).\n   - Choose the structured reporter/subprocess architecture.\n   - Specify Playwright, wasm-pack, benchmark, retry, blocked, provenance, and artifact mappings into test-api.\n   - Create implementation follow-ups only where the existing first-batch tickets do not already own the work.\n4. Implement [6002e996-dcb8-4dad-a830-20346ce9d8cc Canonical shared Playwright harness and all-viewer runner](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml).\n   - Remove weaker copied shared suites.\n   - Repair cross-platform task paths.\n   - Include ticket-viewer, spec-viewer, log-viewer, and doc-viewer.\n   - Preserve viewer-specific feature tests.\n   - Immediately run the narrow shared Playwright check after the first harness edit.\n5. Implement [26a73130-c631-4168-8030-fade31c5cf55 Reproducible software and hardware browser lanes](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml).\n   - Centralize named browser profiles and capability probes.\n   - Record browser, adapter, driver/backend, OS, viewport, scale factor, and display metadata.\n   - Block explicitly when required WebGPU capabilities are absent.\n6. Complete [8f349d96-a307-400b-a90e-3aceb2250166 Ship WASM tracing logs to a server file sink](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml).\n   - Begin with a failing network-layer session-header test.\n   - Route requests through the shared session utility.\n   - Bound buffers and test overflow, threshold flush, final flush, redaction, and sink failure.\n   - Verify log-query tooling can select one browser session.\n7. Implement [40110a1a-40e8-4345-8407-577bd5f4d602 Accessibility, responsive, focus, and visual regression gates](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml).\n   - Add shared Axe checks, keyboard/focus contracts, bounded viewport projects, deterministic fixtures, screenshot baselines, and canvas-pixel checks.\n8. Run the required first-batch validation.\n   - Record focused executions against [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json).\n   - Do not mark it passed until all six ticket nodes are complete and their focused evidence exists.\n   - Run the final canonical release-browser all-viewer command once implemented.\n   - Update durable workflow statuses incrementally as each action completes.\n\n## Completion Status\n\n- [7d951620-76c5-4b24-90ce-e7d08d2dd188](memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml): `not-started`. First action.\n- [93b8a331-da80-4fef-b13d-7f277cadb15f](memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml): `not-started`. Design decisions are required before result ingestion implementation.\n- [6002e996-dcb8-4dad-a830-20346ce9d8cc](memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml): `not-started`. Existing fragmented harness is the implementation anchor.\n- [26a73130-c631-4168-8030-fade31c5cf55](memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml): `not-started`. Existing viewer configs provide the discriminating comparison.\n- [8f349d96-a307-400b-a90e-3aceb2250166](viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml): `not-started`. Partial implementation exists, but the operational contract is incomplete.\n- [40110a1a-40e8-4345-8407-577bd5f4d602](memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml): `not-started`. Depends practically on the shared harness conventions.\n- [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json): `not-started`. No execution has been recorded.\n\n## Blockers\n\nThere are no board, ownership, or ticket-graph blockers.\n\nImplementation completion is blocked only by the work itself:\n\n- No new measurable validation spec has been authored yet.\n- No canonical all-viewer runner exists yet.\n- No validation execution exists for `val-viewer-first-batch`.\n- Browser log correlation is not proven end to end.\n- Performance and native Tauri tickets outside this batch remain intentionally deferred.\n\n## Definition Of Done\n\nThe first batch is done only when:\n\n- All six ticket-backed workflow nodes are complete and moved through the required ticket lifecycle.\n- The measurable `aligned-structure:v2` spec exists, passes health/reference checks, and links exact tickets and guards.\n- One shared release-browser runner covers all four viewers on Windows and Unix paths.\n- Shared tracing/log correlation is enforced rather than viewer-specific.\n- Browser/test-api result and artifact mapping is documented and implementation-ready.\n- Named functional, software-WebGPU, and hardware-WebGPU profiles exist with environment manifests.\n- Axe, keyboard/focus, responsive, visual-baseline, and canvas checks run through the shared harness.\n- Focused executable validation passes for each slice.\n- A passing ValidationExecution is recorded for [val-viewer-first-batch](.test/default/specs/val-viewer-first-batch.json).\n- The durable workflow marks every required node completed and the implementation session creates the next handoff or finishes cleanly.\n\nExecute the next actions in order and continue until every action is completed or explicitly blocked with durable ticket, spec, log, and validation evidence.\n~~~",
+      "captured_at": "2026-07-15T10:40:04.575Z",
+      "event_meta": {
+        "event_id": "46e7cb5d-36f5-466a-b7cb-0ca577506de1",
+        "parent_event_id": "b07d15ca-bd93-4888-81ee-2f5699bb028f",
+        "event_type": "assistant.message",
+        "message_id": "75f30f95-dc58-486e-926f-ff4e4458a9e8",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
