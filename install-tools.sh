@@ -24,6 +24,8 @@ tool_names=(
     spec-cli
     audit-cli
     rule-cli
+    feedback-cli
+    session-cli
     context-mcp
     ticket-mcp
     spec-mcp
@@ -62,6 +64,8 @@ tool_path() {
         spec-cli) printf '%s\n' "memory-api/tools/cli/spec-cli" ;;
         audit-cli) printf '%s\n' "memory-api/tools/cli/audit-cli" ;;
         rule-cli) printf '%s\n' "memory-api/tools/cli/rule-cli" ;;
+        session-cli) printf '%s\n' "memory-api/tools/cli/session-cli" ;;
+        feedback-cli) printf '%s\n' "memory-api/tools/cli/feedback-cli" ;;
         context-mcp) printf '%s\n' "context-stack/tools/mcp/context-mcp" ;;
         ticket-mcp) printf '%s\n' "memory-api/tools/mcp/ticket-mcp" ;;
         spec-mcp) printf '%s\n' "memory-api/tools/mcp/spec-mcp" ;;
@@ -91,6 +95,8 @@ tool_bin() {
         spec-cli) printf '%s\n' "spec" ;;
         audit-cli) printf '%s\n' "audit" ;;
         rule-cli) printf '%s\n' "rule" ;;
+        feedback-cli) printf '%s\n' "feedback" ;;
+        session-cli) printf '%s\n' "session" ;;
         context-mcp) printf '%s\n' "context-mcp" ;;
         ticket-mcp) printf '%s\n' "ticket-mcp" ;;
         spec-mcp) printf '%s\n' "spec-mcp" ;;
