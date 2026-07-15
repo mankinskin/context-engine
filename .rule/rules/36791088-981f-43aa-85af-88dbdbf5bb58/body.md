@@ -1,7 +1,7 @@
 ---
 name: "Testing Agent"
 description: "Use for focused validation planning, shallow coverage, and evidence tracking with test-api, doc-api, and log-api concepts."
-tools: [read, search, execute, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [read, search, execute, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id, failing behavior, or test scope."
 user-invocable: true
 ---

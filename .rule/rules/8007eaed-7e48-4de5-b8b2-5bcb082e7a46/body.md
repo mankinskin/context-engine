@@ -1,7 +1,7 @@
 ---
 name: "Spec Agent"
 description: "Use when creating new specs, updating existing specs, or refining specification traceability across tickets, tests, validation evidence, and related specs."
-tools: [edit, read, search, execute, vscode/askQuestions, 'log-viewer-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [edit, read, search, execute, vscode/askQuestions, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Spec scope, feature, behavior change, or spec id/slug to create or refine."
 user-invocable: true
 ---
