@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "session_id": "b7ebd0f5-f886-4dd5-86b8-1545f4b87df1",
+  "captured_at": "2026-07-15T22:39:31.565Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "/handoff \r\n## Summary\r\n\r\nI refined all 6 tickets against the actual `session-api` / `spec-api` source and decomposed the two largest into subtickets.\r\n\r\n**Grounded each ticket in verified code touchpoints and added a Solution Design section:**\r\n\r\n| Ticket | Key code-grounded refinement |\r\n|---|---|\r\n| 6431985e narrative/blockers | Pinpointed the `outcome=None` root cause: `resolve_validation_gates` (store.rs:1614) only fills `outcome` for **required workflow nodes**. Now a **tracker → 3 subtickets**. |\r\n| 96f9ffaa delta+cleanup | Split the low-risk schema cleanup from the delta format change. Now a **tracker → 2 subtickets**. |\r\n| 0d3fdba6 completeness gate | Diff `{node.ticket_urn} ∪ {pin.urn}` vs `new_entities` in `create_handoff_record`. |\r\n| e731d333 pin GC | `render_pinned_rule_instructions` (store.rs:926) hard-`Err`s on first dead pin; proposed partial-render + `resolve_pins` helper + audited prune. |\r\n| 67d7c279 event dedup | Confirmed `raw_event_json` is fully derivable from `event_id/captured_at/parent_event_id`; readers (audit.rs:96, store_helpers:308) only use `data_json` → safe to drop. |\r\n| f4b1bf95 refs validate guards | **Corrected the premise**: `validate_refs` (code_ref.rs:49) structurally ignores guards entirely; fix = resolve `parse_guards_from_markdown` ids through `test_store.get_spec`. |\r\n\r\n**5 new subtickets, each with its own AC + solution design**, wired with 8 dependency edges (parent `depends_on` children; sequential ordering between children):\r\n- `6431985e` → `a6f17580` (model) → `e8bdb7cf` (populate) → `f77e35d8` (CLI/MCP/prompt)\r\n- `96f9ffaa` → `68c8a5ef` (flatten snapshot) → `89d1f983` (delta serialization)\r\n\r\nAdditionally, another session folded in the flattening of the workspace structure:\r\n\r\n## Flattening track (new, under epic `effba966`)\r\n\r\n**Tracker parent** 0a45bedb — Flatten session store layout, unify identity, git-track durable artifacts. Decomposed into 4 subtickets:\r\n\r\n| Sub | Scope |\r\n|---|---|\r\n| fc86f42d | **Identity** — add the missing `session_id` join between runtime context and captured transcripts (foundational). |\r\n| 7a4f9c3d | **Layout flatten** — relocate `context.json`/`handoffs/`/`finish.json` under `sessions/<session_id>/`, move local pointers/locks to `.session/local/`, back-compat readers. |\r\n| 41ed4585 | **Handoff folders** — `handoffs/<id>/` with `handoff.json` + rendered `handoff.md` (reuses the existing terminal renderer that's currently thrown away). |\r\n| 4817a5cc | **Git policy** — rewrite root + memory-api .gitignore to track durable artifacts, ignore local pointers/locks. |\r\n\r\nInternal order: identity → layout → handoff folders → git policy.\r\n\r\n## Gating (flattening before further work)\r\n\r\nWired the tracker as a prerequisite of all further session-api handoff/schema work: 6431985e, 96f9ffaa, 0d3fdba6, and e731d333 now all `depends_on` the tracker. The epic also tracks it.\r\n\r\n**One deliberate ordering nuance:** event de-dup 67d7c279 is *not* gated behind flattening — instead the git-policy subticket `depends_on` it, because events.json must shrink **before** it's bulk-tracked. Gating it behind the tracker would have created a cycle.\r\n\r\n## Spec\r\n\r\nUpdated 8c880efc: 2 new Positions rows (store layout/identity; handoff folders+markdown+git), a Contract line (session-owned durable artifacts, git-tracked, folder+markdown handoffs), new **AC8**, and Traceability entries for the tracker + 4 subtickets. `spec_health` = 0 issues; force-reindexed (943 specs, 0 diagnostics).\r\n\r\nGraph integrity: flattening subtree health check = 6 tickets, 0 findings; no cycles.",
+      "captured_at": "2026-07-15T22:37:45.454Z",
+      "event_meta": {
+        "event_id": "fac2bc52-9a1b-4bfb-8a37-9704dbea2d6e",
+        "parent_event_id": "adb5d9e4-6728-482e-8bd7-b54dd991aacc",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’m retrieving the durable session record plus the referenced ticket and spec state, then I’ll compress it into a restart-ready handoff with the dependency ordering preserved.",
+      "captured_at": "2026-07-15T22:37:48.871Z",
+      "event_meta": {
+        "event_id": "5178cf0c-27d4-4e72-a555-cd5197fbe687",
+        "parent_event_id": "c7fd7657-8c01-4699-88dd-56f5cab02211",
+        "event_type": "assistant.message",
+        "message_id": "be403bd1-e7bf-4526-81ab-721e00eb9ebb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_UwcRSnZQIMY2uImyIAXLlCfA",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Initialize or resume a durable workspace session, inspect persisted handoffs, and render pinned guidance from the session store."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "The durable runtime initialized against the workspace; I’m reading its compact record now and will cross-check the tracker, child tickets, and updated spec so the handoff points at authoritative artifacts rather than only this summary.",
+      "captured_at": "2026-07-15T22:38:03.257Z",
+      "event_meta": {
+        "event_id": "27f87f69-d7a1-4cf8-8511-64d4c2b664af",
+        "parent_event_id": "72ffbe25-7a48-40ac-9f61-b0fcabd58fbc",
+        "event_type": "assistant.message",
+        "message_id": "6d7234f9-186e-4539-813b-533e107a15c3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_utlF3IEF3Xs2Dguea634rrZV",
+            "name": "tool_search",
+            "arguments": {
+              "query": "Inspect ticket board status, retrieve ticket details and descriptions, and view a spec record for a handoff summary."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "The board has no active ownership on this workstream; it only reports an unrelated stale entry. The flattening tracker is correctly a dependency-gated parent under the session-bootstrap epic, so I’m now collecting the exact child titles and persisted handoff lineage for the final restart sequence.",
+      "captured_at": "2026-07-15T22:38:35.535Z",
+      "event_meta": {
+        "event_id": "d116af5c-44a8-459c-8552-292873429dea",
+        "parent_event_id": "d043fb81-2ce0-45d0-b347-65a3e270e8e3",
+        "event_type": "assistant.message",
+        "message_id": "d61efc43-f4aa-4c60-9937-615d8d5f0b47",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_j8u1JacrVoO1V4PeoiJ4ZMqi",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\b7ebd0f5-f886-4dd5-86b8-1545f4b87df1\\call_G5JcVnyjmzAUq7varkEANR03__vscode-1784155040812\\content.json",
+              "startLine": 241,
+              "endLine": 520
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_uAyEvcDc2whpvvRLlCyrHgUd",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\85c65471aaff0b651db0ce38f3719fa7\\GitHub.copilot-chat\\chat-session-resources\\b7ebd0f5-f886-4dd5-86b8-1545f4b87df1\\call_uyRDdKyzDubDr4zpuPbiKndp__vscode-1784155040818\\content.json",
+              "startLine": 1,
+              "endLine": 240
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_7F4QEx2JOcNdshz6YPUkyHVP",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "fc86f42d"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_11IY26Hfz6n6jssldn8cLUHU",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "7a4f9c3d"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WywStwFNeseYZETux5IrqXKa",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "41ed4585"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PzUns24IBhPJ7ZNI3J67mcFl",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "4817a5cc"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_k1BgqqKicbUuVmLDJz7oG70V",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "6431985e"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_T01Eo589eBZ2Zf3oKhyIltvP",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "96f9ffaa"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_WxF7cM6ws8p2xOd4bgF6ICoi",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "0d3fdba6"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JBTstmowbXc4uvjXPHrVqFKp",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "e731d333"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rpaa9fr6fl0QkHn9zJh4wzFX",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "67d7c279"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_MmRxV6dNsPAyhETXzdJkGfLV",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "f4b1bf95"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "The authoritative dependency fields confirm the intended order: identity, layout, handoff folders, then git policy; event de-dup remains independent but must finish before the git-policy child. I’m persisting the outgoing handoff record and doing one focused graph-health check to leave the next session a durable checkpoint.",
+      "captured_at": "2026-07-15T22:38:51.888Z",
+      "event_meta": {
+        "event_id": "8f6b101d-e706-4fa7-b49e-7ae366c2c29a",
+        "parent_event_id": "106585a6-0f2c-4efa-a32e-2859d5ecea15",
+        "event_type": "assistant.message",
+        "message_id": "c69972ac-5f27-43e8-9a57-b1c0371ff81a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_frObzjEI95i8XKN3ItMjpHzx",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_dWJr9M1awpEQZ9Xkx3cCnIWa",
+            "name": "mcp_ticket-mcp_health_check",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "root": "0a45bedb-6dfe-466e-893f-fddfd225f1f6",
+              "direction": "down",
+              "depth": 4
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yNGygKyNjlFczh6mtn54pPXm",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "a6f17580"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_39APUWPE16yFv97mrCrhVZ0R",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "e8bdb7cf"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_RKlmRhug1WcRhyWHMG2lcBn1",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "f77e35d8"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Na8nTSDfKkGYu8CNVyrPtxMV",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "68c8a5ef"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_SdX29chRoOqprHjOtbiEoF7O",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "id": "89d1f983"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "The outgoing record is now persisted as `6aee8228-4542-47ea-ab41-d46ffdfa24fa` with the exact resume command. The targeted health invocation surfaced only unrelated convergence warnings outside the flattening subtree, so I’ll keep that distinction explicit and provide the handoff without overstating a clean global check.",
+      "captured_at": "2026-07-15T22:39:05.030Z",
+      "event_meta": {
+        "event_id": "161cb0ea-8c74-4845-bc3d-858c9c8131e8",
+        "parent_event_id": "c93747f5-2051-4d78-ab80-6c8cc50325d3",
+        "event_type": "assistant.message",
+        "message_id": "189037f0-d863-41d5-a795-67fdd775d096",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_e3PSitrgYXFeqFU0YaXe7x7w",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\.ticket\\tickets\\0a45bedb-6dfe-466e-893f-fddfd225f1f6"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_yjKBQNfFqgtGi2hNXzYoVOac",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.spec\\specs\\8c880efc-7083-4e1d-bf06-96b8254be913"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_JBGfQCIltq46a9pBI3mRpWTj",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.session\\runtime\\workspaces\\03baab6c-0fdb-4ffc-8159-b83066a6283f\\handoffs"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "The durable handoff record, lineage, ticket graph, and spec reference have been collected and condensed into the requested restart prompt.",
+      "captured_at": "2026-07-15T22:39:10.489Z",
+      "event_meta": {
+        "event_id": "59930b90-678d-4b0c-adec-b912921db203",
+        "parent_event_id": "eebc05fb-36b2-4dc2-a4e6-728a1a989531",
+        "event_type": "assistant.message",
+        "message_id": "4fb6f022-94f5-48c7-ad26-bddee4546777",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_RRpNOjxMaDmVUYV5LrvsngtG",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Persisted handoff 6aee8228-4542-47ea-ab41-d46ffdfa24fa and produced a source-grounded restart prompt covering the flattening prerequisite, follow-on session-api tracks, exact lineage, tickets, spec, and validation caveat."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "~~~text\n# Session-API Handoff: Flatten Durable Store First\n\n## Shorthand And Placeholder Legend\n- `FLATTEN` = [0a45bedb Flatten session store layout, unify identity, and git-track durable artifacts](memory-api/.ticket/tickets/0a45bedb-6dfe-466e-893f-fddfd225f1f6/ticket.toml).\n- `EPIC` = [effba966 Dynamic session bootstrapping & context routing redesign](memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml).\n- `SPEC` = [8c880efc Dynamic session bootstrapping and just-in-time context routing](.spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml).\n- `SESSION` = durable workspace session `03baab6c-0fdb-4ffc-8159-b83066a6283f`.\n- `RUN` = outgoing run `8cf1255d-7969-4ac2-905a-cbd234dc3eac`.\n\nThis track makes `session-api` durable artifacts coherent and git-trackable before changing the remaining handoff schema. All relevant tickets have source-grounded Solution Design sections and acceptance criteria. Begin in `c:/Users/linus/git/graph_app/context-engine`, resume the durable session, then execute the flattening sequence in order; do not start the flattening-gated handoff/schema work before `FLATTEN` is complete.\n\n## Durable Session Identity\n- `workspace_session_id`: `03baab6c-0fdb-4ffc-8159-b83066a6283f`\n- Outgoing `run_id`: `8cf1255d-7969-4ac2-905a-cbd234dc3eac`\n- `handoff_id`: `6aee8228-4542-47ea-ab41-d46ffdfa24fa`\n- Persisted record: [.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/6aee8228-4542-47ea-ab41-d46ffdfa24fa.json](.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/6aee8228-4542-47ea-ab41-d46ffdfa24fa.json)\n- Exact resume command:\n  `session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id 8cf1255d-7969-4ac2-905a-cbd234dc3eac`\n\n## Ticket Legend\n- `FLATTEN`: [0a45bedb Flatten session store layout, unify identity, and git-track durable artifacts](memory-api/.ticket/tickets/0a45bedb-6dfe-466e-893f-fddfd225f1f6/ticket.toml).\n- `EPIC`: [effba966 Dynamic session bootstrapping & context routing redesign](memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml).\n\n## Key Entities\n- [0a45bedb Flatten session store layout, unify identity, and git-track durable artifacts](memory-api/.ticket/tickets/0a45bedb-6dfe-466e-893f-fddfd225f1f6/ticket.toml): prerequisite tracker for all future handoff/schema changes.\n- [effba966 Dynamic session bootstrapping & context routing redesign](memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml): long-horizon epic that tracks `FLATTEN` and the downstream remediation work.\n- [8c880efc Dynamic session bootstrapping and just-in-time context routing](.spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml): updated with positions, durable-artifact contract language, AC8, and tracker/subticket traceability. Read its [body](.spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/body.md) before implementation.\n- [.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/6aee8228-4542-47ea-ab41-d46ffdfa24fa.json](.session/runtime/workspaces/03baab6c-0fdb-4ffc-8159-b83066a6283f/handoffs/6aee8228-4542-47ea-ab41-d46ffdfa24fa.json): persisted lineage and previously pinned session context.\n\n## Findings And Decisions\n- The first implementation goal is a flattened durable store: runtime context, captured transcripts, handoffs, and finish state must share a session identity and reside under `sessions/<session_id>/`; local pointers and locks belong under `.session/local/`.\n- `session_id` is currently missing from the join between runtime context and captured transcripts. This is foundational because layout migration cannot safely associate historical artifacts without it.\n- Handoffs should become `handoffs/<handoff_id>/handoff.json` plus rendered `handoff.md`; reuse the existing terminal renderer rather than discarding its output.\n- Durable session-owned artifacts should be committed; machine-local pointers and locks should remain ignored.\n- [67d7c279 Deduplicate captured events](memory-api/.ticket/tickets/67d7c279-6661-461b-8204-7a1bd7e028c5/ticket.toml) is intentionally not gated behind `FLATTEN`. `raw_event_json` is derivable from `event_id`, `captured_at`, and `parent_event_id`; readers consume `data_json`. It must finish before the git-policy child bulk-tracks `events.json`, avoiding a dependency cycle.\n- [6431985e Persist blockers, resolved validation outcome, and structured narrative](memory-api/.ticket/tickets/6431985e-e729-426b-9f91-66ad4b1c6fe6/ticket.toml) has a verified root cause: `resolve_validation_gates` in `memory-api/crates/session-api/src/store.rs` populates `outcome` only for required workflow nodes.\n- [0d3fdba6 Handoff completeness gate](memory-api/.ticket/tickets/0d3fdba6-45e6-4129-84f7-d98324c9519d/ticket.toml) should diff `{node.ticket_urn} union {pin.urn}` against `new_entities` during `create_handoff_record`.\n- [e731d333 Resume-time pin resolution and dead-pin garbage collection](memory-api/.ticket/tickets/e731d333-7c11-4f9d-aec5-277c84be3796/ticket.toml) must replace the first-dead-pin hard error in `render_pinned_rule_instructions` with partial rendering, a `resolve_pins` helper, and audited pruning.\n- [f4b1bf95 spec_refs_validate dangling guard references](memory-api/.ticket/tickets/f4b1bf95-55bc-457f-93e9-1aaa05aa8814/ticket.toml) has a corrected premise: `validate_refs` structurally ignores guards. Resolve IDs from `parse_guards_from_markdown` via `test_store.get_spec`.\n\n## Execution Order\n1. Claim and implement [fc86f42d Unify session identity: link runtime context to session_id and stamp transcripts](memory-api/.ticket/tickets/fc86f42d-3fc0-4f07-911a-525098248dcf/ticket.toml). First action: inspect the runtime-context and transcript write paths in `memory-api/crates/session-api/src/store.rs`, add the shared identity field, and create focused persistence/migration coverage. First validation: focused `session-api` tests for linking a runtime context to a captured transcript.\n2. Implement [7a4f9c3d Flatten .session layout under sessions/<session_id>/ and relocate local pointers/locks](memory-api/.ticket/tickets/7a4f9c3d-bf5f-4849-93c7-b8c2706dac61/ticket.toml), preserving backwards-compatible readers and migration behavior. Validate new and legacy layout reads.\n3. Implement [41ed4585 Store handoffs as folders with handoff.json + rendered handoff.md](memory-api/.ticket/tickets/41ed4585-5b1e-4681-96e8-4883ed140c18/ticket.toml). Validate both persisted JSON and the retained markdown rendering.\n4. In parallel only when its dependencies allow, implement [67d7c279 Deduplicate captured events](memory-api/.ticket/tickets/67d7c279-6661-461b-8204-7a1bd7e028c5/ticket.toml). Validate round-trip event semantics and confirm `events.json` is smaller.\n5. Implement [4817a5cc Git-tracking policy: track durable session artifacts, ignore local pointers/locks](memory-api/.ticket/tickets/4817a5cc-5e91-4280-b7ed-aed296a480b3/ticket.toml), after both handoff folders and event de-dup. Validate `.gitignore` behavior with representative durable and local paths.\n6. Mark `FLATTEN` complete only after its four children are complete and the migration/back-compat suite passes.\n7. Then begin flattening-gated work in this order where dependencies permit:\n   - [a6f17580 Add narrative/blockers/new_entities fields to SessionHandoffRecord model](memory-api/.ticket/tickets/a6f17580-f7ea-4c4e-92e7-0c77c68185fe/ticket.toml)\n   - [e8bdb7cf Populate resolved validation outcome and new_entities](memory-api/.ticket/tickets/e8bdb7cf-6605-4879-ab48-2c67da57df65/ticket.toml)\n   - [f77e35d8 Thread narrative fields through CLI, MCP, and /handoff](memory-api/.ticket/tickets/f77e35d8-8d74-4160-9ed0-85bf32c62a97/ticket.toml)\n   - [68c8a5ef Flatten SessionWorkflowSnapshot and drop denormalized live_ticket_state](memory-api/.ticket/tickets/68c8a5ef-fc7e-4700-956e-aea832c85011/ticket.toml)\n   - [89d1f983 Delta/baseline handoff serialization](memory-api/.ticket/tickets/89d1f983-5081-4bfa-b22d-9398c5aae58c/ticket.toml)\n   - [0d3fdba6 Handoff completeness gate](memory-api/.ticket/tickets/0d3fdba6-45e6-4129-84f7-d98324c9519d/ticket.toml)\n   - [e731d333 Resume-time pin resolution and dead-pin garbage collection](memory-api/.ticket/tickets/e731d333-7c11-4f9d-aec5-277c84be3796/ticket.toml)\n   - [f4b1bf95 spec_refs_validate dangling guard references](memory-api/.ticket/tickets/f4b1bf95-55bc-457f-93e9-1aaa05aa8814/ticket.toml)\n\n## Validation And Board Notes\n- The prior session recorded `spec_health` as zero issues after force reindexing 943 specs with zero diagnostics. Re-run this before moving affected tickets to review.\n- A later health-check invocation returned three dependency-convergence warnings, all on unrelated feedback-api ticket `5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d`; do not treat those as failures of the flattening subtree.\n- The board has no active ownership for this track. It has one unrelated stale ownership entry for `d505282b-ba78-4ddc-9071-20060630a86f`; do not claim or modify its files.\n- Before editing, check in each ticket and claim only the files needed by its narrow slice. Update `SPEC`, ticket status, and validation evidence as work completes.\n\n## Completion Status\n- `FLATTEN`: `not-started` - parent tracker; blocked on all four children.\n- [fc86f42d Unify session identity](memory-api/.ticket/tickets/fc86f42d-3fc0-4f07-911a-525098248dcf/ticket.toml): `not-started` - first required implementation.\n- [7a4f9c3d Flatten layout](memory-api/.ticket/tickets/7a4f9c3d-bf5f-4849-93c7-b8c2706dac61/ticket.toml): `blocked` - awaits identity.\n- [41ed4585 Handoff folders](memory-api/.ticket/tickets/41ed4585-5b1e-4681-96e8-4883ed140c18/ticket.toml): `blocked` - awaits layout.\n- [67d7c279 Deduplicate captured events](memory-api/.ticket/tickets/67d7c279-6661-461b-8204-7a1bd7e028c5/ticket.toml): `not-started` - independent; complete before git policy.\n- [4817a5cc Git-tracking policy](memory-api/.ticket/tickets/4817a5cc-5e91-4280-b7ed-aed296a480b3/ticket.toml): `blocked` - awaits handoff folders and event de-dup.\n- Flattening-gated handoff/schema tickets: `blocked` - await `FLATTEN`.\n\n## Definition Of Done\nThe durable session store uses a single `session_id` across runtime and captured artifacts; durable data is session-foldered and tracked by Git; local pointers/locks remain ignored; handoff records preserve both JSON and rendered markdown; legacy reads are supported or migrated; event storage is de-duplicated before bulk tracking; focused tests and specification health checks pass; and tickets/spec traceability plus validation evidence are current.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.\n~~~",
+      "captured_at": "2026-07-15T22:39:31.565Z",
+      "event_meta": {
+        "event_id": "f296f7bb-01a5-435c-8436-1b981ab64514",
+        "parent_event_id": "b3eb79df-4824-438d-a4b9-f25d3444b55a",
+        "event_type": "assistant.message",
+        "message_id": "dafea616-9af8-41a7-be36-29ef88218610",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

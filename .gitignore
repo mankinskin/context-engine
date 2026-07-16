@@ -34,9 +34,17 @@ tools/log-viewer/demo-logs/
 .repo-qa/
 .session/*
 !.session/sessions/
-!.session/sessions/default/
-!.session/sessions/default/**
+!.session/sessions/**
+
+# Session local machine state (never commit)
+.session/local/
+.session/local/**
+.session/**/*.lock
+
+# Capture logs and large event payloads stay local; durable transcript/handoff/finish files stay tracked.
 .session/sessions/**/session-capture-stop.log
+.session/sessions/**/events.json
+.session/sessions/**/runs/**/events.json
 packages/
 
 # Spec/ticket store binary indexes (only the spec/ticket folders are tracked)

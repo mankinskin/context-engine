@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "session_id": "897472a4-9556-4d3f-a1dc-85fcecb042bf",
+  "captured_at": "2026-07-15T22:17:09.734Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "how can i test an mcp server from the commandline?",
+      "captured_at": "2026-07-15T22:16:42.119Z",
+      "event_meta": {
+        "event_id": "a751345b-da65-4db3-8418-17d13ea8193b",
+        "parent_event_id": "0e40ca3a-e200-4bbb-8699-06fd2e062bd9",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I’ll give you a practical CLI workflow to test an MCP server end-to-end, including the exact JSON-RPC sequence and a quick way to avoid hand-crafting messages.Use one of these 3 command-line approaches, from easiest to most low-level.\n\n1. Easiest: MCP Inspector (recommended)\n- Install/run:\n  npx @modelcontextprotocol/inspector --command \"your-server-binary\" --args \"arg1 arg2\"\n- This opens a local UI and also shows the raw protocol traffic.\n- You can immediately test:\n  - initialize\n  - tools/list\n  - tools/call\n- Best when you want fast validation without writing your own client.\n\n2. Pure CLI with JSON-RPC over stdio (good for scripting)\n- MCP is JSON-RPC 2.0. The basic handshake is:\n  1. Send initialize\n  2. Send notifications/initialized\n  3. Send tools/list (or resources/list, prompts/list)\n  4. Send tools/call\n\n- Minimal request sequence (newline-delimited JSON):\n    {\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"cli-test\",\"version\":\"0.1.0\"}}}\n    {\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\",\"params\":{}}\n    {\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n    {\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{\"name\":\"your_tool_name\",\"arguments\":{}}}\n\n- Pipe that into your server process and inspect responses with jq.\n\n3. If your server exposes HTTP transport\n- You can use curl directly to POST JSON-RPC to the MCP endpoint.\n- Same message flow as above; only transport differs.\n- This is ideal for deployed/server-mode MCPs.\n\nCommon gotchas\n- Running the server binary alone does not test behavior unless you also send protocol messages.\n- You must do initialize before calling tools.\n- Some servers require exact protocolVersion and may reject mismatches.\n- If a command exits immediately, confirm it is a stdio MCP server mode, not a normal CLI mode.\n\nFor your specific situation\n- The command you showed looks like you fed ticket CLI-style JSON into a program, not a full MCP JSON-RPC exchange.\n- If you want, I can give you a copy-paste bash script that performs a full initialize → list tools → call tool test against your server binary in this repo.",
+      "captured_at": "2026-07-15T22:17:09.734Z",
+      "event_meta": {
+        "event_id": "e4a18b59-17a4-4d48-aaa7-e86da7e55a7b",
+        "parent_event_id": "4e939b52-b4fc-4042-aa60-5d43c4d65539",
+        "event_type": "assistant.message",
+        "message_id": "ecdd2a99-2ea6-47af-bedd-634fac7c664f",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
