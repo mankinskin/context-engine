@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "log-api crate exists for validation log capture and retrieval; logs have native identifiers and queryable metadata; links to tickets/specs/docs/test-api executions are first-class; design integrates with shared memory-system behavior instead of a workflow wrapper CLI"
 component = "log-api"
 depends_on = ["0fb5a2e5-af2b-4b52-81a5-c3a49ffc3274", "75e9fef3-b624-4e12-9709-5d800222908c"]
+effort = "1200"
 priority = "high"
 risk_level = "high"
 tags = "log-api,workflow,validation,memory-api"

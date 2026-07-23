@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "Port hypergraph, overlay/effects, scene3d, theme settings, and debug surfaces to Dioxus without duplicating viewer-api logic."
 component = "tools/viewer/log-viewer/frontend/dioxus"
 depends_on = ["4c1167a0-9262-4850-bf47-2a6729eb6e76"]
+effort = "1200"
 priority = "P2"
 risk_level = "high"
 tags = "#log-viewer #frontend #dioxus #viewer-api #wgpu"

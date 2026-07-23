@@ -4,6 +4,7 @@ title = "[sandbox-v1][impl] Firecracker control plane and repo-local microVM fou
 state = "ready"
 component = "context-engine"
 depends_on = ["456d9b69-ec43-4746-b47d-20704da01be9"]
+effort = "1200"
 priority = "high"
 tags = "sandbox,v1,orchestrator,core"
 type = "tracker-improvement"

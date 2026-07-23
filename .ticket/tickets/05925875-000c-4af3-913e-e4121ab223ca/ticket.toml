@@ -4,6 +4,7 @@ title = "[Bug] context-read overlap-step materialization breaks retention policy
 state = "new"
 acceptance_criteria = "repetition_aabbaabb and read_infix2 pass without width/border panics; sync_read_text2 is resolved under the clarified retention/materialization policy; overlap steps are safe to materialize immediately"
 component = "context-read"
+effort = "1200"
 risk_level = "high"
 tags = "#bug,#context-read,#materialization,#retention,#graph-invariant,#read"
 type = "tracker-improvement"

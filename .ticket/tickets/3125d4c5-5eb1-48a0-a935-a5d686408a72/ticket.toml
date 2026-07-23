@@ -6,6 +6,7 @@ acceptance_criteria = "context-read compiles cleanly against current context-tra
 bug_validity = "not_confirmed"
 component = "context-read"
 doc_category = "bug-report"
+effort = "1200"
 last_reproduced_at = "2026-03-22T16:32:33.779198300+00:00"
 last_reproduced_commit = "899a0e871aea0c1ed26944815550975bd0a6bd8a"
 last_reproduction_command = "cargo check -p context-read"

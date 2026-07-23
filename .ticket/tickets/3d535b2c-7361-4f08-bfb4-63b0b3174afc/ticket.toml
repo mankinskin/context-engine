@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "1. A prompt-time (UserPromptSubmit) bootstrap hook script exists under tools/agent-hooks/ and is referenced from the root hook configuration alongside the existing PreToolUse/PostToolUse/Stop hooks. 2. The hook reads the prompt, resolves ticket/owner context, and calls the session-api check-in surface to obtain the authoritative worktree path, branch, and allocation mode without synthesizing the path itself. 3. The hook injects the resolved worktree path via hookSpecificOutput.additionalContext so the agent operates from that directory. 4. Reuse vs rotation follows the spec contract with rotation as the default handoff path; the hook never silently transfers board ownership. 5. Existing hook reminders remain functional and a focused simulated hook invocation proves the bootstrap path resolves and injects a worktree path."
 component = "session-api"
 depends_on = ["cf4d1e1a-5315-4aa8-b836-5a90996e63c4", "f76b0fa9-d880-45da-b039-b483e904ee2f"]
+effort = "1200"
 execution_order = "4"
 execution_wave = "2"
 linked = ["326bfe38-6f5e-4000-9ffc-e5be0839194f", "e2189e9d-8ea7-4747-bda9-51e573ba51ca"]

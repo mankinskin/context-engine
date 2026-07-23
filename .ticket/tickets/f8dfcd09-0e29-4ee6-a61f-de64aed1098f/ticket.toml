@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "equal-span roots gain peer decompositions when later subparts materialize; rotating-overlap corpus matches spec-backed decomposition sets; focused revisitation validation and manual graph inspection are recorded"
 component = "context-read"
 depends_on = ["6e61bef1-6037-42c8-abc1-d79a3f9367f7", "9f8d842e-3c7c-4470-b840-dd69b92380b5"]
+effort = "1200"
 priority = "high"
 risk_level = "high"
 tags = "#context-read,#read,#decomposition,#revisitation,#overlap,#reconciliation"

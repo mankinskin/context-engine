@@ -6,6 +6,7 @@ acceptance_criteria = "Implement a reproducible Docker harness plus synchronized
 component = "documentation-tooling"
 depends_on = ["5d320d7e-f974-4d52-9e25-8265bf7a42cf"]
 doc_category = "user-facing-installation"
+effort = "1200"
 phase = "implementation-planning"
 priority = "high"
 tags = "docs,docker,ci,installation,deinstallation"

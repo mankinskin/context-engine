@@ -4,6 +4,7 @@ title = "[Bug] context-read normalization of embedded paths is inconsistent acro
 state = "new"
 acceptance_criteria = "validate_mixed_pattern, complex_abcabababcaba, and read_infix1 are resolved under a documented normalization contract for abstract versus lower-level surfaces"
 component = "context-read"
+effort = "1200"
 risk_level = "high"
 tags = "#bug,#context-read,#normalization,#overlap,#path-coverage,#search"
 type = "tracker-improvement"

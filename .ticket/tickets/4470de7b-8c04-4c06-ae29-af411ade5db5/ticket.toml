@@ -4,6 +4,7 @@ title = "Design backlog: stable dependency semantics with state-derived readines
 state = "new"
 acceptance_criteria = "Document single-direction edge model, define readiness derivation from ticket states, compare with edge-flip approach, and propose migration/compatibility plan"
 component = "context-tasks"
+effort = "1200"
 interview_file_type = "interview"
 interview_files = { answers = "assets/interviews/answers.md", questions = "assets/interviews/questions.md" }
 linked = ["91e22471-4895-4fcf-bab2-63efd7d9262d"]

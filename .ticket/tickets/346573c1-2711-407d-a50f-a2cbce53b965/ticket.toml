@@ -6,6 +6,7 @@ acceptance_criteria = "Search Response root_token always present in its TraceCac
 bug_validity = "not_confirmed"
 component = "context-search"
 doc_category = "bug-report"
+effort = "1200"
 last_reproduced_at = "2026-03-22T16:32:35.510741+00:00"
 last_reproduced_commit = "899a0e871aea0c1ed26944815550975bd0a6bd8a"
 last_reproduction_command = "cargo test -p context-read validate_triple_repeat -- --nocapture"

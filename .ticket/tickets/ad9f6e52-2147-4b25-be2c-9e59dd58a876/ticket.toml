@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "doc-cli crate exists as thin interface over doc-api; exposes initial inspection and validation commands; workflow metadata updates happen through shared-library behavior and normal doc-cli usage; CLI docs explain default workflow integration"
 component = "doc-cli"
 depends_on = ["06778dd8-a894-4759-b8fc-f00f6dd21fa5"]
+effort = "1200"
 priority = "high"
 risk_level = "medium"
 tags = "doc-api,doc-cli,workflow,tooling"

@@ -4,6 +4,7 @@ title = "[ticket-viewer][viewer-api] Refine graph selection focus and outside-cl
 state = "in-implementation"
 acceptance_criteria = "1. Only nodes outside the active focus neighborhood render with low-focus transparency. 2. Selecting a node keeps the selected node and direct linked neighbors visually emphasized by default, with stepwise path-distance falloff available for wider neighborhoods. 3. Selected-state emphasis includes stable hooks for scale growth, glow or halo, brighter or thicker linked edges, and neighborhood tint shifts. 4. Clicking or tapping empty graph space clears active selection. 5. Release Playwright coverage proves deselection, focus-band transitions, and selected-neighborhood effects."
 component = "ticket-viewer"
+effort = "1200"
 priority = "high"
 risk_level = "medium"
 spec_refs = "98b4f75d-3628-470d-a5cc-c91b6cc9811a"

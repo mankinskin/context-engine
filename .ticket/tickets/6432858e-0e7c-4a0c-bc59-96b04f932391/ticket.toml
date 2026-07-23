@@ -6,6 +6,7 @@ acceptance_criteria = "context-read crate feature-complete for text indexing; al
 component = "context-read"
 depends_on = ["fe81b165-113f-43fc-87c2-dc7f44170152"]
 doc_category = "plan"
+effort = "1200"
 risk_level = "high"
 source_agent_files = "plans/20260218_PLAN_CONTEXT_READ_COMPLETION.md"
 tags = "#plan,#context-read,#algorithm,#cursor,#expansion,#overlap"

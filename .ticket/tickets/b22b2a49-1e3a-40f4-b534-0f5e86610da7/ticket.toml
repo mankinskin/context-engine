@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "Make Dioxus the default served frontend, keep dist artifacts ignored, and validate the migrated log-viewer flows end-to-end."
 component = "tools/viewer/log-viewer/frontend/dioxus"
 depends_on = ["6d0dc335-693a-450e-92ba-9cdaa4087afa", "972c239e-e110-49da-9449-8bdcfaea5f18"]
+effort = "1200"
 priority = "P2"
 risk_level = "medium"
 tags = "#log-viewer #frontend #dioxus #migration"

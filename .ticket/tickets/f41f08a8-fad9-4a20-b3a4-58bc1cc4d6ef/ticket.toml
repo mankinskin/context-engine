@@ -4,6 +4,7 @@ title = "[Bug] edge_repeated_single_char: panic — pattern width mismatch in T2
 state = "new"
 acceptance_criteria = "integration::edge_case_tests::edge_repeated_single_char passes; read_sequence(\"aaaa\") returns text=aaaa width=4 without panic"
 component = "context-trace"
+effort = "1200"
 risk_level = "high"
 tags = "#bug,#panic,#integration-test,#context-trace,#repeated-char,#RC-3"
 type = "tracker-improvement"

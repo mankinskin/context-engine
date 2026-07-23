@@ -5,6 +5,7 @@ state = "in-implementation"
 acceptance_criteria = "read_repeating_known1 and read_multiple_overlaps1 pass; each overlap expansion step follows largest-overlap search, complement completion, and safe root commit"
 component = "context-read"
 depends_on = ["73d1bf88-8f61-431b-bc2d-d36c523f8f03"]
+effort = "1200"
 risk_level = "high"
 tags = "#bug,#context-read,#largest-overlap,#decomposition,#overlap,#read"
 type = "tracker-improvement"

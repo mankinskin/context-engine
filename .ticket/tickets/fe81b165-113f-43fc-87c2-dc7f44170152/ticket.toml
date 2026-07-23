@@ -5,6 +5,7 @@ state = "new"
 acceptance_criteria = "child reconciliation tickets are resolved under the rewritten read specs; each spec-backed implementation records focused validation plus manual graph/log confirmation where broader suites remain blocked; full context-read lib validation passes or blocked cases are explicitly rebaselined"
 component = "context-read"
 depends_on = ["05925875-000c-4af3-913e-e4121ab223ca", "51cfdc74-4454-481d-91af-1d94b4934dec", "529feeaa-822c-443b-a6a2-f0ae67edc225", "6e61bef1-6037-42c8-abc1-d79a3f9367f7", "73d1bf88-8f61-431b-bc2d-d36c523f8f03", "9f8d842e-3c7c-4470-b840-dd69b92380b5", "b78a21bd-de8f-407f-a9b8-2664019240da", "bfe43d0d-2870-4146-b651-1464a55ec7aa", "c6cc7d5a-dcfb-4ae0-bfc7-d8682462503b", "f8dfcd09-0e29-4ee6-a61f-de64aed1098f"]
+effort = "1200"
 linked = ["978ce8a5-3936-467b-aca8-822eeecd1eb0", "a25e3cad-5bf2-4432-9c89-3a6dd67ee774"]
 risk_level = "high"
 tags = "#tracker,#context-read,#context-stack,#integration,#testing,#read,#spec"

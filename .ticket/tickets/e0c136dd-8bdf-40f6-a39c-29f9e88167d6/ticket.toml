@@ -6,6 +6,7 @@ acceptance_criteria = "Continuously validate install and deinstall docs in CI ac
 component = "documentation-tooling"
 depends_on = ["0ffac34a-4e33-426c-8eef-ef6482ab3bde"]
 doc_category = "user-facing-installation"
+effort = "1200"
 phase = "planning"
 priority = "high"
 tags = "docs,docker,ci,installation,deinstallation"
