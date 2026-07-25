@@ -1,8 +1,9 @@
-Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), bundling all ticket components: ticket-api, ticket-cli, ticket-mcp, ticket-http, ticket-viewer, and ticket-vscode(+ticket-vscode-core).
+Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-api` crate and exposes transports as FEATURE-GATED binary targets (`ticket-cli`, `ticket-mcp`, `ticket-http`) built on the shared `transport-harness` (`dbe0e955`). Frontends stay separate crates: `ticket-viewer` (Dioxus) and `ticket-vscode` (+ ticket-vscode-core).
 
-Follow the common per-tool extraction recipe (see parent tracker): assemble crates+transports+viewer+vscode, declare memory-kernel/viewer-api/memory-fixtures as deps, preserve history, migrate ticket-scoped artifacts via the cross-store move tooling, verify build/test/transports/viewer, register in workflow-tools.
+Follow the parent-tracker recipe (`858c5286`); migrate ticket-scoped artifacts via the cross-store move tooling.
 
 ## Acceptance criteria
-- `ticket` repo builds/tests independently; cli/mcp/http smoke pass; ticket-viewer browser-verified (screenshot + Playwright).
+- `ticket` builds independently: domain crate lib (primary) re-exporting internal `ticket-api` + feature-gated transport bins (names preserved) over the harness.
+- cli/mcp/http bin smoke pass; ticket-viewer browser-verified (screenshot + Playwright).
 - ticket-scoped artifacts migrated with reference integrity.
 - Registered as a workflow-tools dependency.

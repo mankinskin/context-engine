@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "40698f27-e605-497f-a307-63aa88d763a9",
-  "captured_at": "2026-07-25T14:03:20.878Z",
+  "captured_at": "2026-07-25T14:39:29.313Z",
   "turns": [
     {
       "sequence": 0,
@@ -1463,6 +1463,994 @@
         "parent_event_id": "2266becb-e576-41ae-88bf-b89b67c7f078",
         "event_type": "assistant.message",
         "message_id": "c365c2cb-6e37-495a-8678-909b55742eeb",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "user",
+      "content": "help me review the planned tickets. crutially, we have a new decision to combine all domain tool transports into a single crate, and to add a domain crate layer on top of all transports and the domain api (e.g. ticket crate for all ticket-cli, ticket-mcp, ticket-http, ... transports and ticket-api) as a single domain crate handle. this crate should be the primary build target with the current transport interface binaries as binary build targets. Create new tickets and update any adjacient work tickets under this epic and help me review all tickets for this epic.",
+      "captured_at": "2026-07-25T14:15:46.570Z",
+      "event_meta": {
+        "event_id": "26b6ed68-7932-4b59-9745-4752b3f0c838",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "I'll incorporate the new architectural decision, then walk you through the full epic for review. First let me re-load the current per-tool tickets to review them accurately against the new decision.",
+      "captured_at": "2026-07-25T14:16:41.787Z",
+      "event_meta": {
+        "event_id": "634e71b2-86ff-4da8-8924-4e929140c1eb",
+        "parent_event_id": "d06cd2ef-1234-4391-a096-9c0a0f288f6f",
+        "event_type": "assistant.message",
+        "message_id": "a05e9852-35ad-4c69-bb68-9917e7bb404b",
+        "reasoning_text": "The user wants to restructure the architecture so that each domain tool consolidates all its transports (CLI, MCP, HTTP) into a single crate alongside the domain API, making that combined crate the primary build target with the individual transports as binary outputs. This changes how the per-tool extraction is organized compared to the current approach.\n\nNow I need to fetch the current epic tickets to review them against this new architectural decision, then create or update tickets to reflect the consolidation pattern and walk through all the work items with the user. I need to create a new design ticket that establishes the domain-crate consolidation pattern as a foundational contract, then update the epic description, the per-tool parent tracker to reference this design ticket and reflect the single-crate structure, and add notes to each of the 11 tool tickets about following this convention—though updating all their descriptions individually is heavy, I can lean on the parent tracker's recipe as the source of truth and just add clarifying notes. The domain crate consolidates the Rust transport binaries (api, cli, mcp, http) into a single crate with multiple bin targets, while the viewer (Dioxus/WASM) and vscode extension (TypeScript) remain as separate crates. I need to clarify this distinction in the design ticket and then review the current tickets to update them accurately.\n\nNow I'm planning the action items: create a new design ticket for the domain-crate consolidation contract, then wire it into the dependency graph. The domain-crate layout is a convention that should be established early, though it's independent of the memory-kernel extraction—it's really just about crate organization. I'll make it depend on provisioning or keep it as a pure design task with minimal structural dependencies, then link it under the epic and have the per-tool tickets depend on it. that the per-tool parent tracker already aggregates the tool work, I could make it depend on the design ticket instead of having each of the 11 tools depend on it individually. That reduces the edges significantly while still gating the work properly. I'll go ahead and add those 11 edges to make each tool depend on the design ticket—that's the clearest way to enforce the convention. For the epic description, I need to decide whether to replace the whole thing or append. Since update_ticket likely does a full replacement, I'll need to resend the entire description with the new decision section added, which is verbose but ensures I don't lose any existing content.\n\nMy plan: create the design ticket first to capture the decision, then update the epic with a revised description that includes the locked decision and references the new ticket, update the parent tool ticket with the new recipe, and finally update all 11 tool tickets with their new titles and descriptions.\n\nI need to clarify the scope—viewer and vscode stay separate since the domain crate covers just the API and Rust transports. Let me start by creating the design ticket and getting its ID so I can wire up the edges and make the remaining updates.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01CfH7ueHYp5bxpkX4S8GvzM",
+            "name": "mcp_ticket-mcp_get_ticket_description",
+            "arguments": {
+              "id": "858c5286",
+              "workspace": "default"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01Q2tqovP3dGvGJNHaJYG9xv",
+            "name": "mcp_ticket-mcp_get_ticket_description",
+            "arguments": {
+              "id": "ba4aaa9c",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "Now I'll create the design ticket that captures the new domain-crate consolidation decision, then wire and propagate it.",
+      "captured_at": "2026-07-25T14:17:37.554Z",
+      "event_meta": {
+        "event_id": "d9def2ff-6184-48f4-8aa2-b857fceb503d",
+        "parent_event_id": "13fa50a5-6f80-4a7a-a717-4e91a56b89b4",
+        "event_type": "assistant.message",
+        "message_id": "d4b3e254-f326-4d28-89b3-cfa6103004b6",
+        "reasoning_text": "I'm creating a design ticket to document the domain-crate consolidation decision, then connecting it to the relevant tickets by establishing dependencies—the tools will depend on this design, the epic will aggregate it, and it'll depend on provisioning. After that, I'll update the epic, parent tracker, and all eleven tool tickets to reflect these changes.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01QbctFvQf3esuru2j6iaQfv",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "description": "Phase A design/contract. Define the canonical per-domain crate layout that every tool extraction must follow: a single domain crate (named after the domain, e.g. `ticket`) that unifies the domain api and all of its transports into one build target, with each transport exposed as a binary target of that crate.\n\n## Decision (locked 2026-07-25)\n- Collapse the previous multi-crate split ({domain}-api + {domain}-cli + {domain}-mcp + {domain}-http as separate crates) into ONE domain crate `{domain}`.\n- The domain crate's library is the primary build target and the public domain handle: it re-exports the domain api surface and the shared transport-agnostic core.\n- Each transport (cli, mcp, http, and any future transport) becomes a binary build target (`[[bin]]`) of the same crate, sharing the crate's lib as its dependency. Transport-specific code lives in modules (e.g. `src/bin/cli.rs`, `src/bin/mcp.rs`, `src/bin/http.rs`) or gated features, not separate crates.\n- Binary names preserve the current interface tool names (e.g. `ticket-cli`, `ticket-mcp`, `ticket-http`) so downstream invocations and MCP wiring are unchanged.\n- The domain api layer (`{domain}-api`) is absorbed as an internal library layer/module of the domain crate rather than a standalone crate; its public items are re-exported from the domain crate lib.\n- Frontends stay separate: the domain viewer (Dioxus/WASM) and any vscode extension remain their own crates/packages inside the tool repo, depending on the domain crate lib.\n- Feature flags gate optional transports so a consumer can build a slim domain crate (lib only) or select specific transport bins.\n\n## Rationale\n- One primary build target per domain (the crate handle) simplifies dependency declaration for `workflow-tools` and target projects.\n- Transports share one version, one lib, one test surface; no cross-crate version skew within a domain.\n- Binary targets keep the existing CLI/MCP/HTTP entry points intact while removing crate-boundary overhead.\n\n## Scope\n- Author the crate-layout contract (Cargo manifest shape: `[lib]` + multiple `[[bin]]`, feature matrix, module layout) and a reference skeleton.\n- Define the api-absorption rule (how {domain}-api items are re-exported) and the transport-binary naming rule.\n- Define the workspace/dependency declaration `workflow-tools` and context-engine use to consume a domain crate.\n- Update the per-tool extraction recipe and every per-tool ticket to target the single-crate structure.\n\n## Acceptance criteria\n- Committed crate-layout contract + reference skeleton crate compiling with lib + all transport bins.\n- Naming rules preserve current binary names; api absorbed and re-exported.\n- Per-tool parent tracker and all 11 per-tool tickets updated to reference this contract.\n- workflow-tools dependency-declaration pattern documented against the single domain crate.\n\n## Dependencies\n- Gates every per-tool extraction ticket (they must follow this layout).\n- Independent of kernel extraction content, but should be finalized before per-tool work begins.",
+              "fields": [
+                "priority=high",
+                "effort=1200",
+                "component=workflow-tools",
+                "risk_level=high"
+              ],
+              "state": "new",
+              "title": "[workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets",
+              "type": "task",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "Design ticket `0da6894c` created. Now wire it: epic aggregates it, and all 11 tool extractions depend on it (they must follow the finalized crate layout).",
+      "captured_at": "2026-07-25T14:18:09.869Z",
+      "event_meta": {
+        "event_id": "27d152a2-f16f-4327-a727-dbf6f0634d85",
+        "parent_event_id": "ad268229-7d9d-4c3b-88db-b0f17ab0712e",
+        "event_type": "assistant.message",
+        "message_id": "f41bc217-e4a2-47de-a8a0-ec01010a52b2",
+        "reasoning_text": "I'm setting up the dependency graph for this ticket. The epic depends on this design ticket for aggregation, which itself depends on the provisioning ticket. Then all eleven tool tickets gate on this design work, and the parent ticket that aggregates them also depends on the design being complete first.\n\nActually, I'm reconsidering whether the design ticket needs to depend on provisioning at all. The crate-layout design is self-contained and doesn't require the repos to be ready, so I can let it start immediately as a root item. The epic will still depend on it for proper sequencing. The tools already depend on both the shared libraries and this design ticket, which gives us the right ordering.\n\nNow I'm adding the edges: the epic depends on the design ticket, and all twelve tool tickets depend on it too.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01YL989GcWoMxXmGn3jhioE1",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "69eb4118",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01RgTYk7Vx7x2Z5MFvGNjRwC",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "ba4aaa9c",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01JMuTVSYtgP8soE1xmLgeo6",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "58576ac3",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01G5cQVtHSYXfKmRvpNv2feE",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "21893f5f",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01WoXnfmgoT4k3AJDFSRTdkV",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "a57886e4",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01MT9irD1huKYZLtLM6mSm3J",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "eab4cd40",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01HSbmpn5AaYNKKqxpG7wG8k",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "2736c3dc",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01Pbq3MMRq6tRDySxB6ZAXtD",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "bdd35984",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01JNM57SKLVGZHZeHkHRNT8W",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "94de0e62",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01JWAAgrxAQkGX9gnCwQeeGm",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "afb71e41",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01GgRCMt6WysbkbMuyd1jSmH",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "6af0deab",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01N5yCAN9J5icUzk6B1N7SxZ",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "f2882a13",
+              "kind": "depends_on",
+              "to": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "Edges wired. Now I'll propagate the decision into the parent tracker recipe, the epic's locked decisions, and each of the 11 tool tickets. Let me update the parent tracker and epic first.",
+      "captured_at": "2026-07-25T14:18:52.139Z",
+      "event_meta": {
+        "event_id": "2249f291-ba53-4119-ba46-f8920ae708b8",
+        "parent_event_id": "63f4304c-7ad9-448f-9440-ba4aa443265e",
+        "event_type": "assistant.message",
+        "message_id": "96746aa6-efe8-48a3-beca-be891a8a3b47",
+        "reasoning_text": "I need to update the parent tracker recipe to reflect a single domain crate, then revise the epic description and all 11 tool tickets with new titles and descriptions. Let me start by updating the parent tracker description.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01LeeEF11PkJtLPN6wFUR2mm",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B parent tracker. Split each of the 11 domain tools into its own bare-named repository under github.com/mankinskin. Each tool repo is built around a single domain crate (see the domain-crate contract `0da6894c`) that unifies the domain api and all Rust transports, with frontends kept as separate crates/packages.\n\n## Single-crate structure (per domain-crate contract 0da6894c)\n- One domain crate `{domain}` is the primary build target: its lib is the public domain handle and absorbs/re-exports the former `{domain}-api`.\n- Each transport (cli, mcp, http) is a binary target (`[[bin]]`) of that crate, preserving current binary names (`{domain}-cli`, `{domain}-mcp`, `{domain}-http`). No separate transport crates.\n- Frontends stay separate crates/packages in the repo: the domain viewer (Dioxus/WASM) and vscode extension, depending on the domain crate lib.\n\n## Common per-tool extraction recipe\n1. Consolidate the domain's api + transports (from memory-api/{crates,tools}) into the single `{domain}` crate with lib + transport bin targets; move its viewer from memory-viewers as a separate crate.\n2. Declare `memory-kernel`, `viewer-api`, and `memory-fixtures` as external dependencies of the domain crate / frontends.\n3. Preserve git history where practical (subtree/filter-repo).\n4. Migrate the tool's tool-scoped artifacts (tickets/specs/docs for that tool) into the tool repo's own stores using the safe cross-workspace move tooling (memory-api `505b2cd4`) so references are relinked, not broken.\n5. Independent build + test: `cargo build` produces the lib + all transport bins; smoke each bin (cli/mcp/http); viewer browser verification.\n6. Register the tool repo (its domain crate) as a dependency of `workflow-tools`.\n\n## Children (one per tool)\nticket, spec, rule, doc, test, log, feedback, session, audit, peek, interview.\n\n## Acceptance criteria\n- Every child tool repo builds/tests independently: one domain crate lib + transport bins, plus separate frontend crates.\n- Binary names preserved; api absorbed and re-exported from the domain crate lib.\n- Tool-scoped artifacts moved with reference integrity preserved (no dangling refs).\n- All child tickets closed and aggregated into workflow-tools.\n\n## Dependencies\n- Blocked by foundations (memory-kernel, shared libs) and the domain-crate contract `0da6894c`.\n- Artifact moves blocked on cross-store move tooling (memory-api `505b2cd4`).",
+              "id": "858c5286",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "Now update the epic's locked decisions and phases to record the single-crate decision.",
+      "captured_at": "2026-07-25T14:19:27.548Z",
+      "event_meta": {
+        "event_id": "223dfdef-351c-4bbc-9286-26258ef5ea18",
+        "parent_event_id": "ebfdf582-84ad-44f3-aab1-37635463d8d7",
+        "event_type": "assistant.message",
+        "message_id": "ba193796-5c0b-4801-8eb2-20db56031825",
+        "reasoning_text": "I'm updating the epic description to incorporate the new locked decision about crate structure—each domain tool as a single domain crate with transports as binary targets—and adding a Phase A design item along with related work notes.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01EbTkLhd6Nu9Dw8AzGzFifJ",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Tracking epic for the repository restructuring that turns this monorepo into an instantiated example of a general, self-improving agent framework, and extracts the workflow tooling into standalone, independently-versioned repositories.\n\n## Goal\nThe whole repository should act as an environment in which an AI agent can operate autonomously: discover its tools, find next tasks, build and refine its own workflow, spawn sub-agents, gather user feedback (interviews, reviews, ratings), and self-improve the tools/workflows/environment. To generalize beyond this repo, we separate:\n- the **target environment / application** (the context-stack: context-api/insert/read/search/trace + context-engine's own generated artifacts), from\n- the **workflow tooling** (the memory-api domain stores, their transports, the viewer framework, and the guidance/skill), which becomes an installable dependency that any target project can consume.\n\n## Locked decisions (interview 2026-07-25)\n- GitHub owner: `mankinskin` (same as existing submodules).\n- Granularity: **full per-tool split immediately** — each domain tool becomes its own repo.\n- **Crate structure (NEW 2026-07-25):** each domain tool is a **single domain crate** `{domain}` that unifies the domain api and all Rust transports; each transport (cli, mcp, http) is a **binary target (`[[bin]]`)** of that crate, preserving current binary names. The domain crate **lib is the primary build target and public handle**; the former `{domain}-api` is absorbed and re-exported. Frontends (viewer, vscode) stay separate crates/packages. See design ticket `0da6894c`.\n- Per-tool repo naming: **bare domain name** (ticket, spec, rule, doc, test, log, feedback, session, audit, peek, interview).\n- Viewers bundle into their owning tool repo as a separate frontend crate (memory-viewers is dissolved).\n- Shared storage kernel is extracted and **renamed `memory-kernel`** (frees the `memory-api` name).\n- Umbrella repo: **workflow-tools** aggregates the tool + shared repos (each consumed as its single domain crate) as dependencies.\n- Skill: dedicated **workflow-skill** repo published to skills.sh; installable at root and at each nested tool; single active install ignores nested installs and can self-uninstall.\n- context-engine becomes a consuming example: keeps only context-stack + its own generated artifacts (.ticket/.spec/.rule/...); workflow tooling is an installed dependency.\n- Artifacts: workflow-tools gets repo-level self-referential artifact stores now; per-tool artifact stores follow with the split.\n- interview repo is pre-created as a placeholder even though the crate is not built yet.\n\n## Repositories to create on GitHub (owner: mankinskin)\nShared libraries:\n- `memory-kernel` — shared storage/index/search kernel (from memory-api/crates/memory-api)\n- `memory-fixtures` — shared test support (memory-fixtures + memory-matrix)\n- (`viewer-api` already exists — shared viewer framework + viewer-ctl; keep)\n\nPer-tool repos (each built around a single domain crate + transport bins + separate frontend crates):\n- `ticket`, `spec`, `rule`, `doc`, `test`, `log`, `feedback`, `session`, `audit`, `peek`, `interview`\n\nUmbrella + packaging:\n- `workflow-tools` — aggregates all tool + shared repos as dependencies\n- `workflow-skill` — skills.sh-installable entry point / guidance\n\nExisting repos: `viewer-api` and `context-stack` are kept; `memory-api` name is freed (content split out); `memory-viewers` is dissolved into per-tool repos.\n\n## Migration phases\n- Phase 0 — Provisioning: user creates the GitHub repos above; agent waits for confirmation/links.\n- Phase A — Shared foundations + crate contract: finalize the single domain-crate contract (`0da6894c`); extract `memory-kernel`; stabilize `viewer-api` + `memory-fixtures` as standalone deps.\n- Phase B — Per-tool extraction: split each of the 11 domain tools into its own repo built around the single domain crate (lib + transport bins) + separate frontend crates, using the cross-workspace move tooling for artifact integrity.\n- Phase C — Umbrella + artifacts: create `workflow-tools`; add repo-level self-referential artifact stores; migrate tool-scoped artifacts into each tool repo.\n- Phase D — Skill packaging: author `workflow-skill`; define scope/precedence for root + nested installs, single active install, self-uninstall.\n- Phase E — context-engine reframing: reduce to context-stack + own artifacts; consume workflow-tools as installed dependency; update entry points across all three install sites.\n- Phase F — Validation & cutover: end-to-end build/test/MCP/CLI/viewer + browser verification across split repos; migration guide.\n\n## Cross-store prerequisite (recorded textually; graph edges cannot cross ticket stores)\nArtifact moves must preserve reference integrity. The safe cross-workspace move tooling lives in the **memory-api** ticket store:\n- memory-api `505b2cd4` \"Deliver safe cross-workspace ticket move for git-backed stores\" (+ children) — journaled, ref-relinking moves.\n- This is a hard prerequisite for Phase B/C artifact migration and must be green before per-tool artifact moves begin.\n\n## Related existing work to link (default store)\n- `671d4e47` [architecture][multi-store] Tracker: cross-store interaction model and migration — internal contract/neutralization; complementary, must stay coordinated (linked).\n- `13912e44` [architecture][memory-api] Neutral naming migration map — informs the memory-kernel rename (linked).\n- `2b1279bd` [architecture][memory-api] Neutral storage kernel and API migration — kernel extraction dependency (linked).\n- `b13c5d89` Epic: Agent Skill Foundation — skill contract feeds the workflow-skill packaging (linked).\n\n## Acceptance criteria\n- Complete dependency graph with every child ticket implementation-ready and validated.\n- Domain-crate contract finalized; every tool repo built as a single domain crate (lib primary target) with transport binary targets and separate frontend crates.\n- All new repos exist and build/test independently; workflow-tools aggregates them.\n- context-engine builds using workflow-tools as an installed dependency, retaining only context-stack + its own artifacts.\n- workflow-skill installs from skills.sh, wires the entry point at root and nested tools, and handles scope de-duplication + self-uninstall.\n- Artifact moves preserve cross-reference integrity (validated), with no dangling references.\n- Migration guide + install docs published; browser verification recorded for viewer-facing changes.",
+              "id": "69eb4118",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "Now propagate into all 11 tool tickets — updating each title and description to the single-crate structure.",
+      "captured_at": "2026-07-25T14:20:36.302Z",
+      "event_meta": {
+        "event_id": "b59ccbaf-1b4e-4271-b31b-bf9e91613dfb",
+        "parent_event_id": "efb73d93-6a99-40db-b067-cd81bb89d7e2",
+        "event_type": "assistant.message",
+        "message_id": "60e3e24c-a941-464a-a6f5-10ecd2826aa2",
+        "reasoning_text": "I'm going to batch update all 11 tool tickets by setting new titles that follow a consistent pattern reflecting each domain as a single crate, along with updated descriptions. The update_ticket function lets me pass both the description and fields (including the title) in one call, so I can handle everything efficiently. Now I'm mapping out the per-tool specifics for each domain: ticket, spec, rule, doc, test, log, feedback, session, audit, peek, and interview—each with their own binary targets and frontend requirements. I need to update each tool's configuration, starting with the ticket tool and working through the list systematically.\n\nSince these are independent updates to different tickets, I can parallelize all eleven calls in a single batch rather than splitting them sequentially.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01MWc8TMLeegvUJqa2DtYvhi",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "ba4aaa9c",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends"
+              ],
+              "description": "Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `ticket-api` and hosts the transports as binary targets (`ticket-cli`, `ticket-mcp`, `ticket-http`). Frontends stay separate crates/packages: `ticket-viewer` (Dioxus) and `ticket-vscode` (+ ticket-vscode-core).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate ticket-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `ticket` repo builds independently: one domain crate lib (primary target) + transport bins (`ticket-cli`/`ticket-mcp`/`ticket-http`) with names preserved; api re-exported from the lib.\n- cli/mcp/http bin smoke pass; ticket-viewer browser-verified (screenshot + Playwright).\n- ticket-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency (its domain crate).",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_018aM7wFttaNMdtbDKfGbebZ",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "58576ac3",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract spec tool as a single `spec` domain crate (api + transport bins) + viewer frontend"
+              ],
+              "description": "Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `spec-api` and hosts transports as binary targets (`spec-cli`, `spec-mcp`, and `spec-http` if present). Frontend `spec-viewer` stays a separate crate.\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate spec-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `spec` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported from the lib.\n- transport bin smoke pass; spec-viewer browser-verified (screenshot + Playwright).\n- spec-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_019aNts2YdvLTamY44J4YydA",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "21893f5f",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract rule tool as a single `rule` domain crate (api + transport bins)"
+              ],
+              "description": "Phase B. Extract the rule tool into its own `rule` repository (owner mankinskin), built as a single `rule` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `rule-api` and hosts transports as binary targets (`rule-cli`, `rule-mcp`, and any rule-http).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate rule-scoped artifacts via the cross-store move tooling. Coordinate with the migrate-off-generator work (rule-targets coupling).\n\n## Acceptance criteria\n- `rule` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass.\n- rule-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01TBYgjbWNoiSwt9Mtr9u5pz",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "a57886e4",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract doc tool as a single `doc` domain crate (api + transport bins) + viewer frontend"
+              ],
+              "description": "Phase B. Extract the doc tool into its own `doc` repository (owner mankinskin), built as a single `doc` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `doc-api` and hosts transports as binary targets (doc cli/mcp/http as present). Frontend `doc-viewer` stays a separate crate.\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate doc-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `doc` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass; doc-viewer browser-verified (screenshot + Playwright).\n- doc-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01LZz1XJH74uv4wZm9Htww3x",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "eab4cd40",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract test tool as a single `test` domain crate (api + transport bins)"
+              ],
+              "description": "Phase B. Extract the test tool into its own `test` repository (owner mankinskin), built as a single `test` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `test-api` and hosts transports as binary targets (`test-cli`, `test-mcp`, and any test-http).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate test-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `test` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass.\n- test-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_016xNLVRZwVpZ7TGa57sRNHf",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "2736c3dc",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract log tool as a single `log` domain crate (api + transport bins) + viewer frontend"
+              ],
+              "description": "Phase B. Extract the log tool into its own `log` repository (owner mankinskin), built as a single `log` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `log-api` and hosts transports as binary targets (log cli/mcp as present). Frontend `log-viewer` stays a separate crate.\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate log-scoped artifacts via the cross-store move tooling. Coordinate with in-flight log-viewer Dioxus port tickets.\n\n## Acceptance criteria\n- `log` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass; log-viewer browser-verified (screenshot + Playwright).\n- log-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01HK1og8WaEGQMsT6tdoS9kZ",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "bdd35984",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract feedback tool as a single `feedback` domain crate (api + transport bins)"
+              ],
+              "description": "Phase B. Extract the feedback tool into its own `feedback` repository (owner mankinskin), built as a single `feedback` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `feedback-api` and hosts transports as binary targets (`feedback-cli`, `feedback-mcp`).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate feedback-scoped artifacts via the cross-store move tooling. Coordinate with the feedback-api design/curation tickets still in review.\n\n## Acceptance criteria\n- `feedback` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass.\n- feedback-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_013njwds2qfAp8rjbkKvgfSp",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "94de0e62",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract session tool as a single `session` domain crate (api + transport bins)"
+              ],
+              "description": "Phase B. Extract the session tool into its own `session` repository (owner mankinskin), built as a single `session` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `session-api` and hosts transports as binary targets (`session-cli`, `session-mcp`).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate session-scoped artifacts via the cross-store move tooling. Coordinate with session identity/optimization tickets still in review.\n\n## Acceptance criteria\n- `session` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass.\n- session-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01VjuKN5Bvn7umRBFpS31yTP",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "afb71e41",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract audit tool as a single `audit` domain crate (api + transport bins)"
+              ],
+              "description": "Phase B. Extract the audit tool into its own `audit` repository (owner mankinskin), built as a single `audit` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `audit-api` and hosts transports as binary targets (`audit-cli`, `audit-mcp`), plus the `.audit.toml` config contract.\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate audit-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `audit` repo builds independently: one domain crate lib + transport bins (names preserved); api re-exported.\n- transport bin smoke pass.\n- audit-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_012jzz68hCjocP7yHAK8LgjG",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "6af0deab",
+              "fields": [
+                "title=[workflow-tools][per-tool] Extract peek tool as a single `peek` domain crate (api + transport bins incl. compact-terminal)"
+              ],
+              "description": "Phase B. Extract the peek tool into its own `peek` repository (owner mankinskin), built as a single `peek` domain crate per the domain-crate contract `0da6894c`: the crate lib absorbs and re-exports `peek-api` and hosts transports as binary targets (`peek-cli`, `peek-mcp`, and `compact-terminal-mcp`).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`). Migrate peek-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `peek` repo builds independently: one domain crate lib + transport bins (names preserved incl. compact-terminal-mcp); api re-exported.\n- transport bin smoke pass.\n- peek-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_0198mUgsmBmD9Z1bFkw7yi5t",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "id": "f2882a13",
+              "fields": [
+                "title=[workflow-tools][per-tool] Pre-create interview tool repo as a single `interview` domain crate skeleton (placeholder)"
+              ],
+              "description": "Phase B. Pre-create the `interview` repository (owner mankinskin) as a placeholder for the interview tool, scaffolded per the domain-crate contract `0da6894c`: a single `interview` domain crate skeleton (lib stub that will absorb `interview-api`) with transport binary-target stubs (`interview-cli`, `interview-mcp`) and artifact stores. The interview tool is planned but not yet built (see interview-api ticket `7639449a`).\n\nFollow the common per-tool extraction recipe (see parent tracker `858c5286`) to the extent components exist; otherwise scaffold the single-crate skeleton and register the placeholder in workflow-tools.\n\n## Acceptance criteria\n- `interview` repo exists with the single domain-crate skeleton (lib stub + transport bin stubs + stores).\n- Registered as a workflow-tools dependency (placeholder allowed).\n- Linked to the interview-api design ticket so implementation targets this repo and layout.",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "The design is now propagated across the epic, parent tracker, and all 11 tool tickets. Let me lightly update the umbrella ticket (adjacent) to specify the domain crate as the dependency unit, then validate graph health.",
+      "captured_at": "2026-07-25T14:21:09.465Z",
+      "event_meta": {
+        "event_id": "50ac7e05-6c0a-4284-a9c4-f9d7f6751ca1",
+        "parent_event_id": "f51a950d-64a4-4f57-8aa2-1d72bd8af979",
+        "event_type": "assistant.message",
+        "message_id": "cea70eef-3aba-453f-b916-b8d46ad212c4",
+        "reasoning_text": "I've updated the umbrella ticket to clarify that each domain is consumed as a single crate, and I'm noting that the context-engine refactoring ticket also touches on the crate structure and may need similar adjustments.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_018KDyz94AnrDwHjPsZbapMr",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase C. Create the `workflow-tools` umbrella repository that aggregates the extracted shared libs (`memory-kernel`, `viewer-api`, `memory-fixtures`) and the 11 per-tool repos as dependencies (submodules and/or versioned deps), forming the single installable workflow-tooling bundle that a target project consumes.\n\nPer the domain-crate contract (`0da6894c`), the dependency unit for each tool is its single domain crate (`{domain}`); the umbrella depends on that crate and re-exposes/passes through its transport binaries (`{domain}-cli`, `{domain}-mcp`, `{domain}-http`) so installers get the same interface tools.\n\n## Scope\n- Initialize `workflow-tools` with an aggregation manifest referencing every tool domain crate + shared repo.\n- Provide a build/install entry that pulls and wires all tools (the dependency any target environment installs), exposing the transport bins.\n- Establish the repo-level guidance entry point (AGENTS.md) that points into the workflow-skill.\n\n## Acceptance criteria\n- `workflow-tools` resolves and builds all aggregated domain crates and exposes their transport bins.\n- A documented install path exists for a target project to depend on workflow-tools.\n- Repo-level entry point references the workflow-skill guidance.\n\n## Dependencies\n- Blocked by per-tool extraction (tool domain crates must exist) and foundations.",
+              "id": "b525a7fa",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Decision fully propagated and the graph is healthy (50 tickets checked, 0 cycles, 0 dangling edges; the only 9 warnings are pre-existing missing-effort flags on the *linked* Agent Skill Foundation cluster, none on our tickets).\n\n## What changed for the new decision\n- **New design ticket** [0da6894c Single domain crate per tool: unify api + transports as one crate with transport binary targets](.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml) — captures: one `{domain}` crate whose **lib is the primary build target/handle**, transports become `[[bin]]` targets (names preserved), `{domain}-api` absorbed and re-exported, frontends (viewer/vscode) stay separate. It **gates all 11 tool extractions** and is aggregated by the epic.\n- **Epic** locked-decisions + phases updated; **parent tracker** [858c5286](.ticket/tickets/858c5286-6c2b-4a05-a0f3-4e8f6b90b75e/ticket.toml) recipe rewritten to single-crate; **all 11 tool tickets** re-titled/re-scoped to \"single `{domain}` domain crate (api + transport bins)\"; **umbrella** [b525a7fa](.ticket/tickets/b525a7fa-f59d-4a14-b234-2ec7b8a42e95/ticket.toml) updated so the dependency unit is the domain crate with transport-bin passthrough.\n\n## Full epic at a glance (28 tickets)\n- **Phase 0:** [4f284d45 provisioning](.ticket/tickets/4f284d45-e520-4d22-945e-f54bdd3c0175/ticket.toml)\n- **Phase A:** [0da6894c domain-crate contract](.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml) · [e12d8343 memory-kernel](.ticket/tickets/e12d8343-24f2-4b5d-8023-5a071238904a/ticket.toml) · [1c452ff1 shared libs](.ticket/tickets/1c452ff1-6edc-47c8-a73d-d07ce9b4d473/ticket.toml)\n- **Phase B:** [858c5286 per-tool tracker](.ticket/tickets/858c5286-6c2b-4a05-a0f3-4e8f6b90b75e/ticket.toml) → 11 domain-crate tickets (ticket, spec, rule, doc, test, log, feedback, session, audit, peek, interview)\n- **Phase C:** [b525a7fa umbrella](.ticket/tickets/b525a7fa-f59d-4a14-b234-2ec7b8a42e95/ticket.toml) · [47a0bcc3 artifact stores](.ticket/tickets/47a0bcc3-f42d-475e-b05a-777293c4698e/ticket.toml) · [47f2a664 artifact migration](.ticket/tickets/47f2a664-7803-4074-b40c-f41d3caf0c54/ticket.toml)\n- **Phase D:** [b9a52b79 skill authoring](.ticket/tickets/b9a52b79-2beb-4710-958d-25582ed79dcf/ticket.toml) · [24d47244 skill scope](.ticket/tickets/24d47244-fcb4-46cf-9bc8-c78c29fe7ff2/ticket.toml)\n- **Phase E:** [92741a14 context-engine reframe](.ticket/tickets/92741a14-d718-4f49-8843-040432a3d8da/ticket.toml) · [67e254b5 entry points](.ticket/tickets/67e254b5-8eac-4251-b640-ec3649f250dd/ticket.toml)\n- **Phase F:** [2345ba7f validation](.ticket/tickets/2345ba7f-6d83-449b-bf07-d541c5f8e01e/ticket.toml) · [0b527d28 docs](.ticket/tickets/0b527d28-9487-4a6c-8c7a-835b4a5d9582/ticket.toml)\n\nNow I'll drive the review. A few of these are judgment calls I want your explicit verdict on before this epic is review-clean — one of them (transport boilerplate duplication) is a real architectural risk the single-crate decision introduces.",
+      "captured_at": "2026-07-25T14:22:17.252Z",
+      "event_meta": {
+        "event_id": "cfede7fb-4672-4fea-9884-577315d50b80",
+        "parent_event_id": "21aa42e2-bf40-4258-85ac-f0c43ed384fd",
+        "event_type": "assistant.message",
+        "message_id": "c53b2361-03ea-4aaa-be61-ec536ec1e305",
+        "reasoning_text": "I've checked 50 tickets now including the new design ticket, and the graph is still healthy—no new findings beyond the pre-existing missing_effort issues on the Agent Skill Foundation cluster, no cycles or dangling edges. Now I'm ready to walk the user through the epic for review as the Review Agent.\n\nI'll present the domain-crate decision and its propagation, then ask targeted questions about the key architectural choices: whether the API crate should be absorbed and re-exported, confirming the viewer and vscode separation, validating the workflow-tools re-export of transport bins, and checking effort/priority sanity. I'll also probe for any missing work like CI templates or dependency pinning strategy. Rather than dumping the full structure, I'm focusing on decision-driving questions that get clear verdicts on scope and completeness. I'll surface Q4 as a critical architectural concern during the review—collapsing transports into each domain crate could lead to duplicating transport scaffolding across the codebase, so a shared transport harness library would be worth proposing to keep things DRY. Then I'll present the full set of questions concisely and ask for verdicts on readiness.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01AiyCGfrxDkLRsVy5Fc2Yhs",
+            "name": "vscode_askQuestions",
+            "arguments": {
+              "questions": [
+                {
+                  "header": "api absorption",
+                  "message": "The design ticket currently says {domain}-api is absorbed and re-exported from the domain crate lib (no standalone api crate).",
+                  "options": [
+                    {
+                      "label": "Absorb: api becomes an internal module/layer of the domain crate, re-exported",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Keep {domain}-api as its own internal crate that the domain crate wraps/re-exports"
+                    }
+                  ],
+                  "question": "How should the domain api relate to the single domain crate?"
+                },
+                {
+                  "header": "transport boilerplate",
+                  "message": "Collapsing cli/mcp/http into every domain crate risks duplicating transport scaffolding (arg parsing, MCP server setup, HTTP router) across all 11 crates. A shared transport-harness lib would keep it DRY.",
+                  "options": [
+                    {
+                      "description": "Add a foundation ticket for a shared transport-harness crate the domain crates depend on for their bin targets.",
+                      "label": "Yes — add a shared transport-harness crate ticket",
+                      "recommended": true
+                    },
+                    {
+                      "label": "No — let each domain crate own its transport code independently"
+                    }
+                  ],
+                  "question": "Should we add a shared transport-harness crate to avoid per-domain transport duplication?"
+                },
+                {
+                  "header": "bin exposure",
+                  "message": "Transports are [[bin]] targets of the domain crate. Question is how the umbrella + a target project get them.",
+                  "options": [
+                    {
+                      "label": "Feature-gated bins: consumers enable features to build the transports they need",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Always-built bins: every transport bin builds by default"
+                    }
+                  ],
+                  "question": "How should transport binaries be gated when the domain crate is consumed as a dependency?"
+                },
+                {
+                  "header": "context-engine consumption",
+                  "options": [
+                    {
+                      "label": "Consume domain crate libs + invoke installed transport bins (mcp/cli/http) as tools",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Consume only the installed transport bins (no lib dependency)"
+                    }
+                  ],
+                  "question": "How should context-engine consume each tool once workflow-tools is an installed dependency?"
+                },
+                {
+                  "header": "Epic verdict",
+                  "message": "This determines whether the epic is review-clean or needs another pass.",
+                  "options": [
+                    {
+                      "label": "Approve: epic scope + single-crate decision are correct; ready for implementation sequencing",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Approve with the transport-harness addition, otherwise correct"
+                    },
+                    {
+                      "label": "Needs changes — I'll specify what"
+                    }
+                  ],
+                  "question": "What is your verdict on the epic as it now stands?"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "Clear verdicts. Four concrete changes to apply (internal api crate wrapped+re-exported, shared transport-harness, feature-gated bins, lib+bin consumption), plus you flagged \"needs changes — I'll specify.\" Let me apply the four decided changes first, then collect your remaining specifics.\n\nStarting with the new shared transport-harness foundation ticket.",
+      "captured_at": "2026-07-25T14:35:26.802Z",
+      "event_meta": {
+        "event_id": "168f75dd-d59d-499f-a25e-06ec21baffaa",
+        "parent_event_id": "0fe15556-a325-4262-8c11-b277d26f4fed",
+        "event_type": "assistant.message",
+        "message_id": "eaa55ec2-f2e3-4224-a64a-34749bdae98b",
+        "reasoning_text": "I'm settling on keeping {domain}-api as its own internal crate that the domain crate wraps and re-exports, so I need to update the design ticket, parent tracker, and epic decision to reflect this approach. The wording across the eleven tool tickets currently says \"absorbs and re-exports\" but should be changed to \"wraps the internal {domain}-api crate and re-exports it\" to be more accurate. The semantic difference between \"absorbs\" and \"wraps internal crate\" matters for accuracy, so I should update all 11 tool tickets with the corrected descriptions. I'll batch the updates in parallel to keep this efficient, then the design ticket, epic decision, and parent tracker will all align on the same model. I need to decide where the transport-harness crate lives and how it fits into the dependency graph. The harness is a shared library that the domain crate binaries depend on, so it should be a foundation ticket that the tool tickets depend on, with the design ticket referencing it. I'm leaning toward housing it in the memory-kernel repo since it's closely related, though it could also live in its own repo or within workflow-tools. The harness itself would depend on provisioning, and I need to figure out if provisioning requires a separate repo or if everything can coexist in memory-kernel. I'll place it as a separate crate in the memory-kernel repo to sidestep provisioning overhead, flagging the placement as an open decision. The harness ticket gates the eleven tool tickets as a dependency, itself depending on memory-kernel extraction, with the epic aggregating the harness and the design ticket referencing it. I also need to update the design ticket to specify feature-gated transport bins and adjust the umbrella context-engine accordingly, then ensure context-engine consumes the domain crate libraries and invokes install.\n\nFor the epic verdict, they selected \"needs changes — I'll specify what\" but left the freeText empty, so I should apply the four concrete changes I've identified (API model, harness, feature-gated bins, consumption model) and then ask them to clarify any additional modifications they want. I'll prioritize creating the transport-harness ticket first to get its ID, then use that to wire up the updates across the design ticket, epic, parent tracker, and E1, followed by batch updates to the 11 tool tickets before asking for the remaining specifics.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0181sezTJQUsishwCEkQCrWz",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "description": "Phase A foundation. Provide a shared transport-harness library crate that factors out the common cli / mcp / http scaffolding (argument parsing, MCP server setup, HTTP router/error mapping, output formatting) so each domain crate's transport binary targets reuse it instead of duplicating boilerplate across all 11 domain crates.\n\n## Motivation\nThe single-domain-crate decision (`0da6894c`) collapses cli/mcp/http into each domain crate as `[[bin]]` targets. Without a shared harness, transport scaffolding would be duplicated 11×. The harness keeps the transports DRY while each domain crate supplies only its domain-specific command/handler wiring.\n\n## Scope\n- Extract the reusable transport scaffolding into a `transport-harness` shared crate (default placement: the `memory-kernel` repo as a sibling crate; final placement is a minor open sub-decision — may become its own shared repo if it grows).\n- Define the harness API each domain crate's bins call to register commands/handlers for cli, mcp, and http.\n- Ensure the harness is transport-feature-aware so domain crates can feature-gate which transports build.\n\n## Acceptance criteria\n- `transport-harness` builds/tests independently and is consumable by domain crates.\n- A reference domain crate wires all three transports (cli/mcp/http) through the harness with no duplicated scaffolding.\n- Harness supports feature-gated transport selection.\n- Documented in the domain-crate contract (`0da6894c`) as the required scaffolding dependency.\n\n## Dependencies\n- Builds on `memory-kernel` extraction; gates the per-tool extraction tickets (their bins depend on the harness).",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "component=workflow-tools",
+                "risk_level=medium"
+              ],
+              "state": "new",
+              "title": "[workflow-tools][foundations] Shared transport-harness crate for cli/mcp/http scaffolding reused by domain-crate binaries",
+              "type": "task",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "assistant",
+      "content": "Transport-harness ticket `dbe0e955` created. Now wire it (memory-kernel → harness → 11 tools; epic aggregates).",
+      "captured_at": "2026-07-25T14:35:51.945Z",
+      "event_meta": {
+        "event_id": "5bd29d5e-9e50-45b1-9416-81033205849b",
+        "parent_event_id": "2447d669-1977-4e76-8ba7-f18aa88f6ce8",
+        "event_type": "assistant.message",
+        "message_id": "7319b6c3-7f71-4f30-95a6-fd139ea2cb73",
+        "reasoning_text": "I'm setting up the dependency graph for the transport-harness commit, wiring the epic to depend on it, linking that commit to the memory-kernel, and connecting eleven tools as dependents—that's thirteen edges total to batch together.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_018Hcw9mGiATK8UDxEFR29CM",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "69eb4118",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01Q8ZrKWbkXH1nPxpVgF2zY1",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "dbe0e955",
+              "kind": "depends_on",
+              "to": "e12d8343",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01VBpRwhMEBXLYDtfSoMTTQq",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "ba4aaa9c",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01FF5W1EWt4u7hjuraj2Zr8W",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "58576ac3",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01M9HA7zThDNKeNkyxPzFx3e",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "21893f5f",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01CMk7VVCiZCcfbQLMB8LiyH",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "a57886e4",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01SdL7xBePZWu4i56BpdoZjj",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "eab4cd40",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_0157zvDDYdWFkvwHp9hWA1fE",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "2736c3dc",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01QKQjzmtY11QdSHhz8rBizo",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "bdd35984",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_013jY1NpD3KQMyN89BRTL4Bs",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "94de0e62",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01Hy5kvCVaHqFySCai7E3P4u",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "afb71e41",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_012S46yZSj3RWGuo3Uu5yGdR",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "6af0deab",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_015MNuxc7iSVBCQRgGNEX8Rb",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "f2882a13",
+              "kind": "depends_on",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "assistant",
+      "content": "Now correct the authoritative contract (design ticket) for the internal-api-crate model, feature-gated bins, and harness reference.",
+      "captured_at": "2026-07-25T14:36:42.736Z",
+      "event_meta": {
+        "event_id": "daeb8de1-3b38-40e4-bde9-ff073b235069",
+        "parent_event_id": "b3ac0c35-6425-4e00-b139-72550d31cc8a",
+        "event_type": "assistant.message",
+        "message_id": "eadc44bb-f84c-4321-b57d-6128279f1805",
+        "reasoning_text": "I need to update the design ticket with the corrected API details—marking it as an internal crate that's wrapped and re-exported, adding feature-gated binaries, and referencing the transport-harness. After that, I'll cascade these changes through the epic's locked decisions, the parent tracker, and the E1 context-engine consumption documentation, then align the phrasing across all eleven tool tickets.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Mpay43aZ7Tn4yZ1QEmZwpw",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase A design/contract. Define the canonical per-domain crate layout that every tool extraction must follow: a single domain crate (named after the domain, e.g. `ticket`) that unifies the domain api and all of its transports into one build target, with each transport exposed as a binary target of that crate.\n\n## Decision (locked 2026-07-25, refined after review)\n- Collapse the previous multi-crate transport split into ONE domain crate `{domain}`.\n- The domain crate's library is the primary build target and the public domain handle.\n- **api relationship (reviewed):** `{domain}-api` is KEPT as its own internal crate; the domain crate depends on it and re-exports its public surface. The domain crate lib = internal-api-crate re-export + transport-agnostic wiring. (Not absorbed into modules.)\n- Each transport (cli, mcp, http, future) is a binary build target (`[[bin]]`) of the domain crate, sharing the crate lib. Transport-specific code lives in `src/bin/*` (or gated modules), not separate transport crates.\n- **transport scaffolding (reviewed):** transport bins are built on the shared `transport-harness` crate (`dbe0e955`) so cli/mcp/http boilerplate is not duplicated across the 11 domain crates.\n- **bin gating (reviewed):** transport binaries are FEATURE-GATED. Consumers enable the features for the transports they need (e.g. `--features cli,mcp`); a slim consumer can build the lib only.\n- Binary names preserve the current interface tool names (`{domain}-cli`, `{domain}-mcp`, `{domain}-http`).\n- Frontends stay separate: the domain viewer (Dioxus/WASM) and any vscode extension remain their own crates/packages, depending on the domain crate lib.\n\n## Rationale\n- One primary build target per domain simplifies dependency declaration for `workflow-tools` and target projects.\n- Internal api crate keeps a clean api boundary and independent testability while the domain crate is the single consumable handle.\n- Shared transport-harness + feature-gated bins keep transports DRY and let consumers build only what they invoke.\n\n## Scope\n- Author the crate-layout contract (manifest shape: `[lib]` + feature-gated `[[bin]]` targets, feature matrix, module layout) and a reference skeleton.\n- Define the api re-export rule (domain crate re-exports the internal `{domain}-api` crate) and transport-binary naming rule.\n- Define how bins consume the `transport-harness`.\n- Define the workspace/dependency declaration `workflow-tools` and context-engine use to consume a domain crate (lib + selected transport bins).\n- Update the per-tool extraction recipe and every per-tool ticket to target this structure.\n\n## Acceptance criteria\n- Committed crate-layout contract + reference skeleton compiling with lib + feature-gated transport bins over the transport-harness.\n- Internal `{domain}-api` crate re-exported from the domain crate lib; binary names preserved.\n- Per-tool parent tracker and all 11 per-tool tickets updated to reference this contract.\n- workflow-tools dependency-declaration pattern documented against the single domain crate with feature-selected bins.\n\n## Dependencies\n- Pairs with the shared `transport-harness` crate (`dbe0e955`).\n- Gates every per-tool extraction ticket (they must follow this layout).\n- Should be finalized before per-tool work begins.",
+              "id": "0da6894c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_016Yp8mzxY3u5AhyEgQh3Pkz",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "0da6894c",
+              "kind": "linked",
+              "to": "dbe0e955",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 34,
+      "role": "assistant",
+      "content": "Now refine the epic decisions, the parent tracker recipe, and the context-engine consumption model to match the reviewed verdicts.",
+      "captured_at": "2026-07-25T14:37:36.732Z",
+      "event_meta": {
+        "event_id": "869a206c-3313-4b2c-9b27-f04106174b35",
+        "parent_event_id": "6e4ef74e-2fb4-431d-9749-39a1ab338317",
+        "event_type": "assistant.message",
+        "message_id": "3a6fc591-e2f7-47bd-8864-d2d4c159f589",
+        "reasoning_text": "I need to update the epic's locked decisions to incorporate the refinements we've discussed—the internal API crate, transport-harness, feature-gated binaries, and context-engine consumption patterns. I'll update the crate structure bullet, add transport-harness to Phase A, and include the context-engine consumption details, then resend the full epic description with these changes incorporated.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_019BfWsh5y2bhbeHVSaLEccb",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Tracking epic for the repository restructuring that turns this monorepo into an instantiated example of a general, self-improving agent framework, and extracts the workflow tooling into standalone, independently-versioned repositories.\n\n## Goal\nThe whole repository should act as an environment in which an AI agent can operate autonomously: discover its tools, find next tasks, build and refine its own workflow, spawn sub-agents, gather user feedback, and self-improve. To generalize beyond this repo, we separate:\n- the **target environment / application** (the context-stack: context-api/insert/read/search/trace + context-engine's own generated artifacts), from\n- the **workflow tooling** (the memory-api domain stores, their transports, the viewer framework, and the guidance/skill), which becomes an installable dependency that any target project can consume.\n\n## Locked decisions (interview 2026-07-25, refined after review)\n- GitHub owner: `mankinskin`.\n- Granularity: **full per-tool split immediately**.\n- **Crate structure:** each domain tool is a **single domain crate** `{domain}` whose **lib is the primary build target/handle**. `{domain}-api` is kept as an **internal crate** the domain crate depends on and **re-exports**. Each transport (cli, mcp, http) is a **feature-gated binary target (`[[bin]]`)** of the domain crate, built on the shared **`transport-harness`** crate (`dbe0e955`), with current binary names preserved. Frontends (viewer, vscode) stay separate crates. See contract `0da6894c`.\n- Per-tool repo naming: **bare domain name**.\n- Viewers bundle into their owning tool repo as a separate frontend crate (memory-viewers dissolved).\n- Shared storage kernel extracted and **renamed `memory-kernel`** (frees `memory-api`).\n- Umbrella repo **workflow-tools** aggregates tool + shared repos; the dependency unit per tool is its domain crate (with feature-selected transport bins passed through).\n- Skill: dedicated **workflow-skill** repo on skills.sh; installable at root + nested tools; single active install ignores nested installs and can self-uninstall.\n- **context-engine consumption:** consumes each tool as a **domain crate lib dependency AND invokes the installed transport bins** (mcp/cli/http) as tools.\n- context-engine keeps only context-stack + its own generated artifacts; workflow tooling is an installed dependency.\n- workflow-tools gets repo-level self-referential artifact stores now; per-tool artifact stores follow.\n- interview repo pre-created as a placeholder.\n\n## Repositories to create on GitHub (owner: mankinskin)\nShared libraries: `memory-kernel`, `memory-fixtures` (viewer-api already exists). The shared `transport-harness` crate defaults to living inside the `memory-kernel` repo (final placement is a minor open sub-decision in `dbe0e955`).\nPer-tool repos (single domain crate + feature-gated transport bins + separate frontend crates): `ticket`, `spec`, `rule`, `doc`, `test`, `log`, `feedback`, `session`, `audit`, `peek`, `interview`.\nUmbrella + packaging: `workflow-tools`, `workflow-skill`.\nExisting: `viewer-api`, `context-stack` kept; `memory-api` name freed; `memory-viewers` dissolved.\n\n## Migration phases\n- Phase 0 — Provisioning: user creates the repos; agent waits.\n- Phase A — Foundations + crate contract: finalize domain-crate contract (`0da6894c`) + shared `transport-harness` (`dbe0e955`); extract `memory-kernel`; stabilize `viewer-api` + `memory-fixtures`.\n- Phase B — Per-tool extraction: split each of the 11 tools into its own repo built around the single domain crate (lib + feature-gated transport bins over the harness) + separate frontend crates; migrate artifacts via the move tooling.\n- Phase C — Umbrella + artifacts: create `workflow-tools`; add repo-level artifact stores; migrate tool-scoped artifacts.\n- Phase D — Skill packaging: author `workflow-skill`; scope/precedence for root + nested installs, single active install, self-uninstall.\n- Phase E — context-engine reframing: reduce to context-stack + own artifacts; consume domain crate libs + installed transport bins; update entry points across all three install sites.\n- Phase F — Validation & cutover: end-to-end build/test/MCP/CLI/viewer + browser verification; migration guide.\n\n## Cross-store prerequisite (recorded textually; edges cannot cross ticket stores)\nArtifact moves depend on the memory-api store's move tooling `505b2cd4` \"Deliver safe cross-workspace ticket move for git-backed stores\" (+ children); must be green before Phase B/C artifact migration.\n\n## Related existing work to link (default store)\n- `671d4e47` cross-store interaction tracker — complementary (linked).\n- `13912e44` neutral naming map / `2b1279bd` neutral storage kernel — inform memory-kernel (linked).\n- `b13c5d89` Agent Skill Foundation — feeds workflow-skill (linked).\n\n## Acceptance criteria\n- Complete dependency graph; every child implementation-ready and validated.\n- Domain-crate contract + transport-harness finalized; every tool repo built as a single domain crate (lib primary target) with feature-gated transport bins over the shared harness, internal api crate re-exported, and separate frontend crates.\n- All new repos build/test independently; workflow-tools aggregates them.\n- context-engine builds using workflow-tools as an installed dependency (domain crate libs + transport bins), retaining only context-stack + its own artifacts.\n- workflow-skill installs from skills.sh; entry point wired at root + nested tools; scope de-dup + self-uninstall.\n- Artifact moves preserve cross-reference integrity; no dangling references.\n- Migration guide + install docs published; browser verification recorded for viewer changes.",
+              "id": "69eb4118",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01XRvFperN3unRNUUpJEvCRT",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B parent tracker. Split each of the 11 domain tools into its own bare-named repository under github.com/mankinskin. Each tool repo is built around a single domain crate (see contract `0da6894c`) that unifies the domain api and all Rust transports, with frontends kept as separate crates.\n\n## Single-crate structure (per contract 0da6894c + harness dbe0e955)\n- One domain crate `{domain}` is the primary build target: its lib is the public handle and re-exports the internal `{domain}-api` crate (api kept as its own internal crate, not absorbed).\n- Each transport (cli, mcp, http) is a FEATURE-GATED binary target (`[[bin]]`) of that crate, built on the shared `transport-harness` crate, preserving current binary names (`{domain}-cli`/`{domain}-mcp`/`{domain}-http`). No separate transport crates.\n- Frontends stay separate crates in the repo: the domain viewer (Dioxus/WASM) and vscode extension, depending on the domain crate lib.\n\n## Common per-tool extraction recipe\n1. Assemble the domain crate: depend on the internal `{domain}-api` crate (re-exported) and add feature-gated transport bin targets over `transport-harness`; move its viewer from memory-viewers as a separate crate.\n2. Declare `memory-kernel`, `transport-harness`, `viewer-api`, and `memory-fixtures` as external dependencies as applicable.\n3. Preserve git history where practical (subtree/filter-repo).\n4. Migrate the tool's tool-scoped artifacts into the tool repo's own stores using the safe cross-workspace move tooling (memory-api `505b2cd4`) so references are relinked.\n5. Independent build + test: `cargo build` produces the lib + selected transport bins; smoke each bin (cli/mcp/http); viewer browser verification.\n6. Register the tool repo (its domain crate) as a dependency of `workflow-tools`.\n\n## Children (one per tool)\nticket, spec, rule, doc, test, log, feedback, session, audit, peek, interview.\n\n## Acceptance criteria\n- Every child tool repo builds/tests independently: one domain crate lib (primary) re-exporting the internal api crate + feature-gated transport bins over the harness, plus separate frontend crates.\n- Binary names preserved.\n- Tool-scoped artifacts moved with reference integrity preserved.\n- All child tickets closed and aggregated into workflow-tools.\n\n## Dependencies\n- Blocked by foundations (memory-kernel, transport-harness, shared libs) and the domain-crate contract `0da6894c`.\n- Artifact moves blocked on cross-store move tooling (memory-api `505b2cd4`).",
+              "id": "858c5286",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01QJtPvR1xYbcK8GCDv7Sen3",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase E. Reframe context-engine as an instantiated example of a target environment: it retains only the context-stack (context-api/insert/read/search/trace) plus its own generated artifacts, and consumes the workflow tooling as an installed dependency rather than vendoring it.\n\n## Consumption model (reviewed 2026-07-25)\n- context-engine depends on each tool's **domain crate lib** (for in-process/library use) AND **invokes the installed transport bins** (mcp/cli/http) as external tools.\n- Transport bins are selected via features per the domain-crate contract (`0da6894c`); context-engine enables the transports it actually invokes.\n\n## Scope\n- Remove workflow tooling from context-engine as vendored submodules; declare `workflow-tools` (domain crates + selected transport bins) as an installed dependency.\n- Keep context-stack and context-engine's own artifact stores (.ticket/.spec/.rule/...).\n- Ensure the workflow tools/artifacts remain usable after installation.\n- Update install scripts (install-tools.sh, install-deps.sh) to install the workflow-tools dependency and the transport bins.\n\n## Acceptance criteria\n- context-engine builds/operates with workflow-tools installed (domain crate libs + transport bins).\n- Only context-stack + context-engine artifacts remain in-repo.\n- Documented install step reproduces a working environment from a clean checkout.\n\n## Dependencies\n- Blocked by umbrella creation, artifact migration, and skill packaging.",
+              "id": "92741a14",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "role": "assistant",
+      "content": "Now I'll correct the 11 tool ticket descriptions so their api wording matches the reviewed decision (internal api crate re-exported, feature-gated bins over the harness) — the only remaining stale clause.",
+      "captured_at": "2026-07-25T14:38:45.554Z",
+      "event_meta": {
+        "event_id": "e85a1ec5-df53-4acb-a473-0ac10c053ab6",
+        "parent_event_id": "be671e62-b79c-4a7e-a981-9db7f34147d8",
+        "event_type": "assistant.message",
+        "message_id": "e177527e-381d-46ed-b547-2212336d2c71",
+        "reasoning_text": "I'm noticing the 11 tool tickets now have outdated language about how the crate library handles the domain API—they say it \"absorbs and re-exports\" when it should reflect the actual pattern of wrapping an internal API crate with feature-gating. The authoritative definition is in the parent tracker and commit 0da6894c, which the tool tickets reference, but this terminology mismatch needs to be corrected for clarity during review.\n\nI could leave them as-is since they defer to the authoritative sources, but that direct contradiction would likely get flagged. I'll update all 11 tool tickets with corrected descriptions that align with the locked decision—it's the right move for review integrity, even though it's a batch operation. I'm filling in the acceptance criteria and specifying the binary targets for each of the 11 tools—ticket, spec, rule, doc, and test each have their own set of CLI, MCP, and sometimes HTTP binaries, plus viewer verification where applicable. I'll apply this consistently across all tickets to ensure they're aligned on what \"independent build\" means and what artifacts need migrating.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01QJtRasEyrfMRiEeR5Zf1x6",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-api` crate and exposes transports as FEATURE-GATED binary targets (`ticket-cli`, `ticket-mcp`, `ticket-http`) built on the shared `transport-harness` (`dbe0e955`). Frontends stay separate crates: `ticket-viewer` (Dioxus) and `ticket-vscode` (+ ticket-vscode-core).\n\nFollow the parent-tracker recipe (`858c5286`); migrate ticket-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `ticket` builds independently: domain crate lib (primary) re-exporting internal `ticket-api` + feature-gated transport bins (names preserved) over the harness.\n- cli/mcp/http bin smoke pass; ticket-viewer browser-verified (screenshot + Playwright).\n- ticket-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "ba4aaa9c",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01AABPxmTDttxJXv8xy27cig",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per contract `0da6894c`: the crate lib re-exports the internal `spec-api` crate and exposes transports as FEATURE-GATED binary targets (`spec-cli`, `spec-mcp`, and `spec-http` if present) built on the shared `transport-harness` (`dbe0e955`). Frontend `spec-viewer` stays a separate crate.\n\nFollow the parent-tracker recipe (`858c5286`); migrate spec-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `spec` builds independently: domain crate lib (primary) re-exporting internal `spec-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass; spec-viewer browser-verified (screenshot + Playwright).\n- spec-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "58576ac3",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_017N2h56qeDJmwRXV2qirmjs",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the rule tool into its own `rule` repository (owner mankinskin), built as a single `rule` domain crate per contract `0da6894c`: the crate lib re-exports the internal `rule-api` crate and exposes transports as FEATURE-GATED binary targets (`rule-cli`, `rule-mcp`, and any rule-http) built on the shared `transport-harness` (`dbe0e955`).\n\nFollow the parent-tracker recipe (`858c5286`); migrate rule-scoped artifacts via the cross-store move tooling. Coordinate with the migrate-off-generator work (rule-targets coupling).\n\n## Acceptance criteria\n- `rule` builds independently: domain crate lib (primary) re-exporting internal `rule-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass.\n- rule-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "21893f5f",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_014uSUmK111Ukq7uzCj3FRW1",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the doc tool into its own `doc` repository (owner mankinskin), built as a single `doc` domain crate per contract `0da6894c`: the crate lib re-exports the internal `doc-api` crate and exposes transports as FEATURE-GATED binary targets (doc cli/mcp/http as present) built on the shared `transport-harness` (`dbe0e955`). Frontend `doc-viewer` stays a separate crate.\n\nFollow the parent-tracker recipe (`858c5286`); migrate doc-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `doc` builds independently: domain crate lib (primary) re-exporting internal `doc-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass; doc-viewer browser-verified (screenshot + Playwright).\n- doc-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "a57886e4",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_019HjWFuoTVSgdonmfzJSkkq",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the test tool into its own `test` repository (owner mankinskin), built as a single `test` domain crate per contract `0da6894c`: the crate lib re-exports the internal `test-api` crate and exposes transports as FEATURE-GATED binary targets (`test-cli`, `test-mcp`, and any test-http) built on the shared `transport-harness` (`dbe0e955`).\n\nFollow the parent-tracker recipe (`858c5286`); migrate test-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `test` builds independently: domain crate lib (primary) re-exporting internal `test-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass.\n- test-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "eab4cd40",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01UdA1M5tZUvFm7MeGYr5WHh",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the log tool into its own `log` repository (owner mankinskin), built as a single `log` domain crate per contract `0da6894c`: the crate lib re-exports the internal `log-api` crate and exposes transports as FEATURE-GATED binary targets (log cli/mcp as present) built on the shared `transport-harness` (`dbe0e955`). Frontend `log-viewer` stays a separate crate.\n\nFollow the parent-tracker recipe (`858c5286`); migrate log-scoped artifacts via the cross-store move tooling. Coordinate with in-flight log-viewer Dioxus port tickets.\n\n## Acceptance criteria\n- `log` builds independently: domain crate lib (primary) re-exporting internal `log-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass; log-viewer browser-verified (screenshot + Playwright).\n- log-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "2736c3dc",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_017tf1AiG4aPNySRyorotfvX",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the feedback tool into its own `feedback` repository (owner mankinskin), built as a single `feedback` domain crate per contract `0da6894c`: the crate lib re-exports the internal `feedback-api` crate and exposes transports as FEATURE-GATED binary targets (`feedback-cli`, `feedback-mcp`) built on the shared `transport-harness` (`dbe0e955`).\n\nFollow the parent-tracker recipe (`858c5286`); migrate feedback-scoped artifacts via the cross-store move tooling. Coordinate with the feedback-api design/curation tickets still in review.\n\n## Acceptance criteria\n- `feedback` builds independently: domain crate lib (primary) re-exporting internal `feedback-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass.\n- feedback-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "bdd35984",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01UfgkLjzUvfmqBpznF3Q7cG",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the session tool into its own `session` repository (owner mankinskin), built as a single `session` domain crate per contract `0da6894c`: the crate lib re-exports the internal `session-api` crate and exposes transports as FEATURE-GATED binary targets (`session-cli`, `session-mcp`) built on the shared `transport-harness` (`dbe0e955`).\n\nFollow the parent-tracker recipe (`858c5286`); migrate session-scoped artifacts via the cross-store move tooling. Coordinate with session identity/optimization tickets still in review.\n\n## Acceptance criteria\n- `session` builds independently: domain crate lib (primary) re-exporting internal `session-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass.\n- session-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "94de0e62",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_013AEU7NSjGWTPuYrBuLugi3",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the audit tool into its own `audit` repository (owner mankinskin), built as a single `audit` domain crate per contract `0da6894c`: the crate lib re-exports the internal `audit-api` crate and exposes transports as FEATURE-GATED binary targets (`audit-cli`, `audit-mcp`) built on the shared `transport-harness` (`dbe0e955`), plus the `.audit.toml` config contract.\n\nFollow the parent-tracker recipe (`858c5286`); migrate audit-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `audit` builds independently: domain crate lib (primary) re-exporting internal `audit-api` + feature-gated transport bins (names preserved) over the harness.\n- transport bin smoke pass.\n- audit-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "afb71e41",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_018ZMeDJyUU9zg9AS8UzuWT1",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Extract the peek tool into its own `peek` repository (owner mankinskin), built as a single `peek` domain crate per contract `0da6894c`: the crate lib re-exports the internal `peek-api` crate and exposes transports as FEATURE-GATED binary targets (`peek-cli`, `peek-mcp`, and `compact-terminal-mcp`) built on the shared `transport-harness` (`dbe0e955`).\n\nFollow the parent-tracker recipe (`858c5286`); migrate peek-scoped artifacts via the cross-store move tooling.\n\n## Acceptance criteria\n- `peek` builds independently: domain crate lib (primary) re-exporting internal `peek-api` + feature-gated transport bins (names preserved incl. compact-terminal-mcp) over the harness.\n- transport bin smoke pass.\n- peek-scoped artifacts migrated with reference integrity.\n- Registered as a workflow-tools dependency.",
+              "id": "6af0deab",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01BRqMrZ4LwCYXoNaCpPwHYf",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "description": "Phase B. Pre-create the `interview` repository (owner mankinskin) as a placeholder for the interview tool, scaffolded per contract `0da6894c`: a single `interview` domain crate skeleton whose lib will re-export the internal `interview-api` crate, with FEATURE-GATED transport bin stubs (`interview-cli`, `interview-mcp`) built on the shared `transport-harness` (`dbe0e955`) and artifact stores. The interview tool is planned but not yet built (see interview-api ticket `7639449a`).\n\nFollow the parent-tracker recipe (`858c5286`) to the extent components exist; otherwise scaffold the single-crate skeleton and register the placeholder in workflow-tools.\n\n## Acceptance criteria\n- `interview` repo exists with the single domain-crate skeleton (lib stub + internal api crate stub + feature-gated transport bin stubs + stores).\n- Registered as a workflow-tools dependency (placeholder allowed).\n- Linked to the interview-api design ticket so implementation targets this repo and layout.",
+              "id": "f2882a13",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine/.ticket"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 36,
+      "role": "assistant",
+      "content": "All four reviewed changes are now consistently applied across the epic, the contract, the new harness ticket, the parent tracker, all 11 tool tickets, the umbrella, and the context-engine reframing. Let me confirm the graph is still clean.",
+      "captured_at": "2026-07-25T14:39:09.160Z",
+      "event_meta": {
+        "event_id": "fb7b6546-cce7-4085-a431-d0a1619efb85",
+        "parent_event_id": "cb39c99d-3a72-416d-a0da-cec14f36e29c",
+        "event_type": "assistant.message",
+        "message_id": "4a6a9a7a-134e-41a6-8005-e041457b6533",
+        "reasoning_text": "All the tool tickets are now aligned with the four agreed-upon changes across the entire system. I should verify the graph is still consistent, then present the updated state and ask what other modifications they'd like to make.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_019VNvHo91FQb37Skdo9U6wp",
+            "name": "mcp_ticket-mcp_health_check",
+            "arguments": {
+              "root": "69eb4118",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 37,
+      "role": "assistant",
+      "content": "The graph remains clean (51 tickets checked, 0 cycles, 0 dangling edges; the 9 warnings are all the pre-existing missing-effort flags on the linked Agent Skill Foundation cluster, none on our tickets).\n\n## Applied from your review verdicts\n1. **Internal api crate** — contract, parent tracker, and all 11 tool tickets now say the domain crate lib *re-exports the internal `{domain}-api` crate* (not absorbed).\n2. **Shared transport-harness** — new foundation ticket [dbe0e955 Shared transport-harness crate for cli/mcp/http scaffolding](.ticket/tickets/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d/ticket.toml), wired: `memory-kernel → transport-harness → 11 tool crates`, aggregated by the epic, linked from the contract.\n3. **Feature-gated bins** — contract + all tool tickets specify transports as feature-gated `[[bin]]` targets.\n4. **context-engine consumption** — [92741a14](.ticket/tickets/92741a14-d718-4f49-8843-040432a3d8da/ticket.toml) now: consume domain-crate libs **and** invoke installed transport bins.\n\nThe epic now has **30 tickets** and the single-crate architecture is internally consistent end-to-end.\n\n## Your verdict was \"needs changes — I'll specify what\"\nI've applied the four decisions above. Please specify the remaining changes you had in mind so I can fold them in before this epic is review-clean. To help you be specific, here are the open judgment calls I have *not* yet resolved:\n\n- **transport-harness placement** — currently defaulted to living inside the `memory-kernel` repo (flagged as a minor open sub-decision). Want it as its own repo instead?\n- **memory-fixtures + memory-matrix** — currently one combined repo; split them?\n- **Missing cross-cutting tickets?** — e.g. a dedicated CI/release-versioning ticket per repo, a dependency-pinning/version-policy ticket, or a `workflow-tools` semver/release-train ticket. None exist yet.\n- **Effort/priority calibration** — anything mis-sized (e.g. memory-kernel 2200, artifact-migration 1800)?\n- **interview placeholder** — keep as an extraction ticket, or drop it to a separate \"future\" note?\n\nTell me which of these (and anything else) you want changed, and I'll update the tickets.",
+      "captured_at": "2026-07-25T14:39:29.313Z",
+      "event_meta": {
+        "event_id": "e893b7af-c7ae-4cd6-b34c-b195d8a3aba7",
+        "parent_event_id": "8f8e6d90-1753-49dd-bc68-808383628338",
+        "event_type": "assistant.message",
+        "message_id": "a4241738-9023-4870-9304-595aba4cce34",
+        "reasoning_text": "I've verified the graph is clean with no new issues found across the tickets checked. Now I need to follow up on their \"needs changes\" verdict by asking them to clarify what specific modifications they're looking for.",
         "tool_requests_json": []
       }
     }

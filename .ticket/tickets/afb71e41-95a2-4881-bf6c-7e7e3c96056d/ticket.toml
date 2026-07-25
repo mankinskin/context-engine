@@ -1,9 +1,9 @@
 id = "afb71e41-95a2-4881-bf6c-7e7e3c96056d"
 created_at = "2026-07-25T13:57:29.564237100+00:00"
-title = "[workflow-tools][per-tool] Extract audit tool (api+cli+mcp) into its own repository"
+title = "[workflow-tools][per-tool] Extract audit tool as a single `audit` domain crate (api + transport bins)"
 state = "new"
 component = "audit"
-depends_on = ["1c452ff1-6edc-47c8-a73d-d07ce9b4d473"]
+depends_on = ["0da6894c-dcbb-4196-8ac7-b6fae7c40ec9", "1c452ff1-6edc-47c8-a73d-d07ce9b4d473", "dbe0e955-c1b4-414d-820c-10c3fbbb5d3d"]
 effort = "1200"
 priority = "high"
 risk_level = "medium"

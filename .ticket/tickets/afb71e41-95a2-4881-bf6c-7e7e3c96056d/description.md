@@ -1,8 +1,9 @@
-Phase B. Extract the audit tool into its own `audit` repository (owner mankinskin), bundling: audit-api, audit-cli, audit-mcp, plus the .audit.toml config contract.
+Phase B. Extract the audit tool into its own `audit` repository (owner mankinskin), built as a single `audit` domain crate per contract `0da6894c`: the crate lib re-exports the internal `audit-api` crate and exposes transports as FEATURE-GATED binary targets (`audit-cli`, `audit-mcp`) built on the shared `transport-harness` (`dbe0e955`), plus the `.audit.toml` config contract.
 
-Follow the common per-tool extraction recipe (see parent tracker). Migrate audit-scoped artifacts via the cross-store move tooling.
+Follow the parent-tracker recipe (`858c5286`); migrate audit-scoped artifacts via the cross-store move tooling.
 
 ## Acceptance criteria
-- `audit` repo builds/tests independently; transports smoke pass.
+- `audit` builds independently: domain crate lib (primary) re-exporting internal `audit-api` + feature-gated transport bins (names preserved) over the harness.
+- transport bin smoke pass.
 - audit-scoped artifacts migrated with reference integrity.
 - Registered as a workflow-tools dependency.

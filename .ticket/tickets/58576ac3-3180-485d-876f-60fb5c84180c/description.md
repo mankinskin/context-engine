@@ -1,8 +1,9 @@
-Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), bundling: spec-api, spec-cli, spec-mcp, spec-http (if present), and spec-viewer.
+Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per contract `0da6894c`: the crate lib re-exports the internal `spec-api` crate and exposes transports as FEATURE-GATED binary targets (`spec-cli`, `spec-mcp`, and `spec-http` if present) built on the shared `transport-harness` (`dbe0e955`). Frontend `spec-viewer` stays a separate crate.
 
-Follow the common per-tool extraction recipe (see parent tracker). Migrate spec-scoped artifacts via the cross-store move tooling.
+Follow the parent-tracker recipe (`858c5286`); migrate spec-scoped artifacts via the cross-store move tooling.
 
 ## Acceptance criteria
-- `spec` repo builds/tests independently; transports smoke pass; spec-viewer browser-verified (screenshot + Playwright).
+- `spec` builds independently: domain crate lib (primary) re-exporting internal `spec-api` + feature-gated transport bins (names preserved) over the harness.
+- transport bin smoke pass; spec-viewer browser-verified (screenshot + Playwright).
 - spec-scoped artifacts migrated with reference integrity.
 - Registered as a workflow-tools dependency.
