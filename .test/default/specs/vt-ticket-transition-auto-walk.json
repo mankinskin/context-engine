@@ -1,0 +1,11 @@
+{
+  "id": "vt-ticket-transition-auto-walk",
+  "title": "Ticket transition auto-walk-by-default with strict single-hop opt-out",
+  "command": "cargo test -p ticket-api --lib update_regression && cargo test -p ticket-cli --test integration_transition_recovery && cargo test -p ticket-mcp --test integration_update_mcp",
+  "detail": "Covers auto-walk default (store/CLI), strict single-hop opt-out block+recovery (store/CLI/MCP), and capability-catalog byte-equality parity.",
+  "links": {
+    "ticket_ids": [
+      "16d8aed9-cc29-4820-bfc7-4ae2f202f262"
+    ]
+  }
+}

@@ -79,3 +79,11 @@ same recovery contract: a rejected value must return the allowed set.
 - `memory-api/crates/session-api/`
 - `.agents/instructions/ticket-system.instructions.md`
 - `memory-api/.spec/`
+
+# Implementation Status — in-review (2026-07-25)
+
+Delivered (session-mcp + session-cli scope, the added scope of this ticket): `parse_node_kind`, `parse_edge_kind`, `parse_node_status`, and `parse_requirement` in both `memory-api/tools/mcp/session-mcp/src/server.rs` and `memory-api/tools/cli/session-cli/src/lib.rs` now enumerate the allowed values on rejection (including deprecated-alias notes and snake/kebab alias notes). This satisfies the "MCP (session)" regression requirement and pairs with `7f1ed44f`'s schema-level advertisement to deliver the full enum-discoverability contract.
+
+Validation: `vt-session-workflow-tooling-fix` / `exec-vt-session-workflow-tooling-fix-20260725` (passed). Test `invalid_workflow_values_report_allowed_set` asserts each rejection lists the allowed set.
+
+REVIEWER NOTE — remaining original-scope (NOT delivered in this session): the ticket-state-transition recovery contract for `ticket-api`/`ticket-cli`/`ticket-mcp` (allowed-next-states, required intermediate states, HTTP parity, and the transition-inspection command) was out of scope for this session, which was chartered to extend this ticket for the session-mcp surface. Confirm the ticket-transition portion before closing beyond in-review.

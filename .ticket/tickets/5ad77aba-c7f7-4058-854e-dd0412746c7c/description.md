@@ -71,3 +71,11 @@ enum-valued parameters, or the fact that a session handle is required for every 
 - `memory-api/tools/cli/session-cli/`
 - `README.md`
 - `.agents/instructions/`
+
+# Implementation Status — in-review (2026-07-25)
+
+Delivered (session-mcp scope, the added scope of this ticket): new machine-readable `session_capabilities` tool in `memory-api/tools/mcp/session-mcp/src/server.rs` returns a self-describing catalog listing the durable-session lifecycle flow (`runtime_init` → `pin`/`view` → `workflow_add_node`/`add_edge`/`set_status` → `render_terminal`/`render_mermaid` → `handoff`/`finish`), the ordered steps and their canonical tool names, the `workspace_session_id` handle contract, `nested_roots_supported: true`, and every enum-valued workflow parameter with its legal values (behavioral vs descriptive kinds, requirement, edge kind, status). The server `instructions` header now points agents at `session_capabilities`.
+
+Validation: `vt-session-workflow-tooling-fix` / `exec-vt-session-workflow-tooling-fix-20260725` (passed). Test `capabilities_lists_session_lifecycle_and_enums` asserts the lifecycle steps and behavioral-kind enum are reachable from the catalog.
+
+REVIEWER NOTE — remaining original-scope (NOT delivered in this session): the broader ticket/spec/rule capability catalog and CLI/human-readable + MCP parity across those surfaces was out of scope for this session, which was chartered to extend this ticket for the session-mcp surface. Confirm the ticket/spec/rule catalog portion before closing beyond in-review.

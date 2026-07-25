@@ -1,0 +1,21 @@
+{
+  "id": "exec-rule-cli-decouple-agents-20260725",
+  "validation_spec_id": "vt-rule-cli-tests",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T13:03:17.945720300Z",
+  "detail": "48 passed / 0 failed. New test sync_targets_prunes_decoupled_hand_owned_outputs_without_deleting_them covers decoupled-output classification. Root + 3 submodule `rule sync-targets --check` exit 0; real root sync pruned 41 orphaned generated-target state records with zero hand-owned file deletions.",
+  "links": {
+    "spec_ids": [
+      "a9b7ef39-ace4-4a12-a171-80f54548fc65"
+    ],
+    "ticket_ids": [
+      "14c0995c-1113-46dc-b924-82f0175628fc"
+    ]
+  },
+  "provenance": {
+    "domain": "rule-cli",
+    "operation": "sync-targets-decouple",
+    "transport": "cli",
+    "run_id": "run-decouple-agents-20260725"
+  }
+}

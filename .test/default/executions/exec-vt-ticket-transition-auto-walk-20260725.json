@@ -1,0 +1,18 @@
+{
+  "id": "exec-vt-ticket-transition-auto-walk-20260725",
+  "validation_spec_id": "vt-ticket-transition-auto-walk",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T13:26:09.622154200Z",
+  "detail": "ticket-api update_regression: 8 passed. ticket-cli integration_transition_recovery: 4 passed (adds multi_hop_transition_auto_walks_by_default). ticket-mcp integration_update_mcp: 2 passed (block test now uses single_hop:true). Catalog parity: integration_catalog_cli 1 passed, integration_capabilities_mcp 2 passed (byte-equality preserved). Pre-existing unrelated 7 ticket-http registry/routes failures confirmed on clean HEAD.",
+  "links": {
+    "ticket_ids": [
+      "16d8aed9-cc29-4820-bfc7-4ae2f202f262"
+    ]
+  },
+  "provenance": {
+    "domain": "ticket",
+    "operation": "update-transition",
+    "transport": "cli",
+    "run_id": "run-16d8aed9-20260725"
+  }
+}

@@ -58,3 +58,9 @@ advertisement so the values are discoverable before a call is ever made; togethe
 - `memory-api/tools/mcp/session-mcp/src/server.rs`
 - `memory-api/crates/session-api/src/model/workflow.rs`
 - `memory-api/tools/cli/session-cli/src/lib.rs`
+
+# Implementation Status — in-review (2026-07-25)
+
+Delivered: the workflow mutation input fields stay `String` (so `parse_*` keeps accepting snake/kebab aliases and returns the allowed-values error owned by `8bb97b73`), but each now carries `#[schemars(with = ...)]` projecting a helper enum into the generated JSON schema — `WorkflowNodeKindSchema` {ticket, validation, spec, task}, `WorkflowRequirementSchema`, `WorkflowEdgeKindSchema`, `WorkflowNodeStatusSchema`. Param descriptions state the legal values. `session-cli` arg help updated in parity. The advertised set matches the (updated by `203248cb`) `session-api` enums; drift is guarded by a parity test.
+
+Validation: `vt-session-workflow-tooling-fix` / `exec-vt-session-workflow-tooling-fix-20260725` (passed). Tests `workflow_add_node_schema_advertises_kind_and_requirement_enums`, `workflow_edge_and_status_schemas_advertise_enums`, `workflow_enum_parity_with_session_api`, and the 367ac6a3-replay `runtime_init_result_exposes_workspace_session_id_top_line`.

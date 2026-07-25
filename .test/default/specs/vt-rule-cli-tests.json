@@ -1,0 +1,14 @@
+{
+  "id": "vt-rule-cli-tests",
+  "title": "rule-cli test suite",
+  "command": "cargo test -p rule-cli",
+  "detail": "rule-cli unit + integration suite covering sync-targets stale/decoupled classification and generated-output handling.",
+  "links": {
+    "spec_ids": [
+      "a9b7ef39-ace4-4a12-a171-80f54548fc65"
+    ],
+    "ticket_ids": [
+      "14c0995c-1113-46dc-b924-82f0175628fc"
+    ]
+  }
+}

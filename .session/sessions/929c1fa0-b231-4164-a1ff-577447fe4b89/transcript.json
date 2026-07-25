@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "929c1fa0-b231-4164-a1ff-577447fe4b89",
-  "captured_at": "2026-07-25T08:04:50.917Z",
+  "captured_at": "2026-07-25T09:34:35.018Z",
   "turns": [
     {
       "sequence": 0,
@@ -1818,6 +1818,351 @@
         "parent_event_id": "3d924dbd-318f-417e-9cda-14eb31649afc",
         "event_type": "assistant.message",
         "message_id": "efa2f975-46b5-48e2-88cb-502087862f17",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 66,
+      "role": "user",
+      "content": "the agent and prompt files still need to be migrated out of the rule system. create corresponding follow-up tickets under the same epic and link them into the ticket set.",
+      "captured_at": "2026-07-25T09:16:13.192Z",
+      "event_meta": {
+        "event_id": "f140be78-5792-4cf3-aed1-dc6c6f66eb97",
+        "parent_event_id": "62a5bce7-a4c4-4bcf-b104-d4e75153ae56",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 67,
+      "role": "assistant",
+      "content": "I'll gather context on the epic, existing child tickets, and the agent/prompt rule-targets before creating the follow-up tickets.",
+      "captured_at": "2026-07-25T09:16:26.012Z",
+      "event_meta": {
+        "event_id": "9eb898c6-e28b-4e27-b4ef-aafcf4682dcf",
+        "parent_event_id": "e4dd8b72-57ca-4697-a2c0-7ceb72bb9ccc",
+        "event_type": "assistant.message",
+        "message_id": "7343edc0-ff00-4df6-be7c-2c13fa706d72",
+        "reasoning_text": "I need to understand what the user is asking for—they want to migrate agent and prompt files out of the rule system, similar to how instructions were handled, and create follow-up tickets under the same epic. There's a potential blocker with the ticket store schema, but the terminal output suggests it might already be resolved or working for certain ticket types. I'm gathering context while in \"Interview Agent\" mode.\n\nNow I'm looking at the rule-targets directory to identify which files still need migration—specifically the agents and prompts ones—and checking the epic b13c5d89 along with any existing child tickets to understand the current state.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015WFPaf5SQaKrg9YznepFUN",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "id": "b13c5d89",
+              "workspace": "default"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01RbNYqV1ZfRo52GewPiNRtK",
+            "name": "mcp_ticket-mcp_subgraph",
+            "arguments": {
+              "workspace": "default",
+              "root": "b13c5d89"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01FVVVyx2eXLn86Y82kqUCjv",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\rule-targets"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01PpktcBrQqU6Cosuw7nC7Af",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\prompts"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_017AbxZX9wQFBF5eyQgoeJ5X",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 68,
+      "role": "assistant",
+      "content": "I have enough context. There are 21 prompt files and 11 agent files still marker-generated, backed by `rule-targets/30-agents-prompts.yaml` and `rule-targets/45-agents-agents.yaml`. I'll create two follow-up tickets mirroring the CH-D instruction-migration pattern and wire them into the epic.",
+      "captured_at": "2026-07-25T09:17:20.402Z",
+      "event_meta": {
+        "event_id": "8b90d204-245f-4c20-a95c-6e0ba64d70a0",
+        "parent_event_id": "921a557e-16e7-4494-8cf9-40c932b87097",
+        "event_type": "assistant.message",
+        "message_id": "e3199c27-5f96-4a7e-814d-7dc28a7f6dc6",
+        "reasoning_text": "I'm getting a clearer picture of the codebase structure—there are 21 prompt files with 17+ containing markers, and 11 agent files with 10 that have markers, though I need to verify the exact count since ticket-refinement.agent.md seems to be missing from my tally. The migration ticket reference f43cb appears to be cut off.\n\nThe ticket f43cb5 is still in new state and needs follow-up tickets created under the same epic for the prompts and agents migration. I'm weighing whether to create a single ticket covering both prompts and agents, or split them into two separate tickets—since they have distinct rule-targets (30-agents-prompts.yaml and 45-agents-agents.yaml), splitting them might make more sense following the pattern established by the CH-D ticket, which handled instructions with its own rule-target deletions. I should make a decision and move forward with the ticket creation.\n\nI'm leaning toward two separate follow-up tickets: one for migrating the prompts files and deleting the prompts rule-target, and another for the agents files and their rule-target. Both would depend on the CH-D ticket since that establishes the migration approach and serves as the parity gate, and they'd mirror its \"strictly last\" positioning. I need to check whether these should depend on each other or remain independent, and whether to reference the anchor spec like the original migration ticket did. Now I'm setting up the dependency graph — the epic depends on both new tickets, and each ticket depends on the instructions migration. I need to pull the exact file counts for the descriptions: 21 prompt files and 11 agent files, with the full list of prompts starting with audit, build-validate-tools, commit, debug-test, and several others.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01U5fz7hKAz1otnkmikXLVTT",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "workspace": "default",
+              "type": "task",
+              "title": "[migration] Convert 21 prompt files off rule generator + delete prompts rule-target",
+              "description": "Migrate all `.agents/prompts/*.prompt.md` files off the rule-store generator to hand-owned by-description files, and retire the prompts rule-target. Follow-up to CH-D (f43cb5cb) which established the migration pattern for the 12 instruction files.\n\nAnchor spec: agents/skill-infrastructure (a9b7ef39) — extends AC5 to the prompt surface. Runs AFTER the instruction migration (CH-D) so the parity-gate + target-deletion procedure is already proven.\n\nScope:\n- 1:1 conversion now (keep the current file boundaries); refine into finer-grained by-description files incrementally later.\n- Content-parity gate: seed each hand-owned file from its current generated content, then git-diff to confirm no guidance is lost before deleting the target.\n- Delete the prompts target `rule-targets/30-agents-prompts.yaml`.\n- Strip `rule-api:file generated=true` and `rule-api:entry` headers from every `.agents/prompts/*.prompt.md` file.\n- Remove any stale self-reference notes that claim the file is generated from a .rule entry.\n\nFiles (21): audit, build-validate-tools, commit, debug-test, handoff-tickets, handoff, implement, interview, memory-setup, next, research, reviews, rule-target, rule, spec, swarm-worker, tdd, ticket-next, ticket, tickets, user-training.\n\nAcceptance criteria (verifiable):\n- AC-1: No file under `.agents/prompts/` contains `rule-api:file generated=true` or `rule-api:entry`.\n- AC-2: `rule sync-targets` (or `rule generate`) no longer regenerates any `.agents/prompts/**` file (target removed).\n- AC-3: git-diff parity record shows seed-from-current content preserved (no guidance dropped) before target deletion.\n- AC-4: Each migrated prompt file has accurate frontmatter for discovery/loading."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01BjxvAu5e2wo8KYjwzqfeEi",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "workspace": "default",
+              "type": "task",
+              "title": "[migration] Convert 11 agent files off rule generator + delete agents rule-target",
+              "description": "Migrate all `.agents/agents/*.agent.md` files off the rule-store generator to hand-owned by-description files, and retire the agents rule-target. Follow-up to CH-D (f43cb5cb) which established the migration pattern for the 12 instruction files.\n\nAnchor spec: agents/skill-infrastructure (a9b7ef39) — extends AC5 to the agent-mode surface. Runs AFTER the instruction migration (CH-D) so the parity-gate + target-deletion procedure is already proven.\n\nScope:\n- 1:1 conversion now (keep the current file boundaries); refine into finer-grained by-description files incrementally later.\n- Content-parity gate: seed each hand-owned file from its current generated content, then git-diff to confirm no guidance is lost before deleting the target.\n- Delete the agents target `rule-targets/45-agents-agents.yaml`.\n- Strip `rule-api:file generated=true` and `rule-api:entry` headers from every `.agents/agents/*.agent.md` file.\n- Remove any stale self-reference notes that claim the file is generated from a .rule entry.\n\nFiles (11): audit, commit, default, implement, interview, research, review, roast, spec, testing, ticket-refinement.\n\nAcceptance criteria (verifiable):\n- AC-1: No file under `.agents/agents/` contains `rule-api:file generated=true` or `rule-api:entry`.\n- AC-2: `rule sync-targets` (or `rule generate`) no longer regenerates any `.agents/agents/**` file (target removed).\n- AC-3: git-diff parity record shows seed-from-current content preserved (no guidance dropped) before target deletion.\n- AC-4: Each migrated agent file has accurate frontmatter for agent-mode selection."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 69,
+      "role": "assistant",
+      "content": "Creation needs an explicit workspace path.",
+      "captured_at": "2026-07-25T09:17:39.646Z",
+      "event_meta": {
+        "event_id": "e9f81eb5-2b0d-4181-84b3-a893f07232d8",
+        "parent_event_id": "d84946ca-0f75-4815-9a02-170eceb2f525",
+        "event_type": "assistant.message",
+        "message_id": "8cfd628e-8803-4ac3-b7fa-2e401bee03c6",
+        "reasoning_text": "I need to specify an explicit workspace path for this creation, so I'll use the repository root.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0158wJXbrNFnzVLDMsej8nKZ",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "description": "Migrate all `.agents/prompts/*.prompt.md` files off the rule-store generator to hand-owned by-description files, and retire the prompts rule-target. Follow-up to CH-D (f43cb5cb) which established the migration pattern for the 12 instruction files.\n\nAnchor spec: agents/skill-infrastructure (a9b7ef39) — extends AC5 to the prompt surface. Runs AFTER the instruction migration (CH-D) so the parity-gate + target-deletion procedure is already proven.\n\nScope:\n- 1:1 conversion now (keep the current file boundaries); refine into finer-grained by-description files incrementally later.\n- Content-parity gate: seed each hand-owned file from its current generated content, then git-diff to confirm no guidance is lost before deleting the target.\n- Delete the prompts target `rule-targets/30-agents-prompts.yaml`.\n- Strip `rule-api:file generated=true` and `rule-api:entry` headers from every `.agents/prompts/*.prompt.md` file.\n- Remove any stale self-reference notes that claim the file is generated from a .rule entry.\n\nFiles (21): audit, build-validate-tools, commit, debug-test, handoff-tickets, handoff, implement, interview, memory-setup, next, research, reviews, rule-target, rule, spec, swarm-worker, tdd, ticket-next, ticket, tickets, user-training.\n\nAcceptance criteria (verifiable):\n- AC-1: No file under `.agents/prompts/` contains `rule-api:file generated=true` or `rule-api:entry`.\n- AC-2: `rule sync-targets` (or `rule generate`) no longer regenerates any `.agents/prompts/**` file (target removed).\n- AC-3: git-diff parity record shows seed-from-current content preserved (no guidance dropped) before target deletion.\n- AC-4: Each migrated prompt file has accurate frontmatter for discovery/loading.",
+              "title": "[migration] Convert 21 prompt files off rule generator + delete prompts rule-target",
+              "type": "task",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_019VMqJc27oLMWD4qTokkHEn",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "description": "Migrate all `.agents/agents/*.agent.md` files off the rule-store generator to hand-owned by-description files, and retire the agents rule-target. Follow-up to CH-D (f43cb5cb) which established the migration pattern for the 12 instruction files.\n\nAnchor spec: agents/skill-infrastructure (a9b7ef39) — extends AC5 to the agent-mode surface. Runs AFTER the instruction migration (CH-D) so the parity-gate + target-deletion procedure is already proven.\n\nScope:\n- 1:1 conversion now (keep the current file boundaries); refine into finer-grained by-description files incrementally later.\n- Content-parity gate: seed each hand-owned file from its current generated content, then git-diff to confirm no guidance is lost before deleting the target.\n- Delete the agents target `rule-targets/45-agents-agents.yaml`.\n- Strip `rule-api:file generated=true` and `rule-api:entry` headers from every `.agents/agents/*.agent.md` file.\n- Remove any stale self-reference notes that claim the file is generated from a .rule entry.\n\nFiles (11): audit, commit, default, implement, interview, research, review, roast, spec, testing, ticket-refinement.\n\nAcceptance criteria (verifiable):\n- AC-1: No file under `.agents/agents/` contains `rule-api:file generated=true` or `rule-api:entry`.\n- AC-2: `rule sync-targets` (or `rule generate`) no longer regenerates any `.agents/agents/**` file (target removed).\n- AC-3: git-diff parity record shows seed-from-current content preserved (no guidance dropped) before target deletion.\n- AC-4: Each migrated agent file has accurate frontmatter for agent-mode selection.",
+              "title": "[migration] Convert 11 agent files off rule generator + delete agents rule-target",
+              "type": "task",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 70,
+      "role": "assistant",
+      "content": "Both tickets created. Now wire them into the epic and add the dependency on the instruction-migration ticket (CH-D).",
+      "captured_at": "2026-07-25T09:17:53.085Z",
+      "event_meta": {
+        "event_id": "baae3a59-3fb3-4af3-ac59-a75ae67175bc",
+        "parent_event_id": "5854fd20-c320-4494-a51d-ea9f68618747",
+        "event_type": "assistant.message",
+        "message_id": "8fe3cbff-ebdf-4683-8433-b98ff8127b8d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XwWzd8wjMtfQRmr8dwVfuA",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "b13c5d89-db09-46e7-9061-dbed85c4ab41",
+              "to": "76d0ace3-6e65-493d-9bef-fdc531081992",
+              "kind": "depends_on",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_011HckP9KDkHkQK937ExWdUe",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "b13c5d89-db09-46e7-9061-dbed85c4ab41",
+              "to": "16cfd19f-f1bd-4008-a15d-84037511f8fc",
+              "kind": "depends_on",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01K1t4gZd8zSBR2YjrvpSS24",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "76d0ace3-6e65-493d-9bef-fdc531081992",
+              "to": "f43cb5cb-07dd-44c2-876b-8aceb2d841cb",
+              "kind": "depends_on",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_017UPmsR3zBUE4a9pBo5mc4c",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "from": "16cfd19f-f1bd-4008-a15d-84037511f8fc",
+              "to": "f43cb5cb-07dd-44c2-876b-8aceb2d841cb",
+              "kind": "depends_on",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 71,
+      "role": "assistant",
+      "content": "Edges wired. Let me verify the epic graph and record the scope extension in the anchor spec for traceability.",
+      "captured_at": "2026-07-25T09:18:09.133Z",
+      "event_meta": {
+        "event_id": "69938ce8-14e7-472b-9b0d-4002a3ba6ef7",
+        "parent_event_id": "b9dfe4f8-d46c-4f23-9d4d-3cec814b6329",
+        "event_type": "assistant.message",
+        "message_id": "e510d321-ec5a-45a0-bc67-b90581a9c9ad",
+        "reasoning_text": "I've wired everything up, so now I'm recording this in the anchor spec as a follow-up and updating the epic's dependency notes. Let me verify the subgraph and add a spec section documenting the scope extension, then note the follow-up tickets that extend AC5 in commit a9b7ef39 to keep everything traceable.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0123pSx6Bgowi93kK36JPz2T",
+            "name": "mcp_ticket-mcp_subgraph",
+            "arguments": {
+              "root": "b13c5d89-db09-46e7-9061-dbed85c4ab41",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "depth": 1
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01JLBenHZdPwkuMWNMZQmsUW",
+            "name": "mcp_spec-mcp_spec_section_add",
+            "arguments": {
+              "id": "a9b7ef39",
+              "name": "Follow-up: Prompt & Agent Migration (AC5 extension)",
+              "content": "The initial migration ticket (CH-D, f43cb5cb) converted the 12 `.agents/instructions/*.md` files off the rule generator. Two follow-up tickets extend the same AC5 migration pattern to the remaining rule-generated agent surfaces, wired under the same epic (b13c5d89) and dependent on CH-D so the parity-gate + target-deletion procedure is proven before they run:\n\n- 76d0ace3 — [migration] Convert 21 prompt files off rule generator + delete `rule-targets/30-agents-prompts.yaml`. Covers `.agents/prompts/*.prompt.md` (audit, build-validate-tools, commit, debug-test, handoff-tickets, handoff, implement, interview, memory-setup, next, research, reviews, rule-target, rule, spec, swarm-worker, tdd, ticket-next, ticket, tickets, user-training).\n- 16cfd19f — [migration] Convert 11 agent files off rule generator + delete `rule-targets/45-agents-agents.yaml`. Covers `.agents/agents/*.agent.md` (audit, commit, default, implement, interview, research, review, roast, spec, testing, ticket-refinement).\n\nEach mirrors CH-D's acceptance criteria: no residual `rule-api:` markers, target removed so `rule sync-targets` no longer regenerates the surface, git-diff parity record proving no guidance is dropped, and accurate discovery/selection frontmatter retained.",
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 72,
+      "role": "assistant",
+      "content": "Both follow-up tickets are created, wired into the epic, and dependent on the instruction-migration ticket (CH-D). The anchor spec now records the scope extension.\n\n**New tickets (under epic [b13c5d89 Epic: Agent Skill Foundation](.ticket/tickets/b13c5d89-db09-46e7-9061-dbed85c4ab41/ticket.toml)):**\n\n- [76d0ace3 Convert 21 prompt files off rule generator](.ticket/tickets/76d0ace3-6e65-493d-9bef-fdc531081992/ticket.toml) — migrates `.agents/prompts/*.prompt.md`, deletes [rule-targets/30-agents-prompts.yaml](rule-targets/30-agents-prompts.yaml).\n- [16cfd19f Convert 11 agent files off rule generator](.ticket/tickets/16cfd19f-f1bd-4008-a15d-84037511f8fc/ticket.toml) — migrates `.agents/agents/*.agent.md`, deletes [rule-targets/45-agents-agents.yaml](rule-targets/45-agents-agents.yaml).\n\n**Dependency wiring:** epic `depends_on` both; both `depends_on` [f43cb5cb (instruction migration, CH-D)](.ticket/tickets/f43cb5cb-07dd-44c2-876b-8aceb2d841cb/ticket.toml) so the parity-gate + target-deletion procedure is proven first. Verified: the epic subgraph now shows 8 children with the two new `depends_on` edges present.\n\n**Traceability:** anchor spec [a9b7ef39](.spec) gained a \"Follow-up: Prompt & Agent Migration (AC5 extension)\" section documenting both tickets, their file lists, and the mirrored acceptance criteria.\n\nEach ticket carries the same AC set as CH-D: no residual `rule-api:` markers, target removed, git-diff parity record, and accurate frontmatter retained. I confirmed 17+ prompt files and 10+ agent files still carry generator markers, so the scope is real and non-empty. Both remain in `new` state (consistent with the other unstarted children).",
+      "captured_at": "2026-07-25T09:18:25.674Z",
+      "event_meta": {
+        "event_id": "c723f13d-732a-4c10-8e6a-e689a9356115",
+        "parent_event_id": "41780b1b-9b67-451e-a6cd-5665c589c464",
+        "event_type": "assistant.message",
+        "message_id": "e396c5c8-f83a-4c16-bfb9-6d248305bdfc",
+        "reasoning_text": "Both tickets are created and linked to the epic with the dependency set up, and I've updated the spec. The epic now has 8 children total. I need to grab the manifest paths for the tickets so I can provide clickable references—they should be in the `.ticket/tickets/<id>/ticket.toml` format based on the create response.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01B3QKLYNAsHv9QzHiBnbQ1B",
+            "name": "task_complete",
+            "arguments": {
+              "summary": "Created two follow-up migration tickets under the Agent Skill Foundation epic (b13c5d89): 76d0ace3 (21 prompt files + delete 30-agents-prompts.yaml) and 16cfd19f (11 agent files + delete 45-agents-agents.yaml). Wired epic→both depends_on edges and both→CH-D (f43cb5cb) dependency so the proven instruction-migration parity procedure runs first. Verified the epic subgraph now has 8 children and recorded the AC5 scope extension in anchor spec a9b7ef39."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 73,
+      "role": "assistant",
+      "content": "Done. Two follow-up tickets now cover the remaining rule-generated agent surfaces (prompts and agent-mode files), linked into the same epic and sequenced after the instruction-migration ticket so the parity-gate procedure is proven before they execute.",
+      "captured_at": "2026-07-25T09:18:30.207Z",
+      "event_meta": {
+        "event_id": "67b9fcf4-a584-4bb9-abe2-7afc8286bd11",
+        "parent_event_id": "6917a919-0c5a-4af1-8997-d83fc31b0475",
+        "event_type": "assistant.message",
+        "message_id": "b0957e61-865b-4ec1-b2f4-1b17944a70ec",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 74,
+      "role": "user",
+      "content": "/handoff implementation of the remaining migration tickets",
+      "captured_at": "2026-07-25T09:32:18.261Z",
+      "event_meta": {
+        "event_id": "0ed73229-20ea-4d43-9635-01f07b2dda2b",
+        "parent_event_id": "04d7142c-883a-4de9-a1d4-7519ecd721ee",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 75,
+      "role": "assistant",
+      "content": "I'll gather the durable session identity and persist a handoff record before composing the handoff prompt.",
+      "captured_at": "2026-07-25T09:32:49.328Z",
+      "event_meta": {
+        "event_id": "8e4f90da-3437-43f0-8da0-accf96639335",
+        "parent_event_id": "88ba270d-996d-416b-91b7-5c823acaa03f",
+        "event_type": "assistant.message",
+        "message_id": "3359ad23-9bab-4656-b6a1-e7e32e1b96dc",
+        "reasoning_text": "I'm preparing a handoff prompt for the remaining migration work. Let me gather the context from the tickets I just created and follow the handoff instructions to compile the key information.\n\nLooking at the three migration tickets that need to be completed: the instructions migration (CH-D) had its content work done in a prior session with 12 files stripped and rule-targets deleted, but it's stuck in a schema error state and can't move to in-review; the prompts migration needs to convert 21 files off the rule generator and delete the prompts rule-target; and the agents migration needs to convert 11 files and delete the agents rule-target. The epic and anchor spec provide the broader context for this work.\n\nI need to establish durable session identity to create a proper handoff record—I have the workspace_session_id and run_id from the summary, but I should retrieve or persist a handoff record with a handoff_id and resume command so the next session can pick up exactly where this one left off. Let me try calling session_runtime_view to get the current context.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01EuLiVsohYcoMtLc158QEaY",
+            "name": "mcp_session-mcp_session_runtime_view",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 76,
+      "role": "assistant",
+      "content": "Session is active. Now I'll persist the handoff record to obtain the handoff_id and finish-readiness state.",
+      "captured_at": "2026-07-25T09:33:05.888Z",
+      "event_meta": {
+        "event_id": "7ad3399f-b4bd-48c5-887f-bf34af58130e",
+        "parent_event_id": "c8b3aec9-3790-45a7-8600-b8d0bef713ad",
+        "event_type": "assistant.message",
+        "message_id": "48961933-de51-433a-8fda-a926172979bf",
+        "reasoning_text": "I have the active session details now, so I'm going to create a handoff record by calling the session_handoff function to get a handoff ID.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01RouVsTfqK4PXt8JdYxhy37",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 77,
+      "role": "assistant",
+      "content": "Everything gathered. Here is the handoff prompt for resuming the remaining migration work.\n\n~~~text\n# Handoff — Remaining Rule-Generator Migration (Prompts + Agents)\n\n## Overview\n\nThis track finishes migrating the repo's agent-customization surfaces off the `.rule` generator to hand-owned by-description files. The instruction surface (12 files) is already content-complete from a prior session; two sibling tickets remain to migrate the **prompt** surface (21 files) and the **agent-mode** surface (11 files), each deleting its `rule-targets/*.yaml` generator source. The migration pattern is already proven on instructions (strip markers → git-diff parity → delete target → keep accurate frontmatter), so the next agent replays that exact procedure per surface. Work is wired under one epic and both remaining tickets depend on the instruction-migration ticket.\n\n## Shorthand And Placeholder Legend\n\n- `EPIC` → [b13c5d89 Epic: Agent Skill Foundation](.ticket/tickets/b13c5d89-db09-46e7-9061-dbed85c4ab41/ticket.toml) — `b13c5d89-db09-46e7-9061-dbed85c4ab41`\n- `CH-D` → [f43cb5cb Convert 12 instruction files off rule generator](.ticket/tickets/f43cb5cb-07dd-44c2-876b-8aceb2d841cb/ticket.toml) — `f43cb5cb-07dd-44c2-876b-8aceb2d841cb`\n- `PROMPTS` → [76d0ace3 Convert 21 prompt files off rule generator](.ticket/tickets/76d0ace3-6e65-493d-9bef-fdc531081992/ticket.toml) — `76d0ace3-6e65-493d-9bef-fdc531081992`\n- `AGENTS-MIG` → [16cfd19f Convert 11 agent files off rule generator](.ticket/tickets/16cfd19f-f1bd-4008-a15d-84037511f8fc/ticket.toml) — `16cfd19f-f1bd-4008-a15d-84037511f8fc`\n- `SPEC` → [a9b7ef39 agents/skill-infrastructure anchor spec](.spec) — `a9b7ef39-ace4-4a12-a171-80f54548fc65`\n\n## Ticket Legend\n\n- `EPIC` = `b13c5d89-db09-46e7-9061-dbed85c4ab41` — \"Epic: Agent Skill Foundation — contract, adopt proven skills, author Dioxus, migrate off rule generator\"\n- `CH-D` = `f43cb5cb-07dd-44c2-876b-8aceb2d841cb` — \"[migration] Convert 12 instruction files off rule generator + delete agent-guidance rule-targets\"\n- `PROMPTS` = `76d0ace3-6e65-493d-9bef-fdc531081992` — \"[migration] Convert 21 prompt files off rule generator + delete prompts rule-target\"\n- `AGENTS-MIG` = `16cfd19f-f1bd-4008-a15d-84037511f8fc` — \"[migration] Convert 11 agent files off rule generator + delete agents rule-target\"\n\n## Durable Session Identity\n\n- `workspace_session_id`: `03baab6c-0fdb-4ffc-8159-b83066a6283f`\n- outgoing `run_id`: `b4deeb1e-a866-4247-b49e-41e43fe54a2e`\n- `handoff_id`: `0d7ca533-0320-4f99-9913-b3ff213c820c`\n- resume command: `session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id b4deeb1e-a866-4247-b49e-41e43fe54a2e`\n- target working directory: `c:/Users/linus/git/graph_app/context-engine`\n\n## Long-Horizon Goal (Epic)\n\n`EPIC` converges when the agent skill foundation is complete AND every `.agents/**` + root guidance surface is hand-owned (no `rule-api:` markers, no generator targets). Prompts and agents are the last two surfaces; finishing `PROMPTS` and `AGENTS-MIG` closes the migration half of the epic.\n\n## Findings\n\n- The instruction migration (`CH-D`) is already **content-complete** on disk: markers stripped from 12 `.agents/instructions/*.md` + `AGENTS.md` + `.github/copilot-instructions.md`, and 5 agent-guidance targets were git-rm'd. Only its ticket state bookkeeping is unresolved (see Blockers).\n- Prompts still carry markers: 17+ of 21 `.agents/prompts/*.prompt.md` files have `rule-api:file generated=true` + `rule-api:entry` header lines (lines ~8 and ~10). Generator source is [rule-targets/30-agents-prompts.yaml](rule-targets/30-agents-prompts.yaml).\n- Agents still carry markers: 10 of 11 `.agents/agents/*.agent.md` files have the two marker lines (lines ~8-11). Generator source is [rule-targets/45-agents-agents.yaml](rule-targets/45-agents-agents.yaml).\n- Proven migration procedure per surface: (1) seed hand-owned content from current generated content, (2) delete the two `rule-api:` marker lines only, (3) `git diff --ignore-all-space` to prove zero guidance change, (4) `git rm` the surface's rule-target yaml, (5) keep/repair accurate `description`/`applyTo` frontmatter for by-description loading, (6) remove any stale \"generated from a .rule entry\" self-reference notes.\n- [rule-targets/00-imports.yaml](rule-targets/00-imports.yaml) aggregates the target files — confirm it no longer imports the two deleted yamls after removal (the prior instruction migration set the precedent of pruning imports).\n- [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md) `applyTo` covers `.agents/prompts/*.prompt.md` and `.agents/agents/*.agent.md`, and [.agents/instructions/session-optimization.instructions.md](.agents/instructions/session-optimization.instructions.md) covers `.agents/prompts/*.prompt.md` — honor their compact/frontmatter format guidance while editing.\n\n## Decisions\n\n- Two separate tickets (one per surface) rather than one combined ticket, mirroring `CH-D`'s per-category shape; both created as type `task` and depend on `CH-D` so the parity gate is proven first.\n- 1:1 conversion now (keep current file boundaries); finer-grained by-description splitting is deferred.\n- Ticket creation requires an explicit workspace path (not `default`/`.`); use the absolute repo path `c:\\Users\\linus\\git\\graph_app\\context-engine` for all ticket/spec/board mutations.\n\n## Blockers\n\n- Ticket state transitions to `in-review`/`done` fail with `no schema for type 'task'` (both MCP and CLI) — a pre-existing ticket-api type-schema loader issue, out of this track's scope. `PROMPTS`, `AGENTS-MIG`, and `CH-D` will remain in `new` even when work is done; record completion in `SPEC` + board check-out until the schema loader is repaired. Transitions to `new` still work (confirmed).\n- Autopilot risk-gating blocks raw `rm` and MCP hard-delete; use reversible `git rm` for target/file deletion (as the prior session did).\n\n## Key Entities\n\n- [76d0ace3 PROMPTS ticket](.ticket/tickets/76d0ace3-6e65-493d-9bef-fdc531081992/ticket.toml) — full AC set for the 21-file prompt migration; primary work item.\n- [16cfd19f AGENTS-MIG ticket](.ticket/tickets/16cfd19f-f1bd-4008-a15d-84037511f8fc/ticket.toml) — full AC set for the 11-file agent migration; primary work item.\n- [f43cb5cb CH-D ticket](.ticket/tickets/f43cb5cb-07dd-44c2-876b-8aceb2d841cb/ticket.toml) — the proven-pattern reference and dependency; read its description for the exact parity-gate procedure.\n- [b13c5d89 EPIC](.ticket/tickets/b13c5d89-db09-46e7-9061-dbed85c4ab41/ticket.toml) — convergence target; now has 8 children.\n- [a9b7ef39 anchor spec](.spec) — \"Follow-up: Prompt & Agent Migration (AC5 extension)\" section documents both tickets, file lists, and mirrored ACs; update its outcome section on completion.\n- [rule-targets/30-agents-prompts.yaml](rule-targets/30-agents-prompts.yaml) — delete when `PROMPTS` parity is proven.\n- [rule-targets/45-agents-agents.yaml](rule-targets/45-agents-agents.yaml) — delete when `AGENTS-MIG` parity is proven.\n- [rule-targets/00-imports.yaml](rule-targets/00-imports.yaml) — prune any imports of the two deleted targets.\n\n## Next Actions (execution order)\n\n1. Board check-in on `PROMPTS` (`76d0ace3-6e65-493d-9bef-fdc531081992`), owning the 21 `.agents/prompts/*.prompt.md` files + [rule-targets/30-agents-prompts.yaml](rule-targets/30-agents-prompts.yaml). First validation: `grep -rl \"rule-api:file generated=true\" .agents/prompts/` lists the files to clear.\n2. Strip the two `rule-api:` marker lines from every `.agents/prompts/*.prompt.md`; verify each retains accurate `description`/`applyTo` frontmatter; remove stale \"generated from a .rule entry\" notes.\n3. Prove prompt parity with `git diff --ignore-all-space -- .agents/prompts/` (only marker lines removed), then `git rm rule-targets/30-agents-prompts.yaml` and prune it from [rule-targets/00-imports.yaml](rule-targets/00-imports.yaml).\n4. Board check-in on `AGENTS-MIG` (`16cfd19f-f1bd-4008-a15d-84037511f8fc`) and repeat steps 2-3 for the 11 `.agents/agents/*.agent.md` files + [rule-targets/45-agents-agents.yaml](rule-targets/45-agents-agents.yaml).\n5. Confirm the generator no longer targets either surface (run the rule sync/generate command and verify no `.agents/prompts/**` or `.agents/agents/**` file is regenerated); confirm `grep -rl \"rule-api:\" .agents/prompts .agents/agents` returns nothing.\n6. Record outcome + parity evidence in `SPEC` (a9b7ef39), attempt ticket transitions (expect the `no schema for type 'task'` block — note it), and board check-out of both tickets.\n\n## Completion Status\n\n- Action 1 (check-in PROMPTS): not-started\n- Action 2 (strip prompt markers + frontmatter): not-started\n- Action 3 (prompt parity + delete target/import): not-started\n- Action 4 (agents surface repeat): not-started\n- Action 5 (generator no-regen verification): not-started\n- Action 6 (spec outcome + ticket bookkeeping + check-out): not-started — ticket transition step expected `blocked` by the `no schema for type 'task'` loader issue\n\n## Definition of Done\n\n- No file under `.agents/prompts/` or `.agents/agents/` contains `rule-api:file generated=true` or `rule-api:entry`.\n- `rule-targets/30-agents-prompts.yaml` and `rule-targets/45-agents-agents.yaml` are deleted and no longer imported by `rule-targets/00-imports.yaml`; the rule generator regenerates neither surface.\n- `git diff --ignore-all-space` parity records for both surfaces show only marker-line removals (no guidance dropped).\n- Every migrated file retains accurate discovery/selection frontmatter.\n- `SPEC` (a9b7ef39) records the completion + parity evidence; both tickets are board-checked-out; ticket state transitions attempted and, if still blocked by the type-schema loader, the blocker is explicitly noted.\n\n## Board Note\n\nNo active board ownership carries into this session (prior session checked out cleanly). The next agent must board check-in on each ticket before editing its owned files, and check out on completion. Use workspace path `c:\\Users\\linus\\git\\graph_app\\context-engine` for all board/ticket/spec calls.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.\n~~~\n\nHandoff record persisted (handoff_id `0d7ca533-0320-4f99-9913-b3ff213c820c`). The block above is ready to paste as the first prompt of the resuming session.",
+      "captured_at": "2026-07-25T09:34:35.018Z",
+      "event_meta": {
+        "event_id": "b7582be3-6fad-48a7-bb1d-a561ae92463e",
+        "parent_event_id": "e22ea415-da00-4f5f-9b6c-1551432f7a8d",
+        "event_type": "assistant.message",
+        "message_id": "b87eca4b-9474-4c4d-9944-d1ef3a4632c9",
+        "reasoning_text": "I'm noting the durable identity information for this session, including the handoff ID and workspace session ID that would be used to resume this work if needed.\n\nNow I'm composing the handoff for the remaining migration work. There are two tickets left to implement: one for migrating prompts across 21 files with a cleanup step, and another for migrating agents across 11 files with its own cleanup. Both depend on completing the instructions migration ticket, which has its content done but is blocked on schema bookkeeping. I'm also tracking a known issue where ticket state transitions fail with a schema error for the task type, though transitions to the \"new\" state work fine—the blocker appears specific to transitions through the task schema states.\n\nThe migration follows the proven pattern from the instructions work: seed each file from the current generated content after stripping the marker lines, verify git-diff parity, delete the corresponding rule-target YAML, add proper frontmatter, and clean up stale self-references. I need to verify that the imports in rule-targets/00-imports.yaml still resolve after deleting the two rule-target files.\n\nThe token-efficiency and session-optimization instructions apply to the prompt and agent markdown files, and I should use repo-root-relative paths for the handoff document with markdown links to the manifest files.\n\nNow I'm structuring the handoff with a legend mapping shorthands to ticket identifiers, sections for durable session identity and the epic's long-horizon goal, then findings, decisions, and blockers, followed by key entities and next actions.\n\nI'm also noting the execution order, completion status, definition of done, and board notes. The prior session with the GitHub Copilot agent checked out on ticket 5f217947, so the next agent should board check-in on tickets 76d0ace3 and 16cfd19f when starting.",
         "tool_requests_json": []
       }
     }

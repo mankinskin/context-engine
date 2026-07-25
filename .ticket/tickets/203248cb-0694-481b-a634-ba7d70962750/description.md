@@ -89,3 +89,9 @@ Separate the two axes rather than loosen or blindly extend `kind`:
 - `memory-api/tools/mcp/session-mcp/src/server.rs`
 - `memory-api/tools/cli/session-cli/src/lib.rs`
 - `memory-api/.spec/`
+
+# Implementation Status — in-review (2026-07-25)
+
+Delivered: `SessionWorkflowNodeKind` is now the closed behavioral set `{Ticket, Validation, Spec}` plus the generic descriptive `Task`; added `spec_urn` and open free-text `category` on `SessionWorkflowNode`/`SessionWorkflowNodeDraft`. A required `Spec` node gates finish symmetrically to `Ticket`: `workflow_snapshot` resolves spec state (new `resolve_spec_state` on `SessionTicketStateResolver`, default `DefaultTicketStateResolver` reads the sibling `.spec` store), unavailable resolution fails closed, and completion requires a terminal spec state (`verified`/`deprecated`/`cancelled`). `Decision`/`Action`/`Checkpoint` deprecated and deserialize as `Task` via serde aliases (back-compat). CLI/MCP parsers, args, and help updated; taxonomy documented in spec `c677182e` (durable-session-workflow).
+
+Validation: `vt-session-workflow-tooling-fix` / `exec-vt-session-workflow-tooling-fix-20260725` (passed). New session-api tests: `workflow_finish_blocks_spec_node_with_unavailable_state`, `workflow_finish_gates_spec_node_on_terminal_state`, `workflow_finish_ignores_descriptive_category`, `legacy_node_kinds_deserialize_as_task`. `cargo test -p session-api -p session-mcp -p session-cli` green.
