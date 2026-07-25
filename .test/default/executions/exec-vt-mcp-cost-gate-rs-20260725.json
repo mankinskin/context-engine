@@ -1,0 +1,19 @@
+{
+  "id": "exec-vt-mcp-cost-gate-rs-20260725",
+  "validation_spec_id": "vt-mcp-cost-gate-rs",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T20:52:16.595582500Z",
+  "detail": "14 lib tests passed. gate.rs: output_mtok resolution (exact/case-insensitive/ambiguous-max/exact-wins/unknown), strict X=15 boundary, tool classification, evaluate outcomes. proxy.rs: missing caller_model rejected, expensive+token-heavy refused, cheap forwarded with caller_model stripped, expensive+light forwarded, no-gate passthrough, tools/list schema injection adds required caller_model, schema created when absent. Live-verified against real ticket-mcp binary; also confirmed live in-session: the installed middleware rejected an MCP call lacking caller_model and allowed it once supplied.",
+  "links": {
+    "ticket_ids": [
+      "042109c0-8e0e-4585-9b58-37fdd345ce12"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/tools/mcp/mcp-cost-gate/src/proxy.rs",
+    "domain": "model-prices",
+    "operation": "rust-middleware-tests",
+    "transport": "cli",
+    "run_id": "run-mcp-cost-gate-rs-20260725"
+  }
+}

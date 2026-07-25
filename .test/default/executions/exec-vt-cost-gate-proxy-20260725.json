@@ -1,0 +1,19 @@
+{
+  "id": "exec-vt-cost-gate-proxy-20260725",
+  "validation_spec_id": "vt-cost-gate-proxy",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T20:27:04.094276800Z",
+  "detail": "9 e2e tests passed (5 env-source + 4 dynamic file-source). Adds CALLER_MODEL_FILE per-call resolution: proxy re-reads the model file on every tools/call, so switching the file content flips enforcement without restarting the server (verified live: opus->refused, gpt-5-mini->forwarded through one process). File source is preferred over the static CALLER_MODEL env; empty/absent file = passthrough.",
+  "links": {
+    "ticket_ids": [
+      "a5ad2721-2d07-47dd-85f5-f180d4a030fa"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/model-prices/test_mcp_cost_gate_proxy.py",
+    "domain": "model-prices",
+    "operation": "mcp-proxy-e2e",
+    "transport": "cli",
+    "run_id": "run-cost-gate-proxy-20260725b"
+  }
+}

@@ -2,48 +2,125 @@
   "servers": {
     "context-mcp": {
       "type": "stdio",
-      "command": "context-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "context-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "ticket-mcp": {
       "type": "stdio",
-      "command": "ticket-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "ticket-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "spec-mcp": {
       "type": "stdio",
-      "command": "spec-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "spec-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "test-mcp": {
       "type": "stdio",
-      "command": "test-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "test-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "feedback-mcp": {
       "type": "stdio",
-      "command": "feedback-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "feedback-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "session-mcp": {
       "type": "stdio",
-      "command": "session-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "session-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "peek-mcp": {
       "type": "stdio",
-      "command": "peek-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "peek-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "rule-mcp": {
       "type": "stdio",
-      "command": "rule-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "rule-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "audit-mcp": {
       "type": "stdio",
-      "command": "audit-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "audit-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "compact-terminal-mcp": {
       "type": "stdio",
-      "command": "compact-terminal-mcp"
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "compact-terminal-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     },
     "log-viewer-mcp": {
       "type": "stdio",
-      "command": "log-viewer",
-      "args": ["--mcp"]
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "log-viewer",
+        "--mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+      }
     }
   }
 }

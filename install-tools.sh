@@ -36,6 +36,7 @@ tool_names=(
     rule-mcp
     audit-mcp
     compact-terminal-mcp
+    mcp-cost-gate
 )
 
 mcp_tool_names=(
@@ -49,6 +50,7 @@ mcp_tool_names=(
     rule-mcp
     audit-mcp
     compact-terminal-mcp
+    mcp-cost-gate
     log-viewer
 )
 
@@ -76,6 +78,7 @@ tool_path() {
         rule-mcp) printf '%s\n' "memory-api/tools/mcp/rule-mcp" ;;
         audit-mcp) printf '%s\n' "memory-api/tools/mcp/audit-mcp" ;;
         compact-terminal-mcp) printf '%s\n' "memory-api/tools/mcp/compact-terminal-mcp" ;;
+        mcp-cost-gate) printf '%s\n' "memory-api/tools/mcp/mcp-cost-gate" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -107,6 +110,7 @@ tool_bin() {
         rule-mcp) printf '%s\n' "rule-mcp" ;;
         audit-mcp) printf '%s\n' "audit-mcp" ;;
         compact-terminal-mcp) printf '%s\n' "compact-terminal-mcp" ;;
+        mcp-cost-gate) printf '%s\n' "mcp-cost-gate" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1

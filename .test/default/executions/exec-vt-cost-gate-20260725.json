@@ -1,0 +1,19 @@
+{
+  "id": "exec-vt-cost-gate-20260725",
+  "validation_spec_id": "vt-cost-gate",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T19:50:04.041647400Z",
+  "detail": "18 tests passed in 0.008s. Covers output_mtok resolution (exact/substring/ambiguous-max/unknown), strict `>` threshold boundary at X=15, tool classification, and evaluate() outcomes: expensive+token-heavy=delegate, expensive+light=allow, boundary Sonnet(15)=allow, cheap=allow, unknown-model conservative delegate, plus CLI exit codes (0 allow / 3 delegate / 2 error).",
+  "links": {
+    "ticket_ids": [
+      "a5ad2721-2d07-47dd-85f5-f180d4a030fa"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/model-prices/test_cost_gate.py",
+    "domain": "model-prices",
+    "operation": "cost-gate-unit-tests",
+    "transport": "cli",
+    "run_id": "run-cost-gate-20260725"
+  }
+}
