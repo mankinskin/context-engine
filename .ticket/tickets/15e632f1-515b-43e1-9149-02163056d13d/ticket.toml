@@ -1,10 +1,11 @@
 id = "15e632f1-515b-43e1-9149-02163056d13d"
 created_at = "2026-07-25T18:35:46.916981100+00:00"
 title = "[workflow-tools][foundations] Extract memory-matrix + rewire in-tree consumers to external memory-fixtures"
-state = "new"
+state = "in-review"
 component = "workflow-tools"
 effort = "500"
 linked = ["1c452ff1-6edc-47c8-a73d-d07ce9b4d473"]
 priority = "medium"
+review_finding = "Rewire criterion MET and independently verified (cargo test -p spec-api -p ticket-api => 198 passed; memory-fixtures resolved from git remote in spec-api/ticket-api dev-deps + memory-matrix normal dep). UNMET criterion: 'memory-matrix builds standalone against externally resolved domain crates' — not delivered, awaits domain-crate extraction. Reviewer sent ticket back to in-implementation to carry the remaining standalone-build extraction work. Do NOT re-review the rewire portion; it is accepted."
 risk_level = "medium"
 type = "task"

@@ -35,3 +35,15 @@ ticket captures the deferred remainder.
   from the git remote and passes.
 - After extraction: `memory-matrix` builds standalone against externally
   resolved domain crates.
+
+## Validation Result (2026-07-26)
+
+Consumer rewiring completed. Manifests updated:
+- `memory-api/crates/spec-api/Cargo.toml` (dev-dependency)
+- `memory-api/crates/ticket-api/Cargo.toml` (dev-dependency)  
+- `memory-api/crates/memory-matrix/Cargo.toml` (normal dependency)
+
+All three now use: `{ git = "https://github.com/mankinskin/memory-fixtures", branch = "main" }`
+
+Validation: `cargo test -p spec-api -p ticket-api` passed (198 tests, 188.57s).
+Git remote fetch successful; tests resolved memory-fixtures from the external repo.

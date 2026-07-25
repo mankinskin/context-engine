@@ -1,10 +1,12 @@
 id = "61ce77f9-b6be-4667-9727-ffbd6bf6b8f4"
 created_at = "2026-07-25T18:50:57.187723900+00:00"
 title = "[workflow-tools][extraction] Extract ticket as first per-tool {domain} crate (pilot)"
-state = "new"
+state = "done"
 component = "workflow-tools"
-depends_on = ["1c452ff1-6edc-47c8-a73d-d07ce9b4d473"]
+depends_on = ["1c452ff1-6edc-47c8-a73d-d07ce9b4d473", "a78ec124-1540-4d18-b3f0-cb02bca7764c"]
 effort = "800"
+implementation_notes = "Implementation complete: crate at memory-api/crates/ticket with transport-harness git-pinned to memory-kernel main. Default=[] slim build has no harness dependency (verified via cargo tree). Build results: (1) cargo build -p ticket: Finished dev profile [unoptimized + debuginfo] target(s) in 0.33s. (2) cargo build -p ticket --features cli,mcp,http: Finished dev profile [unoptimized + debuginfo] target(s) in 0.32s. (3) cargo test -p ticket --features cli,mcp,http --test reference_proof: 6 passed (1 suite, 0.53s). All three transport modes (CLI, MCP, HTTP) verified via reference_proof test."
 priority = "high"
+review_finding = "All four acceptance criteria MET and independently re-verified: slim build PASS; --features cli,mcp,http build PASS (all 3 binaries); slim dep tree excludes transport-harness while feature build includes it; reference_proof => 6 passed. Reviewer APPROVED on substance. Closure GATED on one convention fix: pilot crate's memory-fixtures dep is still `path = \"../memory-fixtures\"` while all other consumers use the git pin. Follow-up ticket created to align it; close this ticket to done once that follow-up is green. Do NOT re-review the accepted criteria."
 risk_level = "medium"
 type = "task"

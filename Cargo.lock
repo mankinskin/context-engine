@@ -6027,6 +6027,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "memory-fixtures"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-fixtures?branch=main#96bcaf34d57d1e9587609af7b727314d67f06f47"
+dependencies = [
+ "serde",
+ "tempfile",
+ "thiserror 2.0.18",
+ "toml",
+]
+
+[[package]]
 name = "memory-matrix"
 version = "0.1.0"
 dependencies = [
@@ -6036,7 +6047,7 @@ dependencies = [
  "criterion",
  "log-api",
  "memory-api",
- "memory-fixtures",
+ "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
  "pretty_assertions",
  "rmcp",
  "rule-api",
@@ -9133,7 +9144,7 @@ dependencies = [
  "chrono",
  "feedback-api",
  "memory-api",
- "memory-fixtures",
+ "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -9771,6 +9782,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket"
+version = "0.1.0"
+dependencies = [
+ "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "ticket-api",
+ "tokio",
+ "tower 0.5.3",
+ "transport-harness",
+ "urlencoding",
+ "uuid",
+]
+
+[[package]]
 name = "ticket-api"
 version = "0.1.0"
 dependencies = [
@@ -9779,7 +9807,7 @@ dependencies = [
  "feedback-api",
  "fs4 0.11.1",
  "memory-api",
- "memory-fixtures",
+ "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
  "notify",
  "pretty_assertions",
  "reqwest",
@@ -10415,6 +10443,22 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "transport-harness"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-kernel?branch=main#59dff48382b03bdb332700436d1125fc4cd919ef"
+dependencies = [
+ "axum",
+ "clap",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
