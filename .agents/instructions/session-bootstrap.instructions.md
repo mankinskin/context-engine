@@ -3,9 +3,7 @@ description: "Minimal session bootstrap for discovering and pinning task-relevan
 applyTo: "**"
 ---
 
-<!-- rule-api:file generated=true -->
 
-<!-- rule-api:entry id=89330b3b-4d28-4c48-80dd-203311dbe855 slug=context-engine/instructions/session-bootstrap -->
 
 ## Session Bootstrap
 

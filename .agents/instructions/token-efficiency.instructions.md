@@ -3,17 +3,13 @@ description: "Use when editing agent workflow guidance, CLI output handling, or 
 applyTo: "AGENTS.md,.github/copilot-instructions.md,.agents/instructions/*.instructions.md,.agents/prompts/*.prompt.md,.agents/agents/*.agent.md,memory-api/tools/cli/peek-cli/**,memory-api/tools/mcp/compact-terminal-mcp/**"
 ---
 
-<!-- rule-api:file generated=true -->
 
-<!-- rule-api:entry id=4135e465-dc19-4966-892c-b232e062346b slug=context-engine/instructions/token-efficiency/l1 -->
 
 ## Token-Efficient Agent Workflow
 
 These rules apply during every session to keep token consumption bounded and debuggability intact.
 
 The primary objective is to reduce what reaches the model API in the first place. Post-hoc transcript capture is diagnostic only; it does not make the current request cheaper.
-
-> **Editing this file:** it is generated from a `.rule` entry — do not hand-edit the `.instructions.md`. Change the body at `.rule/rules/4135e465-dc19-4966-892c-b232e062346b/body.md`, regenerate with `cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml`, then stage the rule entry and the regenerated output together. Full workflow: [commit.instructions.md](./commit.instructions.md).
 
 The high-frequency, every-turn mechanics come first (structural orientation, bounded inspection, compact output, differential patching). The optional model-routing strategy is **capability-gated** and lives at the end under **Model Cost Awareness & Routing** — apply it only when a subagent tool is actually available.
 

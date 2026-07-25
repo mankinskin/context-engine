@@ -1,0 +1,14 @@
+{
+  "id": "vt-skill-discovery-matrix",
+  "title": "Prompt-replay skill-discovery matrix — correct skill loads by description per domain",
+  "command": "python .agents/skills/tests/skill_discovery_matrix.py",
+  "detail": "Asserts by-description loading resolves the intended skill as the top match for a representative prompt in every target domain (rust-async, rust-best-practices, playwright-cli, playwright-best-practices, webgpu/typegpu, webgpu-threejs-tsl, interviewing, authoring, dioxus, token-optimization, find-skills). Satisfies AC7 of the Agent Skill Infrastructure spec.",
+  "links": {
+    "spec_ids": [
+      "a9b7ef39-ace4-4a12-a171-80f54548fc65"
+    ],
+    "ticket_ids": [
+      "0c72ecac-abaf-4fba-84e6-40c5ad24a941"
+    ]
+  }
+}

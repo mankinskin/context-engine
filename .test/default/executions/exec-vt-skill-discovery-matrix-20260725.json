@@ -1,0 +1,22 @@
+{
+  "id": "exec-vt-skill-discovery-matrix-20260725",
+  "validation_spec_id": "vt-skill-discovery-matrix",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T08:02:37.927722400Z",
+  "detail": "11/11 domains resolved to the correct skill by description (exit 0). rust-async->rust-async-patterns, rust-best-practices->rust-best-practices, playwright-cli->playwright-cli, playwright-best-practices->playwright-best-practices, webgpu-typegpu->typegpu, webgpu-threejs-tsl->webgpu-threejs-tsl, interviewing->customer-interviews, authoring->doc-coauthoring, dioxus->dioxus, token-optimization->token-optimized-agentic-engineering, find-skills->find-skills.",
+  "links": {
+    "spec_ids": [
+      "a9b7ef39-ace4-4a12-a171-80f54548fc65"
+    ],
+    "ticket_ids": [
+      "0c72ecac-abaf-4fba-84e6-40c5ad24a941"
+    ]
+  },
+  "provenance": {
+    "source_path": ".agents/skills/tests/skill_discovery_matrix.py",
+    "domain": "agent-skills",
+    "operation": "skill-discovery-by-description",
+    "transport": "cli",
+    "run_id": "ch-f-20260725"
+  }
+}
