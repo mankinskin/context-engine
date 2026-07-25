@@ -1,0 +1,18 @@
+{
+  "id": "memory-kernel-standalone-extraction",
+  "title": "memory-kernel standalone build, tests, lint, and consumer compile",
+  "command": "cd ../memory-kernel && cargo fmt --check && cargo clippy --all-targets --all-features && cargo test --all-features; compile an external path-dependent consumer",
+  "detail": "Verifies the extracted crate independently and proves a downstream Cargo package can import memory_kernel without a legacy memory-api dependency.",
+  "links": {
+    "spec_ids": [
+      "66538d9e-c8ff-4dd8-b3df-a12dc9984a0e"
+    ],
+    "acceptance_criterion_ids": [
+      "standalone-build",
+      "external-consumer"
+    ],
+    "ticket_ids": [
+      "e12d8343-24f2-4b5d-8023-5a071238904a"
+    ]
+  }
+}

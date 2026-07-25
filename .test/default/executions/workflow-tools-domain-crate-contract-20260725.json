@@ -1,0 +1,27 @@
+{
+  "id": "workflow-tools-domain-crate-contract-20260725",
+  "validation_spec_id": "workflow-tools-domain-crate-contract",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T15:21:26.845822700Z",
+  "duration_ms": 600,
+  "detail": "Passed cargo build -p example; cargo build -p example --features cli,mcp,http; cargo test --workspace --all-features (2 tests); cargo fmt --check; and direct CLI/MCP/HTTP binary probes producing example-cli, example-mcp, and example-http.",
+  "links": {
+    "spec_ids": [
+      "5ee7f36a-2aea-4373-8c67-e6b26ae174bf"
+    ],
+    "acceptance_criterion_ids": [
+      "domain-crate-reference-builds"
+    ],
+    "ticket_ids": [
+      "0da6894c-dcbb-4196-8ac7-b6fae7c40ec9"
+    ]
+  },
+  "provenance": {
+    "source_path": "workflow-tools-contract-reference/Cargo.toml",
+    "test_id": "reference-workspace",
+    "domain": "workflow-tools",
+    "operation": "domain-crate-contract",
+    "transport": "in-process",
+    "run_id": "124bb209-64b3-47f1-888f-13bbcb8a0564"
+  }
+}

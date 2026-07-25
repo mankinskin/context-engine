@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "40698f27-e605-497f-a307-63aa88d763a9",
-  "captured_at": "2026-07-25T14:39:29.313Z",
+  "captured_at": "2026-07-25T15:15:54.838Z",
   "turns": [
     {
       "sequence": 0,
@@ -2451,6 +2451,157 @@
         "event_type": "assistant.message",
         "message_id": "a4241738-9023-4870-9304-595aba4cce34",
         "reasoning_text": "I've verified the graph is clean with no new issues found across the tickets checked. Now I need to follow up on their \"needs changes\" verdict by asking them to clarify what specific modifications they're looking for.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 38,
+      "role": "user",
+      "content": "/handoff the tickets are ready. create a handoff for the first two phases (PHASE 0 and PHASE A)",
+      "captured_at": "2026-07-25T15:13:09.271Z",
+      "event_meta": {
+        "event_id": "c1edf74e-1933-44b2-8a53-3a7bf5eb5e6d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 39,
+      "role": "assistant",
+      "content": "I'll persist a durable handoff record so the next session has real identity fields, then produce the handoff. Let me initialize the runtime session and pin the Phase 0/A entities.",
+      "captured_at": "2026-07-25T15:13:29.863Z",
+      "event_meta": {
+        "event_id": "28f29ebb-b46f-4a05-b1b8-69d7262c49b9",
+        "parent_event_id": "845b82a1-7e75-49c0-b640-b3778031fbc2",
+        "event_type": "assistant.message",
+        "message_id": "0475c349-4819-4349-82cd-edb984a61f5c",
+        "reasoning_text": "I need to create a handoff for the workflow-tools migration epic covering Phase 0 and Phase A, so I'm gathering the necessary session identifiers like workspace_session_id, run_id, and handoff_id, along with the ticket UUIDs for both phases. I'll attempt to initialize a durable workspace session and persist the handoff record through the available session tools. I see there's a Phase A ticket (e9b4d473) for shared libs with viewer-api and memory-fixtures, linked to an epic. There are also related tickets for memory-kernel. Now I'm attempting to initialize the durable session using runtime_init with the workspace path, being mindful that this might require specific setup.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XbspwwFEMjVHheQBsrcJ3r",
+            "name": "mcp_session-mcp_session_runtime_init",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 40,
+      "role": "assistant",
+      "content": "Durable session found: `03baab6c-0fdb-4ffc-8159-b83066a6283f`, active run `124bb209-64b3-47f1-888f-13bbcb8a0564`. Let me pin the Phase 0/A entities and persist a handoff record.",
+      "captured_at": "2026-07-25T15:14:00.878Z",
+      "event_meta": {
+        "event_id": "0ba4297b-24eb-4751-b8cb-2146cf7c4f1a",
+        "parent_event_id": "2fd84e3d-e9b4-47bb-bff2-1c96176b75e9",
+        "event_type": "assistant.message",
+        "message_id": "ba1bb89f-3338-420e-98b0-bc5506d80a3c",
+        "reasoning_text": "I've got the durable session set up with the workspace and run IDs, so now I'm pinning the key Phase 0/A entities and creating a handoff record to get the handoff_id. I'll focus on pinning the epic and the most critical tickets rather than everything to keep it clean.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_012eQoWyRX4FzbsVzfKtpFub",
+            "name": "mcp_session-mcp_session_runtime_pin",
+            "arguments": {
+              "entity_urn": "ce://default/ticket/69eb4118-19ec-4b5b-bb12-30e314029cc5",
+              "reason": "Migration epic being handed off",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01AdSy61J91RjF6WBb4WSGPK",
+            "name": "mcp_session-mcp_session_runtime_pin",
+            "arguments": {
+              "entity_urn": "ce://default/ticket/4f284d45-e520-4d22-945e-f54bdd3c0175",
+              "reason": "Phase 0 provisioning gate",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01AW2QGeFYtC4N4kt2ZaM9kH",
+            "name": "mcp_session-mcp_session_runtime_pin",
+            "arguments": {
+              "entity_urn": "ce://default/ticket/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9",
+              "reason": "Phase A domain-crate contract",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01EXcpvavvohH32D9gvKham9",
+            "name": "mcp_session-mcp_session_runtime_pin",
+            "arguments": {
+              "entity_urn": "ce://default/ticket/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d",
+              "reason": "Phase A transport-harness",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_011E2U4rUMyKjhXUhJ1CYXNe",
+            "name": "mcp_session-mcp_session_runtime_pin",
+            "arguments": {
+              "entity_urn": "ce://default/ticket/e12d8343-24f2-4b5d-8023-5a071238904a",
+              "reason": "Phase A memory-kernel extraction",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01UGbkUT22bqLFesUTwhMTDX",
+            "name": "mcp_session-mcp_session_runtime_pin",
+            "arguments": {
+              "entity_urn": "ce://default/ticket/1c452ff1-6edc-47c8-a73d-d07ce9b4d473",
+              "reason": "Phase A shared libs stabilization",
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 41,
+      "role": "assistant",
+      "content": "Entities pinned. Now persist the handoff record to obtain the `handoff_id`.",
+      "captured_at": "2026-07-25T15:14:09.773Z",
+      "event_meta": {
+        "event_id": "650aa31b-d131-4b37-8328-bec7a5bdf567",
+        "parent_event_id": "eb87feee-cbaa-4c08-be35-72cc25f5fbe1",
+        "event_type": "assistant.message",
+        "message_id": "e8676f6c-1195-4d12-9897-d2ef21ca18c1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01UVno5hXGiv7wePy5fiHu6c",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "workspace": "C:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 42,
+      "role": "assistant",
+      "content": "All durable identity fields captured. Here is the handoff for Phase 0 and Phase A.\n\n~~~text\n## Handoff — workflow-tools migration: Phase 0 (Provisioning) + Phase A (Foundations)\n\nThis session planned and review-hardened the ticket tree for extracting the workflow tooling into standalone per-tool repositories and reframing context-engine as a consuming example. The full 30-ticket epic is created, wired, and health-clean (0 cycles, 0 dangling edges). Locked architecture: each domain tool becomes a single domain crate (lib = primary handle) that re-exports an internal `{domain}-api` crate and exposes cli/mcp/http as feature-gated `[[bin]]` targets over a shared transport-harness; frontends stay separate crates. This handoff covers only the first two phases: Phase 0 provisioning (user creates GitHub repos) and Phase A foundations (domain-crate contract, memory-kernel extraction, transport-harness, shared-lib stabilization). Start in the repo root working directory context-engine.\n\n## Shorthand And Placeholder Legend\n\n- EPIC → ticket 69eb4118-19ec-4b5b-bb12-30e314029cc5 — \"[workflow-tools][migration] Extract workflow tooling into standalone per-tool repositories and reframe context-engine as a consuming example\"\n- P0 → ticket 4f284d45-e520-4d22-945e-f54bdd3c0175 — \"[workflow-tools][provisioning] Create GitHub repositories for extracted workflow tooling (user action)\"\n- A-CONTRACT → ticket 0da6894c-dcbb-4196-8ac7-b6fae7c40ec9 — \"[workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets\"\n- A-KERNEL → ticket e12d8343-24f2-4b5d-8023-5a071238904a — \"[workflow-tools][foundations] Extract shared storage kernel into memory-kernel repository\"\n- A-HARNESS → ticket dbe0e955-c1b4-414d-820c-10c3fbbb5d3d — \"[workflow-tools][foundations] Shared transport-harness crate for cli/mcp/http scaffolding reused by domain-crate binaries\"\n- A-SHAREDLIBS → ticket 1c452ff1-6edc-47c8-a73d-d07ce9b4d473 — \"[workflow-tools][foundations] Stabilize viewer-api and memory-fixtures as standalone shared dependencies\"\n- REL-XSTORE → ticket 671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe — \"[architecture][multi-store] Tracker: cross-store interaction model and migration\"\n- REL-NAMING → ticket 13912e44-fee8-4aa5-b28f-68bbc22af401 — \"[architecture][memory-api] Neutral naming migration map\"\n- REL-KERNELMIG → ticket 2b1279bd-c42f-4b0e-8835-d0d645a733ab — \"[architecture][memory-api] Neutral storage kernel and API migration\"\n- MOVE-TOOLING → memory-api-store ticket 505b2cd4 \"Deliver safe cross-workspace ticket move for git-backed stores\" (lives in the memory-api ticket store, not the default store; Phase B/C prerequisite only — not required for Phase 0/A)\n\n## Ticket Legend (full UUIDs)\n\n- EPIC = 69eb4118-19ec-4b5b-bb12-30e314029cc5\n- P0 = 4f284d45-e520-4d22-945e-f54bdd3c0175\n- A-CONTRACT = 0da6894c-dcbb-4196-8ac7-b6fae7c40ec9\n- A-KERNEL = e12d8343-24f2-4b5d-8023-5a071238904a\n- A-HARNESS = dbe0e955-c1b4-414d-820c-10c3fbbb5d3d\n- A-SHAREDLIBS = 1c452ff1-6edc-47c8-a73d-d07ce9b4d473\n- REL-XSTORE = 671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe\n- REL-NAMING = 13912e44-fee8-4aa5-b28f-68bbc22af401\n- REL-KERNELMIG = 2b1279bd-c42f-4b0e-8835-d0d645a733ab\n\n## Long-Horizon Goal (Epic)\n\n[EPIC 69eb4118 — Extract workflow tooling into standalone per-tool repositories](.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml) — the tracker this handoff advances; holds all locked decisions, the repository list, and phase gates.\n\n## Durable Session Identity\n\n- workspace_session_id: 03baab6c-0fdb-4ffc-8159-b83066a6283f\n- outgoing run_id: 124bb209-64b3-47f1-888f-13bbcb8a0564\n- handoff_id: 9f0d4582-c830-4e39-abf6-641e3655429b\n- resume command: session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id 124bb209-64b3-47f1-888f-13bbcb8a0564\n\n## Decisions (carried forward, locked 2026-07-25)\n\n- GitHub owner is mankinskin (same owner as existing submodules in [./.gitmodules](./.gitmodules)).\n- Full per-tool split immediately; per-tool repos use bare domain names (ticket, spec, rule, doc, test, log, feedback, session, audit, peek, interview).\n- Single domain crate per tool: lib is the primary build target and public handle; it re-exports an internal `{domain}-api` crate (api kept as its own internal crate, not absorbed).\n- Transports (cli, mcp, http) are feature-gated `[[bin]]` targets of the domain crate, built on the shared transport-harness; binary names preserved.\n- Frontends (viewer, vscode) stay separate crates depending on the domain crate lib; memory-viewers is dissolved.\n- Shared storage kernel is extracted and renamed memory-kernel (frees the memory-api name).\n- transport-harness default placement is inside the memory-kernel repo (minor open sub-decision recorded in A-HARNESS).\n- context-engine keeps only the context-stack + its own artifacts; workflow tooling becomes an installed dependency consumed as domain-crate libs plus invoked transport bins.\n\n## Findings (expensive to rediscover)\n\n- The repo is already a git-submodule composition: [./.gitmodules](./.gitmodules) references memory-api, viewer-api, memory-viewers, and context-stack, all under github.com/mankinskin — extraction re-parents these, it does not start from scratch.\n- Shared kernel source to extract for A-KERNEL lives at [memory-api/crates/memory-api](memory-api/crates/memory-api); domain api/crates are under [memory-api/crates](memory-api/crates); transports are under [memory-api/tools/cli](memory-api/tools/cli), [memory-api/tools/mcp](memory-api/tools/mcp), and memory-api/tools/http.\n- Domain viewers (doc/log/spec/ticket) live in [memory-viewers](memory-viewers); shared viewer framework + viewer-ctl in [viewer-api](viewer-api) — inputs to A-SHAREDLIBS and later per-tool frontend crates.\n- REL-KERNELMIG and REL-NAMING are the internal neutral-naming/kernel work that A-KERNEL must reconcile with (apply neutral names or keep deprecation aliases); they are linked from A-KERNEL.\n- Ticket creation requires an explicit workspace PATH, not the alias \"default\": use C:/Users/linus/git/graph_app/context-engine/.ticket for create/update/edge operations. Reads may use workspace \"default\".\n\n## Blockers\n\n- P0 is a user action and gates A-KERNEL (and transitively A-HARNESS, A-SHAREDLIBS). The next agent must present the repository list and wait for the user to create the repos and return the URLs/owner confirmation before kernel extraction can begin. A-CONTRACT is NOT blocked by P0 and can proceed in parallel.\n- Board has one stale entry: agent github-copilot holds owned_files \".ticket/tickets\" (stale, TTL expired). Review/clean before taking new file ownership so board state stays accurate.\n\n## Repositories the user must create (Phase 0 deliverable)\n\nShared libs: memory-kernel, memory-fixtures. Per-tool (bare names): ticket, spec, rule, doc, test, log, feedback, session, audit, peek, interview. Umbrella + packaging: workflow-tools, workflow-skill. (viewer-api and context-stack already exist; memory-api name is freed; memory-viewers dissolved.) The authoritative, always-current list is in the P0 ticket body.\n\n## Key Entities\n\n- [EPIC 69eb4118 — migration tracker](.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml) — locked decisions, repo list, phase gates.\n- [P0 4f284d45 — provisioning (user action)](.ticket/tickets/4f284d45-e520-4d22-945e-f54bdd3c0175/ticket.toml) — the exact repositories to create; gates Phase A extraction.\n- [A-CONTRACT 0da6894c — domain-crate contract](.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml) — startable now; defines the crate layout every per-tool ticket depends on.\n- [A-KERNEL e12d8343 — extract memory-kernel](.ticket/tickets/e12d8343-24f2-4b5d-8023-5a071238904a/ticket.toml) — shared substrate all domain crates depend on.\n- [A-HARNESS dbe0e955 — transport-harness crate](.ticket/tickets/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d/ticket.toml) — DRY cli/mcp/http scaffolding for the domain-crate bins.\n- [A-SHAREDLIBS 1c452ff1 — stabilize viewer-api + memory-fixtures](.ticket/tickets/1c452ff1-6edc-47c8-a73d-d07ce9b4d473/ticket.toml) — standalone shared deps for later frontend/test use.\n- [REL-XSTORE 671d4e47 — cross-store interaction tracker](.ticket/tickets/671d4e47-b53d-4a04-aa1d-30f2aa8a2bbe/ticket.toml) — complementary internal-contract work; keep coordinated, do not duplicate.\n- [REL-NAMING 13912e44 — neutral naming map](.ticket/tickets/13912e44-fee8-4aa5-b28f-68bbc22af401/ticket.toml) and [REL-KERNELMIG 2b1279bd — neutral storage kernel migration](.ticket/tickets/2b1279bd-c42f-4b0e-8835-d0d645a733ab/ticket.toml) — inform naming during A-KERNEL.\n- [./.gitmodules](./.gitmodules) — current submodule wiring and owner (mankinskin).\n- [./AGENTS.md](./AGENTS.md) — global rules (ticket/spec routing, browser validation, ownership).\n\n## Dependency Order (Phase 0 → Phase A)\n\nP0 gates A-KERNEL. A-KERNEL gates A-HARNESS and A-SHAREDLIBS. A-CONTRACT has no structural dependency and runs in parallel from the start.\n\n## Next Actions (execution order)\n\n1. Drive P0: present the repository list from the P0 ticket to the user, and wait for repo creation + URLs/owner confirmation. Then check the board for the stale entry and clean if appropriate.\n2. Start A-CONTRACT in parallel now (no repo needed): author the crate-layout contract (manifest shape `[lib]` + feature-gated `[[bin]]`, feature matrix, module layout, internal-api re-export rule, harness usage) and a compiling reference skeleton crate.\n3. Once repos exist, execute A-KERNEL: extract memory-api/crates/memory-api into the memory-kernel repo, reconciling neutral names per REL-NAMING/REL-KERNELMIG; make domain crates compile against it.\n4. Execute A-HARNESS: factor cli/mcp/http scaffolding into the transport-harness crate (default: sibling crate in the memory-kernel repo); wire a reference domain crate's three transports through it with no duplicated scaffolding.\n5. Execute A-SHAREDLIBS: extract memory-fixtures (+ memory-matrix) into the memory-fixtures repo and confirm viewer-api is self-contained; document the dependency-declaration pattern per-tool repos will use.\n\nFirst concrete action: begin A-CONTRACT (step 2) while requesting P0 repo creation (step 1). First validation check: the A-CONTRACT reference skeleton builds as a lib plus feature-gated transport bins over the harness (cargo build with selected transport features); and confirm every P0 repository exists under github.com/mankinskin.\n\n## Completion Status (for follow-up handoffs)\n\n1. Drive P0 provisioning — blocked (awaiting user repo creation + URLs).\n2. A-CONTRACT authoring — not-started (startable immediately, no dependency).\n3. A-KERNEL extraction — not-started (blocked by P0).\n4. A-HARNESS crate — not-started (blocked by A-KERNEL).\n5. A-SHAREDLIBS stabilization — not-started (blocked by A-KERNEL).\n\n## Definition Of Done (Phase 0 + Phase A)\n\n- All P0 repositories exist under github.com/mankinskin and are confirmed; P0 moved to done.\n- A-CONTRACT committed: crate-layout contract + a compiling reference skeleton (lib + feature-gated transport bins over the harness); all 11 per-tool tickets already reference it.\n- A-KERNEL: memory-kernel repo builds/tests independently; domain crates compile against it; naming reconciled with REL-NAMING/REL-KERNELMIG.\n- A-HARNESS: transport-harness builds/tests independently; a reference domain crate wires cli/mcp/http through it with no duplicated scaffolding; feature-gated transport selection works.\n- A-SHAREDLIBS: memory-fixtures builds/tests independently; viewer-api confirmed dependency-free of domain crates; dependency-declaration pattern documented.\n- Each completed ticket moved to in-review with validation evidence; board ownership released.\n\n## Board / Persisted-Session Notes\n\n- Board: clean the stale github-copilot entry on owned_files \".ticket/tickets\" before claiming ownership; board_check_in for tickets you actively work.\n- Resume this exact context with the resume command in the Durable Session Identity section (handoff_id 9f0d4582-c830-4e39-abf6-641e3655429b).\n\nExecute the next actions in order and continue until all are completed or explicitly blocked.\n~~~\n\nHandoff record persisted (`handoff_id` 9f0d4582-c830-4e39-abf6-641e3655429b) with the Phase 0/A tickets pinned to the durable workspace session. The block above is copy-paste ready as the next session's opening prompt.",
+      "captured_at": "2026-07-25T15:15:54.838Z",
+      "event_meta": {
+        "event_id": "f44b5550-897c-464c-9903-8f15aa907f74",
+        "parent_event_id": "bda33306-1e23-45dd-ad45-8e9887c66a7a",
+        "event_type": "assistant.message",
+        "message_id": "ba9bc433-f277-4efa-a52d-37de9e3f3446",
+        "reasoning_text": "I've collected all the durable identity fields I need for the session, including the workspace session ID, outgoing run ID, handoff ID, and the resume command that will let me pick up where I left off.\n\nNow I'm mapping out the ticket dependencies for the handoff across Phase 0 and Phase A. I can see the provisioning ticket gates Phase A work, with memory-kernel depending on it, and then both the transport-harness and shared libs viewer-api+memory-fixtures depending on memory-kernel. The domain-crate contract has no structural dependencies so it can start independently.\n\nI need to confirm the session-cli path from the resume command and then write out the handoff using markdown links to the ticket manifest paths. I'm mapping out the ticket legend with shorthand references for the epic, priority levels, and architecture components, then laying out the next actions in execution order starting with waiting for the user to provision the GitHub repositories. So the first concrete move is launching A-CONTRACT in parallel with driving P0 provisioning forward—the contract doesn't depend on repos existing yet. I need to validate that the contract reference skeleton compiles properly with the lib and feature-gated binaries, then confirm the repos are actually provisioned. There's also a stale entry on the board that needs attention.",
         "tool_requests_json": []
       }
     }

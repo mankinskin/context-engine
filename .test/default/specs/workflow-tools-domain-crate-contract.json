@@ -1,0 +1,18 @@
+{
+  "id": "workflow-tools-domain-crate-contract",
+  "title": "Workflow-tools domain crate reference workspace",
+  "command": "cd workflow-tools-contract-reference && cargo build -p example && cargo build -p example --features cli,mcp,http && cargo test --workspace --all-features && cargo fmt --check",
+  "detail": "Verifies library-only compilation, all feature-gated transport binaries, internal API re-export tests, shared harness tests, and Rust formatting.",
+  "slow_threshold_ms": 30000,
+  "links": {
+    "spec_ids": [
+      "5ee7f36a-2aea-4373-8c67-e6b26ae174bf"
+    ],
+    "acceptance_criterion_ids": [
+      "domain-crate-reference-builds"
+    ],
+    "ticket_ids": [
+      "0da6894c-dcbb-4196-8ac7-b6fae7c40ec9"
+    ]
+  }
+}

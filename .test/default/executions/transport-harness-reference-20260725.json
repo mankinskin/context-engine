@@ -1,0 +1,29 @@
+{
+  "id": "transport-harness-reference-20260725",
+  "validation_spec_id": "transport-harness-reference",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T16:11:00Z",
+  "detail": "PASS. memory-kernel: cargo fmt -p transport-harness -- --check; cargo test -p transport-harness --all-features (5 passed); cargo test --workspace --all-features (155 passed, 1 ignored); cargo clippy --workspace --all-targets --all-features (0 errors, 24 inherited warnings). Reference: package fmt check; cargo test default (1 passed) and all features (1 passed); explicit default/all-transport builds; strict clippy clean. Binary probes: CLI emitted example-cli; MCP returned a valid 2025-03-26 initialize response; HTTP /health returned example-http. External Edge at 1920x1080 rendered example-http; screenshot workflow-tools-contract-reference/target/transport-harness-http-health.png. Sole console error was the browser-generated /favicon.ico 404, unrelated to /health.",
+  "links": {
+    "spec_ids": [
+      "53a23ab2-0ea4-4c4c-8a8b-0066c5219d8f"
+    ],
+    "acceptance_criterion_ids": [
+      "harness-independent",
+      "reference-all-transports",
+      "feature-gating",
+      "contract-documentation"
+    ],
+    "ticket_ids": [
+      "dbe0e955-c1b4-414d-820c-10c3fbbb5d3d"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-kernel/crates/transport-harness/src/lib.rs",
+    "test_id": "transport-harness-reference",
+    "domain": "transport-harness",
+    "operation": "workspace-and-binary-validation",
+    "transport": "in-process,cli,mcp,http",
+    "run_id": "23b3c04e-a096-4b73-8ea1-c94795d54fbc"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "transport-harness-reference",
+  "title": "Production transport harness and reference-domain validation",
+  "command": "cargo test -p transport-harness --all-features; cargo test --workspace --all-features; reference cargo test/build default and --all-features; binary probes",
+  "detail": "Validates the standalone production harness, feature-gated CLI/MCP/HTTP APIs, reference-domain integration, output/protocol behavior, live HTTP health route, and browser rendering.",
+  "slow_threshold_ms": 120000,
+  "links": {
+    "spec_ids": [
+      "53a23ab2-0ea4-4c4c-8a8b-0066c5219d8f"
+    ],
+    "acceptance_criterion_ids": [
+      "harness-independent",
+      "reference-all-transports",
+      "feature-gating",
+      "contract-documentation"
+    ],
+    "ticket_ids": [
+      "dbe0e955-c1b4-414d-820c-10c3fbbb5d3d"
+    ]
+  }
+}

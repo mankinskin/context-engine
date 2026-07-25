@@ -1,0 +1,26 @@
+{
+  "id": "memory-kernel-standalone-extraction-20260725",
+  "validation_spec_id": "memory-kernel-standalone-extraction",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T15:48:12.074263400Z",
+  "detail": "cargo fmt --check passed after normalization; cargo clippy --all-targets --all-features passed with inherited non-fatal warnings; cargo test --all-features passed with 150 passed and 1 ignored; a fresh external package with a path dependency compiled using memory_kernel::URN_SCHEME. Strict cargo clippy -- -D warnings remains blocked by 24 inherited warnings and is documented as follow-up lint debt.",
+  "links": {
+    "spec_ids": [
+      "66538d9e-c8ff-4dd8-b3df-a12dc9984a0e"
+    ],
+    "acceptance_criterion_ids": [
+      "standalone-build",
+      "external-consumer"
+    ],
+    "ticket_ids": [
+      "e12d8343-24f2-4b5d-8023-5a071238904a"
+    ]
+  },
+  "provenance": {
+    "source_path": "../memory-kernel",
+    "domain": "memory-kernel",
+    "operation": "standalone-extraction",
+    "transport": "in-process",
+    "run_id": "bed66ba4-5392-421c-94cb-f7779ebc57fe"
+  }
+}

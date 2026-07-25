@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "e174497c-9284-4ab0-b18b-065215bf51e3",
-  "captured_at": "2026-07-25T17:08:05.558Z",
+  "captured_at": "2026-07-25T17:10:05.316Z",
   "turns": [
     {
       "sequence": 0,
@@ -1139,6 +1139,95 @@
             "type": "function"
           }
         ]
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "`.session/runtime` is gitignored (local runtime state, resumable via `session-cli`). I'll stage without it.",
+      "captured_at": "2026-07-25T17:08:14.512Z",
+      "event_meta": {
+        "event_id": "574d1d21-c777-4b0a-b2d2-ad256f109f19",
+        "parent_event_id": "b51fc098-3125-430a-957f-2a0f43746ec4",
+        "event_type": "assistant.message",
+        "message_id": "cd7c84cb-7fe9-4f09-897f-b775b2e8cafc",
+        "reasoning_text": "The `.session/runtime` directory is gitignored since it's just local runtime state that can be restored through session-cli, so I shouldn't force-add it. The actual persisted session data I need to track is in `.session/sessions`, so I'll re-stage without including the runtime path.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01DfAHRE14KbSb8dTv9rKtme",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git add -- \\\n  .ticket/tickets/9451f439-9a08-45bb-810e-771721ac1189 \\\n  .ticket/tickets/f10f52e4-baec-4fd8-9ac8-2e683ad05ee8 \\\n  .ticket/tickets/2cc7680c-7f19-4ad7-8658-29920e60ce1c \\\n  .ticket/tickets/60114a17-c0ad-43eb-8df6-4741a59d83ce \\\n  .ticket/tickets/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d \\\n  .session/sessions/e174497c-9284-4ab0-b18b-065215bf51e3 && echo \"=== staged ===\" && git diff --cached --name-only",
+              "explanation": "Stage review tickets and tracked session transcript.",
+              "goal": "Stage owned review artifacts",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "Staged cleanly — only review-track tickets and this session's transcript. Committing now.",
+      "captured_at": "2026-07-25T17:08:24.887Z",
+      "event_meta": {
+        "event_id": "b580808a-50b8-4e26-8fd4-c3f0baf92697",
+        "parent_event_id": "31f24f32-0139-447d-afc7-c10e59f27998",
+        "event_type": "assistant.message",
+        "message_id": "9c7cff2b-e731-42f4-bb02-6bebe8bd6d31",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Sw9vkbr2pK7aMGzdeCWBhe",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git commit -m \"review(workflow-tools): record transport-harness follow-up verdicts\" -m \"Review-only pass over the three dbe0e955 follow-ups (durable session 03baab6c).\n\n- 9451f439 (submodule): PASS. Decisions: path memory-kernel/ at root, reference\n  consumes harness via git branch-pinned dep, submodule is dev-only.\n- f10f52e4 (canonical spec): PASS. New .spec store in memory-kernel owns spec;\n  validation evidence rooted in kernel; depends_on 9451f439.\n- 2cc7680c (realistic reference): NEEDS CHANGES. Design precursor required first.\n  Created 60114a17 (design integration-test proof in memory-kernel);\n  2cc7680c depends_on 60114a17, 9451f439, f10f52e4.\n- dbe0e955: recorded parent review outcome + implementation order.\n\nNo implementation code or repo structure changed. task-type state transitions\nremain blocked by 'no schema for type task'; verdicts recorded via ticket\ndescriptions/edges and durable session workflow.\" 2>&1 | tail -15",
+              "explanation": "Commit the staged review-track artifacts.",
+              "goal": "Commit review verdicts",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "Committed at `35c32775` (pre-commit hook passed; no push — that needs your go-ahead). Now persisting a fresh handoff record to capture post-commit state and lineage for the next session.",
+      "captured_at": "2026-07-25T17:08:41.434Z",
+      "event_meta": {
+        "event_id": "9843fa2d-2dfb-448a-97db-333a6419d7fe",
+        "parent_event_id": "c0fa1334-98cc-43bc-a8bb-66f9d40e56e5",
+        "event_type": "assistant.message",
+        "message_id": "a9abe3f7-63c0-49c3-b826-0d27e477c581",
+        "reasoning_text": "I've committed the changes locally with the tickets and sessions included, but I'm holding off on pushing since that wasn't explicitly requested. Now I'm preparing the handoff prompt following the handoff guidelines, with the next session focused on implementing the approved foundation tickets starting with ticket 9451.\n\nI need to call session_handoff again to capture the post-commit state and get a fresh handoff_id and run lineage for the handoff record.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01VRsSmMkxZuQPCG6WEtrA4c",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "workspace": "c:\\Users\\linus\\git\\graph_app\\context-engine",
+              "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "New handoff record persisted. Here is the resumable handoff prompt for the next (implementation) session.\n\n~~~text\n# Implementation Handoff — Transport-Harness Foundations (post-review)\n\n## Overview\n\nThe review-only pass over the three [dbe0e955](./.ticket/tickets/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d/ticket.toml) transport-harness follow-ups is complete and committed at `35c32775`. Two follow-ups are APPROVED and one requires a design precursor. This handoff starts the **implementation** track: build the approved foundation in order, beginning with the submodule registration. Verdicts, decisions, dependency edges, and the design precursor already exist as durable ticket + session-workflow state — do not re-review the accepted topology.\n\n## Shorthand And Placeholder Legend\n\n- EPIC → 69eb4118-19ec-4b5b-bb12-30e314029cc5 — \"Extract workflow tooling into standalone per-tool repositories\"\n- PARENT → dbe0e955-c1b4-414d-820c-10c3fbbb5d3d — \"Shared transport-harness crate for CLI/MCP/HTTP scaffolding\"\n- T-SUBMODULE → 9451f439-9a08-45bb-810e-771721ac1189 — \"Register memory-kernel as a context-engine submodule\"\n- T-SPEC → f10f52e4-baec-4fd8-9ac8-2e683ad05ee8 — \"Move the transport-harness contract into a memory-kernel spec\"\n- T-DESIGN → 60114a17-c0ad-43eb-8df6-4741a59d83ce — \"Design memory-kernel transport-harness reference-proof integration tests\"\n- T-REF → 2cc7680c-7f19-4ad7-8658-29920e60ce1c — \"Replace trivial transport reference with realistic domain wiring\"\n- SPEC-HARNESS → 53a23ab2-0ea4-4c4c-8a8b-0066c5219d8f — \"Shared transport harness\" (context-engine spec, to be slimmed to a reference)\n- KERNEL → sibling production repo `../memory-kernel`, published `github.com/mankinskin/memory-kernel`, clean `main` at commit 45de2fd07ce4918c5e164f7b9330b1095319290b\n\n## Target Working Directory\n\nStart from [./](./) (context-engine repo root, `c:/Users/linus/git/graph_app/context-engine`). KERNEL lives at [../memory-kernel](../memory-kernel) until T-SUBMODULE relocates it under [./memory-kernel](./memory-kernel).\n\n## Durable Session Identity\n\n- workspace_session_id: `03baab6c-0fdb-4ffc-8159-b83066a6283f`\n- outgoing run_id: `dc58ae27-89a2-4133-8124-8225fd8417b7`\n- handoff_id: `35d9bfec-a7ea-4841-a28e-23fafc27de7d`\n- Resume command:\n  `session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id dc58ae27-89a2-4133-8124-8225fd8417b7`\n\nThe persisted session retains all verdict nodes, follow-up nodes, dependency edges, and pinned routing/ownership/browser-validation guidance. Raw transcript replay is unnecessary.\n\n## Long-Horizon Goal\n\nEPIC: extract workflow tooling into independently versioned per-tool repositories (one public domain crate per tool, internal API re-exports, feature-gated CLI/MCP/HTTP binaries, shared foundations), with context-engine becoming a consuming example. This handoff delivers the shared foundation under PARENT.\n\n## Review Verdicts Carried Forward\n\n- T-SUBMODULE — PASS. Path `memory-kernel/` at repo root (sibling to existing submodules); reference consumes harness via a **git branch-pinned dependency** (not the current relative path dep); submodule is **development-only**.\n- T-SPEC — PASS. Create a new spec-api-managed `.spec` store inside KERNEL owning the canonical spec; KERNEL owns validation evidence; context-engine references without duplicating; depends_on T-SUBMODULE.\n- T-REF — NEEDS CHANGES. Implementation gated on T-DESIGN. Durable proof moves into KERNEL integration tests; one domain op across all three transports; assert success output AND harness error envelope + HTTP status mapping. depends_on T-DESIGN, T-SUBMODULE, T-SPEC.\n\n## Decisions To Preserve\n\n- transport-harness stays transport-neutral; domains keep command dispatch, MCP tool/handler registration, HTTP router registration.\n- Harness owns shared startup, parsing/output, tracing, runtime setup, transport-aware errors.\n- `default = []`; CLI/MCP/HTTP independently selectable — ACCEPTED, do not re-review or regress.\n- Do not begin per-tool extraction until this shared foundation is accepted.\n- Do not populate unrelated empty per-tool repos.\n\n## Findings\n\n- `.gitmodules` registers four submodules (memory-viewers, context-stack, memory-api, viewer-api); KERNEL is absent — hence the discoverability gap.\n- The reference currently reaches KERNEL via a fragile out-of-tree path dep at [./workflow-tools-contract-reference/crates/example/Cargo.toml](./workflow-tools-contract-reference/crates/example/Cargo.toml) line 33.\n- Reference binaries are trivial: [./workflow-tools-contract-reference/crates/example/src/bin/example-cli.rs](./workflow-tools-contract-reference/crates/example/src/bin/example-cli.rs) (empty command), [./workflow-tools-contract-reference/crates/example/src/bin/example-mcp.rs](./workflow-tools-contract-reference/crates/example/src/bin/example-mcp.rs) (empty ServerHandler), [./workflow-tools-contract-reference/crates/example/src/bin/example-http.rs](./workflow-tools-contract-reference/crates/example/src/bin/example-http.rs) (only `/health`).\n- KERNEL has no `.spec` store yet (only its README), so T-SPEC must create one.\n\n## Blockers\n\n- SCHEMA DEFECT: `task`-type ticket **state** transitions fail with `store error: no schema for type 'task'`. All five tickets remain in `new`. Description edits and edges DO succeed. Do not falsify state; report if it still blocks. This gates the \"in-review\"/\"done\" moves at the end of each ticket.\n- Not pushed: commit `35c32775` is local only. Pushing needs explicit user go-ahead.\n\n## Key Entities\n\n- [EPIC 69eb4118 Extract workflow tooling](./.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml) — long-horizon goal.\n- [PARENT dbe0e955 Shared transport-harness crate](./.ticket/tickets/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d/ticket.toml) — accepted only after all foundations land; holds recorded review outcome + order.\n- [T-SUBMODULE 9451f439 Register memory-kernel submodule](./.ticket/tickets/9451f439-9a08-45bb-810e-771721ac1189/ticket.toml) — first to implement; unblocks the rest.\n- [T-SPEC f10f52e4 Canonical transport-harness spec in memory-kernel](./.ticket/tickets/f10f52e4-baec-4fd8-9ac8-2e683ad05ee8/ticket.toml) — depends on T-SUBMODULE.\n- [T-DESIGN 60114a17 Design reference-proof integration tests](./.ticket/tickets/60114a17-c0ad-43eb-8df6-4741a59d83ce/ticket.toml) — precursor gating T-REF.\n- [T-REF 2cc7680c Realistic transport reference wiring](./.ticket/tickets/2cc7680c-7f19-4ad7-8658-29920e60ce1c/ticket.toml) — implement only after T-DESIGN accepted.\n- [SPEC-HARNESS 53a23ab2 Shared transport harness](./.spec/specs/53a23ab2-0ea4-4c4c-8a8b-0066c5219d8f/spec.toml) — to be slimmed to a reference by T-SPEC.\n- [WORKFLOW_TOOLS_DOMAIN_CRATE_CONTRACT.md](./WORKFLOW_TOOLS_DOMAIN_CRATE_CONTRACT.md) — cross-repo contract to slim to references.\n- [transport-harness-reference-20260725 validation](./.test/default/executions/transport-harness-reference-20260725.json) — existing evidence for the harness implementation (5 harness tests, 155 kernel tests, clippy clean).\n\n## Board / Persisted-Session Notes\n\n- No board lease is held by this track. One unrelated active lease plus stale legacy entries exist — do not clean or claim them; before editing broad ticket paths, claim only the exact ticket paths.\n- The working tree has intermittent other-agent changes (dirty `memory-api` submodule, unrelated tickets/rules/specs). The review commit `35c32775` staged only the five review tickets + this session transcript; leave everything else untouched.\n\n## Next Actions (execution order)\n\n1. Implement T-SUBMODULE (9451f439): add KERNEL as a submodule at `memory-kernel/` pinned to commit 45de2fd; switch the reference dep in [./workflow-tools-contract-reference/crates/example/Cargo.toml](./workflow-tools-contract-reference/crates/example/Cargo.toml) to a git branch-pinned dependency; add dev-only bootstrap docs. First validation: `git submodule status --recursive`, then reference `cargo metadata --no-deps` proving the harness resolves via the git dependency.\n2. Implement T-SPEC (f10f52e4): create a `.spec` store in KERNEL, author the canonical harness spec (responsibilities, non-goals, features, API boundaries, guards), root validation evidence in KERNEL, slim SPEC-HARNESS + the contract doc to references. First validation: validate the new spec's refs from the KERNEL root; confirm context-engine references without duplicating normative requirements.\n3. Implement T-DESIGN (60114a17): produce and get acceptance for the reference-proof integration-test design (smallest realistic op, per-transport success + error assertions, KERNEL test layout).\n4. Implement T-REF (2cc7680c): realistic domain wiring, one op across CLI/MCP/HTTP with error-envelope assertions. First validation: `cargo test -p example --features cli`, then independent MCP and HTTP tests, then the all-feature build.\n5. Accept PARENT (dbe0e955): once 1–4 land, record acceptance (state move blocked by the `task` schema defect until fixed).\n\n## Completion Status\n\n- Next action 1 (T-SUBMODULE): not-started — approved, unblocked, smallest actionable.\n- Next action 2 (T-SPEC): not-started — blocked on action 1.\n- Next action 3 (T-DESIGN): not-started — blocked on actions 1–2.\n- Next action 4 (T-REF): not-started — blocked on action 3 (and 1–2).\n- Next action 5 (PARENT acceptance): blocked — awaits 1–4; final state move also blocked by `task` schema defect.\n\n## Definition Of Done\n\n- T-SUBMODULE, T-SPEC, T-DESIGN, and T-REF are implemented and their first-narrow validations pass.\n- KERNEL owns the canonical spec and validation evidence; context-engine references without duplication.\n- The reference proof lives in KERNEL integration tests exercising one op across all three transports plus the error envelope; `default = []` slimness preserved.\n- PARENT is recorded as accepted (or the `task` schema blocker is explicitly reported if the state move still fails).\n- No accepted topology was re-reviewed; no unrelated changes were reverted or committed.\n\nExecute the next actions in order and continue until all are completed or explicitly blocked. Begin with next action 1 (T-SUBMODULE); check in to only its exact ticket path before editing.\n~~~\n\nSummary of what I did this turn:\n- **Committed** the review-track artifacts at `35c32775` (5 tickets + this session transcript). The pre-commit hook passed; only owned paths were staged — the dirty `memory-api` submodule and unrelated tickets/rules/specs were deliberately left untouched.\n- **Persisted a fresh handoff** (`handoff_id 35d9bfec-a7ea-4841-a28e-23fafc27de7d`, outgoing `run_id dc58ae27-89a2-4133-8124-8225fd8417b7`).\n- **Produced the handoff prompt** above for the implementation session.\n\nNot done (needs your decision): `git push` — say the word and I'll push `main`.",
+      "captured_at": "2026-07-25T17:10:05.316Z",
+      "event_meta": {
+        "event_id": "b6d0c620-fa8f-4f91-ae32-1a4827daaa64",
+        "parent_event_id": "a9d764d1-befa-43a2-82d5-3391487e24fd",
+        "event_type": "assistant.message",
+        "message_id": "bf4501b3-7d4f-4c7e-a300-0ff25c2faac4",
+        "reasoning_text": "I'm recording a handoff with session and run identifiers for resuming this workspace session later.\n\nNow I need to compose the handoff prompt following the requirements, starting with implementing the approved foundation tickets. I'm setting up a ticket legend with full UUIDs that map to the epic for extracting workflow tooling, the parent ticket for the shared transport-harness crate, and the four implementation subtasks covering submodule registration, spec migration, transport reference replacement, and the reference-proof design.\n\nThe execution order is clear: first add memory-kernel as a submodule with git branch pinning and bootstrap docs, then create the spec store and migrate the transport-harness contract into it, and finally produce the accepted design for the integration tests.\n\nAfter that comes the realistic domain wiring implementation, followed by accepting the parent task. I'm tracking two blockers—the task schema state transition issue keeping tickets in `new` status and an incomplete push—plus noting that the review track has no active lease and there are some stale legacy board entries I should leave alone.\n\nNow I'm preparing the handoff with clickable references following policy: manifest links for tickets pointing to their ticket.toml files, and relative paths prefixed with ./ for file references.",
+        "tool_requests_json": []
       }
     }
   ]
