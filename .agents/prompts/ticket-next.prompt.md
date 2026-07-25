@@ -5,10 +5,6 @@ argument-hint: "[ticket-id|query|current]"
 agent: "agent"
 ---
 
-<!-- rule-api:file generated=true -->
-
-<!-- rule-api:entry id=5b9a1792-06ac-40cc-845f-d243f0db1aec slug=context-engine/prompts/ticket-next/l1 -->
-
 # Ticket Next
 
 Work on the next iteration by following the repository workflow around actionable tickets, focused implementation slices, validation, and evidence tracking.

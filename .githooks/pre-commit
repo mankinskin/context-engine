@@ -170,7 +170,11 @@ if staged_matches '^\.vscode/(tasks\.json|tasks\.d/.*\.jsonc)$'; then
     check_vscode_tasks
 fi
 
-if staged_matches '^(rule-targets\.yaml|\.rule/.*|AGENTS\.md|\.github/README\.md|\.github/copilot-instructions\.md|\.agents/instructions/.*\.instructions\.md)$'; then
+# Root AGENTS.md, .github/copilot-instructions.md, and everything under
+# .agents/** are hand-owned (not produced by rule-targets.yaml); do NOT trigger
+# the sync-targets drift gate on them. Only the still-generated outputs
+# (.clinerules/** and the rule store) gate here.
+if staged_matches '^(rule-targets\.yaml|\.rule/.*|\.clinerules/.*|\.github/README\.md)$'; then
     check_rule_targets 'rule-targets.yaml'
 fi
 

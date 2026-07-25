@@ -5,10 +5,6 @@ argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementat
 agent: "Implement Agent"
 ---
 
-<!-- rule-api:file generated=true -->
-
-<!-- rule-api:entry id=6e652560-810e-4719-8f92-36634c87a54c slug=shared/implement-prompt/l1 -->
-
 # Implement
 
 Delegate to the Implement Agent for the full surgical workflow.

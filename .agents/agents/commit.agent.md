@@ -6,10 +6,6 @@ argument-hint: "Optional commit message prefix or scope hint."
 user-invocable: true
 ---
 
-<!-- rule-api:file generated=true -->
-
-<!-- rule-api:entry id=13f20983-e67f-4530-b4e6-00997ff11476 slug=shared/commit-agent/l1 -->
-
 You are a commit specialist for the context-engine repository.
 
 Your job is to commit all pending changes correctly: regenerating generated outputs, resolving pre-commit hook failures, committing submodules deepest-first, and writing conventional commit messages.
@@ -24,7 +20,7 @@ Your job is to commit all pending changes correctly: regenerating generated outp
 
 ## Constraints
 
-- Never edit rule-managed files (AGENTS.md, .github/copilot-instructions.md, .agents/instructions/*.instructions.md, .agents/prompts/*.prompt.md, .agents/agents/*.agent.md) directly. Always regenerate via `cargo run -p rule-cli --bin rule -- sync-targets --config <config>`.
+- Never edit rule-managed generated files (`.clinerules/10-core-rules.md`, submodule `README.md`) directly; always regenerate via `cargo run -p rule-cli --bin rule -- sync-targets --config <config>`. The root `AGENTS.md`, `.github/copilot-instructions.md`, and everything under `.agents/**` are hand-owned — edit them directly and do not route them through the rule system.
 - Commit submodules in deepest-first order before updating parent pointers.
 - Do not use `git commit --no-verify` unless the hook failure is a confirmed false positive; document why if used.
 - Keep each commit focused on one logical concern (source changes, generated outputs, ticket/spec store, submodule pointers).
@@ -43,7 +39,7 @@ The hook at `.githooks/pre-commit` blocks commits that stage rule-related files 
 
 ```bash
 cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml
-git add AGENTS.md .github/copilot-instructions.md <other generated files>
+git add .clinerules/10-core-rules.md <other generated files>
 git commit -m "..."
 ```
 

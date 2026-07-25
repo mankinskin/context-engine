@@ -5,10 +5,6 @@ argument-hint: "[ticket-id|track|current]"
 agent: "agent"
 ---
 
-<!-- rule-api:file generated=true -->
-
-<!-- rule-api:entry id=084fd4e6-660b-4227-a13e-514edf44e393 slug=context-engine/prompts/handoff/l1 -->
-
 # Handoff
 
 Create a compact handoff prompt that a new session can use to resume a specific implementation track quickly. Carry over the current session's hard-won context: decisions, findings, blockers, suggested next steps, and entity references that would be expensive or error-prone to rediscover.

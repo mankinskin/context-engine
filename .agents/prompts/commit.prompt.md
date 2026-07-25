@@ -5,10 +5,6 @@ argument-hint: "[message]"
 agent: "agent"
 ---
 
-<!-- rule-api:file generated=true -->
-
-<!-- rule-api:entry id=f52de457-4d85-49cf-9aae-109a8f348101 slug=shared/commit-prompt/l1 -->
-
 # Commit Changes
 
 Commit all pending changes across the root repo and submodules following the repository's commit conventions.
@@ -27,7 +23,7 @@ Reference [commit.instructions.md](./.agents/instructions/commit.instructions.md
 
 ## Key rules
 
-- Never edit rule-managed files (AGENTS.md, copilot-instructions.md, instruction/prompt/agent files) directly. Always regenerate via `rule sync-targets`.
+- Never edit still-generated rule-managed files (`.clinerules/**`, submodule `README.md`) directly. Always regenerate via `rule sync-targets`. Root `AGENTS.md`, `.github/copilot-instructions.md`, and everything under `.agents/**` are hand-owned — edit them directly.
 - Commit submodules in deepest-first order before updating parent pointers.
 - The pre-commit hook blocks commits that stage rule-related files with drifted generated outputs. Fix by running `rule sync-targets` and re-staging.
 - Use `git commit --no-verify` only for confirmed false-positive hook failures; document why in the commit message.

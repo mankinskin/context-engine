@@ -74,6 +74,34 @@ Update ticket state immediately when the work status changes — do not defer to
 > If a state was reached prematurely, use `update --undo` to revert the last
 > transition and re-progress correctly.
 
+### Single-hop Transitions and Recovery
+
+`update --to-state <state>` performs **one legal hop**. If the target is not a
+direct neighbor of the current state (e.g. `new -> in-implementation`, which
+must pass through `ready`), the update is **rejected with recovery guidance**
+rather than silently walked. The error names the current state, the legal next
+states, and the mandatory intermediate waypoint(s), for example:
+
+```
+invalid state transition 'new' -> 'in-implementation'; current state 'new'
+allows next states [cancelled, ready]; to reach 'in-implementation', first
+transition through: ready
+```
+
+To advance across multiple states, either step through each hop, name the
+waypoints with `--transition-state`, or use `close <id> --to-state <state>`
+which fast-forwards along the shortest legal path.
+
+Inspect the legal transition graph for any ticket with:
+
+```bash
+# Current state, allowed next states, full transition graph, required/terminal states
+./target/debug/ticket.exe transitions <id> --toon
+```
+
+The same recovery-field shape (current + allowed-next + intermediate states) is
+surfaced identically across the CLI, ticket-MCP, and HTTP mutation surfaces.
+
 ### Correcting State Transitions (Undo / Revert)
 
 If a ticket was advanced to the wrong state, use `--undo` to roll back the
