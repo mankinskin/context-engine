@@ -1,0 +1,19 @@
+{
+  "id": "val-session-workflow-flexibility",
+  "title": "Session workflow flexibility epic regression suite",
+  "command": "cargo test -p session-api -p session-mcp -p session-cli; cargo fmt -p session-api -p session-mcp -p session-cli -- --check; validate spec refs and instruction diagnostics",
+  "detail": "Covers actionable rejections, category and anchor_urn persistence/gating, atomic indexed batch APIs, CLI/MCP parity, and hand-owned path-scoped session-workflow guidance discovered from session bootstrap.",
+  "slow_threshold_ms": 30000,
+  "links": {
+    "spec_ids": [
+      "96bc688a-62ac-4083-923f-e507f2bb19fe"
+    ],
+    "ticket_ids": [
+      "1a7ae853-7588-409d-b172-b2d2bfbed3fb",
+      "781dd9ad-74a6-41a1-9dac-4fda185780d7",
+      "3c6da958-f494-408f-b7dd-cc43997b8ead",
+      "524bee64-3ba0-480b-80c7-4ab56cd45784",
+      "729b72ac-9688-48be-847d-c864ffa037be"
+    ]
+  }
+}
