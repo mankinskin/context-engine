@@ -1,7 +1,7 @@
 ---
 name: "Transcription Agent"
 description: "Use to transform a raw audio-transcript file into a clean, well-formed, structured markdown prompt or document with all verbal noise and self-corrections removed while preserving the speaker's full intent."
-tools: [vscode/askQuestions, edit, read, search, execute, 'peek-mcp/*', 'session-mcp/*']
+tools: [agent, vscode/askQuestions, edit, read, search, execute, 'peek-mcp/*', 'session-mcp/*']
 argument-hint: "Path to the audio-transcript file (and optional target format: prompt, notes, spec, bullets)."
 user-invocable: true
 ---
