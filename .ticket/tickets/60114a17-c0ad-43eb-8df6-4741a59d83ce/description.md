@@ -25,3 +25,19 @@ Depends on 9451f439 (submodule discoverability) and f10f52e4 (canonical spec in 
 ## Definition of done
 
 A written, reviewed design (spec section or ticket description) that unambiguously specifies the domain op, transport surfaces, output/error assertions, and memory-kernel test layout, ready to hand to 2cc7680c implementation.
+
+## Design (2026-07-25): ACCEPTED
+
+The full design is recorded durably as section "Reference-proof integration tests (design)" on the canonical memory-kernel spec e5294ae5-6bff-44dc-81a9-24a44615b775 (memory-kernel/.spec/specs/e5294ae5-6bff-44dc-81a9-24a44615b775). Summary:
+
+- Domain op: `describe(id) -> Item` over a tiny fixed in-test registry `{ "harness" => "Shared transport harness" }`. Unknown id -> `DomainError::NotFound(id)`. Smallest op exercising input parsing, a structured success payload, and a per-transport-normalized domain error.
+- Success shape: `{"id":"harness","summary":"Shared transport harness"}`. CLI via `Output::json` + one trailing newline; MCP returns same item; HTTP `200 OK` with that body.
+- Error per transport: domain message `unknown item: <id>`. CLI -> `HarnessError::Domain` (args errors -> `HarnessError::Arguments`); MCP -> harness domain error with same message; HTTP -> `404 NOT_FOUND` with `HttpError` envelope `{"code":"not_found","message":"unknown item: <id>"}` (assert BOTH status and envelope).
+- Test layout: `memory-kernel/crates/transport-harness/tests/reference_proof.rs`, an integration test in the harness crate; run gate `cargo test -p transport-harness --all-features`; per-transport runs use single features. Fixture domain inline in the test module (dev-only, never in library surface, `default = []` untouched). CLI via `cli::run_from` (no spawn); MCP via in-process handler routing; HTTP via ephemeral `127.0.0.1:0` + real requests.
+- context-engine reference: retained as a thin compile-only consumer proving the branch-pinned git dep resolves and all three gated binaries build/run; no behavioral assertions duplicated there.
+
+All four open questions resolved; all locked decisions honored. Ready to hand to 2cc7680c.
+
+### State move blocker
+
+`update_ticket to_state` returns `store error: no schema for type 'task'` — the known schema defect. Ticket remains in `new`; state not falsified.

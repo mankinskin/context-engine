@@ -1,0 +1,11 @@
+{
+  "id": "vt-submodule-git-dep",
+  "title": "memory-kernel submodule + reference git-dep resolution",
+  "command": "git submodule status --recursive; cargo metadata --no-deps (reference); cargo build -p example --features cli",
+  "detail": "Verifies memory-kernel is registered as a submodule pinned to 45de2fd and the reference resolves transport-harness via a branch-pinned git dependency.",
+  "links": {
+    "ticket_ids": [
+      "9451f439-9a08-45bb-810e-771721ac1189"
+    ]
+  }
+}

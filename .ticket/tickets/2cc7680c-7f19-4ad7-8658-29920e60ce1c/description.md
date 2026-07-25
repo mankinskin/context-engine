@@ -34,3 +34,28 @@ A design/research pass must complete and be accepted before this ticket may be i
 ## First validation after implementation (unchanged)
 
 cargo test -p example --features cli, then independent MCP and HTTP tests, then the all-feature build.
+
+## Implementation (2026-07-25): DONE
+
+Design precursor 60114a17 accepted; implemented per its accepted design.
+
+- Durable proof lives in memory-kernel integration test `crates/transport-harness/tests/reference_proof.rs`. One realistic op `describe(id)` over a tiny fixed registry (`harness` -> "Shared transport harness"; unknown -> `unknown item: <id>`). Fixture domain is inline + dev-only, so the library surface and `default = []` slimness are untouched.
+- CLI: parses a `describe --id` subcommand and dispatches through `cli::run_from` + shared `Output::json`; asserts the one-line JSON success, the `HarnessError::Domain` unknown-id error, and `HarnessError::Arguments` on bad args.
+- MCP: registers a real `describe` tool (`#[tool_router]`/`#[tool]`/`#[tool_handler]`) and invokes it in-process; asserts the success item and the domain-error mapping.
+- HTTP: registers `GET /describe/{id}`; success -> 200 + item JSON, unknown -> `HttpError` 404 with envelope `{"code":"not_found","message":"unknown item: missing"}`; asserts BOTH status and envelope via `tower::oneshot`.
+- Added a `core_proof` test that runs under `default = []`, proving shared output/error mechanics work with no transport deps.
+- context-engine reference retained as a thin compile-only consumer (builds all three gated binaries via the branch-pinned git dep); no behavioral assertions duplicated there.
+- Harness correctness fix discovered by the proof: `write_output`'s JSON branch appended the JSON-encoded string `"\n"` (quoted) instead of a real newline byte. Fixed to write the value then `b"\n"`; added guarding unit test `write_output_appends_one_real_newline_to_json`.
+
+### Validation (all passed)
+
+- `cargo test -p transport-harness --features cli` -> 4 ok; `--features mcp` -> 3 ok; `--features http` -> 3 ok.
+- `cargo test -p transport-harness --all-features` -> 6 unit + 8 integration ok.
+- `cargo build -p transport-harness` (default) ok; `cargo tree` default shows no clap/axum/rmcp/tokio (only 2 pre-existing dead-code warnings for transport-only helpers).
+- `cargo clippy -p transport-harness --all-features --tests` -> clean.
+- Reference `cargo build -p example --features cli,mcp,http` -> ok via git dep.
+- Evidence: memory-kernel/.test (workspace-slug memory-kernel) execution exec-vt-transport-harness-reference-proof-20260725 (spec vt-transport-harness-reference-proof).
+
+### State move blocker
+
+`update_ticket to_state` returns `store error: no schema for type 'task'` — the known schema defect. Ticket remains in `new`; state not falsified.

@@ -54,3 +54,22 @@ Criterion-level status after the follow-up review:
 Parent remains BLOCKED and not accepted until: 9451f439 and f10f52e4 are implemented, and 2cc7680c's design precursor (60114a17) is accepted and 2cc7680c implemented. No implementation was performed during this review-only pass.
 
 Implementation order (recorded): 9451f439 → f10f52e4 → 60114a17 (design) → 2cc7680c (implementation) → parent acceptance.
+
+## Acceptance (2026-07-25 implementation track): ACCEPTED
+
+All foundations landed in the recorded order; every gate satisfied:
+
+- 9451f439 (submodule): DONE. `memory-kernel/` registered at 45de2fd, reference resolves the harness via a branch-pinned git dependency, dev-only bootstrap docs added. Evidence exec-vt-submodule-git-dep-20260725.
+- f10f52e4 (canonical spec): DONE. New `.spec` store in memory-kernel owns canonical spec e5294ae5-6bff-44dc-81a9-24a44615b775; validation rooted in memory-kernel/.test; context-engine spec 53a23ab2 + WORKFLOW_TOOLS_DOMAIN_CRATE_CONTRACT.md slimmed to references. Evidence exec-vt-transport-harness-spec-20260725.
+- 60114a17 (design): ACCEPTED. Reference-proof design recorded as a section on the canonical kernel spec.
+- 2cc7680c (realistic reference): DONE. Durable proof in memory-kernel/crates/transport-harness/tests/reference_proof.rs — one `describe` op across CLI/MCP/HTTP asserting success output AND the harness domain error envelope + HTTP 404 status mapping; default=[] slimness preserved and separately proven; clippy clean. Also fixed a harness JSON-newline defect found by the proof. Evidence exec-vt-transport-harness-reference-proof-20260725.
+
+Per-tool extraction remains gated behind this accepted foundation (not started).
+
+### State move blocker
+
+`update_ticket to_state` returns `store error: no schema for type 'task'` — the known schema defect. All five tickets remain in `new`; acceptance is recorded here in the description because the administrative state transition cannot be performed until the schema defect is fixed. State not falsified.
+
+### Not pushed
+
+Commit 35c32775 and all subsequent implementation changes (context-engine working tree + the memory-kernel submodule commit) are LOCAL ONLY. Pushing (context-engine and the memory-kernel submodule) requires explicit user go-ahead.

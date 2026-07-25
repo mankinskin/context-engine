@@ -1,0 +1,18 @@
+{
+  "id": "exec-vt-submodule-git-dep-20260725",
+  "validation_spec_id": "vt-submodule-git-dep",
+  "outcome": "passed",
+  "executed_at": "2026-07-25T17:20:24.005105500Z",
+  "detail": "git submodule status --recursive lists memory-kernel at 45de2fd07ce4918c5e164f7b9330b1095319290b (heads/main). Reference cargo metadata resolves transport-harness v0.1.0 from git+https://github.com/mankinskin/memory-kernel?branch=main#45de2fd0. cargo build -p example --features cli finished successfully compiling transport-harness from the git checkout. default=[] slimness preserved (dep:transport-harness only under cli/mcp/http features).",
+  "links": {
+    "ticket_ids": [
+      "9451f439-9a08-45bb-810e-771721ac1189"
+    ]
+  },
+  "provenance": {
+    "domain": "workflow-tools",
+    "operation": "submodule-registration",
+    "transport": "cli",
+    "run_id": "dc58ae27-89a2-4133-8124-8225fd8417b7"
+  }
+}
