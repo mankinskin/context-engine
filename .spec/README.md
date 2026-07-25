@@ -180,9 +180,6 @@
   - [spec-viewer/spec-tree](./tree/spec-viewer/d8b515b8/spec-tree/8c2bbb42/README.md)
   - [spec-viewer/theme-settings](./tree/spec-viewer/d8b515b8/theme-settings/c5b11920/README.md)
 
-## test
-- [test/foo](./tree/foo/227df77c/README.md)
-
 ## ticket-api
 - [ticket-api/cross-workspace-move-contract](./tree/cross-workspace-move-contract/afcaccc9/README.md)
 - [ticket-api/model/tracker-improvement-effort-field](./tree/tracker-improvement-effort-field/fa5265cc/README.md)
