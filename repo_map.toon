@@ -4,7 +4,7 @@ usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
   root: "//?/C:/Users/linus/git/graph_app/context-engine"
-top_level_dirs[8]: config,"context-stack","memory-api","memory-viewers",packages,"rule-targets",tools,"viewer-api"
+top_level_dirs[12]: config,"context-stack","memory-api","memory-kernel","memory-viewers",packages,"rule-targets",tmp,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
   kind: dir
@@ -74,7 +74,7 @@ crates:
         - name: crates
           kind: dir
           path: "crates/memory-api/crates"
-          children[14]{name,kind,path,note}:
+          children[15]{name,kind,path,note}:
             "audit-api",dir,"crates/memory-api/crates/audit-api","crate=audit-api"
             "doc-api",dir,"crates/memory-api/crates/doc-api","crate=doc-api"
             "feedback-api",dir,"crates/memory-api/crates/feedback-api","crate=feedback-api"
@@ -87,6 +87,7 @@ crates:
             "session-api",dir,"crates/memory-api/crates/session-api","crate=session-api"
             "spec-api",dir,"crates/memory-api/crates/spec-api","crate=spec-api"
             "test-api",dir,"crates/memory-api/crates/test-api","crate=test-api"
+            ticket,dir,"crates/memory-api/crates/ticket",crate=ticket
             "ticket-api",dir,"crates/memory-api/crates/ticket-api","crate=ticket-api"
             "ticket-vscode-core",dir,"crates/memory-api/crates/ticket-vscode-core","crate=ticket-vscode-core"
         - name: tools
@@ -116,10 +117,11 @@ crates:
             - name: mcp
               kind: dir
               path: "crates/memory-api/tools/mcp"
-              children[9]{name,kind,path,note}:
+              children[10]{name,kind,path,note}:
                 "audit-mcp",dir,"crates/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
                 "compact-terminal-mcp",dir,"crates/memory-api/tools/mcp/compact-terminal-mcp","crate=compact-terminal-mcp"
                 "feedback-mcp",dir,"crates/memory-api/tools/mcp/feedback-mcp","crate=feedback-mcp"
+                "mcp-cost-gate",dir,"crates/memory-api/tools/mcp/mcp-cost-gate","crate=mcp-cost-gate"
                 "peek-mcp",dir,"crates/memory-api/tools/mcp/peek-mcp","crate=peek-mcp"
                 "rule-mcp",dir,"crates/memory-api/tools/mcp/rule-mcp","crate=rule-mcp"
                 "session-mcp",dir,"crates/memory-api/tools/mcp/session-mcp","crate=session-mcp"
@@ -207,19 +209,8 @@ agent_guidance:
   name: "agent-guidance"
   kind: dir
   path: "agent-guidance"
-  children[2]:
-    - name: .agents
-      kind: dir
-      path: "agent-guidance/.agents"
-      children[1]:
-        - name: instructions
-          kind: dir
-          path: "agent-guidance/.agents/instructions"
-          children[1]{name,kind,path}:
-            "token-efficiency.instructions.md",file,"agent-guidance/.agents/instructions/token-efficiency.instructions.md"
-    - name: AGENTS.md
-      kind: file
-      path: "agent-guidance/AGENTS.md"
+  children[1]{name,kind,path}:
+    AGENTS.md,file,"agent-guidance/AGENTS.md"
 agent_files:
   name: "agent-files"
   kind: dir
@@ -232,23 +223,12 @@ agent_files:
         - name: instructions
           kind: dir
           path: "agent-files/.agents/instructions"
-          children[12]{name,kind,path}:
-            audit.instructions.md,file,"agent-files/.agents/instructions/audit.instructions.md"
-            commit.instructions.md,file,"agent-files/.agents/instructions/commit.instructions.md"
-            "context-http.instructions.md",file,"agent-files/.agents/instructions/context-http.instructions.md"
-            "core-crates.instructions.md",file,"agent-files/.agents/instructions/core-crates.instructions.md"
-            frontend.instructions.md,file,"agent-files/.agents/instructions/frontend.instructions.md"
-            "session-bootstrap.instructions.md",file,"agent-files/.agents/instructions/session-bootstrap.instructions.md"
-            "session-optimization.instructions.md",file,"agent-files/.agents/instructions/session-optimization.instructions.md"
-            "spec-system.instructions.md",file,"agent-files/.agents/instructions/spec-system.instructions.md"
-            tests.instructions.md,file,"agent-files/.agents/instructions/tests.instructions.md"
-            "ticket-system.instructions.md",file,"agent-files/.agents/instructions/ticket-system.instructions.md"
-            "token-efficiency.instructions.md",file,"agent-files/.agents/instructions/token-efficiency.instructions.md"
-            "viewer-api-tools.instructions.md",file,"agent-files/.agents/instructions/viewer-api-tools.instructions.md"
+          children[1]{name,kind,path}:
+            README.md,file,"agent-files/.agents/instructions/README.md"
         - name: prompts
           kind: dir
           path: "agent-files/.agents/prompts"
-          children[21]{name,kind,path}:
+          children[22]{name,kind,path}:
             audit.prompt.md,file,"agent-files/.agents/prompts/audit.prompt.md"
             "build-validate-tools.prompt.md",file,"agent-files/.agents/prompts/build-validate-tools.prompt.md"
             commit.prompt.md,file,"agent-files/.agents/prompts/commit.prompt.md"
@@ -269,12 +249,13 @@ agent_files:
             "ticket-next.prompt.md",file,"agent-files/.agents/prompts/ticket-next.prompt.md"
             ticket.prompt.md,file,"agent-files/.agents/prompts/ticket.prompt.md"
             tickets.prompt.md,file,"agent-files/.agents/prompts/tickets.prompt.md"
+            "transform-transcript.prompt.md",file,"agent-files/.agents/prompts/transform-transcript.prompt.md"
             "user-training.prompt.md",file,"agent-files/.agents/prompts/user-training.prompt.md"
         - name: skills
           kind: dir
           path: "agent-files/.agents/skills"
           children[1]{name,kind,path}:
-            "token-optimized-agentic-engineering.SKILL.md",file,"agent-files/.agents/skills/token-optimized-agentic-engineering.SKILL.md"
+            README.md,file,"agent-files/.agents/skills/README.md"
 hooks:
   name: hooks
   kind: dir

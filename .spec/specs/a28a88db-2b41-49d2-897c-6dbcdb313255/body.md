@@ -22,14 +22,14 @@ If this spec is implemented, dependents can rely on only the minimal bootstrappe
 
 - Canonical searchable rule entries: `implemented` at `.rule/rules/` and `memory-api/crates/rule-api/src/store/store_query.rs`.
 - Generated instruction target selection: `implemented` at `rule-targets/50-agents-instructions.yaml`; ticket/spec/commit are description-only generated artifacts and token-efficiency retains narrow path globs.
-- Minimal universal bootstrapper: `implemented` at `.agents/instructions/session-bootstrap.instructions.md` from canonical rule `89330b3b-4d28-4c48-80dd-203311dbe855`.
+- Minimal universal bootstrapper: `implemented` at `.agents/instructions/session/session-bootstrap.instructions.md` from canonical rule `89330b3b-4d28-4c48-80dd-203311dbe855`.
 - Session-side pinned-rule rendering: `implemented` at `memory-api/crates/session-api/src/store.rs`.
 - CLI render surface: `implemented` at `memory-api/tools/cli/session-cli/src/lib.rs`.
 - MCP render surface: `implemented` at `memory-api/tools/mcp/session-mcp/src/server.rs`.
 
 ## Governing-rule requirement
 
-This contract is governed by `.agents/instructions/spec-system.instructions.md` and its aligned-structure v2 requirement.
+This contract is governed by `.agents/instructions/spec/spec-system.instructions.md` and its aligned-structure v2 requirement.
 
 # Contract
 
