@@ -8,8 +8,11 @@ The cost-gate moves from a binary light/heavy classification to a **graded numer
 ### Tool Cost Assignment
 
 - **tool.cost**: LINEAR map of empirical `est-output-tokens` (from tool_metrics T1/T2) → 1–100, clamped
-- Tools with **insufficient data** (< 5 calls) fall back to the existing static heavy/light list (`TOKEN_HEAVY_TOOL_SUBSTRINGS` in `memory-api/tools/mcp/mcp-cost-gate/src/gate.rs`)
-- Static-heavy tools map to high cost; static-light tools map to low cost
+- Tools with **insufficient data** (< 5 calls) receive a **single default cost for unknown tools**
+- Default cost calibrated to:
+  - Gate expensive/orchestrator-tier models (above their budget)
+  - Remain below cheaper-agent budgets (bootstrap requirement)
+  - Allow cheaper agents to call unknown tools and gather metrics
 
 ### Named Tiers
 

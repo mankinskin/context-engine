@@ -12,10 +12,9 @@ A tool's cost is derived from **empirical output-token estimates**:
    - Tools with larger typical outputs map to higher costs
 
 2. **Insufficient data** (< 5 calls):
-   - **Fail open** to static `TOKEN_HEAVY_TOOL_SUBSTRINGS` list
-   - Static-heavy → high cost
-   - Static-light → low cost
-   - Never silently assume "light"
+   - Receives **single default cost for unknown tools**
+   - Default cost calibrated to gate expensive models while allowing cheaper agents (bootstrap requirement)
+   - Empirical data takeover once ≥ 5 calls recorded
 
 ### Gate Decision Flow
 
@@ -31,9 +30,10 @@ A tool's cost is derived from **empirical output-token estimates**:
 
 Default anchor constants are tuned so:
 - Today's **threshold X=15 boundary** is reproduced
-- Current `TOKEN_HEAVY_TOOL_SUBSTRINGS` behavior is preserved
+- Single default cost for unknown tools gates expensive models while allowing cheaper agents
 - Orchestrator-tier models (output_mtok > 15) get low budgets by default
 - Cheap models (output_mtok ≤ 15) get high budgets by default
+- Bootstrap constraint: unknown-tool default must stay below cheaper-agent budgets to enable metric gathering
 
 ### Rust + Python Parity
 

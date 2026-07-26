@@ -59,6 +59,7 @@ The cost-gate has evolved from binary heavy/light classification to a **graded n
 - **Grant Records**: Durable grant storage and resolution
 - **Escalation Workflow**: Upward escalation when blocked
 - **Graded Cost Policy**: Gate decision flow and calibration
+- **Argument-Based Cost Estimation**: Dynamic per-call cost estimation using tool argument properties
 
 The empirical tool-metrics foundation (T1/T2) remains unchanged; the graded model extends how those metrics drive gate decisions.
 
@@ -68,13 +69,14 @@ The empirical tool-metrics foundation (T1/T2) remains unchanged; the graded mode
 
 - Reads rollup via `COST_GATE_TOOL_METRICS` env var (points to `tool-metrics-rollup.json` path)
 - Reads grants via `COST_GATE_GRANTS_DIR` env var (points to session store `.session/<workspace>/grants/` directory)
-- **Unions** empirical heavy set with static `TOKEN_HEAVY_TOOL_SUBSTRINGS`
-- **Fails open**: Missing/unreadable rollup → fall back to static list only
+- Tools without sufficient empirical data (< 5 calls) receive a **single default cost for unknown tools**
+- Default cost calibrated to gate expensive/orchestrator-tier models while remaining below cheaper-agent budgets (bootstrap requirement)
+- **Fails open**: Missing/unreadable rollup → fall back to single default cost
 - Gate only **reads** the rollup (never writes)
 
 ### Python Mirror (tools/model-prices/cost_gate.py)
 
-- Implements identical classification + union + fail-open logic
+- Implements identical single-default-for-unknown-tools + fail-open logic
 - Maintains parity with Rust behavior
 
 ### Grant JSON Contract
@@ -105,6 +107,12 @@ Grants are stored as individual JSON files with schema:
 - **T4** [a0b59873](../../../.ticket/tickets/a0b59873-abe9-4e62-84a3-c233635b4cd6/ticket.toml): spec + validation — **implemented+tested**
 - **T5** [6737a239](../../../.ticket/tickets/6737a239-60fa-44af-8bf3-a60f8eb1e8a8/ticket.toml): budget-offset grants — **implemented+tested**
 - **T6** [c81f3938](../../../.ticket/tickets/c81f3938-0b4b-42a0-bbf1-888ddd9d2262/ticket.toml): upward escalation workflow — **implemented+tested**
+- **T7** [9c9e2edc](../../../.ticket/tickets/9c9e2edc-81fc-489e-9153-bf4ac0bf1a13/ticket.toml): dynamic argument-based cost estimation — **planned**
+- **T8** [9185d8f2](../../../.ticket/tickets/9185d8f2-1080-46b1-84da-485f9ad839f6/ticket.toml): remove hardcoded token-heavy tool categorization; single default cost + empirical bootstrap — **planned**
+
+**Related/Context Tickets**:
+- [8c4d1d9c](../../../.ticket/tickets/8c4d1d9c-1004-4539-9880-0a0e8aa03dd3/ticket.toml): token-optimized default agent tools (peek suite)
+- [445a2d76](../../../.ticket/tickets/445a2d76-5795-4d7a-aec8-d1536ec61416/ticket.toml): parent epic
 
 ### Dependencies
 
@@ -113,6 +121,7 @@ Grants are stored as individual JSON files with schema:
 - T5 depends on T1, T3
 - T6 depends on T5
 - T4 depends on T1, T2, T3, T5, T6
+- T7 depends on T1, T2, T3
 
 ### Validation Evidence
 

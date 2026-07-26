@@ -1,5 +1,5 @@
 ---
-description: "Use when ticket workflow operations that apply across sessions: orientation, discovery before creating, picking next work, dependency semantics, health checks, command chaining, and transactional batch."
+description: "Use in ticket workflow operations that apply across sessions: orientation, discovery before creating, picking next work, dependency semantics, health checks, command chaining, and transactional batch."
 ---
 
 ## Ticket Workflow Operations

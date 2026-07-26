@@ -1,0 +1,26 @@
+## Problem
+
+Session 51701334 (instruction-file migration) cost ~$9 total; the orchestrator model used only ~$0.90, so ~90% of spend went to sub-agents. This spend is currently **unattributable from the session store**.
+
+Investigation of `.session/sessions/51701334-cf77-4a4b-97f3-5df8753631e1/events.json` (86k lines, 554 tool executions) found **zero** `tokens`/`cost`/`usage`/`model_id`/`price` fields anywhere. `model` survives only as a `runSubagent` argument, never as per-turn attribution. `session.json` has no cost fields.
+
+Result: we cannot answer "which sub-agent / which model / which loop cost the most," which is exactly the question needed to tune the orchestration/delegation policy.
+
+## Goal
+
+Capture, per assistant turn and per sub-agent spawn:
+- input/output/cache token counts
+- resolved USD cost (via the existing model price table `tools/model-prices/model_prices.json`)
+- the acting `model_id` (per turn, not just as a runSubagent arg)
+
+Aggregate a per-sub-agent rollup (model, turns, tools, tokens, cost, wall time, outcome) so a spawn's total cost is directly inspectable.
+
+## Acceptance criteria
+- events.json (or a sibling capture) records token + cost + model_id per turn.
+- A per-`runSubagent` cost rollup is queryable (e.g. via session-mcp or session-cli).
+- Re-running a delegating session lets a reviewer attribute total cost across sub-agents without external tooling.
+
+## Evidence
+- events.json L44080: 31.2-min sub-agent, no cost recorded.
+- events.json L80467: 20.1-min sub-agent, no cost recorded.
+- Owning code: memory-api/crates/session-api, memory-api/tools (session-mcp/session-cli).
