@@ -69,6 +69,8 @@ let _tracing = init_test_tracing!(&graph);
 - When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available command or manual check and call out the limitation explicitly in the status summary and spec traceability.
 - Follow `.github/hooks/` reminders when they fire.
 - Scratch notes belong in temporary files only; do not commit ephemeral notes.
+- Follow the closed-loop iteration workflow: Review→Interview→Commit→Handoff. See [loop-closure.instructions.md](.agents/instructions/orchestration/loop-closure.instructions.md).
+- When a handoff package is incomplete or requirements are ambiguous, escalate rather than clarifying inline during implementation. See [escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md).
 
 ## Feedback Workflow
 
