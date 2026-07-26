@@ -1,34 +1,15 @@
 #!/usr/bin/env python3
 """Model-aware cost gate for price-awareness orchestration.
 
-Transport-agnostic enforcement core for the "context stack price awareness"
-track. Given the calling model's identity and a tool name, it resolves the
-model's output price from the shared price table produced by
-``sync_model_prices.py`` (``model_prices.json``) and decides whether the call
-may proceed directly or must be delegated to a cheaper sub-agent.
+Transport-agnostic enforcement core using a graded budget model with empirical
+tool costs. Given the calling model's identity and a tool name, it resolves the
+model's base budget from output price, applies optional grant offsets, and
+decides whether the call may proceed or must be delegated. Policy (see AGENTS.md):
 
-Policy (see AGENTS.md "Model cost awareness & routing"):
-
-* The driving field is ``output_mtok`` (USD per 1,000,000 output tokens).
-* The threshold is ``X = 15``. The gate fires when ``output_mtok > X``
-  (strictly greater), matching the AGENTS.md rule.
-* When the running model is above threshold ("orchestrator mode"), calls to
-  *token-heavy* tools are refused with delegation guidance; calls to *light*
-  tools (planning / delegation, e.g. ``runSubagent``) pass through.
-* Models at or below threshold pass through unchanged.
-
-This module is the single decision point shared by both enforcement transports:
-
-* **Client/extension layer (option C):** the client, which knows the active
-  model, shells out to this gate (or imports :func:`evaluate`) before a tool
-  call reaches any MCP server. This is the real enforcement surface because the
-  model cannot spoof its own identity there.
-* **Explicit-parameter wrapper (option A, portable fallback):** a wrapper that
-  accepts a ``caller_model`` argument for non-VS-Code transports and calls the
-  same :func:`evaluate`.
-
-Cost is always resolved from the shared mapping; it is never hardcoded per tool
-or per agent.
+* base_budget(model): LINEAR inverse of output_mtok on a 1..100 scale
+* tool cost: empirical rollup (if sufficient data) else static fallback
+* offset grants: optional per-session/subagent budget boosts
+* Decision: Allow if cost <= (base_budget + offset); otherwise Delegate
 
 Stdlib only. No third-party dependencies.
 """
@@ -37,15 +18,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Default threshold on ``output_mtok`` (USD per 1M output tokens). Equivalent to
-# 1500 credits/1M at 100 credits = $1. Keep this in sync with the AGENTS.md
-# "Orchestrator-mode threshold" rule.
+# Default threshold (kept for backward compatibility and as budget_zero_price default).
 DEFAULT_THRESHOLD_X = 15.0
+
+# Minimum call count for using empirical tool cost from rollup.
+MIN_CALLS = 5
 
 DEFAULT_PRICE_TABLE = Path(__file__).with_name("model_prices.json")
 
@@ -94,6 +78,23 @@ ALWAYS_ALLOWED_TOOL_SUBSTRINGS: tuple[str, ...] = (
 
 class CostGateError(Exception):
     """Raised when the price table cannot be loaded or the model is unknown."""
+
+
+@dataclass(frozen=True)
+class ModelBudgetCalibration:
+    """Model budget calibration for the graded cost scale."""
+
+    scale_max: int = 100
+    budget_zero_price: float = 60.0  # TODO: provisional anchor; re-tune from empirical data
+
+
+@dataclass(frozen=True)
+class Grant:
+    """Grant record for budget offsets."""
+
+    offset: int
+    model: str | None = None
+    expires_at: str | None = None
 
 
 def load_models(path: Path = DEFAULT_PRICE_TABLE) -> list[dict[str, Any]]:
@@ -148,6 +149,106 @@ def resolve_output_mtok(models: list[dict[str, Any]], model: str) -> float | Non
     return max(float(r["output_mtok"]) for r in matches)
 
 
+def base_budget(
+    output_mtok: float | None, cal: ModelBudgetCalibration = ModelBudgetCalibration()
+) -> int:
+    """Compute base_budget from model's output_mtok using linear inverse mapping.
+    Returns a value in [0, scale_max]. Unknown model (None) → 0 (conservative).
+    """
+    if output_mtok is None:
+        return 0
+    ratio = 1.0 - (output_mtok / cal.budget_zero_price)
+    scaled = round(ratio * cal.scale_max)
+    return max(0, min(scaled, cal.scale_max))
+
+
+def heavy_fallback_cost(
+    cal: ModelBudgetCalibration = ModelBudgetCalibration(),
+) -> int:
+    """Compute the static fallback cost for TokenHeavy tools as the base budget
+    at the legacy threshold X. This ensures the fallback reproduces the binary
+    boundary and auto-tracks calibration changes.
+    """
+    ratio = 1.0 - (DEFAULT_THRESHOLD_X / cal.budget_zero_price)
+    scaled = round(ratio * cal.scale_max)
+    return max(0, min(scaled, cal.scale_max))
+
+
+def tool_cost_from_rollup(
+    tool: str, rollup: dict[str, Any] | None, cal: ModelBudgetCalibration
+) -> int | None:
+    """Resolve tool cost from rollup if sufficient data exists. Returns None for fallback."""
+    if not rollup:
+        return None
+    tools = rollup.get("report", {}).get("tools", [])
+    tool_low = tool.lower()
+    matches = [
+        t
+        for t in tools
+        if (tool_low in str(t.get("tool_name", "")).lower()
+            or str(t.get("tool_name", "")).lower() in tool_low)
+        and t.get("call_count", 0) >= MIN_CALLS
+        and isinstance(t.get("cost"), int)
+    ]
+    if matches:
+        return max(t["cost"] for t in matches)
+    return None
+
+
+def tool_cost(
+    tool: str,
+    rollup: dict[str, Any] | None,
+    cal: ModelBudgetCalibration = ModelBudgetCalibration(),
+) -> int:
+    """Resolve tool cost: empirical rollup (if sufficient data) else static fallback.
+    AlwaysAllowed tools always return 0 (bypass budget check).
+    """
+    tool_class = classify_tool(tool)
+    if tool_class == "always_allowed":
+        return 0
+    # Try rollup
+    cost = tool_cost_from_rollup(tool, rollup, cal)
+    if cost is not None:
+        return cost
+    # Static fallback
+    if tool_class == "token_heavy":
+        return heavy_fallback_cost(cal)
+    return 1  # light
+
+
+def load_grant(
+    grant_id: str, model: str, grants_dir: Path | None
+) -> int:
+    """Load grant offset from grants_dir/<grant_id>.json. Returns 0 on any error."""
+    if not grants_dir:
+        return 0
+    grant_path = grants_dir / f"{grant_id}.json"
+    try:
+        grant_data = json.loads(grant_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return 0
+    
+    offset = grant_data.get("offset", 0)
+    if not isinstance(offset, int):
+        return 0
+    
+    # Check expiry
+    if expires := grant_data.get("expires_at"):
+        try:
+            exp_time = datetime.fromisoformat(expires.replace("Z", "+00:00"))
+            if exp_time < datetime.now(timezone.utc):
+                return 0
+        except (ValueError, AttributeError):
+            return 0
+    
+    # Check model match
+    if grant_model := grant_data.get("model"):
+        if str(grant_model).lower() != model.lower():
+            return 0
+    
+    return offset
+
+
 def is_orchestrator(output_mtok: float, x: float = DEFAULT_THRESHOLD_X) -> bool:
     """Return True when ``output_mtok`` is strictly greater than threshold ``x``."""
     return output_mtok > x
@@ -178,11 +279,10 @@ class Decision:
     decision: str  # "allow" | "delegate"
     model: str
     tool: str
-    output_mtok: float | None
-    threshold_x: float
-    orchestrator: bool
-    tool_class: str
-    reason: str
+    base_budget: int
+    tool_cost: int
+    offset: int
+    effective_budget: int
     guidance: str | None
 
     def to_dict(self) -> dict[str, Any]:
@@ -190,11 +290,10 @@ class Decision:
             "decision": self.decision,
             "model": self.model,
             "tool": self.tool,
-            "output_mtok": self.output_mtok,
-            "threshold_x": self.threshold_x,
-            "orchestrator": self.orchestrator,
-            "tool_class": self.tool_class,
-            "reason": self.reason,
+            "base_budget": self.base_budget,
+            "tool_cost": self.tool_cost,
+            "offset": self.offset,
+            "effective_budget": self.effective_budget,
             "guidance": self.guidance,
         }
 
@@ -213,24 +312,61 @@ def _delegation_guidance(model: str, tool: str) -> str:
 def evaluate(
     model: str,
     tool: str,
+    grant_id: str | None = None,
+    models: list[dict[str, Any]] | None = None,
+    rollup: dict[str, Any] | None = None,
+    *,
+    price_table: Path = DEFAULT_PRICE_TABLE,
+    calibration: ModelBudgetCalibration = ModelBudgetCalibration(),
+    grants_dir: Path | None = None,
+) -> Decision:
+    """Decide whether ``model`` may call ``tool`` directly using graded budget model.
+
+    * AlwaysAllowed tool → Allow (bypass budget).
+    * Compute: base_budget, tool_cost, offset.
+    * effective = base_budget + offset (capped at 2*scale_max).
+    * Allow if cost <= effective; else Delegate with guidance.
+    """
+    rows = models if models is not None else load_models(price_table)
+    output_mtok = resolve_output_mtok(rows, model)
+    
+    cost = tool_cost(tool, rollup, calibration)
+    if cost == 0:
+        # Always allowed tool
+        return Decision(
+            "allow", model, tool, 0, 0, 0, 0, None
+        )
+    
+    base = base_budget(output_mtok, calibration)
+    offset = load_grant(grant_id, model, grants_dir) if grant_id else 0
+    effective = min(base + offset, 2 * calibration.scale_max)
+    
+    if cost <= effective:
+        return Decision(
+            "allow", model, tool, base, cost, offset, effective, None
+        )
+    
+    guidance = (
+        f"Tool '{tool}' requires cost {cost} but model '{model}' has effective "
+        f"budget {effective} (base {base} + offset {offset}). An offset grant or "
+        f"delegation to a cheaper model is required. Delegate via "
+        f"runSubagent(model=<cheaper>, ...)."
+    )
+    return Decision(
+        "delegate", model, tool, base, cost, offset, effective, guidance
+    )
+
+
+def evaluate_legacy(
+    model: str,
+    tool: str,
     models: list[dict[str, Any]] | None = None,
     x: float = DEFAULT_THRESHOLD_X,
     *,
     price_table: Path = DEFAULT_PRICE_TABLE,
     unknown_model_orchestrates: bool = True,
-) -> Decision:
-    """Decide whether ``model`` may call ``tool`` directly.
-
-    * Below/at threshold -> ``allow`` (cheap model may execute directly).
-    * Above threshold + token-heavy tool -> ``delegate`` (refused with guidance).
-    * Above threshold + light/always-allowed tool -> ``allow`` (planning /
-      delegation stays on the expensive model).
-
-    When the model is unknown to the price table, the gate is conservative by
-    default (``unknown_model_orchestrates=True``): it treats the model as an
-    orchestrator so an unlisted expensive model is not silently allowed to run
-    token-heavy work.
-    """
+) -> dict[str, Any]:
+    """Legacy evaluate for backward compatibility. Returns old Decision dict format."""
     rows = models if models is not None else load_models(price_table)
     output_mtok = resolve_output_mtok(rows, model)
     tool_class = classify_tool(tool)
@@ -246,35 +382,44 @@ def evaluate(
             if output_mtok is not None
             else "unknown model treated as below threshold; direct execution allowed"
         )
-        return Decision(
-            "allow", model, tool, output_mtok, x, orchestrator, tool_class, reason, None
-        )
+        return {
+            "decision": "allow",
+            "model": model,
+            "tool": tool,
+            "output_mtok": output_mtok,
+            "threshold_x": x,
+            "orchestrator": orchestrator,
+            "tool_class": tool_class,
+            "reason": reason,
+            "guidance": None,
+        }
 
     if tool_class in ("always_allowed", "light"):
-        return Decision(
-            "allow",
-            model,
-            tool,
-            output_mtok,
-            x,
-            orchestrator,
-            tool_class,
-            f"orchestrator model, '{tool_class}' tool; planning/delegation allowed",
-            None,
-        )
+        return {
+            "decision": "allow",
+            "model": model,
+            "tool": tool,
+            "output_mtok": output_mtok,
+            "threshold_x": x,
+            "orchestrator": orchestrator,
+            "tool_class": tool_class,
+            "reason": f"orchestrator model, '{tool_class}' tool; planning/delegation allowed",
+            "guidance": None,
+        }
 
     # orchestrator + token_heavy -> refuse with delegation guidance.
-    return Decision(
-        "delegate",
-        model,
-        tool,
-        output_mtok,
-        x,
-        orchestrator,
-        tool_class,
-        "orchestrator model must delegate token-heavy tool to a cheaper sub-agent",
-        _delegation_guidance(model, tool),
-    )
+    guidance = _delegation_guidance(model, tool)
+    return {
+        "decision": "delegate",
+        "model": model,
+        "tool": tool,
+        "output_mtok": output_mtok,
+        "threshold_x": x,
+        "orchestrator": orchestrator,
+        "tool_class": tool_class,
+        "reason": "orchestrator model must delegate token-heavy tool to a cheaper sub-agent",
+        "guidance": guidance,
+    }
 
 
 # Exit codes for shell integration (option C client hook / option A wrapper).
@@ -287,12 +432,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--model", required=True, help="Calling model id (e.g. claude-opus-4-1).")
     parser.add_argument("--tool", required=True, help="Tool name being invoked.")
-    parser.add_argument(
-        "--x",
-        type=float,
-        default=DEFAULT_THRESHOLD_X,
-        help=f"Threshold on output_mtok (default: {DEFAULT_THRESHOLD_X:g}).",
-    )
+    parser.add_argument("--grant-id", help="Optional grant id for budget offset.")
     parser.add_argument(
         "--price-table",
         type=Path,
@@ -300,31 +440,91 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to model_prices.json (default: next to this script).",
     )
     parser.add_argument(
+        "--rollup",
+        type=Path,
+        help="Path to tool metrics rollup JSON (optional).",
+    )
+    parser.add_argument(
+        "--grants-dir",
+        type=Path,
+        help="Directory with grant JSON files (optional).",
+    )
+    parser.add_argument(
+        "--scale-max",
+        type=int,
+        default=100,
+        help="Budget scale max (default: 100).",
+    )
+    parser.add_argument(
+        "--budget-zero-price",
+        type=float,
+        default=60.0,
+        help="Price at which budget=0 (default: 60.0).",
+    )
+    parser.add_argument(
         "--format",
         choices=("text", "json"),
         default="text",
         help="Output format (default: text).",
     )
+    parser.add_argument(
+        "--legacy",
+        action="store_true",
+        help="Use legacy evaluation (backward compatibility).",
+    )
     args = parser.parse_args(argv)
 
     try:
-        decision = evaluate(args.model, args.tool, x=args.x, price_table=args.price_table)
+        if args.legacy:
+            result = evaluate_legacy(args.model, args.tool, price_table=args.price_table)
+            decision_str = result["decision"]
+            guidance = result.get("guidance")
+        else:
+            rollup_data = None
+            if args.rollup and args.rollup.exists():
+                rollup_data = json.loads(args.rollup.read_text(encoding="utf-8"))
+            
+            calibration = ModelBudgetCalibration(
+                scale_max=args.scale_max,
+                budget_zero_price=args.budget_zero_price,
+            )
+            
+            decision = evaluate(
+                args.model,
+                args.tool,
+                grant_id=args.grant_id,
+                price_table=args.price_table,
+                rollup=rollup_data,
+                calibration=calibration,
+                grants_dir=args.grants_dir,
+            )
+            result = decision.to_dict()
+            decision_str = decision.decision
+            guidance = decision.guidance
     except CostGateError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR
 
     if args.format == "json":
-        print(json.dumps(decision.to_dict(), indent=2, ensure_ascii=False))
+        print(json.dumps(result, indent=2, ensure_ascii=False))
     else:
-        price = "unknown" if decision.output_mtok is None else f"{decision.output_mtok:g}"
-        print(f"decision: {decision.decision}")
-        print(f"model:    {decision.model} (output_mtok={price}, x={decision.threshold_x:g})")
-        print(f"tool:     {decision.tool} [{decision.tool_class}]")
-        print(f"reason:   {decision.reason}")
-        if decision.guidance:
-            print(f"guidance: {decision.guidance}")
+        print(f"decision: {decision_str}")
+        if args.legacy:
+            price = "unknown" if result.get("output_mtok") is None else f"{result['output_mtok']:g}"
+            print(f"model:    {result['model']} (output_mtok={price})")
+            print(f"tool:     {result['tool']} [{result['tool_class']}]")
+            print(f"reason:   {result['reason']}")
+        else:
+            print(f"model:    {result['model']}")
+            print(f"tool:     {result['tool']}")
+            print(f"base:     {result['base_budget']}")
+            print(f"cost:     {result['tool_cost']}")
+            print(f"offset:   {result['offset']}")
+            print(f"effective: {result['effective_budget']}")
+        if guidance:
+            print(f"guidance: {guidance}")
 
-    return EXIT_DELEGATE if decision.decision == "delegate" else EXIT_ALLOW
+    return EXIT_DELEGATE if decision_str == "delegate" else EXIT_ALLOW
 
 
 if __name__ == "__main__":  # pragma: no cover

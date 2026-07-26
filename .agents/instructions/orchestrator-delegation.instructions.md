@@ -58,6 +58,7 @@ Each sub-agent dispatch MUST include:
 1. **Explicit cheaper model** at or below threshold X (Sonnet, GPT-5, Gemini Pro, Haiku, Flash, mini)
    - Format: `"Model Name (Vendor)"`, e.g. `"Claude Haiku 4.5 (copilot)"`
    - Never delegate to another orchestrator-tier model
+   - When multiple eligible models are equal in cost, prefer the latest model version or generation
 2. **Single well-scoped objective** — one unit per sub-agent, never the whole task
 3. **Compact return contract** — ask for exactly the facts/edits/results needed (file paths, line ranges, diff summary, decision, short findings list), not a transcript
    - Suggested shape: `scope | finding | outcome | blocker | pointer`

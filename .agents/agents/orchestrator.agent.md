@@ -44,7 +44,7 @@ For each unit of work, spawn a sub-agent with:
 
 1. **An explicit cheaper model.** Pick a model at or below the threshold
    (Sonnet, GPT-5, Gemini Pro, Haiku, Flash, mini). Never delegate to another
-   expensive/orchestrator-tier model.
+   expensive/orchestrator-tier model. When multiple eligible models are equal in cost, prefer the latest model version or generation.
 2. **A single, well-scoped objective.** One unit per sub-agent; do not hand a
    sub-agent the whole task.
 3. **A compact return contract.** Ask for exactly the facts/edits/results you
