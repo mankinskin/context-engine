@@ -9,7 +9,7 @@ agent: "agent"
 
 Create a compact handoff prompt for a new session and formalize the handoff track through the ticket workflow when needed.
 
-Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session-optimization.instructions.md), [ticket](./ticket.prompt.md), [tickets](./tickets.prompt.md), [ticket-next](./ticket-next.prompt.md), [ticket-system instructions](../instructions/ticket-system.instructions.md), [rule-target](./rule-target.prompt.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), and [audit-cli](../../memory-api/tools/cli/audit-cli/README.md).
+Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../instructions/session/session-optimization.instructions.md), [ticket](./ticket.prompt.md), [tickets](./tickets.prompt.md), [ticket-next](./ticket-next.prompt.md), [ticket-system instructions](../instructions/ticket/), [rule-target](./rule-target.prompt.md), [ticket-cli](../../memory-api/tools/cli/ticket-cli/README.md), [ticket-mcp](../../memory-api/tools/mcp/ticket-mcp/README.md), and [audit-cli](../../memory-api/tools/cli/audit-cli/README.md).
 
 ## Workflow
 

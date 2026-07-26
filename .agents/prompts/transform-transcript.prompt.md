@@ -9,7 +9,7 @@ agent: "Transcription Agent"
 
 Turn a noisy raw audio transcript into one coherent, concise, grammatically correct **English** markdown artifact that faithfully captures the speaker's final intent — nothing invented, nothing meaningful lost.
 
-Follow [audio-transcript.instructions.md](../instructions/audio-transcript.instructions.md) as the authoritative process and the [Transcription Agent](../agents/transcription.agent.md) contract.
+Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-transcript.instructions.md) as the authoritative process and the [Transcription Agent](../agents/transcription.agent.md) contract.
 
 ## Input Resolution
 

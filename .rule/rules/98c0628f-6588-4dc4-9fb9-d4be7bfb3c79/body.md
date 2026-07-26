@@ -1,4 +1,0 @@
-- Core library crate: `audit-api`
-- CLI package: `audit-cli` with the `audit` binary
-- MCP package: `audit-mcp`
-- MCP tool: `audit`

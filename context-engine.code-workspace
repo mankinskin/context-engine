@@ -8,6 +8,15 @@
 		"chat.hookFilesLocations": {
 			".github/hooks": true
 		},
+		"chat.instructionsFilesLocations": {
+			".agents/instructions": true
+		},
+		"chat.promptFilesLocations": {
+			".agents/prompts": true
+		},
+		"chat.agentFilesLocations": {
+			".agents/agents": true
+		},
 		"debug.onTaskErrors": "debugAnyway"
 	}
 }

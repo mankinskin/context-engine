@@ -2,13 +2,21 @@
     "chat.hookFilesLocations": {
         ".github/hooks": true
     },
+    // A configured instructions location is searched recursively, so every
+    // `*.instructions.md` under any nested subfolder of `.agents/instructions`
+    // is discovered automatically. Keep this in sync with the same key in
+    // context-engine.code-workspace and the user profile settings.
+    "chat.instructionsFilesLocations": {
+        ".agents/instructions": true
+    },
+    "chat.promptFilesLocations": {
+        ".agents/prompts": true
+    },
+    "chat.agentFilesLocations": {
+        ".agents/agents": true
+    },
     "chat.mcp.serverSampling": {
-        "context-engine/.vscode/mcp.json: spec-mcp": {
-            "allowedModels": [
-                "copilot/claude-opus-4.5",
-                "copilot/claude-opus-4.6"
-            ]
-        }
+        
     },
     // When trunk serve is the preLaunchTask, pre-existing Rust Analyzer warnings
     // in other crates would otherwise block the launch with a prompt every time.

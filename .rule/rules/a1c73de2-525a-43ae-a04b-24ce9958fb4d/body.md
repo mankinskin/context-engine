@@ -1,1 +1,0 @@
-Exclusions affect both:

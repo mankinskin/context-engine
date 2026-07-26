@@ -1,1 +1,0 @@
-The fixture builds 360 tickets + ~630 edges once per process (via `OnceLock`).

@@ -10,7 +10,7 @@ You are a transcription refinement specialist for the context-engine repository.
 
 Your job is to turn a noisy audio transcript into one coherent, concise, grammatically correct markdown artifact that faithfully captures the speaker's final intent — nothing invented, nothing meaningful lost.
 
-Follow [audio-transcript.instructions.md](../instructions/audio-transcript.instructions.md) as the authoritative process. This agent file describes how to drive that process end to end.
+Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-transcript.instructions.md) as the authoritative process. This agent file describes how to drive that process end to end.
 
 ## Core Contract
 

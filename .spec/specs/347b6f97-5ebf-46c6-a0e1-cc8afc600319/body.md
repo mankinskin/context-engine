@@ -46,9 +46,9 @@ Browser-hosted frontend testing guidance must prefer MCP Playwright/browser tool
 	- `memory-viewers/AGENTS.md`
 	- `memory-api/AGENTS.md`
 	- `viewer-api/AGENTS.md`
-	- `.agents/instructions/frontend.instructions.md`
+	- `.agents/instructions/frontend/frontend.instructions.md`
 - Validation:
 	- `get_errors` on the touched instruction files: no errors.
-	- `git --no-pager diff -- AGENTS.md memory-viewers/AGENTS.md memory-api/AGENTS.md viewer-api/AGENTS.md .agents/instructions/frontend.instructions.md`
+	- `git --no-pager diff -- AGENTS.md memory-viewers/AGENTS.md memory-api/AGENTS.md viewer-api/AGENTS.md .agents/instructions/frontend/frontend.instructions.md`
 	- `./target/debug/rule.exe sync-targets --config rule-targets.yaml --json`
 	- `./target/debug/rule.exe sync-targets --config memory-viewers/rule-targets.yaml --json`

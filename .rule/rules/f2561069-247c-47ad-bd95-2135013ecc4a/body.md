@@ -1,1 +1,0 @@
-For performance-sensitive paths (storage, BFS, graph queries):

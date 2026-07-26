@@ -34,8 +34,8 @@ Define the contract for reducing model-bound Copilot context through upstream to
 ## Background Knowledge References
 
 - Prefer canonical rule-managed guidance over temporary design notes:
-- [.agents/instructions/token-efficiency.instructions.md](.agents/instructions/token-efficiency.instructions.md)
-- [.agents/instructions/session-optimization.instructions.md](.agents/instructions/session-optimization.instructions.md)
+- [.agents/instructions/orchestration/](.agents/instructions/orchestration/)
+- [.agents/instructions/session/session-optimization.instructions.md](.agents/instructions/session/session-optimization.instructions.md)
 - [.agents/prompts/memory-setup.prompt.md](.agents/prompts/memory-setup.prompt.md)
 - [.agents/prompts/handoff.prompt.md](.agents/prompts/handoff.prompt.md)
 - [DESIGN_SESSION_BOOTSTRAPPING.md](DESIGN_SESSION_BOOTSTRAPPING.md) is exploratory background only, not an authoritative policy anchor.

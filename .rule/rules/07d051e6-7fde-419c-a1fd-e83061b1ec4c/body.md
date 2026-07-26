@@ -1,1 +1,0 @@
-Keep the layering thin and explicit:

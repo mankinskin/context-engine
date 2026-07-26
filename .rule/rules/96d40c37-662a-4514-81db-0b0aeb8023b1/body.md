@@ -1,1 +1,0 @@
-For `tracker-improvement` tickets, the schema enforces:

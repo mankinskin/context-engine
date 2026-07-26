@@ -1,5 +1,0 @@
-- target context and repo or index paths
-- sync counters
-- metric summaries
-- `Findings`: one line per finding with severity, scope or path, and failing signal
-- `Recommendations`: deduplicated remediation actions, including finding-specific `fix:` guidance when present

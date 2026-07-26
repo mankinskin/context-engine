@@ -30,6 +30,6 @@ field names, rejection fixes, and atomic batch patterns.
 	alternatives for rejected enum and URN values.
 - `session-cli` provides nested and compatibility-flat batch commands using
 	structured JSON arrays.
-- `.agents/instructions/session-workflow.instructions.md` documents the final
+- `.agents/instructions/session/session-workflow.instructions.md` documents the final
 	node model, entity references, batch behavior, rejection fixes, and an
 	anchored review-criteria example.

@@ -39,7 +39,7 @@ If this spec is implemented, dependents can rely on a durable `workspace_session
 
 ## Governing-rule requirement
 
-This contract is governed by `.agents/instructions/spec-system.instructions.md` and its aligned-structure v2 requirement.
+This contract is governed by `.agents/instructions/spec/spec-system.instructions.md` and its aligned-structure v2 requirement.
 
 # Contract
 

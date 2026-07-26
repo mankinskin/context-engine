@@ -1,2 +1,0 @@
-- source-file indexing
-- Cargo-scoped metrics such as compiler warnings, tests, and coverage

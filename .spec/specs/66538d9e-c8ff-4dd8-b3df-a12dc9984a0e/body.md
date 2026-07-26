@@ -26,7 +26,7 @@ If this spec is implemented, a workflow domain can use `memory-kernel` as an ext
 
 ## Governing-rule requirement
 
-This spec is introduced under the repository ticket/spec workflow in `AGENTS.md` and `.agents/instructions/spec-system.instructions.md`. The durable session’s pinned rule renderer is currently blocked by stale rule IDs; that infrastructure issue must not be treated as evidence that this extraction contract is optional.
+This spec is introduced under the repository ticket/spec workflow in `AGENTS.md` and `.agents/instructions/spec/spec-system.instructions.md`. The durable session’s pinned rule renderer is currently blocked by stale rule IDs; that infrastructure issue must not be treated as evidence that this extraction contract is optional.
 
 ## Non-goals
 

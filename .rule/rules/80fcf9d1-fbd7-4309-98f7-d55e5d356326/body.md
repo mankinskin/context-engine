@@ -1,1 +1,0 @@
-Treat text output as a readable projection of the structured report, not as a separate contract. The agent-facing summary should preserve the same findings-and-recommendations split instead of inventing a different format.
