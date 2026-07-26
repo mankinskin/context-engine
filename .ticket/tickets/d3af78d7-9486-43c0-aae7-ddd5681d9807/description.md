@@ -24,3 +24,9 @@ Define the **handoff-package schema**: the required fields that make the next im
 - `session_handoff` produces/validates a record satisfying the schema; a package missing required fields is rejected or flagged.
 - A next implementation session can execute purely from the package without search or user Q&A.
 - Spec is linked to this ticket and to the epic.
+
+## Review round 2 — FAIL (spec-wording alignment outstanding)
+
+Code enforcement (AC2) and spec linkage (AC4) now pass. One blocking finding remains:
+
+- Spec 5e52039d body (~line 15) still lists `validation` as a required PACKAGE field. The implementation treats validation as a separate `create_handoff_record` parameter (`validation: Vec<SessionValidationGate>`), NOT a field on the `SessionHandoffPackage` struct. Update the spec body so `validation` is documented as a separate handoff-record parameter, not a package schema field. This is a spec-text-only edit; no code change needed.
