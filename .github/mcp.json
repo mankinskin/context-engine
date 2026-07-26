@@ -8,7 +8,9 @@
         "context-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "ticket-mcp": {
@@ -19,7 +21,9 @@
         "ticket-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "spec-mcp": {
@@ -30,7 +34,9 @@
         "spec-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "test-mcp": {
@@ -41,7 +47,9 @@
         "test-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "feedback-mcp": {
@@ -52,7 +60,9 @@
         "feedback-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "session-mcp": {
@@ -63,7 +73,9 @@
         "session-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "peek-mcp": {
@@ -74,7 +86,9 @@
         "peek-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "rule-mcp": {
@@ -85,7 +99,9 @@
         "rule-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "audit-mcp": {
@@ -96,7 +112,9 @@
         "audit-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "compact-terminal-mcp": {
@@ -107,7 +125,9 @@
         "compact-terminal-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
     "log-viewer-mcp": {
@@ -119,7 +139,9 @@
         "--mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json"
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     }
   }
