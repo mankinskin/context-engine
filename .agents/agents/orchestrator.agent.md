@@ -52,6 +52,7 @@ For each unit of work, spawn a sub-agent with:
    findings list — not a transcript.
 4. **The context it needs, and no more.** Pass the minimum anchors (paths,
    ticket/spec ids, prior findings) so the sub-agent does not re-discover them.
+5. **A workspace agent template.** Dispatch only to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent). Never dispatch to a VS Code built-in agent (such as the built-in Explore), which lacks our MCP toolset. For read-only probes, use the workspace **Explore Agent**.
 
 ## Required workflow
 

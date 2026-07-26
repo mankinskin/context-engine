@@ -63,6 +63,7 @@ Each sub-agent dispatch MUST include:
 3. **Compact return contract** — ask for exactly the facts/edits/results needed (file paths, line ranges, diff summary, decision, short findings list), not a transcript
    - Suggested shape: `scope | finding | outcome | blocker | pointer`
 4. **Minimum context** — pass anchors (full workspace-relative paths, ticket/spec ids, prior findings) so sub-agent does not re-discover
+5. **Workspace agent template only** — dispatch to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent); never dispatch to a VS Code built-in agent (e.g. the built-in Explore), which is not integrated with our MCP toolset. For read-only probes use the workspace **Explore Agent** template.
 
 ## Context Isolation
 
@@ -105,6 +106,8 @@ Each sub-agent dispatch MUST include:
 - Survey N files/crates at once
 - Run several independent searches
 - Gather evidence from multiple subsystems in parallel
+
+**Template**: route every fan-out probe through the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`), never the VS Code built-in Explore, so probes keep MCP access.
 
 **Constraint**: Keep fan-out read-only; do not parallelize writes to overlapping scope. Each parallel prompt must still be independently self-contained.
 
