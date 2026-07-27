@@ -1,0 +1,25 @@
+## Problem
+
+`tools/model-prices/sync_model_prices.py` sources prices only from pydantic/genai-prices `prices/data_slim.json`, which is a vendor catalogue. Models offered by the Copilot `runSubagent` surface can be absent from it — `MAI-Code-1-Flash` is offered but has no row, so it cannot be cost-ranked and the cost gate silently resolves it to a zero-cost budget.
+
+## Objective
+
+Add a second upstream source: `https://github.com/github/docs/blob/main/data/tables/copilot/models-and-pricing.yml` (use the raw URL), which lists prices for GitHub Copilot-provided models. Merge it into `model_prices.json` so every model the surface offers has a priced row.
+
+## Scope
+
+- `tools/model-prices/sync_model_prices.py` — add the second fetch, parse the YAML (script is stdlib-only today; keep it that way or justify a dependency), define merge/precedence rules when a model appears in both sources, and extend `source_sha256` to cover both inputs.
+- `tools/model-prices/model_prices.json` — regenerate (generated artifact, commit with the change).
+- `.agents/instructions/orchestration/model-prices.instructions.md` — document the second source and the precedence rule.
+- `.agents/prompts/sync-model-prices.prompt.md` — update the workflow if step semantics change.
+
+## Acceptance criteria
+
+- `python sync_model_prices.py --check` still round-trips correctly with both sources.
+- `MAI-Code-1-Flash` resolves to a real price via `--query`.
+- Precedence between the two sources is documented and deterministic.
+- `python test_cost_gate.py` passes.
+
+## Context
+
+Raised during the 2026-07-27 model-routing iteration, where the verified `runSubagent` roster was reconciled against the price table. See `.agents/instructions/orchestration/model-routing.instructions.md` section "Roster is not the catalogue".
