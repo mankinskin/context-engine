@@ -2,6 +2,22 @@
 description: "Use when handling tool result output, managing command spills, or working with compact-terminal MCP. Covers output reduction and spill-file inspection."
 ---
 
+## Default Agent Tool Suite
+
+Running commands is the **execute** category of the default agent tool suite
+(read / execute / edit / filesystem / search). Its implementation is
+`compact-terminal-mcp`, and it is the default path for **every** agent,
+including delegated sub-agents:
+
+- MCP (preferred): `compact-terminal-mcp` — `run`, `read_spill`. Reachable
+  through the `'compact-terminal-mcp/*'` wildcard in
+  `.agents/agents/*.agent.md`.
+- Shell fallback: the `rtk` proxy, which filters output at the shell level.
+- Follow-up inspection: the **read** category (`peek`), covered in
+  [file-inspection.instructions.md](file-inspection.instructions.md).
+
+Use this suite instead of raw unbounded terminal capture.
+
 ## Tool Result Guarding
 
 Before the model reasons over tool output, reduce it to the smallest useful form.
@@ -31,7 +47,8 @@ peek target/test-logs/<file> --grep "FAILED" --window 10
 peek target/test-logs/<file> --start N --end M
 ```
 
-**compact-terminal-mcp pattern** (when available as MCP tool):
+**compact-terminal-mcp pattern** (registered in `.vscode/mcp.json` and
+`.github/mcp.json`; use it as the default for long-running commands):
 1. `run("cargo test -p crate")` → gets spilled if long; use `spill_file` path.
 2. `read_spill(spill_file, grep="FAILED")` → find failing test line numbers.
 3. `read_spill(spill_file, start=N, end=M)` → read specific failure details.

@@ -1,7 +1,7 @@
 ---
 name: "Handoff Agent"
 description: "Use to summarize completed/in-progress work into a clean, self-contained handoff document and delegate remaining tasks to appropriate sub-agents."
-tools: [read, search, execute, agent, vscode/askQuestions, 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [read, search, execute, agent, vscode/askQuestions, 'compact-terminal-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Work scope, session state, or ticket/spec set to summarize and hand off (defaults to current session context)."
 user-invocable: true
 ---

@@ -2,6 +2,23 @@
 description: "Use when reading workspace files or conducting structural exploration. Covers bounded reads, peek CLI usage, repo_map.toon orientation, and avoiding full-file pulls."
 ---
 
+## Default Agent Tool Suite
+
+Reading files is the **read** category of the default agent tool suite
+(read / execute / edit / filesystem / search). Its implementation is the `peek`
+family, and it is the default path for **every** agent, including delegated
+sub-agents that inherit none of the orchestrator's context:
+
+- MCP (preferred): `peek-mcp` — `peek_read`, `peek_grep`, `peek_count`,
+  `peek_skeleton`. Reachable through the `'peek-mcp/*'` wildcard in
+  `.agents/agents/*.agent.md`.
+- CLI fallback: `peek` (`memory-api/tools/cli/peek-cli`) when MCP is unavailable.
+- Behavior owner: `memory-api/crates/peek-api`.
+
+Use this suite instead of unbounded built-in file reads. The sibling **execute**
+category is covered in
+[tool-output.instructions.md](tool-output.instructions.md).
+
 ## Structural Awareness Before Exploration
 
 Before running exploratory searches or broad file reads, consult compact structural sources first:
@@ -46,3 +63,16 @@ peek path/to/file.rs --all
 When the required line coordinates are unknown, use `grep_search`, `semantic_search`, or `peek --grep` to locate the target region first, then read a bounded window around it.
 
 Full-file reads should become the exception. The `--all` flag is intentionally named to make the cost visible in command history.
+
+## Known Suite Gaps
+
+Two categories of the suite have no owned tool yet, so bounded discipline must be
+applied manually until they land:
+
+- **Filesystem operations** (bounded list / stat / move) — raw shell is the
+  current fallback. Cap depth and entry counts explicitly.
+- **Repo-wide search** — `peek_grep` is single-file only. Repo-wide scans fall
+  back to `grep_search` / `rg`; always pass a narrowing path filter and prefer a
+  counts-first pass before requesting content.
+
+Tracked by epic `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`.

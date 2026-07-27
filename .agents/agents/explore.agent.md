@@ -1,7 +1,7 @@
 ---
 name: "Explore Agent"
 description: "Fast read-only workspace exploration and Q&A. Use for bounded codebase probes and evidence gathering that need our MCP toolset. Prefer over the VS Code built-in Explore agent, which lacks our MCP servers."
-tools: [read, search, execute, agent, todo, vscode/askQuestions, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [read, search, execute, agent, todo, vscode/askQuestions, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "What to find + thoroughness (quick/medium/thorough)."
 user-invocable: true
 ---
