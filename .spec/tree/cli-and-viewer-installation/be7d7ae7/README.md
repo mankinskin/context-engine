@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=be7d7ae7-bb1f-4438-813d-f69f17d65cf6 slug=memory-api/install-contracts/cli-and-viewer-installation digest=47f8ea7014a3 -->
+<!-- spec-index:entry id=be7d7ae7-bb1f-4438-813d-f69f17d65cf6 slug=memory-api/install-contracts/cli-and-viewer-installation digest=ac3349d66755 -->
 
 # CLI and Viewer Installation Contract
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-This spec defines the canonical installation contract for the `memory-api` operator surfaces that are exposed to users through generated README documentation. The goal is to keep one synchronized ins…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

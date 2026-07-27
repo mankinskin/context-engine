@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b7ac0b69-ed06-473a-8fbe-0058a769bf40 slug=viewer-ctl digest=9077cd035d9f -->
+<!-- spec-index:entry id=b7ac0b69-ed06-473a-8fbe-0058a769bf40 slug=viewer-ctl digest=1dfb6684bfc4 -->
 
 # viewer-ctl
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`viewer-ctl` is the **lifecycle manager** for context-engine viewer servers,
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

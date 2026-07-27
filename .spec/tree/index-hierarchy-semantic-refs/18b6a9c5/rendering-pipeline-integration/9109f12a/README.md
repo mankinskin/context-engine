@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9109f12a-cc02-47ae-948f-98008b6c167d slug=generated-context/rendering-pipeline-integration digest=8855a57171ff -->
+<!-- spec-index:entry id=9109f12a-cc02-47ae-948f-98008b6c167d slug=generated-context/rendering-pipeline-integration digest=dd429aec2965 -->
 
 # Shared rendering pipeline integration for generated store indexes
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the shared rendering-pipeline integration for generated store indexes so README/index files route through one rendering paradigm instead of per-domain ad hoc renderers. Store-index generation …
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

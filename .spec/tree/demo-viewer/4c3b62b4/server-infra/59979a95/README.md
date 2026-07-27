@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=59979a95-a4cb-4aa3-9a79-486b029532a3 slug=viewer-api/server-infra digest=20a7e109873b -->
+<!-- spec-index:entry id=59979a95-a4cb-4aa3-9a79-486b029532a3 slug=viewer-api/server-infra digest=59a8bfc3c5d2 -->
 
 # viewer-api: server-infra
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the **HTTP server bootstrap** primitives exported
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

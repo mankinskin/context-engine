@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5b404022-6a67-4395-90e0-1e4282fd83b4 slug=audit-api/workspace-graph-health-and-board-check-in-validation digest=b18a6a7b70ee -->
+<!-- spec-index:entry id=5b404022-6a67-4395-90e0-1e4282fd83b4 slug=audit-api/workspace-graph-health-and-board-check-in-validation digest=bf980e71a60f -->
 
 # audit-api: workspace graph health and board check-in validation
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-Current topology checks can detect orphan tickets and planned convergence risks, but they do not enforce whether dependency requirements are defined, whether required dependency evidence is passing, …
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

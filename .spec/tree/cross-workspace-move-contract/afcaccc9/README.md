@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=afcaccc9-5577-4556-ab6f-cfbe7a77e430 slug=ticket-api/cross-workspace-move-contract digest=03608b210ac6 -->
+<!-- spec-index:entry id=afcaccc9-5577-4556-ab6f-cfbe7a77e430 slug=ticket-api/cross-workspace-move-contract digest=476b088334f4 -->
 
 # ticket-api cross-workspace move contract
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the authoritative contract for ticket cross-workspace move behavior over the shared memory-api move kernel.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9074b2ef-c8fe-4bb0-a987-87063078c1ff slug=ticket-api/workflow/cross-surface-contract-parity-and-validation digest=6d91ee5d9723 -->
+<!-- spec-index:entry id=9074b2ef-c8fe-4bb0-a987-87063078c1ff slug=ticket-api/workflow/cross-surface-contract-parity-and-validation digest=1c295ee62f37 -->
 
 # Workflow and health parity for ticket interfaces
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Ticket CLI, ticket HTTP, and ticket MCP currently return different workflow and health answers for the same store because parity-critical domain behavior still lives in their interface crates instead…
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

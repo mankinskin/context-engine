@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4066c5a3-3e04-4eeb-81a2-91fb8e53cc94 slug=spec-mcp digest=9e3cdfdc7221 -->
+<!-- spec-index:entry id=4066c5a3-3e04-4eeb-81a2-91fb8e53cc94 slug=spec-mcp digest=36100ee2644d -->
 
 # spec-mcp
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Bootstrapped from source analysis.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

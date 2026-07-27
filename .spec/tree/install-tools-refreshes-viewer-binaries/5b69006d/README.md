@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5b69006d-e2ce-425d-91a7-97f4517a9bc6 slug=context-engine/install-tools-refreshes-viewer-binaries digest=68943f2a5e34 -->
+<!-- spec-index:entry id=5b69006d-e2ce-425d-91a7-97f4517a9bc6 slug=context-engine/install-tools-refreshes-viewer-binaries digest=492f044d9ad1 -->
 
 # Install tools refreshes viewer binaries
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Keep the PATH-first viewer workflow intact by making the shared repo installer refresh every shipped viewer binary.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

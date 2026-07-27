@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=904871fa-0b97-4484-9540-f2926e32476f slug=context-stack/graph-induction/read-sequence/induced-graph-structure digest=98e603be4f89 -->
+<!-- spec-index:entry id=904871fa-0b97-4484-9540-f2926e32476f slug=context-stack/graph-induction/read-sequence/induced-graph-structure digest=2cdb7c690918 -->
 
 # induced graph structure
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-This internal child spec records the graph facts that must hold after the
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c598ddb2-4d3a-4b81-90ea-8b25a54b8469 slug=generated-context/benchmarking-profiling-plan digest=4f30bbb21316 -->
+<!-- spec-index:entry id=c598ddb2-4d3a-4b81-90ea-8b25a54b8469 slug=generated-context/benchmarking-profiling-plan digest=f34923c28cda -->
 
 # Benchmarking and profiling plan for store-index generation
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the benchmarking and profiling plan for store-index generation so hook automation and generator implementations share explicit latency budgets, a repeatable measurement method, and evidence re…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

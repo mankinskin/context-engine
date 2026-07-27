@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=bbd92962-33f4-4b9e-b301-f4ce9909c135 slug=context-stack/graph-induction/insert-sequences digest=71224cd94b3d -->
+<!-- spec-index:entry id=bbd92962-33f4-4b9e-b301-f4ce9909c135 slug=context-stack/graph-induction/insert-sequences digest=4a6f8c8d0722 -->
 
 # insert_sequences
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`WorkspaceManager::insert_sequences` performs bulk graph induction over an
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

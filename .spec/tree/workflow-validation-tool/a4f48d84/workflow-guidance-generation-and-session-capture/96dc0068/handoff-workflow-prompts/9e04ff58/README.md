@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9e04ff58-9160-4766-b307-74c0fb32a92c slug=context-engine/handoff-workflow-prompts digest=5dedf5e07fa3 -->
+<!-- spec-index:entry id=9e04ff58-9160-4766-b307-74c0fb32a92c slug=context-engine/handoff-workflow-prompts digest=3165fd5172e6 -->
 
 # handoff workflow prompts
 
@@ -11,11 +11,11 @@
 
 ## Summary
 
-Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session handoffs that help a new session resume a specific implementation track quickly.
+<!-- aligned-structure:v2 -->
 
 ## Acceptance Criteria Excerpt
 
-1. `rule-targets/30-agents-prompts.yaml` defines targets for `.agents/prompts/handoff.prompt.md` and `.agents/prompts/handoff-tickets.prompt.md`. 2. Canonical rule entries exist for both prompts with `.prompt` metadata and matching path scopes. 3. The generated `/handoff` prompt…
+1. Both generated prompts are sourced from canonical rule entries and pass synchronization checks. 2. `/handoff` always contains the durable ID and exact resume command from a persisted handoff record. 3. Receiver instructions create a new linked run rather than reusing the outg…
 
 ## Navigation
 

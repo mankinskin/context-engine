@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0 slug=generated-context/peek-lod-validation digest=1d5cba4363f0 -->
+<!-- spec-index:entry id=c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0 slug=generated-context/peek-lod-validation digest=b72f53b524fb -->
 
 # peek-cli consumption and level-of-detail validation for generated indexes
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the `peek-cli` consumption and level-of-detail (LOD) validation plan for generated store indexes, so generators are reviewed against token-efficient agent consumption, not just correctness. Ge…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

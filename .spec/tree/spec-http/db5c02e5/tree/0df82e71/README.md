@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0df82e71-79ef-48ec-8459-43b4693d4543 slug=spec-http/handlers/tree digest=55e56d3b5bda -->
+<!-- spec-index:entry id=0df82e71-79ef-48ec-8459-43b4693d4543 slug=spec-http/handlers/tree digest=572b762091ff -->
 
 # tree
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/handlers/tree.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

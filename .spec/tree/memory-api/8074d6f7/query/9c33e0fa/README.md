@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9c33e0fa-2a18-45ba-a837-a04d71638944 slug=memory-api/model/query digest=140a1d8b15d7 -->
+<!-- spec-index:entry id=9c33e0fa-2a18-45ba-a837-a04d71638944 slug=memory-api/model/query digest=d348010532c6 -->
 
 # query
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/model/query.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

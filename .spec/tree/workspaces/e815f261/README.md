@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=e815f261-ca7d-4957-8f68-666e1e1dfbfe slug=rule-api/workspaces digest=3af5daf54c53 -->
+<!-- spec-index:entry id=e815f261-ca7d-4957-8f68-666e1e1dfbfe slug=rule-api/workspaces digest=901ecfa4c728 -->
 
 # Rule Workspace Topology and Composition
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`rule-api` already supports canonical rule storage in `.rule/rules/**`, repo-scoped filtering, hierarchical target outlines, and deterministic generation from a single `rule-targets.yaml`. The next s…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

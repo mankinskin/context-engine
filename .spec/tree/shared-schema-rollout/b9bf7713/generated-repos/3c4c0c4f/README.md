@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=3c4c0c4f-7d5c-4fa5-9c45-037420e56cee slug=repo-guidance/readmes/generated-repos digest=21515ea016a9 -->
+<!-- spec-index:entry id=3c4c0c4f-7d5c-4fa5-9c45-037420e56cee slug=repo-guidance/readmes/generated-repos digest=ad2d2e825819 -->
 
 # Generated repository README schema adoption
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Adopt the shared README schema across the existing generated repos in the `memory-viewers` family so those workspaces stop carrying bespoke README target layouts and gain consistent parent/child navi…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

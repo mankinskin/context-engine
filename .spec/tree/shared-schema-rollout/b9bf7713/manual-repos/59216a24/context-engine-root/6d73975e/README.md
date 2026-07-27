@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=6d73975e-5af4-4ac6-b732-33c381bf768d slug=repo-guidance/readmes/context-engine-root digest=87ce9c3849f9 -->
+<!-- spec-index:entry id=6d73975e-5af4-4ac6-b732-33c381bf768d slug=repo-guidance/readmes/context-engine-root digest=07e02724868c -->
 
 # context-engine root README tree generation
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Generate the top-level `context-engine` README tree from the root `.rule` store, including the repo root plus the root-owned first-level child README surfaces that currently break the navigation chai…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

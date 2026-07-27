@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=e0913182-7a5e-4c8f-a750-799afd58baae slug=context-stack/graph-induction/read-sequence/context-read-pipeline digest=0319c9ddf2ff -->
+<!-- spec-index:entry id=e0913182-7a5e-4c8f-a750-799afd58baae slug=context-stack/graph-induction/read-sequence/context-read-pipeline digest=d8e2e23b7f8d -->
 
 # context-read pipeline
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-This internal child spec defines the intended `context-read` algorithm for
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

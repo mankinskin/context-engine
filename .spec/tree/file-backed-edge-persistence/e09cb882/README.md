@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=e09cb882-4146-47c5-b14e-ad35a8f53173 slug=ticket-api/storage/file-backed-edge-persistence digest=d2cdeb2f3486 -->
+<!-- spec-index:entry id=e09cb882-4146-47c5-b14e-ad35a8f53173 slug=ticket-api/storage/file-backed-edge-persistence digest=93c399d28c2e -->
 
 # Persist dependency edges in tracked ticket files
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Dependency edges created through `ticket link` and removed through `ticket unlink` must survive a rebuild from the tracked ticket store, not only the ignored SQLite index.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

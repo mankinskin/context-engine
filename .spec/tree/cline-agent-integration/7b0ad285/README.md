@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=7b0ad285-c7df-4b19-a9d7-a11e71bab2ba slug=context-engine/repo-guidance/cline-agent-integration digest=b212f6bf270a -->
+<!-- spec-index:entry id=7b0ad285-c7df-4b19-a9d7-a11e71bab2ba slug=context-engine/repo-guidance/cline-agent-integration digest=b73f2a34e187 -->
 
 # Cline agent client integration with client-agnostic .agents/ standard
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Integrate the Cline Agent Client (uses `.clinerules/` by default) while maintaining client agnosticity. The canonical standard remains `.agents/` + `AGENTS.md` as the source of truth for all agent gu…
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=d3dea825-4850-4a95-a03d-4884ce85a232 slug=memory-api/model/edge digest=66cc5d17989b -->
+<!-- spec-index:entry id=d3dea825-4850-4a95-a03d-4884ce85a232 slug=memory-api/model/edge digest=27e3f09287af -->
 
 # edge
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/model/edge.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

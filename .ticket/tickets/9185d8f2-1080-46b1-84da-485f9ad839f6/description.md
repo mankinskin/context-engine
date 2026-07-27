@@ -1,30 +1,35 @@
 ## Problem
+`Gate::tool_cost()` in memory-api/tools/mcp/mcp-cost-gate/src/gate.rs falls back to a hardcoded static classification whenever the empirical rollup lacks data for a tool. Tools matching `TOKEN_HEAVY_TOOL_SUBSTRINGS` are assigned `heavy_fallback_cost()` (75 at the default calibration), which exceeds an expensive model's budget (~58). Because .session/tool-metrics-rollup.json is currently empty (`turn_count: 0`, `tools: []`), no tool ever reaches the empirical path, so read_file/peek_*/grep_search/get_log/spec_get/get_ticket_description/subgraph are permanently blocked for large models. This is assumed cost, not proven cost, and it prevents the very measurements that would make the gate accurate.
 
-The cost gate hardcodes a name-based list (TOKEN_HEAVY_TOOL_SUBSTRINGS) that assigns a flat 75 to specific tools by name. This bakes in assumptions about tools we cannot actually know from their names, and unfairly penalizes token-efficient tools like peek. We do not want to hardcode any specific tools or infer cost from names.
+## Decisions (approved)
+1. Fail-open for unmeasured tools. A tool with no rollup entry gets cost **0** — a true bypass, gate inert.
+2. Remove `TOKEN_HEAVY_TOOL_SUBSTRINGS` **entirely**. No hardcoded token-heavy constants, no `heavy_fallback_cost()`, no `ToolClass::TokenHeavy`, and no remaining references to those names.
+3. Remove `ALWAYS_ALLOWED_TOOL_SUBSTRINGS` **entirely** as well. No hardcoded lists at all — every cost is empirical or zero.
+4. Threshold: `MIN_CALLS` drops to **1**. A single recorded measurement is enough to start gating that tool; cost is the average over the existing rollup window.
+5. Rolling window: reuse the existing rollup aggregation window. Do **not** add a new window knob.
+6. Unconditional behavior change. No env flag, no escape hatch.
+7. Rust only. `tools/model-prices/cost_gate.py` is the advisory helper and may lag; do not change it in this ticket.
+8. Fixing the empty measurement pipeline (the rollup writer in memory-api/crates/session-api/) is **out of scope** here and is already tracked by existing tool_metrics tickets.
 
-## Acceptance Criteria
+## Scope of change
+- memory-api/tools/mcp/mcp-cost-gate/src/gate.rs
+  - Delete `TOKEN_HEAVY_TOOL_SUBSTRINGS`, `ALWAYS_ALLOWED_TOOL_SUBSTRINGS`, `ToolClass`, `classify_tool()`, and `heavy_fallback_cost()`.
+  - `tool_cost()` becomes: look up the tool in the rollup; if present with `call_count >= MIN_CALLS`, return the graded cost; otherwise return 0.
+  - `MIN_CALLS` = 1.
+  - `evaluate()` keeps its existing shape: cost 0 → allow; `cost <= effective_budget` → allow; else delegate. Grants and the offset mechanism are unchanged.
+- Remove any now-dead imports/helpers left behind.
 
-1. Remove the TOKEN_HEAVY_TOOL_SUBSTRINGS name-based categorization ENTIRELY from both cost_gate.py and gate.rs (and remove heavy_fallback_cost's role as a per-name classifier). No tool is special-cased by name.
+## Acceptance criteria
+- AC1: `grep -ri "token_heavy\|TOKEN_HEAVY\|always_allowed\|ALWAYS_ALLOWED\|heavy_fallback" memory-api/tools/mcp/mcp-cost-gate/src/` returns no matches.
+- AC2: With an empty or missing rollup, `Gate::evaluate()` allows every tool for every known caller_model, including previously heavy ones (read_file, peek_read, grep_search, get_log, get_ticket_description, spec_get, subgraph).
+- AC3: With a rollup entry having `call_count >= 1` and a graded cost above an expensive model's budget, that tool is delegated (blocked) for that model and allowed for a cheap model. Regression test covers both sides.
+- AC4: An unknown `caller_model` is still rejected — that behavior is unchanged.
+- AC5: The existing missing-price-table fail-open in main.rs `load_gate()` and proxy.rs is unchanged.
+- AC6: `cargo test -p mcp-cost-gate` passes; tests asserting the old static fallback of 75 are replaced by tests asserting the fail-open-to-0 behavior.
+- AC7: Manual smoke check: an expensive-model MCP call to `get_ticket_description` succeeds instead of returning the "requires cost 75 but model has effective budget 58" error.
 
-2. Every tool WITHOUT sufficient empirical data gets ONE single default cost (an "unknown tool" default). No per-tool or name-substring assumptions.
-
-3. Set the single default so it gates expensive/orchestrator-tier models (default cost above their budget) BUT remains BELOW the budget of cheaper/smaller agents, so cheaper agents CAN still call unknown tools. This avoids a chicken-and-egg deadlock: unknown tools must be callable by someone to ever produce metrics.
-
-4. Cheaper-agent calls to unknown tools record tool-metrics into .session/tool-metrics-rollup.json; once >=N (existing threshold, currently 5) empirical calls exist, the empirical p90-output->cost mapping takes over and drives the real cost/rating. Peek being blocked for big models at first is acceptable and expected until data is gathered.
-
-5. Behavior must be mirrored/consistent across the Python gate and the Rust proxy.
-
-6. Preserve grant overrides (.session/grants/) and keep compatibility with the argument-based dynamic estimation work (ticket 9c9e2edc): the single default is the base for unknown tools; arg estimators still refine per-call cost where declared.
-
-## Implementation Notes
-
-Code paths:
-- Python: tools/model-prices/cost_gate.py ~lines 40-65
-- Rust: memory-api/tools/mcp/mcp-cost-gate/src/gate.rs ~lines 27-51
-
-## Related
-
-- Parent ticket: 445a2d76-5795-4d7a-aec8-d1536ec61416
-- Spec: 29ae5f6e-c202-41f1-ba88-a446aa872993
-- Related: 8c4d1d9c-1004-4539-9880-0a0e8aa03dd3 (re-tune calibration from rollup)
-- Related: 9c9e2edc-81fc-489e-9153-bf4ac0bf1a13 (dynamic argument-based cost estimation)
+## Non-goals
+- Populating or repairing the tool-metrics rollup writer.
+- Argument-based dynamic cost estimation (tracked separately).
+- Re-tuning the graded-cost calibration constants (tracked separately).
+- Changes to tools/model-prices/cost_gate.py or its Python tests.

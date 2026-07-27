@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=96dc0068-d05d-4e61-b785-144272119fa9 slug=context-engine/workflow-guidance-generation-and-session-capture digest=d6853009e5a2 -->
+<!-- spec-index:entry id=96dc0068-d05d-4e61-b785-144272119fa9 slug=context-engine/workflow-guidance-generation-and-session-capture digest=25bd308ca39e -->
 
 # workflow guidance generation and session capture scaffolding
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Generate the requested workflow prompt and agent files from canonical rule-api entries, then seed a bounded first session-api scaffold for storing Copilot chat sessions in the memory-api store.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

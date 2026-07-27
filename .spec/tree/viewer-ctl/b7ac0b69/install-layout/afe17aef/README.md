@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=afe17aef-793e-419f-93c1-568bf10a2955 slug=viewer-ctl/install-layout digest=041c71c1424f -->
+<!-- spec-index:entry id=afe17aef-793e-419f-93c1-568bf10a2955 slug=viewer-ctl/install-layout digest=fecbf9cd7dd7 -->
 
 # install layout
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-viewer-ctl installs three classes of artifacts. The layout is fixed and
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

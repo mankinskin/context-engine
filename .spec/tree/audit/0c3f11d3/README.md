@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0c3f11d3-2475-470c-a191-beedd2c8e53c slug=audit digest=d28f38a00c3f -->
+<!-- spec-index:entry id=0c3f11d3-2475-470c-a191-beedd2c8e53c slug=audit digest=8c81f7a88a13 -->
 
 # audit
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`audit` is the repository quality audit tool for this workspace. Its code is split across three layers:
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

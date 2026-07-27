@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=6571abcf-b1b9-4259-b81c-78783e227467 slug=architecture/cross-store-workspace-interaction digest=a1322f2e7e69 -->
+<!-- spec-index:entry id=6571abcf-b1b9-4259-b81c-78783e227467 slug=architecture/cross-store-workspace-interaction digest=49c6217217c1 -->
 
 # Cross-store workspace interaction architecture
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define a workspace architecture where each store remains domain-isolated while cross-store interaction is enabled through contract interfaces and API-layer composition.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

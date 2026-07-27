@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=16c3ad95-451d-4c09-a118-ca90bcefed9a slug=context-stack/graph-induction digest=98cacc4197d1 -->
+<!-- spec-index:entry id=16c3ad95-451d-4c09-a118-ca90bcefed9a slug=context-stack/graph-induction digest=1f515f717cfc -->
 
 # graph induction
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Graph induction is the part of the context stack that accepts token sequences or
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

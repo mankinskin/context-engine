@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=e4ac6ae2-3ef6-4104-911d-eb27fae70d1a slug=feedback-api/structured-feedback-inbox-and-deep-reconciliation-search digest=bd9074e3c084 -->
+<!-- spec-index:entry id=e4ac6ae2-3ef6-4104-911d-eb27fae70d1a slug=feedback-api/structured-feedback-inbox-and-deep-reconciliation-search digest=87353a81940a -->
 
 # feedback-api: structured feedback inbox and deep reconciliation search
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-User and agent feedback is fragmented, hard to query at scale, and not consistently tied to remediation workflows. Teams need an inbox-like store with structured metadata, deep search, and reconcilia…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

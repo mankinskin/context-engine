@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b9129cf5-ddad-49f5-9dd0-60fdb72ee306 slug=memory-api/storage/store-bootstrap-open digest=c19963401ee1 -->
+<!-- spec-index:entry id=b9129cf5-ddad-49f5-9dd0-60fdb72ee306 slug=memory-api/storage/store-bootstrap-open digest=ce9d32e160aa -->
 
 # store bootstrap open
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The local memory-api store wrappers currently expose two low-level entry points:
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

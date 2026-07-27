@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=2e56d63e-c53a-45a0-a984-088b3f9da19a slug=viewer-api/keyboard-interaction-model digest=1c6c810f567a -->
+<!-- spec-index:entry id=2e56d63e-c53a-45a0-a984-088b3f9da19a slug=viewer-api/keyboard-interaction-model digest=7d5a72821990 -->
 
 # viewer-api: keyboard interaction model
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Draft cross-viewer interaction contract for keyboard ownership, shortcut precedence, and phased rollout across shared viewer surfaces.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

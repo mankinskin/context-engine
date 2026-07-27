@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4a16fea7-5af5-477f-835d-6c0c94216bfe slug=memory-api/error digest=938ee43a2d8b -->
+<!-- spec-index:entry id=4a16fea7-5af5-477f-835d-6c0c94216bfe slug=memory-api/error digest=f70626fd0786 -->
 
 # error
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/error.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

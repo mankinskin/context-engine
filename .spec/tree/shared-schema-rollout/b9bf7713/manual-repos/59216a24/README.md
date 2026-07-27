@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=59216a24-598e-48eb-a280-ee8766857c0b slug=repo-guidance/readmes/manual-repos digest=f47559291807 -->
+<!-- spec-index:entry id=59216a24-598e-48eb-a280-ee8766857c0b slug=repo-guidance/readmes/manual-repos digest=aec23fb76d93 -->
 
 # Manual repository README generation rollout
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Migrate the manual README trees in `context-engine` and `context-stack` onto the same rule-backed generation flow and parent/child navigation contract already used in the generated nested workspaces.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

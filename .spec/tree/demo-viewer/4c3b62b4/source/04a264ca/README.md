@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=04a264ca-5dd6-44d4-ab5a-165822d85079 slug=viewer-api/source digest=f877caa7193e -->
+<!-- spec-index:entry id=04a264ca-5dd6-44d4-ab5a-165822d85079 slug=viewer-api/source digest=20dd3a9c3e8e -->
 
 # viewer-api: source
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for `viewer-api::source` — the safe source-file
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

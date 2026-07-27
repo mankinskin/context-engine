@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c6e3cc79-a2de-49f1-9c99-effe1b64a873 slug=viewer-api/client-log digest=12b3db0a12de -->
+<!-- spec-index:entry id=c6e3cc79-a2de-49f1-9c99-effe1b64a873 slug=viewer-api/client-log digest=9c6f40f280d2 -->
 
 # viewer-api: client log endpoint
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for `viewer-api::client_log` — the server endpoint
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=479e226a-b4ef-4e30-ade0-ebdabbf956ed slug=viewer-api/tracing/file-sink digest=0df710ecee8b -->
+<!-- spec-index:entry id=479e226a-b4ef-4e30-ade0-ebdabbf956ed slug=viewer-api/tracing/file-sink digest=ce9def9a8675 -->
 
 # viewer-api: WASM tracing file sink
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Specification for shipping `tracing` records emitted by the Dioxus WASM
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

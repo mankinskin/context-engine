@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=8074d6f7-b888-4e57-95e6-06dde96384b8 slug=memory-api digest=1cce0ea606a6 -->
+<!-- spec-index:entry id=8074d6f7-b888-4e57-95e6-06dde96384b8 slug=memory-api digest=fdff7085cdb7 -->
 
 # memory-api
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Bootstrapped from source analysis.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

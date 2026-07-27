@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e slug=memory-api/storage/board digest=43b8ad4dde72 -->
+<!-- spec-index:entry id=0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e slug=memory-api/storage/board digest=f41df621d8f7 -->
 
 # board
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/storage/board.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

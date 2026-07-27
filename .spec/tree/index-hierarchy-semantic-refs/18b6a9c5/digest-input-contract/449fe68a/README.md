@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=449fe68a-541c-4804-bbfd-476af783f80c slug=generated-context/digest-input-contract digest=9438d05156ed -->
+<!-- spec-index:entry id=449fe68a-541c-4804-bbfd-476af783f80c slug=generated-context/digest-input-contract digest=c29d3e7bdc66 -->
 
 # Domain digest input contract for generated index entries
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the domain-level digest input contract for generated memory-index entries so every generator derives a stable `IndexEntry` payload before calling `seal()`. Given identical source inputs, every…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

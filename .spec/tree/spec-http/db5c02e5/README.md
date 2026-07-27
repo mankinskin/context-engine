@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=db5c02e5-31f5-4a40-bf9c-2227eab412b2 slug=spec-http digest=1f06c53a217a -->
+<!-- spec-index:entry id=db5c02e5-31f5-4a40-bf9c-2227eab412b2 slug=spec-http digest=3d44f7a28ff3 -->
 
 # spec-http
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Bootstrapped from source analysis.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

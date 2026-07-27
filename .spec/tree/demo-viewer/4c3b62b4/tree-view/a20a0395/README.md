@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6 slug=viewer-api/components/tree-view digest=9dbe732f4245 -->
+<!-- spec-index:entry id=a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6 slug=viewer-api/components/tree-view digest=144c66093bb0 -->
 
 # viewer-api: TreeView
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared `TreeView` Dioxus component
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

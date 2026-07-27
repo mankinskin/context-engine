@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=717be077-49f6-49bc-8221-ea5105ba5ff3 slug=spec-http/handlers/health digest=79dcfc2c94ce -->
+<!-- spec-index:entry id=717be077-49f6-49bc-8221-ea5105ba5ff3 slug=spec-http/handlers/health digest=4c080f33bf6d -->
 
 # health
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/handlers/health.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

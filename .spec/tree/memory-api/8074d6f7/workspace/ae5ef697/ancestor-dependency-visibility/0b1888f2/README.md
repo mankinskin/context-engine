@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0b1888f2-7e59-45fb-95d8-1bf14ff7747f slug=ticket-api/workspaces/ancestor-dependency-visibility digest=910e8ac31f63 -->
+<!-- spec-index:entry id=0b1888f2-7e59-45fb-95d8-1bf14ff7747f slug=ticket-api/workspaces/ancestor-dependency-visibility digest=3d0064980c08 -->
 
 # Ancestor Workspace Ticket References for Child-Workspace Dependencies
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Child ticket workspaces need a way to surface ancestor-owned ticket entries when those parent entries participate directly in dependency relationships with child-owned tickets.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

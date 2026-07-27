@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=08aa283e-34ee-47d4-83bc-4c4311a9c85f slug=ticket-query/expressive-query-and-ordering digest=76786ef788a5 -->
+<!-- spec-index:entry id=08aa283e-34ee-47d4-83bc-4c4311a9c85f slug=ticket-query/expressive-query-and-ordering digest=410c6ee1bc4c -->
 
 # Expressive ticket query and ordering contract
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Ticket discovery is split across several partial query mechanisms with
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

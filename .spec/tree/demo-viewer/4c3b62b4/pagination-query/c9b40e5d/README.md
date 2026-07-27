@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c9b40e5d-1239-4ad6-99b1-0b759a9c4c49 slug=viewer-api/pagination-query digest=9169853652fc -->
+<!-- spec-index:entry id=c9b40e5d-1239-4ad6-99b1-0b759a9c4c49 slug=viewer-api/pagination-query digest=264ec4c05c4d -->
 
 # viewer-api: pagination + query helpers
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for `viewer-api::pagination` and `viewer-api::query`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

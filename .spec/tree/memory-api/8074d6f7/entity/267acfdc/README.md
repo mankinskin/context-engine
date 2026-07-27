@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=267acfdc-7df4-4090-9f17-7d6d71232814 slug=memory-api/model/entity digest=1be77ee67dda -->
+<!-- spec-index:entry id=267acfdc-7df4-4090-9f17-7d6d71232814 slug=memory-api/model/entity digest=e6758e954253 -->
 
 # entity
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/model/entity.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

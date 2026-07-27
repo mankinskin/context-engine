@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=3b96ec1c-4e99-48f4-86e5-a36ba24b827a slug=rule-api/workspaces/memory-api-readme-generation digest=2119b92204da -->
+<!-- spec-index:entry id=3b96ec1c-4e99-48f4-86e5-a36ba24b827a slug=rule-api/workspaces/memory-api-readme-generation digest=dd0add296bb5 -->
 
 # memory-api Rule Workspace and README Generation
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`memory-api` needs its own repo-local rule workspace so the repo README and local usage guides are authored next to the crates and tools they describe. The local target config should stay manageable …
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

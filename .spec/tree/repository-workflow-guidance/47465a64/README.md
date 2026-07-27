@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=47465a64-0c5f-4ddc-8d38-018048090af2 slug=context-engine/repository-workflow-guidance digest=cb5e00b8ff6d -->
+<!-- spec-index:entry id=47465a64-0c5f-4ddc-8d38-018048090af2 slug=context-engine/repository-workflow-guidance digest=6c50170fb2ba -->
 
 # repository workflow guidance
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Repository guidance is partly rule-generated today, but nested workspaces still carry hand-written agent files and the parent workspace duplicates child target definitions directly in its own `rule-t…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

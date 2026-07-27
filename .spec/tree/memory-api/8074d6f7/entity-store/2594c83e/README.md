@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=2594c83e-12e3-49d9-a5b7-abe7122e5f52 slug=memory-api/storage/entity-store digest=c523059bec7c -->
+<!-- spec-index:entry id=2594c83e-12e3-49d9-a5b7-abe7122e5f52 slug=memory-api/storage/entity-store digest=f789743d7ae9 -->
 
 # entity_store
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/storage/entity_store.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

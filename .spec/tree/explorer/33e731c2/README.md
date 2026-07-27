@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=33e731c2-a0cf-41f7-bd7c-2df6c4545bf3 slug=ticket-viewer/explorer digest=64374b4c70db -->
+<!-- spec-index:entry id=33e731c2-a0cf-41f7-bd7c-2df6c4545bf3 slug=ticket-viewer/explorer digest=ec83ae35c457 -->
 
 # ticket-viewer: explorer interactions
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the ticket-viewer navigation surfaces that let a user find and open tickets: the sidebar explorer and the quick-search overlay.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

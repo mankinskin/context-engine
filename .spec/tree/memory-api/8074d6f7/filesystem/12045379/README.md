@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=12045379-ce22-416b-8a5e-31d560c35992 slug=memory-api/model/filesystem digest=b0856c7df3dc -->
+<!-- spec-index:entry id=12045379-ce22-416b-8a5e-31d560c35992 slug=memory-api/model/filesystem digest=97f87f1d613f -->
 
 # filesystem
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/model/filesystem.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

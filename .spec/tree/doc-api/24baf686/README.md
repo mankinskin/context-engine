@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=24baf686-38fd-417d-9528-bebc02a556d0 slug=doc-api digest=950905a60534 -->
+<!-- spec-index:entry id=24baf686-38fd-417d-9528-bebc02a556d0 slug=doc-api digest=b529c398bd54 -->
 
 # doc-api
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`memory-api` should gain a `docs` domain so humans and agents can navigate repository structure through the same family pattern already used for rules, specs, tickets, and audits. The first primitive…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

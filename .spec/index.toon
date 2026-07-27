@@ -2,39 +2,48 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[185]:
+entries[220]:
   - id: "00000000-0000-0000-0000-0000000000a2"
     kind: spec
-    source_path: "memory-api/test-fixtures/memory-workspace-fixture/submodule-a/.spec/specs/00000000-0000-0000-0000-0000000000a2/spec.toml"
+    source_path: "./memory-api/test-fixtures/memory-workspace-fixture/submodule-a/.spec/specs/00000000-0000-0000-0000-0000000000a2/spec.toml"
     title: Submodule A fixture spec
-    summary: ""
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: fixture,spec,submodule
-    digest: 49a11183c0a79ecaa6f07a1dff5205894e622f55cb9a99950e63aafa3da8f56b
+    digest: f9c22ea3f5a9ef52f4663ccc8d2e44b78dbc32909cb1f8b59bf035a94533378a
     tags[4]: draft,fixture,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "00000000-0000-0000-0000-0000000000b1"
     kind: spec
-    source_path: "memory-api/test-fixtures/memory-workspace-fixture/.spec/specs/00000000-0000-0000-0000-0000000000b1/spec.toml"
+    source_path: "./memory-api/test-fixtures/memory-workspace-fixture/.spec/specs/00000000-0000-0000-0000-0000000000b1/spec.toml"
     title: Root fixture spec
-    summary: ""
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: fixture,root,spec
-    digest: 8c9ebc7515f2633399ccfd15913613c809e16540ebbec362d2a1641cd71a23b0
+    digest: ba5530d1bfbe1d5ea06d247eaf26ba99b39ee173b77914be5190dc15bd3eeaf6
     tags[4]: draft,fixture,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "00000000-0000-0000-0000-0000000000b2"
     kind: spec
-    source_path: "memory-api/test-fixtures/memory-workspace-fixture/submodule-b/.spec/specs/00000000-0000-0000-0000-0000000000b2/spec.toml"
+    source_path: "./memory-api/test-fixtures/memory-workspace-fixture/submodule-b/.spec/specs/00000000-0000-0000-0000-0000000000b2/spec.toml"
     title: Submodule B fixture spec
-    summary: ""
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: fixture,spec,submodule
-    digest: 32400c22ca02051dbc3f126c3e7a912ec803e9d13008ad8f33a8457bbe676b8f
+    digest: 7167e2f2c929ea6a797f100e7862f84c7dc1955d817174932756307fc2288791
     tags[4]: draft,fixture,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6"
+    kind: spec
+    source_path: "viewer-api/.spec/specs/012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6/spec.toml"
+    title: "viewer-api: minimal viewer-template shell"
+    summary: "A minimal viewer-template that serves as the canonical bootstrap for new viewers (for example a rule-viewer or an audit-viewer). It provides the standard viewer shell so a new domain viewer starts fr…"
+    keywords[6]: minimal,shell,template,viewer,"viewer-api","viewer-template"
+    digest: 0e735a33c06d5a74bd9c64c9cb7d7816f867fc4ceb9827a655d4d9b910d595d8
+    tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "01f7eae8-555d-46e2-bb54-0e0bf2b2da90"
     kind: spec
     source_path: "viewer-api/.spec/specs/01f7eae8-555d-46e2-bb54-0e0bf2b2da90/spec.toml"
     title: tasks
-    summary: A task is an ordered list of shell command invocations. Tasks are the
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: task,tasks
     relations:
       parent:
@@ -43,14 +52,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c31e96f5a04284b9b45fabab2d45d94e05d2a36e84160307c3056745d91d3090
+    digest: 81dc094db9c56b0acf99d1f4e0ae26e5c04782d5de0a70365c7af6494af5df20
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0386c4d0-15c4-4561-a33f-63b881c852c5"
     kind: spec
     source_path: "memory-api/.spec/specs/0386c4d0-15c4-4561-a33f-63b881c852c5/spec.toml"
     title: "CLI reverse-dependency unlock and blocker follow-up discovery"
-    summary: "The ticket CLI needs first-class reverse-dependency workflow support: `ticket unblocked-by <id>` should show which dependents a prerequisite unlocks or still affects, and `ticket next <id>` should sh…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: blocker,discovery,"follow-up","reverse-dependency",unblocked,unlock
     relations:
       parent:
@@ -59,14 +68,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: dec79d8bcd091aae2d9c719ddc8454d27ca4f8b26800ccebceeaa73acf3ca415
+    digest: ee375c67578ef65d2423453f09710979f668945239e63103dc122677886a4506
     tags[3]: draft,"scope:public","ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "04a264ca-5dd6-44d4-ab5a-165822d85079"
     kind: spec
     source_path: "viewer-api/.spec/specs/04a264ca-5dd6-44d4-ab5a-165822d85079/spec.toml"
     title: "viewer-api: source"
-    summary: "Canonical specification for `viewer-api::source` — the safe source-file"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: source,"viewer-api"
     relations:
       parent:
@@ -75,14 +84,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: f877caa7193ee6eead991ca0f33d056266ddb151810c383bbeab31508033810a
+    digest: 20dd3a9c3e8e5bf877ded58105924cfef6c4c4aba5a6324c5f12c271a32ba46a
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "067c60c2-6be0-4f51-bbd3-80dcd29b9d35"
     kind: spec
     source_path: "memory-api/.spec/specs/067c60c2-6be0-4f51-bbd3-80dcd29b9d35/spec.toml"
     title: routes
-    summary: "Source: `tools/http/spec-http/src/routes.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: routes
     relations:
       parent:
@@ -91,14 +100,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 8368c040bf0a00c6a3aeca606bb9220132afec2a392b75eb5df21e4739ef00b4
+    digest: fea22f11774eb0186b8313adfcef39b0b791ce959cc79c4950d985b13950ae2e
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "08aa283e-34ee-47d4-83bc-4c4311a9c85f"
     kind: spec
     source_path: "memory-api/.spec/specs/08aa283e-34ee-47d4-83bc-4c4311a9c85f/spec.toml"
     title: Expressive ticket query and ordering contract
-    summary: Ticket discovery is split across several partial query mechanisms with
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: contract,expressive,ordering,query,ticket
     non_goals: "Redefining the workflow convergence ranking comparator. That is owned by `ticket-api/workflow/best-next-ordering` and `ticket-api/workflow/blocker-trees-and-recently-unblocked-ordering`. Changing board-aware exclusion / WIP semantics. Introducing a new persistence format or a se…"
     relations:
@@ -108,25 +117,36 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 76786ef788a51fdaa83908680e1299f81acb2dbfad462d6a33b9c58a87f9b13b
+    digest: 410c6ee1bc4c28f3b18a7f7f43566a5dc9d8ed81806bad09f73d439264595ee0
     tags[3]: draft,"scope:public","ticket-query"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "09f96d83-4795-4f19-9259-64ad0d452387"
     kind: spec
     source_path: ".spec/specs/09f96d83-4795-4f19-9259-64ad0d452387/spec.toml"
-    title: "VS Code Copilot stop-hook session capture"
-    summary: "Wire the repository's VS Code GitHub Copilot hook configuration to persist chat sessions through `session-api` after each agent response stops."
-    keywords[8]: capture,code,copilot,hook,session,stop,"stop-hook",vscode
-    scope: "register the root hook configuration file in workspace settings via `chat.hookFilesLocations` extend the root hook configuration with a `Stop` hook alongside the existing `PostToolUse` hooks add a small executable `session-api` adapter that reads `Stop` hook input, resolves `tra…"
-    non_goals: "replacing or removing the existing `PostToolUse` hook reminders changing the existing session store layout or append-only merge semantics adding new query, MCP, or HTTP surfaces beyond the current `session-api` store API supporting every Copilot hook event type in one slice"
-    digest: 8c5db5a1d29594f6cefb70e5a4744573b83654fb2e060f48d36c85260c9c1328
-    tags[4]: draft,root,"scope:internal","session-api"
+    title: "VS Code Copilot capture-hook session sync"
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[8]: capture,"capture-hook",code,copilot,hook,session,sync,vscode
+    scope: "keep hook registration rooted at `.github/hooks/hooks.json` run transcript capture on periodic hook events (`UserPromptSubmit`, `PostToolUse`, `Stop`, `SessionEnd`) use a dedicated `session-api` executable hook adapter that reads hook stdin payloads and resolves transcript/store…"
+    non_goals: "replacing existing non-capture reminder hooks introducing new query, MCP, or HTTP surfaces beyond the current `session-api` store API changing the on-disk session directory structure under `.session/sessions/<session-id>/`"
+    digest: cbff8dcb64e204c5bd6a990f5356305ba3abe302ff326999f2590827ba02ae1a
+    tags[4]: "in-review",root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0adfbd09-15c7-46ee-be24-03da0564833d"
+    kind: spec
+    source_path: ".spec/specs/0adfbd09-15c7-46ee-be24-03da0564833d/spec.toml"
+    title: "Store scan and move hot-path performance for ticket-backed indexing"
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[8]: "hot-path",indexing,move,path,performance,scan,store,"ticket-backed"
+    scope: "`ticket-api` scan reconciliation logic `memory-api` search-index bulk write behavior used by ticket scans ticket move-domain post-move index reconciliation scan timing metric correctness for rebuild-probe instrumentation remaining follow-up planning for workflow-facts recompute,…"
+    non_goals: "public API changes for ticket CLI, HTTP, or MCP schema redesign for SQLite or Tantivy documents broad performance work outside the ticket scan/move/indexing path"
+    digest: 2124204fc96af0fcb3b9da25616398fc2e5ff2660a130a7cfc12eae23a7ac931
+    tags[4]: draft,"memory-api",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0b1888f2-7e59-45fb-95d8-1bf14ff7747f"
     kind: spec
     source_path: "memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml"
     title: "Ancestor Workspace Ticket References for Child-Workspace Dependencies"
-    summary: "Child ticket workspaces need a way to surface ancestor-owned ticket entries when those parent entries participate directly in dependency relationships with child-owned tickets."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: ancestor,"child-workspace",dependencies,dependency,references,ticket,visibility,workspace
     relations:
       parent:
@@ -135,14 +155,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 910e8ac31f637b7bb0bcdd5daff56dd304471373f50dc6e6d25b9bdab841e4da
+    digest: 3d0064980c088d1e7599fee6b8d402ffa2d1ae7d83e3048c294a54a178f50bf9
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0c141c86-957c-4b93-b86e-f50a05e84763"
     kind: spec
     source_path: ".spec/specs/0c141c86-957c-4b93-b86e-f50a05e84763/spec.toml"
     title: tool history transplant
-    summary: "This spec records the decision to replace the old bash extraction flow with `crane-cli` for context-stack tool-history migrations."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: history,tool,transplant
     relations:
       parent:
@@ -151,14 +171,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c20e9527d36cd6763d0665c9d011db502f94dcaf1fa19a74239fc56235bed99d
+    digest: 1f1fd55abbc5c391c4e660eb380d4bca06043757f20f968d1ddb45018d1b9b8f
     tags[3]: "context-stack",draft,"scope:system"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e"
     kind: spec
     source_path: "memory-api/.spec/specs/0c34e5d3-8b30-4b8b-9876-fc8f7e02ed9e/spec.toml"
     title: board
-    summary: "Source: `crates/memory-api/src/storage/board.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: board
     relations:
       parent:
@@ -167,23 +187,33 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 43b8ad4dde72aa7bb1f52ce3cc193770062a77bf8ee53720bf53a1abc89f17ed
+    digest: f41df621d8f73aea9f2d7ea8eb8e6dafc468cfb9ed0fb6f525c1f3218f8bae66
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0c3f11d3-2475-470c-a191-beedd2c8e53c"
     kind: spec
     source_path: "memory-api/.spec/specs/0c3f11d3-2475-470c-a191-beedd2c8e53c/spec.toml"
     title: audit
-    summary: "`audit` is the repository quality audit tool for this workspace. Its code is split across three layers:"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: audit
-    digest: d28f38a00c3f15ebbd357b61f55636493f60938f4fb37e5eff7acad1db5b5cb6
+    digest: 8c81f7a88a13e92e4931d2f183b3b321ea6a8304c55dae9bb51ef2a3e1dd6289
     tags[4]: audit,draft,root,"scope:system"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0d205a9e-3add-40e7-a148-b7e2e65b260f"
+    kind: spec
+    source_path: ".spec/specs/0d205a9e-3add-40e7-a148-b7e2e65b260f/spec.toml"
+    title: Canonical repository ownership for viewer and peek crates
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[6]: canonical,crates,ownership,peek,repository,viewer
+    non_goals: "Implementation refactors or user-facing changes. Package publication or version changes. Rewriting historical evidence solely for path cosmetics."
+    digest: 825562b899c8ee0bba5e4a11db82faa5935675ab336170e83c96a83107fcccb1
+    tags[4]: reviewed,root,"scope:internal","workspace-ownership"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0df82e71-79ef-48ec-8459-43b4693d4543"
     kind: spec
     source_path: "memory-api/.spec/specs/0df82e71-79ef-48ec-8459-43b4693d4543/spec.toml"
     title: tree
-    summary: "Source: `tools/http/spec-http/src/handlers/tree.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: tree
     relations:
       parent:
@@ -192,24 +222,24 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 55e56d3b5bdaa3758338cc93ab7c5c90649b1ca524e3b8ec7787bf82282e75bf
+    digest: 572b762091ff535c0c286cd06a7be216247b56ed104d05fccd2f7ea3793455f9
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0e9beee3-9974-48df-ad22-a79504c438af"
     kind: spec
     source_path: "memory-api/.spec/specs/0e9beee3-9974-48df-ad22-a79504c438af/spec.toml"
     title: store
-    summary: "Source:"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: store
     non_goals: "Renaming ticket or other non-rule entity description files. Changing target composition rules beyond the source of hydrated rule body content. Removing compatibility for legacy rule folders before the repository backfill is complete."
-    digest: f85b2a05ce3ec1556540a5ba05926eae8b0049e40bf2afe5c8a9a52ac34a2883
+    digest: a9175204497cd57c9195e46d24379af3bcbbd25fac7d7c518b582bfdbcdfbb74
     tags[4]: draft,root,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0f684a90-6abe-4028-a9f1-5d2d6322f1b9"
     kind: spec
     source_path: "memory-api/.spec/specs/0f684a90-6abe-4028-a9f1-5d2d6322f1b9/spec.toml"
     title: state
-    summary: "Source: `tools/http/spec-http/src/state.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: state
     relations:
       parent:
@@ -218,14 +248,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 7b10f9800605fe42ede38f2ae810036805fe55a1d66815ae8568b6e50e3f1c37
+    digest: 2a2e1934cf95a5784a7656b65606a702f06d06880cfa2b0fb3038b41e2a8e214
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "12045379-ce22-416b-8a5e-31d560c35992"
     kind: spec
     source_path: "memory-api/.spec/specs/12045379-ce22-416b-8a5e-31d560c35992/spec.toml"
     title: filesystem
-    summary: "Source: `crates/memory-api/src/model/filesystem.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: filesystem
     relations:
       parent:
@@ -234,14 +264,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: b0856c7df3dc644a63ac0bc8142433ba54b100a1c0483d37ce0dbe042d7931f4
+    digest: 97f87f1d613f460d2dfd6d79b9afce66b36a9eb4c9e0d864d7f56d5cae51a76f
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "121a0e79-a212-40af-8041-83c1ea11f029"
     kind: spec
     source_path: "memory-api/.spec/specs/121a0e79-a212-40af-8041-83c1ea11f029/spec.toml"
     title: indexed
-    summary: "Source: `crates/memory-api/src/storage/indexed.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: indexed
     relations:
       parent:
@@ -250,14 +280,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 54baacf12624ddc8e069626bc283a96a92e4ce5b2777a3cf5dc76cf3ef776fe6
+    digest: db3583b950374039094a19c2020fee7aa4f8483a9c9dc3f9746be8a17208be5d
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "16c3ad95-451d-4c09-a118-ca90bcefed9a"
     kind: spec
     source_path: ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml"
     title: graph induction
-    summary: Graph induction is the part of the context stack that accepts token sequences or
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: graph,induction
     relations:
       parent:
@@ -271,14 +301,23 @@ entries[185]:
         ".spec/specs/92112188-8acd-4573-bb22-f784fcf371ca/spec.toml","92112188-8acd-4573-bb22-f784fcf371ca",child,spec,""
         ".spec/specs/bbd92962-33f4-4b9e-b301-f4ce9909c135/spec.toml","bbd92962-33f4-4b9e-b301-f4ce9909c135",child,spec,""
         ".spec/specs/e631e914-1840-4fec-9df5-b50a85c6cf00/spec.toml","e631e914-1840-4fec-9df5-b50a85c6cf00",child,spec,""
-    digest: 98cacc4197d1174cc6638db9ecd03428cbf7ff7e6a1aa85574d86340ec9c6773
+    digest: 1f515f717cfc01c8239901cd05f59ba07d54644e1c77115369eef470fa246edc
     tags[3]: "context-stack",draft,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898"
+    kind: spec
+    source_path: "memory-api/.spec/specs/17fc536c-f08f-4b5f-b6ba-a7bcf1dc4898/spec.toml"
+    title: "[feedback-api] Contract v2 — first-class crate, unified FeedbackEntry schema, and persisted ring semantics"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[10]: contract,crate,"feedback-api",feedbackentry,"first-class",persisted,ring,schema,semantics,unified
+    digest: 181e325008180a750d28734293bc27e401aa26310a5cbe965c6b9de164395623
+    tags[3]: draft,"feedback-api",root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
     kind: spec
     source_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
     title: Generated context index hierarchy and semantic reference format
-    summary: "Define a generated, human-readable markdown index hierarchy that integrates with the repository structure, and define a compact machine-friendly semantic summary format (TOON) for similarity search, …"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: context,format,generated,hierarchy,index,reference,refs,semantic
     relations:
       children[6]{canonical_path,entry_id,relation_kind,content_kind,digest}:
@@ -288,14 +327,14 @@ entries[185]:
         ".spec/specs/bf217ce5-8890-4749-9a2d-deffb6d0f4dd/spec.toml","bf217ce5-8890-4749-9a2d-deffb6d0f4dd",child,spec,""
         ".spec/specs/c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0/spec.toml","c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0",child,spec,""
         ".spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469/spec.toml","c598ddb2-4d3a-4b81-90ea-8b25a54b8469",child,spec,""
-    digest: b5ac845ba43f41cb7ba87752238f19a99d2822a1aaf01c3cc1d0f91fc7592da1
+    digest: bf5393c41424c3b92cbd82e3a01b73823038248886365cf6de16a4c38b893904
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "18d7cbc2-d454-498b-9f10-9f1a0d320f2e"
     kind: spec
     source_path: ".spec/specs/18d7cbc2-d454-498b-9f10-9f1a0d320f2e/spec.toml"
     title: "spec-editor: body editor"
-    summary: The `BodyEditor` component is the core authoring surface for a spec's `body.md`.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: body,editor,"spec-editor"
     relations:
       parent:
@@ -304,8 +343,17 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4c2b9ec1e284a6100ece1f2cdd833c3958892cba0388576e3b8b2ece15b7b717
+    digest: d52f25d72cedd154b439c61b2cd9fe540b204bbf9ea99dbacc06800ac2e7bb7e
     tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1a62c7f7-4f94-420b-9532-3a28b0c1ecd5"
+    kind: spec
+    source_path: ".spec/specs/1a62c7f7-4f94-420b-9532-3a28b0c1ecd5/spec.toml"
+    title: VS Code Copilot local MCP server configuration
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[7]: code,configuration,copilot,local,server,servers,vscode
+    digest: 678a6cff05f123f55517cf9f6632f4ff6f3c45415f82e7aa9d68fe8aa71f079e
+    tags[4]: draft,root,"scope:internal","workspace-tooling"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "1cf68c36-7f64-4d81-b553-1947b978fbe3"
     kind: spec
@@ -328,30 +376,30 @@ entries[185]:
     kind: spec
     source_path: ".spec/specs/1d62442b-61dc-4eeb-9b7c-e933f84470f2/spec.toml"
     title: "ticket-api state transition path unification"
-    summary: "Unify ticket state transition handling so `update_ticket` and `close_ticket` share one schema-validated transition-path implementation, remove reliance on caller-supplied `from_state`, and support ex…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: path,state,"ticket-api",transition,unification
     scope: "This spec covers:"
-    digest: 5b35c08136506024afaf311daf3c2261e8d49b65b13ce89ebdbe6c991ceda39f
+    digest: 8906c0562c4a2a6c0950dd3beb7fb18f707ff92303596d76c9704edb5846c948
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "1d6481ff-308b-45ca-ac91-4c2f8d5546f3"
     kind: spec
     source_path: "memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml"
     title: "spec-cli"
-    summary: Bootstrapped from source analysis.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: spec,"spec-cli"
     relations:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml","ec1013ff-2d5f-4860-8d25-64acb6c60587",child,spec,""
         "memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml","ee36710b-1725-436a-a5fc-1e5a7d27f6bb",child,spec,""
-    digest: b8466a1c3b21f8bd75e78d1ae9e18fc90e17463087303264e8939dbb1b7c71cd
+    digest: ec38d94a1931d010c5a15a079ad3de36b8cd9b9b51a7d460a65090fccd72bf5b
     tags[4]: draft,root,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "226ff55f-eebf-43b8-aa1e-5abf81b99101"
     kind: spec
     source_path: "memory-api/.spec/specs/226ff55f-eebf-43b8-aa1e-5abf81b99101/spec.toml"
     title: manifest
-    summary: "Source: `crates/spec-api/src/manifest.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: manifest
     relations:
       parent:
@@ -360,24 +408,24 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 9a43b98ea675464dacd4fbf551450c2632ffd0f7d08903b3a18c85b71d4bf8fb
+    digest: d953581147e6dc085f3e07814c5d18bb0167ec699dc9e111d5a743031c1160dc
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "24baf686-38fd-417d-9528-bebc02a556d0"
     kind: spec
     source_path: "memory-api/.spec/specs/24baf686-38fd-417d-9528-bebc02a556d0/spec.toml"
     title: "doc-api"
-    summary: "`memory-api` should gain a `docs` domain so humans and agents can navigate repository structure through the same family pattern already used for rules, specs, tickets, and audits. The first primitive…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: "doc-api"
     scope: "This spec defines a new `doc-api` family with matching transport layers:"
-    digest: 950905a6053433e68a5c0aeae9d1a6b88c3ef20f782bd9a27a045c2428f120d0
+    digest: b529c398bd54c02b884311c1350adf4dc46c728c3c98c3a2559353b8c8462c2f
     tags[4]: "doc-api",draft,root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2594c83e-12e3-49d9-a5b7-abe7122e5f52"
     kind: spec
     source_path: "memory-api/.spec/specs/2594c83e-12e3-49d9-a5b7-abe7122e5f52/spec.toml"
     title: entity_store
-    summary: "Source: `crates/memory-api/src/storage/entity_store.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: entity,entity_store,store
     relations:
       parent:
@@ -386,14 +434,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c523059bec7cb2576b9502cc8bffa17170c8daa5ec244526601fe978a5b75b2f
+    digest: f789743d7ae91c8ccad2dca126af8f91c0319ccff6c54c94e3aa84c4c2961416
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "267acfdc-7df4-4090-9f17-7d6d71232814"
     kind: spec
     source_path: "memory-api/.spec/specs/267acfdc-7df4-4090-9f17-7d6d71232814/spec.toml"
     title: entity
-    summary: "Source: `crates/memory-api/src/model/entity.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: entity
     relations:
       parent:
@@ -402,14 +450,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1be77ee67dda25c40c40411462c7fc9414f505953e00e16042bd2805dda297ac
+    digest: e6758e954253ddd342f542c0e5bc13ac0a03694185907865504d825ecf69cde6
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "26f51d64-3bf7-4907-ae9d-2f006bb7d1fa"
     kind: spec
     source_path: "memory-api/.spec/specs/26f51d64-3bf7-4907-ae9d-2f006bb7d1fa/spec.toml"
     title: error
-    summary: "Source: `tools/http/spec-http/src/error.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: error
     relations:
       parent:
@@ -418,35 +466,52 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 6f8caba4c9d5f20357b2da984581e0d7d23feade1c3d179827d76907e250678c
+    digest: 51489f2b0711e7447c2c3999e0ad0b274047221b5b28daff3e7acb4036ddb18f
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2860a8db-0c4e-4e94-984a-c10a72a67ffc"
     kind: spec
     source_path: ".spec/specs/2860a8db-0c4e-4e94-984a-c10a72a67ffc/spec.toml"
     title: "default worktree-backed session workflow"
-    summary: Make dedicated git worktrees the default workflow for new agent sessions in this repository so parallel implementation tracks do not share one staging area.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: default,session,workflow,worktree,"worktree-backed"
     scope: "require new sessions to check into the session tool before implementation begins assign each checked-in session an authoritative worktree working directory expose that working directory through targeted `session-api` CLI, MCP, hook, or startup surfaces define how ticket-board ow…"
     non_goals: "reviving the cancelled AOH sandbox-manager implementation as-is changing the existing append-only `session-api` transcript persistence contract designing full merge automation or PR orchestration in this slice"
-    digest: db862d94c94dc382e5da92651deaf1c96967ad4126acb0fc8e4f31f5385488bb
+    digest: d7a93ae3323b22a73e8043e102f4d7f5a14058aa1bddde7fffc0f8d28ca36893
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "298f2f92-df7e-4c8a-b4fe-b63c27622142"
     kind: spec
     source_path: ".spec/specs/298f2f92-df7e-4c8a-b4fe-b63c27622142/spec.toml"
-    title: "Expectation-oriented specification contract and store-owned evidence workflow"
-    summary: "Define an expectation-oriented specification contract for this repository so specs capture intended system properties plus explicit acceptance and evidence requirements, while tickets carry problem s…"
-    keywords[11]: contract,evidence,expectation,"expectation-oriented",oriented,owned,spec,specification,store,"store-owned",workflow
-    scope: "This spec covers:"
-    digest: dc59cbbf9c367e1fc879e9bdf04da9e7a9a4b2a9416d877eec721ca5fe0dfe89
+    title: "Behavior-first specification contract and validation triangulation"
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[8]: behavior,"behavior-first",contract,first,spec,specification,triangulation,validation
+    digest: d0397d2aab8c61dda84172e9d9be06ec1d4360f739048d8a99a710c9da8e91e9
     tags[3]: "context-engine",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "29ae5f6e-c202-41f1-ba88-a446aa872993"
+    kind: spec
+    source_path: ".spec/specs/29ae5f6e-c202-41f1-ba88-a446aa872993/spec.toml"
+    title: "Empirical tool-metrics driven cost-gate classification"
+    summary: "Replace the hardcoded, guess-based `TOKEN_HEAVY_TOOL_SUBSTRINGS` classification in `mcp-cost-gate` and `tools/model-prices/cost_gate.py` with an **empirically-derived** classification computed from o…"
+    keywords[7]: classification,cost,"cost-gate",driven,empirical,gate,"tool-metrics"
+    digest: 2874789d77f2231207edb95c2584ddba24efdd174c62e1b0bea854f5120644e2
+    tags[3]: draft,root,"session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2b0ce814-0c22-42fa-8a89-f123660690e8"
+    kind: spec
+    source_path: "memory-api/.spec/specs/2b0ce814-0c22-42fa-8a89-f123660690e8/spec.toml"
+    title: "Ticket move-planner invisible-reference fixture visibility"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[7]: fixture,invisible,"invisible-reference","move-planner",reference,ticket,visibility
+    digest: ed80626807201bc9a56e735e7d05a5a30a149d0ac0158b68931dd9658aff030c
+    tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2e56d63e-c53a-45a0-a984-088b3f9da19a"
     kind: spec
     source_path: "viewer-api/.spec/specs/2e56d63e-c53a-45a0-a984-088b3f9da19a/spec.toml"
     title: "viewer-api: keyboard interaction model"
-    summary: "Draft cross-viewer interaction contract for keyboard ownership, shortcut precedence, and phased rollout across shared viewer surfaces."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: interaction,keyboard,model,"viewer-api"
     relations:
       parent:
@@ -455,14 +520,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1c6c810f567a0a3645129fd331c180de1a92b561139eab4f7c1aee49649c0722
+    digest: 7d5a728219902e3ee988f7fad5c57c8844c8cd1343b23d0c68c4a91ed0c10c0a
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3235e977-b12a-4981-aa09-6edf218bb97d"
     kind: spec
     source_path: "memory-api/.spec/specs/3235e977-b12a-4981-aa09-6edf218bb97d/spec.toml"
     title: schema
-    summary: "Source: `crates/memory-api/src/model/schema.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: schema
     relations:
       parent:
@@ -471,14 +536,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3e23d0ab8c65c235f8e9249daf3780c3bea21f6a6d51cb40760111b46de24055
+    digest: 8fd8b119afd6864bde50e579ea20c5a6fd726eead97461f0a40b130fdc0ab03f
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "32eaa05c-cef6-4a3b-b506-b5a5410a4674"
     kind: spec
     source_path: "memory-api/.spec/specs/32eaa05c-cef6-4a3b-b506-b5a5410a4674/spec.toml"
     title: code_ref
-    summary: "Source: `crates/spec-api/src/code_ref.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: code,code_ref
     relations:
       parent:
@@ -487,32 +552,32 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1df48c541b508c671f17bab15ae49c2075699fcff9c49906ab5df03a8cc878fb
+    digest: 4fe23d93f549053e4d4898ef8cca24378af927d2398d56c8febd2e525080ebca
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "33e731c2-a0cf-41f7-bd7c-2df6c4545bf3"
     kind: spec
     source_path: "memory-viewers/.spec/specs/33e731c2-a0cf-41f7-bd7c-2df6c4545bf3/spec.toml"
     title: "ticket-viewer: explorer interactions"
-    summary: "Canonical specification for the ticket-viewer navigation surfaces that let a user find and open tickets: the sidebar explorer and the quick-search overlay."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: explorer,interactions,"ticket-viewer"
-    digest: 64374b4c70dbeb8265d4e734f34280149351dc2de6c74673b461e704ebb69450
+    digest: ec83ae35c457abac7a4649725a8e0cba0335f10c9200ad4ced7dbe60be4942b1
     tags[4]: draft,root,"scope:component","ticket-viewer"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "347b6f97-5ebf-46c6-a0e1-cc8afc600319"
     kind: spec
     source_path: ".spec/specs/347b6f97-5ebf-46c6-a0e1-cc8afc600319/spec.toml"
     title: Prefer MCP Playwright/browser tools for browser frontend validation
-    summary: "Browser-hosted frontend testing guidance must prefer MCP Playwright/browser tools before repo-local Playwright wrappers or manual browser steps."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: browser,frontend,playwright,playwright/browser,prefer,tools,validation
-    digest: 79ab84143124b0205094fb809c976ea58d7ba2fc0c045b9dc1820bb51ffd3681
+    digest: 3fd2f1df5aac805096857a7e0ba0ba2969bfa8b7b296de2c9116645444437a4d
     tags[4]: "agent-rules",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "348e17f7-23a8-4e11-bbb3-224cf0bbe9d6"
     kind: spec
     source_path: "viewer-api/.spec/specs/348e17f7-23a8-4e11-bbb3-224cf0bbe9d6/spec.toml"
     title: "viewer-api: TabBar"
-    summary: Canonical specification for the shared `TabBar` Dioxus component
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: tabbar,"viewer-api"
     relations:
       parent:
@@ -521,14 +586,25 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3a64f9e67515916c0f340e435fbbafdffc2f3da73b00559e69179c576106806d
+    digest: e4eda8077ee601ea939f40fc1cfd10cc1a03b060e2d966ddaa879dff770e517d
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "34d5f1cd-e6ad-41db-955c-672b22fc9bb5"
+    kind: spec
+    source_path: ".spec/specs/34d5f1cd-e6ad-41db-955c-672b22fc9bb5/spec.toml"
+    title: "Session audit in unified audit interface with schema-versioned persisted sessions"
+    summary: "Define a stable contract for session-level auditing from persisted session artifacts and expose it through the unified audit CLI surface."
+    keywords[8]: audit,interface,persisted,"schema-versioned",session,sessions,unified,with
+    scope: "Add a `session_audit` capability in session-api that audits one persisted session. Support deterministic session selection by explicit session id and by latest session resolution. Add session schema version tagging in persisted artifacts and include it in audit output. Expose th…"
+    non_goals: "Full migration framework for historical sessions across arbitrary schema versions. Replacing repository-wide audit reporting; this extends it with session-specific review."
+    digest: ea0643fd2dd9c642e96964a7fdcfa603771737a663ca6e9d36a43888fd940516
+    tags[3]: draft,root,"session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "351389c0-0873-4c3c-bc46-3551459ba1cd"
     kind: spec
     source_path: "memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml"
     title: store
-    summary: "Source: `crates/spec-api/src/store.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: store
     relations:
       parent:
@@ -537,14 +613,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e3994b416442f071f9c30913b909e441d3a185472cff12e8e4fa5719ccdd70f0
+    digest: 6e26ba5cbce084dd32a1c0458f77a1f02f0141f7ac03692fd0e1c43817bf10cd
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "351e65fe-0629-4a0f-9c19-27dabb36b72f"
     kind: spec
     source_path: "viewer-api/.spec/specs/351e65fe-0629-4a0f-9c19-27dabb36b72f/spec.toml"
     title: server lifecycle
-    summary: "Servers are long-running Rust binaries that bind a TCP port. viewer-ctl owns"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: lifecycle,server
     relations:
       parent:
@@ -553,27 +629,27 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3c98c4fa49616a64f2eeeeff0296c92c178c3513da97783e173992aad2611484
+    digest: 7981333f42bc5002b929768c8e905c77125f73431990cf846c3eb47679f1a0bf
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "36ebdecb-0b9e-47be-9f44-fe575aa6ad6f"
     kind: spec
     source_path: "viewer-api/.spec/specs/36ebdecb-0b9e-47be-9f44-fe575aa6ad6f/spec.toml"
     title: "viewer-api: theme settings (canonical)"
-    summary: "Canonical UX and behavior specification for the **shared theme-settings panel** used by every Dioxus viewer (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). The reference implementation …"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: canonical,settings,theme,"viewer-api"
-    digest: de4e23d6d6bf4bd4b88d906f4343ed22dfe5cb5880ee97f05a231a74f81c414e
+    digest: c1f7cb1468a01077eb8dbc60ec1bd5e2bfb50c461e62fa16edb05a80e5bbd2da
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "36fd7849-65eb-405e-8cc5-70440f0cb7c2"
     kind: spec
     source_path: "memory-api/.spec/specs/36fd7849-65eb-405e-8cc5-70440f0cb7c2/spec.toml"
     title: "session-api hook ingestion and read query"
-    summary: "Extend `session-api` so repeated Copilot hook captures preserve transcript history as an append-only log and expose a first read/query API over the persisted store."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: hook,ingestion,query,read,"session-api"
     scope: make repeated session captures append only at the transcript layer keep the existing session manifest path and session directory layout add read APIs that reconstruct stored sessions from manifest plus transcript files add a small query surface for listing and filtering stored s…
     non_goals: "a CLI, MCP, or HTTP endpoint for session ingestion a database index for sessions pagination or ranking beyond a small in-memory query filter hook installation scripts or editor integration"
-    digest: cce5d8f774b1fc8e6a9b250f4d7d7615610c7f2b3ad173f9616877a386ea63c9
+    digest: 61d23a0f02df2da8fd11f57b5afa2173c60aca466fdfb5689e48059e77d6857c
     tags[4]: draft,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "38e337c2-cdda-4488-9aa7-b47a300563b0"
@@ -587,11 +663,20 @@ entries[185]:
     digest: a405e78fb70754759d6ad9bc6745ccead5e0359dbff8f2d9964892a803bccd6c
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "39983ddf-1f7e-4081-a060-6b8258eb4c41"
+    kind: spec
+    source_path: ".spec/specs/39983ddf-1f7e-4081-a060-6b8258eb4c41/spec.toml"
+    title: "Model price awareness: orchestrator-mode enforcement across guidance, tool wrapper, and agent"
+    summary: "\"Context stack price awareness\" makes an agent switch into **orchestrator mode** based on the cost of its own underlying model, so expensive models are reserved for strategic decisions, code/change p…"
+    keywords[11]: across,agent,awareness,enforcement,guidance,model,orchestration,"orchestrator-mode",price,tool,wrapper
+    digest: 1c66ce992d34a13f071d555faf5e51fb3a7f69a9ea5aa6d80786739e7d3ab493
+    tags[3]: draft,"model-prices",root
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "3b96ec1c-4e99-48f4-86e5-a36ba24b827a"
     kind: spec
     source_path: "memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml"
     title: "memory-api Rule Workspace and README Generation"
-    summary: "`memory-api` needs its own repo-local rule workspace so the repo README and local usage guides are authored next to the crates and tools they describe. The local target config should stay manageable …"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: generation,memory,"memory-api",readme,rule,workspace
     scope: "This spec defines the desired local rule workspace for `memory-api/`:"
     relations:
@@ -601,14 +686,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 2119b92204da8e0b5c2ae45744f3ced653778184812512af6f8e2b9cf2c9f87c
+    digest: dd0add296bb504a8ac5856fe3232a3489c838aa8eb230c77351e193c653946a5
     tags[3]: draft,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3c4c0c4f-7d5c-4fa5-9c45-037420e56cee"
     kind: spec
     source_path: ".spec/specs/3c4c0c4f-7d5c-4fa5-9c45-037420e56cee/spec.toml"
     title: Generated repository README schema adoption
-    summary: "Adopt the shared README schema across the existing generated repos in the `memory-viewers` family so those workspaces stop carrying bespoke README target layouts and gain consistent parent/child navi…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: adoption,generated,readme,repos,repository,schema
     scope: "This spec covers:"
     relations:
@@ -622,25 +707,35 @@ entries[185]:
         ".spec/specs/4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c/spec.toml","4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c",child,spec,""
         ".spec/specs/5f9a1652-943f-4d98-8812-a4f7ca1d5e61/spec.toml","5f9a1652-943f-4d98-8812-a4f7ca1d5e61",child,spec,""
         ".spec/specs/cfbb4500-4632-4a95-96a1-838dc4dccfd5/spec.toml","cfbb4500-4632-4a95-96a1-838dc4dccfd5",child,spec,""
-    digest: 21515ea016a970f1876c57090b197135eb060554dcf5a200d839f56edf850ae8
+    digest: ad2d2e82581907a5d3e8a310d84af3218cb386bfa99da292eedb6670ec48e8f0
     tags[3]: draft,"repo-guidance","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3ccdde3a-368c-4655-a6c8-20a58822c83d"
     kind: spec
     source_path: ".spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d/spec.toml"
     title: "peek-api transport layering"
-    summary: "Define a reusable `peek-api` layer that owns token-bounded file inspection and structural skeleton rendering so CLI and MCP transports share one contract and one error model."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: layering,peek,"peek-api",transport
     scope: "This spec covers the shared behavior contract for:"
     non_goals: "defining repository-specific folder-tree and repo-map generation behavior beyond the shared primitives it depends on changing the user-facing semantics of existing `peek-cli` modes unless a separately tracked bug or spec requires it introducing a second command or validation mod…"
-    digest: 3e9fe04aa3dfe12a81d2771f7be5bd67ea15681eeaf65010b7eee8b4b639a5d6
-    tags[4]: "agent-tooling",draft,root,"scope:internal"
+    digest: a7c5813c69e1334c2ebf05f26667062ba7a4af82bf85d71d47e33a2a118a06d9
+    tags[4]: "agent-tooling",approved,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3e9d967e-68c6-4c4c-96ae-eb3f974931cf"
+    kind: spec
+    source_path: ".spec/specs/3e9d967e-68c6-4c4c-96ae-eb3f974931cf/spec.toml"
+    title: "Agent-driven interactive chat UI (UI sandbox interaction protocol + skill)"
+    summary: "Extend the agent harness so the agent can **actively drive the shared chat UI** (\"UI sandbox\") — the common interface between agent and user. The agent controls a virtual world through the chat surfa…"
+    keywords[7]: "agent-driven",chat,interaction,interactive,protocol,sandbox,skill
+    non_goals: Full multimodal media pipeline beyond displaying images the agent references. Voice transcription/ASR implementation itself (only the microphone enable/disable affordance and its event signaling). Replacing the existing message/event schema; this extends it.
+    digest: "04e14f89e5284a278b8ab99e657b047ddd04b9b73d04f5ada3fb24d8c6a18c45"
+    tags[3]: "agent-harness",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "3fa36e9e-b097-4566-90e4-7d5f8053cd55"
     kind: spec
     source_path: "viewer-api/.spec/specs/3fa36e9e-b097-4566-90e4-7d5f8053cd55/spec.toml"
     title: configuration
-    summary: "The component registry that drives viewer-ctl is a single TOML file at the"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: config,configuration
     relations:
       parent:
@@ -649,35 +744,44 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 8abfc6b8120aca90ecdff9d39d5d4a8fff66af6a49b1f087bd6f64bfd82ff51b
+    digest: 63b39e661bf281d2e414cb6ebf93017f41301e1365267bf72a1501ec5834c4a5
     tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "3fd3aaff-b0d9-494b-8bbb-802d71140d59"
+    kind: spec
+    source_path: "memory-api/.spec/specs/3fd3aaff-b0d9-494b-8bbb-802d71140d59/spec.toml"
+    title: "ticket-mcp read workspace resolution"
+    summary: "Ticket-MCP read operations resolve against the configured aggregate ticket root, including policy-discovered and indexed descendant stores. Creation and other mutations remain explicitly rooted."
+    keywords[4]: read,resolution,"ticket-mcp",workspace
+    digest: 8a0629b6f1a26bcd3a24a95b2f054cd0a7e49797565d34b3e2725d679d588776
+    tags[4]: draft,root,"scope:public","ticket-mcp"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4066c5a3-3e04-4eeb-81a2-91fb8e53cc94"
     kind: spec
     source_path: "memory-api/.spec/specs/4066c5a3-3e04-4eeb-81a2-91fb8e53cc94/spec.toml"
     title: "spec-mcp"
-    summary: Bootstrapped from source analysis.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: spec,"spec-mcp"
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml","d4831fdc-9790-4a26-ac32-d675bb6a7792",child,spec,""
-    digest: 9e3cdfdc7221f4d9f66809e72a6ecec1514a51148ffea3f4e90e6fc1768b2908
+    digest: 36100ee2644dc8006c3f63b5e3acfb0907bced10f44fee01d3dc107b203097f5
     tags[4]: draft,root,"scope:public","spec-mcp"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "42e8d710-2199-4178-9ab3-dea8d61bfc4a"
     kind: spec
     source_path: ".spec/specs/42e8d710-2199-4178-9ab3-dea8d61bfc4a/spec.toml"
     title: "ticket-cli: graph rendering and closure-aware dependency display"
-    summary: "The ticket graph is queryable, but operators still have to mentally reconstruct dependency shape, bridge nodes, and parallel tracks from list output. Existing graph-aware next planning improves ranki…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: aware,closure,"closure-aware",dependency,display,graph,rendering,"ticket-cli"
-    digest: 3eee9ade04b1e8548f42e3103f99799592805559ed841e978fa4c3d2c9ef3028
+    digest: 3ee1a7b858073b37297dd07463f4b2e568f23132e6c5a5094a909879071b390a
     tags[3]: draft,root,"ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4482f2d0-131c-4ea0-91c0-f0bde198eedd"
     kind: spec
     source_path: "memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml"
     title: sections
-    summary: "Source: `tools/http/spec-http/src/handlers/sections.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: sections
     relations:
       parent:
@@ -686,14 +790,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4f982658f17ba32893cf2a321179285baa847156e3461b9419165d49f39cbcd2
+    digest: c96e855e8a1ca2bcc1c8752c639eeb1a6d04d72be69e25e51a5abd0694587a77
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "449fe68a-541c-4804-bbfd-476af783f80c"
     kind: spec
     source_path: ".spec/specs/449fe68a-541c-4804-bbfd-476af783f80c/spec.toml"
     title: Domain digest input contract for generated index entries
-    summary: "Define the domain-level digest input contract for generated memory-index entries so every generator derives a stable `IndexEntry` payload before calling `seal()`. Given identical source inputs, every…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: contract,digest,domain,entries,generated,index,input
     scope: "Per-domain mapping from source fields to the nine digest input fields. Universal normalization rules (N1–N7). Stable synthetic-ID derivation and the invariant that mutable inputs never feed IDs. Relation ordering for diff stability (relations excluded from digest)."
     non_goals: "Does not wire git hooks (git-hook-automation spec). Does not implement the generator binaries (per-domain generator tickets). Does not change the SHA-256 digest algorithm (`0dba399a`)."
@@ -704,23 +808,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 9438d05156ed6d96395b834e240c08f3a493f743df559f342492ac84180f5a39
+    digest: c29d3e7bdc6666d0596d745017736e7eff947a26ec85baafb6f2a2d8904bc154
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "47465a64-0c5f-4ddc-8d38-018048090af2"
     kind: spec
     source_path: ".spec/specs/47465a64-0c5f-4ddc-8d38-018048090af2/spec.toml"
     title: repository workflow guidance
-    summary: "Repository guidance is partly rule-generated today, but nested workspaces still carry hand-written agent files and the parent workspace duplicates child target definitions directly in its own `rule-t…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: guidance,repository,workflow
-    digest: cb5e00b8ff6daef48456511fb64d1bc3e46abb45870405918081f7547331b7f2
+    digest: 6c50170fb2ba7ede635fc7e4cb716bfe431dd0144e963f705f63e38d5837ec05
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "479e226a-b4ef-4e30-ade0-ebdabbf956ed"
     kind: spec
     source_path: "viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml"
     title: "viewer-api: WASM tracing file sink"
-    summary: Specification for shipping `tracing` records emitted by the Dioxus WASM
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: file,sink,tracing,"viewer-api",wasm
     relations:
       parent:
@@ -729,14 +833,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 0df710ecee8b0e82ea07111fbb168b60e0cb054f9decd0213f5173dea62650f2
+    digest: ce9def9a8675012f849678bf7e774b13ed33c76074c10dc8db1b98b053f1d145
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4a16fea7-5af5-477f-835d-6c0c94216bfe"
     kind: spec
     source_path: "memory-api/.spec/specs/4a16fea7-5af5-477f-835d-6c0c94216bfe/spec.toml"
     title: error
-    summary: "Source: `crates/memory-api/src/error.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: error
     relations:
       parent:
@@ -745,35 +849,35 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 938ee43a2d8bd7802a2cc8588ed0ea42aab660882dab7edb445ba63aab1e10ac
+    digest: f70626fd07860003adff188fa83df4c992d44fee28550726aeb5e2174230209d
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4aa3cbc9-4d95-41ea-8fc3-f4b46eb3483e"
     kind: spec
     source_path: ".spec/specs/4aa3cbc9-4d95-41ea-8fc3-f4b46eb3483e/spec.toml"
     title: "Root-level context-stack workspace layout"
-    summary: "Relocate the context-stack submodule from crates/context-stack to a top-level context-stack directory and remove deprecated repository folders that should no longer participate in the active workspac…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: context,"context-stack",layout,level,root,"root-level",stack,workspace
-    digest: 8e3ae8a389171f92eb466f01f7905b833aecd2d0d9ca2dc123970e4cd4cb4932
+    digest: cd6a015c46011a0d38a448925bb11084d81db72e619c4265bc230c8d920a81ed
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4bd3cd3f-5851-4d9e-b499-978cb7b53275"
     kind: spec
     source_path: "memory-api/.spec/specs/4bd3cd3f-5851-4d9e-b499-978cb7b53275/spec.toml"
     title: "Graph-aware best-next ranking and dependency convergence"
-    summary: "The current best-next contract is deterministic but shallow: default next discovery ranks only dependency-satisfied candidates by candidate workflow state, priority, immediate dependees, and recency.…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[9]: aware,best,"best-next",convergence,dependency,graph,"graph-aware",next,ranking
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml","d702ed9e-f75c-4727-8f05-1b2b244ec74f",child,spec,""
-    digest: b97571f234d914eb7c5f6062f0466be2a226a172d3a7fe3970ffe1c4aa6fec70
+    digest: 855bdbfcd44a4f9f211f5a4e36bcd5fbe09e4751a3d8b052ed6c59e1bafb013f
     tags[4]: draft,root,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4c3b62b4-1198-4ce2-9ef6-df530f38297e"
     kind: spec
     source_path: "viewer-api/.spec/specs/4c3b62b4-1198-4ce2-9ef6-df530f38297e/spec.toml"
     title: "viewer-api: demo-viewer"
-    summary: "The **demo-viewer** is a reference application that lives inside the `viewer-api`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: demo,"demo-viewer",viewer,"viewer-api"
     non_goals: "Not a replacement for unit or integration tests of individual modules. Not a \"playground\" for unstable APIs — only stable, public surface. Not a production-grade application; auth, persistence and styling are minimal (whatever is needed to demonstrate the feature)."
     relations:
@@ -795,14 +899,14 @@ entries[185]:
         "viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml","c9b40e5d-1239-4ad6-99b1-0b759a9c4c49",child,spec,""
         "viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml","df67eee9-08a0-4a6e-b1ff-b483599d232d",child,spec,""
         "viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml","f153483c-f984-4564-94ac-36234b5cbe3f",child,spec,""
-    digest: "04e614853f784db1eeaa890b6044084ea7754608a69943ddbd2115c5bdbd68a6"
+    digest: 7d7d6310e6a4a94b2ffcbd5fef3aa1dc371298271a663ceb07ecff5ed3f07936
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4dafde12-e894-43d7-aa65-cda9a072be27"
     kind: spec
     source_path: "viewer-api/.spec/specs/4dafde12-e894-43d7-aa65-cda9a072be27/spec.toml"
     title: "command-line interface"
-    summary: "The viewer-ctl command-line interface is defined by `clap` in `src/cli.rs`."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: "command-line",interface
     relations:
       parent:
@@ -811,14 +915,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: f02b9ce0967df37b957ca98fe7c29818826cdf74974167ed0b9770497067d9f1
+    digest: afa11d2ae7c4c54dd9d92f886a828618b0f178168e6c582d219d6d1cdc80f212
     tags[3]: draft,"scope:public","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4f14356f-c4bd-4554-be1e-35361de241da"
     kind: spec
     source_path: "viewer-api/.spec/specs/4f14356f-c4bd-4554-be1e-35361de241da/spec.toml"
     title: "viewer-api: Graph3D"
-    summary: "Canonical specification for the shared 3D dependency-graph Dioxus component"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: graph3d,"viewer-api"
     relations:
       parent:
@@ -827,14 +931,32 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3baa481fcecaa7c9d8c7818a42be3338a5b2a58e998a950fa29c009a243725df
+    digest: deac831ac47a7ac176082d2c5d8d3b8ca130a16972821769ea803222dedc0792
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4f5ad264-8e8d-4681-9551-4ec14b73c3b1"
+    kind: spec
+    source_path: ".spec/specs/4f5ad264-8e8d-4681-9551-4ec14b73c3b1/spec.toml"
+    title: "file editing: context-anchored differential patching surface"
+    summary: "Specify a token-bounded, context-anchored file editing surface so agents --"
+    keywords[6]: "context-anchored",differential,editing,file,patching,surface
+    scope: "A context-anchored replacement operation: locate the target by surrounding context text rather than by line number, and replace it. Uniqueness as a precondition: an anchor that matches zero or more than one location fails with a diagnostic naming the match count and candidate lo…"
+    non_goals: "Replacing the VS Code built-in editing tools for interactive human use. Semantic or AST-aware refactoring; that is symbol-rename territory and is served by language-server tooling. File creation and deletion as filesystem entities, which belong to `agent-tooling/filesystem-opera…"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/7c9757a7-739f-4dfe-a4de-26f187f3b5aa/spec.toml"
+        entry_id: "7c9757a7-739f-4dfe-a4de-26f187f3b5aa"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 2e6f1532ced5328055559895aea5c31208d71242d9aef6b127b2beb1762dcc56
+    tags[3]: "agent-tooling",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c"
     kind: spec
     source_path: ".spec/specs/4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c/spec.toml"
     title: "memory-api README schema adoption"
-    summary: "Migrate `memory-api` from bespoke README target structure to the shared schema and extend its generated tool README surfaces with parent links back to the repo root."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: adoption,memory,"memory-api",readme,schema
     scope: "This spec covers:"
     relations:
@@ -844,14 +966,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: be13abf8e5e02e3efb805d2a682ab1825ffc56acd182c59e2835423ccbca58f4
+    digest: b197a6309f06c53fbc8dbe49c7e97d2f65730cfa860d71b1701e17708d1faf6c
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "51c69e48-c8a1-4d45-b050-e06671fe7d71"
     kind: spec
     source_path: "viewer-api/.spec/specs/51c69e48-c8a1-4d45-b050-e06671fe7d71/spec.toml"
     title: "viewer-api: session"
-    summary: "Canonical specification for `viewer-api::session` — the lightweight server"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: session,"viewer-api"
     relations:
       parent:
@@ -860,14 +982,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: b0ce73cc3c814c826de0788ad7c7d623555f1c525235af5fa2a8104590fbe03b
+    digest: 27383768180d77eb5b0ef92e0c5887dd07d613a7fb7c33238a73608f9ac07e28
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "51ee3a34-110c-45ae-ba73-8ba378ab405b"
+    kind: spec
+    source_path: "memory-api/.spec/specs/51ee3a34-110c-45ae-ba73-8ba378ab405b/spec.toml"
+    title: "Rule-introduces-spec — status-conditioned spec presentation in session construction"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[8]: construction,introduces,presentation,rule,"rule-introduces-spec",session,spec,"status-conditioned"
+    digest: 820eff42fb4250587e13ca16c75bd3974babde704b7403f38e9fe0cf5f59afe1
+    tags[3]: draft,root,"rule-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "52521803-fd21-4b40-a4e5-6801b823d59d"
     kind: spec
     source_path: "viewer-api/.spec/specs/52521803-fd21-4b40-a4e5-6801b823d59d/spec.toml"
     title: "viewer-api: auth + middleware + error"
-    summary: "Canonical specification for the `viewer-api::auth`, `viewer-api::middleware`,"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: auth,error,middleware,"viewer-api"
     relations:
       parent:
@@ -876,14 +1007,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c989ee2d8a35a2e34cc6fb6868362629e82ac704a0ba43913b57adfc1d22292c
+    digest: 254da753d185fa23f4431e961bbe54cf71445ac915080fabce80f4f3948da285
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "53a23ab2-0ea4-4c4c-8a8b-0066c5219d8f"
+    kind: spec
+    source_path: ".spec/specs/53a23ab2-0ea4-4c4c-8a8b-0066c5219d8f/spec.toml"
+    title: Shared transport harness
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[3]: harness,shared,transport
+    digest: fef40cfa7de550781608eefc6f1f51ea27c6dbea9e20efff1af8ae12f4576b5a
+    tags[4]: draft,root,"scope:public","transport-harness"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "53c70cae-731b-41b5-bd1a-1de9a98eb36f"
     kind: spec
     source_path: ".spec/specs/53c70cae-731b-41b5-bd1a-1de9a98eb36f/spec.toml"
     title: "Git hook automation for store-index regeneration"
-    summary: "Define the repository-local git-hook automation contract for store-index regeneration so generator tickets have one concrete execution surface instead of each hand-waving at \"pre-commit/post-commit h…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: automation,hook,regeneration,"store-index"
     scope: "The contract for the `.githooks/pre-commit` store-index branch (trigger matrix, dispatch, drift, fallback). The separation from Copilot/editor hooks. The incremental enablement model gated on per-domain generator + budget evidence."
     non_goals: "Does not define the semantic digest inputs (digest-input-contract spec). Does not redesign `IndexEntry` / `IndexSidecar` (`0dba399a` / `e7a0ee3c`). Does not replace docs/session/editor hooks in `.github/hooks/hooks.json`."
@@ -894,14 +1034,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 25999655f5e01f4b45b361bfef380dfac0bad5d8d1721dc9c88b11a5ffb58489
+    digest: 52ea47d83e55b7b90591a284c9e0eed4f8481345573932e90180950d8cc3d4df
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "54800731-e07f-4fb2-8802-fd7d2acc8c05"
     kind: spec
     source_path: "viewer-api/.spec/specs/54800731-e07f-4fb2-8802-fd7d2acc8c05/spec.toml"
     title: "viewer-api: SSE streaming"
-    summary: "Canonical specification for `viewer-api::sse` — the server-sent-events"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: streaming,"viewer-api"
     relations:
       parent:
@@ -910,23 +1050,50 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 447d29d7bc261ed56e4e3152281e6ac2ec47652544d7a2892b794fab65109ddb
+    digest: 1620a4af2ca71c476324643fbe845376f56818de15ae7b15324bf3e01e899027
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5650b307-8408-4ca0-922f-c515dd0bfa27"
     kind: spec
     source_path: "memory-viewers/.spec/specs/5650b307-8408-4ca0-922f-c515dd0bfa27/spec.toml"
     title: "ticket-viewer: shell and header actions"
-    summary: "Canonical specification for the ticket-viewer shell-level interaction contract that sits above the existing explorer and theme-settings specs."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: actions,header,shell,"ticket-viewer"
-    digest: 34978418090c5d7dfb625e66d7bcb44b38af8ec037e3105913c3609f00c80e4e
+    digest: df99b8913e98fedc501d296063483ad392fa7496e3224316a7a9b5d9b193c1b3
     tags[4]: draft,root,"scope:component","ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "57d56ae8-792a-4f95-a531-4fe59e0c824f"
+    kind: spec
+    source_path: ".spec/specs/57d56ae8-792a-4f95-a531-4fe59e0c824f/spec.toml"
+    title: Instruction files nested workflow migration
+    summary: "Spec: Instruction files nested workflow migration"
+    keywords[5]: files,instruction,migration,nested,workflow
+    digest: 8f0bb25338294ec969e4fc8179acb655d577681243114d1faa220f5284832818
+    tags[3]: "agent-tooling",reviewed,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "58a1d32c-2643-455c-bf3b-e0ccf0eecd9f"
+    kind: spec
+    source_path: ".spec/specs/58a1d32c-2643-455c-bf3b-e0ccf0eecd9f/spec.toml"
+    title: "filesystem operations: bounded listing, stat, and conflict-aware mutation"
+    summary: "Specify a token-bounded filesystem surface -- list, stat, move, rename, copy,"
+    keywords[7]: bounded,"conflict-aware",filesystem,listing,mutation,operations,stat
+    scope: "Bounded directory listing with an explicit depth cap and an explicit entry cap, reporting truncation rather than silently omitting entries. Metadata-only `stat` (existence, kind, size, modified time) that never returns file content. Path filtering on listing: include and exclude…"
+    non_goals: "File content reading, which belongs to `agent-tooling/peek-api`. File content editing, which belongs to `agent-tooling/file-editing`. Repo-wide content search, which belongs to `agent-tooling/repo-wide-search`. Entity-store moves (ticket, spec, rule, session), which already have…"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/7c9757a7-739f-4dfe-a4de-26f187f3b5aa/spec.toml"
+        entry_id: "7c9757a7-739f-4dfe-a4de-26f187f3b5aa"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: eaf15a0f25ccfc8ef3db13f1d9eb84af8249ad34490556fb9f305403b9fb6c48
+    tags[3]: "agent-tooling",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "59216a24-598e-48eb-a280-ee8766857c0b"
     kind: spec
     source_path: ".spec/specs/59216a24-598e-48eb-a280-ee8766857c0b/spec.toml"
     title: Manual repository README generation rollout
-    summary: "Migrate the manual README trees in `context-engine` and `context-stack` onto the same rule-backed generation flow and parent/child navigation contract already used in the generated nested workspaces."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: generation,manual,readme,repos,repository,rollout
     scope: "This spec covers:"
     relations:
@@ -939,14 +1106,14 @@ entries[185]:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/6d73975e-5af4-4ac6-b732-33c381bf768d/spec.toml","6d73975e-5af4-4ac6-b732-33c381bf768d",child,spec,""
         ".spec/specs/b8ddb54c-8939-4bbd-a3b3-2e469caa09da/spec.toml","b8ddb54c-8939-4bbd-a3b3-2e469caa09da",child,spec,""
-    digest: f475592918075e10ec631c3382b52f50950ca255effd0b9f6e142bc83539a7fa
+    digest: aec23fb76d93f42c9c6d92e0d0cd6e767e9171805a77d186e4cca13c8ecbd067
     tags[3]: draft,"repo-guidance","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "597de059-859d-4aae-89ad-bfe2d84462c0"
     kind: spec
     source_path: "memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml"
     title: default_schema
-    summary: "Source: `crates/spec-api/src/default_schema.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: default,default_schema,schema
     relations:
       parent:
@@ -955,14 +1122,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3282cedc30f2682b60756c1608d20bfa8f710440f123b8a66ed0c4d4cd6e8891
+    digest: 9d92ecc3ec0670f56621984b46787bbd51582410578ff0aaa3fd7c52007a769a
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "59979a95-a4cb-4aa3-9a79-486b029532a3"
     kind: spec
     source_path: "viewer-api/.spec/specs/59979a95-a4cb-4aa3-9a79-486b029532a3/spec.toml"
     title: "viewer-api: server-infra"
-    summary: Canonical specification for the **HTTP server bootstrap** primitives exported
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: infra,server,"server-infra","viewer-api"
     relations:
       parent:
@@ -971,59 +1138,59 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 20a7e109873b41b9fda382d8ba503096c93d256ef1289e9742c470b265655e0d
+    digest: 59a8bfc3c5d2399fd40f1d12115d9fb1360ba2c414fe00bd6307aa76426a51a7
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5b404022-6a67-4395-90e0-1e4282fd83b4"
     kind: spec
     source_path: ".spec/specs/5b404022-6a67-4395-90e0-1e4282fd83b4/spec.toml"
     title: "audit-api: workspace graph health and board check-in validation"
-    summary: "Current topology checks can detect orphan tickets and planned convergence risks, but they do not enforce whether dependency requirements are defined, whether required dependency evidence is passing, …"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: "audit-api",board,check,"check-in",graph,health,validation,workspace
-    digest: b18a6a7b70ee6aa76f3dd27511be70d633830c927bdcd8558c07d63d44c472f3
+    digest: bf980e71a60ffe8ef3d5feb76a0236c4a4562da33479d32f06e35c2b91c79f0f
     tags[3]: "audit-api",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5b69006d-e2ce-425d-91a7-97f4517a9bc6"
     kind: spec
     source_path: ".spec/specs/5b69006d-e2ce-425d-91a7-97f4517a9bc6/spec.toml"
     title: Install tools refreshes viewer binaries
-    summary: "Keep the PATH-first viewer workflow intact by making the shared repo installer refresh every shipped viewer binary."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: binaries,install,refreshes,tools,viewer
-    digest: 68943f2a5e344f9fda57e02047439aad3790ba227cb689b98c518fa0704ff7fc
+    digest: 492f044d9ad1f8902f4dba94af8271264f4c303f833b9149e751a5992568dd94
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5bd4fd1a-cd0e-4893-9d83-452cd5b533bb"
     kind: spec
     source_path: "memory-api/.spec/specs/5bd4fd1a-cd0e-4893-9d83-452cd5b533bb/spec.toml"
     title: "ticket-http: ticket list endpoint"
-    summary: "Canonical contract for the ticket list API consumed by the Dioxus ticket-viewer explorer and related ticket-picking surfaces."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: endpoint,list,ticket,"ticket-http",tickets
-    digest: 4831955fe39a90d1f9c8cd6be286e2052ea245755e621a166311260134204bb1
+    digest: f24cf2ed742e12ae4ce099847cf604c19302cc808ed2ee36c02aabeab9c7fe20
     tags[4]: draft,root,"scope:public","ticket-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5c8b350c-3bd1-4103-ab49-3fb7aea33126"
     kind: spec
     source_path: ".spec/specs/5c8b350c-3bd1-4103-ab49-3fb7aea33126/spec.toml"
     title: "audit-api: store health metrics and cleanup feedback loops"
-    summary: "Spec, rule, and ticket stores accumulate stale, conflicting, and low-value entries over time. Current checks are useful but insufficient for sustained curation because they do not combine change acti…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: "audit-api",cleanup,feedback,health,loops,metrics,store
-    digest: e4fc44648a97847b7db62e26ee898ef1428c287f36c4cf05790b9e48b92dc9db
+    digest: 7df3e141f875e515be1b3218b10f1756233e7e00bfc857bb9e512f2a65d868f9
     tags[3]: "audit-api",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5d17db06-c8a0-46bd-a22e-8a783643d7a8"
     kind: spec
     source_path: "memory-api/.spec/specs/5d17db06-c8a0-46bd-a22e-8a783643d7a8/spec.toml"
     title: "ticket-vscode Extension"
-    summary: "The `ticket-vscode` extension (VS Code package id: `ticket-viewer`, v0.1.0) surfaces the ticket graph from a running `ticket-viewer` Axum/Dioxus server directly inside VS Code's activity bar. It allo…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: extension,ticket,"ticket-vscode",vscode
-    digest: e40735b420c922f3b67609311662b6f20aa1a4af1c6a84458487bf60276c8911
+    digest: 4dda9019029ce44a9fa361322f1875c1d3551f1ae6be659232e8460863929b47
     tags[4]: reviewed,root,"scope:component","ticket-vscode"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5de125ad-eb0c-4bcb-8e6d-175df1ba33a6"
     kind: spec
     source_path: "memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml"
     title: Nested Workspace Discovery and Target Resolution
-    summary: "Nested rule workspaces should extend the existing `rule-api` store and target model from \"one store + one config\" into an explicitly scanned workspace graph. The owning repo workspace remains the uni…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: discovery,nested,resolution,target,workspace
     relations:
       parent:
@@ -1032,14 +1199,32 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e8c84cf7d90e8b0893fc7de8e6e242735739ed0cac494cdb2d4d2ec2078822e0
+    digest: d26eb06fc58bf056c1b652863a10bcf1d2e16de9887196451ddf9ec196eda4fe
     tags[3]: draft,"rule-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5e52039d-aabc-434d-bdf3-eca63e312476"
+    kind: spec
+    source_path: ".spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml"
+    title: Handoff Package Schema
+    summary: "Define the **handoff package**: the required fields that make the next implementation session fully self-contained — zero discovery, zero user clarification. A handoff package is produced by the tran…"
+    keywords[3]: handoff,package,schema
+    digest: ba29becfe57d132aadfe72ec62a20b80198ca6ed6f7283bf5742502ccd38fb96
+    tags[3]: "agent-tooling",reviewed,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5ee7f36a-2aea-4373-8c67-e6b26ae174bf"
+    kind: spec
+    source_path: ".spec/specs/5ee7f36a-2aea-4373-8c67-e6b26ae174bf/spec.toml"
+    title: "Workflow-tools domain crate contract"
+    summary: "Each extracted workflow domain is consumed through one public Rust crate named after the domain. The crate library is the sole dependency handle, re-exporting its internal `{domain}-api` crate. CLI, …"
+    keywords[4]: contract,crate,domain,"workflow-tools"
+    digest: 97006e11772fd218c53237e2ab1adb1be8b51ec684835591976e89b966949079
+    tags[4]: draft,root,"scope:internal","workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5f9a1652-943f-4d98-8812-a4f7ca1d5e61"
     kind: spec
     source_path: ".spec/specs/5f9a1652-943f-4d98-8812-a4f7ca1d5e61/spec.toml"
     title: "viewer-api README schema adoption"
-    summary: "Migrate `viewer-api` to the shared README schema and extend its generated child README surfaces with parent links back to the repo root."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: adoption,readme,schema,viewer,"viewer-api"
     scope: "This spec covers:"
     relations:
@@ -1049,14 +1234,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: adfa4475fac6527523493ba542008dc5bd97461e8975067994013aa15381c7e2
+    digest: be20e2840c925c11c96ad9aacbf9305b3ef067b7121597d2fb2d407e123725ad
     tags[3]: draft,"scope:internal","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "62f6b6d6-eb0c-43cc-ad3e-a75347f2a705"
     kind: spec
     source_path: ".spec/specs/62f6b6d6-eb0c-43cc-ad3e-a75347f2a705/spec.toml"
     title: "spec-editor: state machine control"
-    summary: The `StateTransition` component surfaces the spec state machine as an interactive
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: control,machine,"spec-editor",state
     relations:
       parent:
@@ -1065,27 +1250,55 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: "0498203f02e6530556120a041e2abcac4dc5c646c9cb865d598249f4b6b3a65c"
+    digest: 0a25fd68a10712166920f136875ff9cdbac1fb00ce6e8f90fcbf38bcb7d2f22f
     tags[3]: draft,"scope:component","spec-editor"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "63c60c9d-adbe-4ddb-8c1d-6156610d0753"
+    kind: spec
+    source_path: ".spec/specs/63c60c9d-adbe-4ddb-8c1d-6156610d0753/spec.toml"
+    title: "compact-terminal: bounded command execution with spill-and-peek"
+    summary: "Specify the token-bounded command-execution surface of the default agent tool"
+    keywords[8]: bounded,command,compact,"compact-terminal",execution,"spill-and-peek",terminal,with
+    scope: "The command-execution request/response contract, including the inline vs spilled decision and the shape of each variant. The spill file lifecycle: creation, addressing by handle, and the guarantee that a handle stays readable for the duration of the agent session. Bounded re-ins…"
+    non_goals: "Changing the observable inline/spilled response shapes for existing callers. Replacing the `rtk` proxy, which performs a complementary filtering role at the shell level. Interactive or long-lived process management (servers, watchers, REPLs); this contract covers one-shot comman…"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/7c9757a7-739f-4dfe-a4de-26f187f3b5aa/spec.toml"
+        entry_id: "7c9757a7-739f-4dfe-a4de-26f187f3b5aa"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 66d0840b98b0ed9c63f6453c3c3a01501ebe71f5ae9ff248e1a2be2f9d66f18a
+    tags[3]: "agent-tooling",approved,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6571abcf-b1b9-4259-b81c-78783e227467"
     kind: spec
     source_path: ".spec/specs/6571abcf-b1b9-4259-b81c-78783e227467/spec.toml"
     title: "Cross-store workspace interaction architecture"
-    summary: "Define a workspace architecture where each store remains domain-isolated while cross-store interaction is enabled through contract interfaces and API-layer composition."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: architecture,cross,"cross-store",interaction,store,workspace
     scope: "Isolate domain persistence and workflow logic per store. Define a generic interfacing layer in memory-api for store discovery, indexing, references, and diagnostics. Define contract interfaces for cross-store interaction using inversion of control. Define migration phases that p…"
     non_goals: "No immediate full rewrite of all stores in a single release. No runtime dependency-injection framework; composition remains in binaries via static typing. No removal of legacy aliases until migration gates are satisfied."
-    digest: a1322f2e7e69cd6b5d209b395bfad49d8f3fb04bd8a35593c66d3e968aa4c9db
+    digest: 49c6217217c1e032d7c8efda95e1f7b22efa37e0521ef7e1df338cf1bcfcf3b6
     tags[4]: draft,"memory-api",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "66538d9e-c8ff-4dd8-b3df-a12dc9984a0e"
+    kind: spec
+    source_path: ".spec/specs/66538d9e-c8ff-4dd8-b3df-a12dc9984a0e/spec.toml"
+    title: Memory kernel standalone extraction
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: extraction,kernel,memory,standalone
+    non_goals: "This extraction does not migrate per-domain APIs or transport binaries. This extraction does not publish a crates.io release. Strict `-D warnings` clippy cleanup is separate inherited debt; it is not a functional extraction requirement."
+    digest: 7bd0e53a79be6dd96d4a9b908f53bca8eba8b7c917881f41ddfb73ff53de7b8f
+    tags[4]: draft,"memory-kernel",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "69f8d8ce-d895-4270-b3f9-0d6c951f2a9a"
     kind: spec
     source_path: ".spec/specs/69f8d8ce-d895-4270-b3f9-0d6c951f2a9a/spec.toml"
     title: reviews prompt target
-    summary: "Define a reusable generated prompt under `.agents/prompts/reviews.prompt.md` for reviewing the highest-ranked `in-review` tickets using the repository ticket workflow."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: prompt,reviews,target
-    digest: ef82680781e94abb46c2d2dec015ffbf5ebdf156e07ada8afc942dc5fb40b7fc
+    digest: c798251f13a3bf79c188f81135c4253b21e3b570d5a598083d4459cfd1c71351
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6cf1685d-dc05-4022-abbb-efdd8e94af22"
@@ -1101,7 +1314,7 @@ entries[185]:
     kind: spec
     source_path: ".spec/specs/6d73975e-5af4-4ac6-b732-33c381bf768d/spec.toml"
     title: "context-engine root README tree generation"
-    summary: "Generate the top-level `context-engine` README tree from the root `.rule` store, including the repo root plus the root-owned first-level child README surfaces that currently break the navigation chai…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: context,"context-engine",engine,generation,readme,root,tree
     scope: "This spec covers:"
     relations:
@@ -1111,27 +1324,36 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 87ce9c3849f96b8500fd07ee3359210fa8c6a26e1ed9b8883a3bde4f5e9fccc1
+    digest: "07e02724868c392636e511629ea700f444b320442cd37f761095f4a4858b1082"
     tags[3]: "context-engine",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6e63979a-f29b-4c6f-a4b7-5264fd9c29d4"
     kind: spec
     source_path: ".spec/specs/6e63979a-f29b-4c6f-a4b7-5264fd9c29d4/spec.toml"
     title: "Add TOON format support across the memory-api CLI suite"
-    summary: "Add a compact TOON machine-readable format alongside existing JSON output across the memory-api CLI suite."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: across,format,"memory-api",suite,support,toon
     scope: "Add a global `--toon` output flag next to `--json` for `ticket`, `spec`, `rule`, and `audit`. Keep existing human-readable output unchanged. Ensure machine-readable success and error payloads render as TOON when requested. Extend structured file-reading inputs that are currently…"
-    digest: a1ba6b40accda899b8d07808dc18922595deb6c24754cbdb6111396124ecb686
+    digest: fdf164999d5da587fb9d6e820f350d742c5a955b6c5ab89d0f786727a728818a
     tags[4]: draft,"memory-api",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6f286eee-115b-4476-a6fc-9bd6796b5f3f"
+    kind: spec
+    source_path: ".spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml"
+    title: "Unified Agent Harness: one minimal operator interface for on-demand chat + long-running loops"
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[10]: agent,chat,harness,interface,"long-running",loops,minimal,"on-demand",operator,unified
+    scope: "Shared protocol/types crate with versioned, tagged lifecycle event schemas. Core ReAct loop runtime with an explicit state machine and a single session model that supports both interactive and autonomous modes. Provider abstraction (OpenAI/Anthropic/OpenRouter) with budget/polic…"
+    digest: 80d3a7fa9524e3831916531d8ab1d10bf22d2fb8debb7f35f6e2c8051d29ca45
+    tags[4]: "agent-harness",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "709f067a-21b6-41b6-8879-3cacef4bacaf"
     kind: spec
     source_path: ".spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/spec.toml"
     title: "Runtime session-context model (pinned entities, init/pin/unpin/view)"
-    summary: "Extend `session-api` (`memory-api/crates/session-api`) with a runtime \"cognitive workspace\": a `session_context.json` document and core operations to create/resume it, pin/unpin entities (as cross-st…"
+    summary: "<!-- aligned-structure:v2 -->"
     keywords[8]: context,entities,init/pin/unpin/view,model,pinned,runtime,session,"session-context"
-    scope: "Add a `session_context.json` document persisted under the session directory, alongside the existing `session.json`/`transcript.json`. Core operations on `SessionStoreConfig`: `init_context(session_id)` — **load-or-create**; creates the session directory if absent; idempotent (re…"
-    non_goals: "The cascade auto-pin logic (separate child spec). CLI/MCP surfaces (separate child spec; this spec is the core lib contract they call). The usage/feedback storage backend itself — this slice **emits** usage events into the generic memory-api usage/feedback model; it does not imp…"
+    non_goals: "Workflow graph persistence, rendering, handoff, and finish, owned by `c677182e-90da-4ac3-8b94-9e2e97c825cf`. Cascade auto-pinning. CLI/MCP transport. Full-body entity resolution."
     relations:
       parent:
         canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
@@ -1139,14 +1361,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: ca9ae86a4b1f0a20156b9d139b35b8a3c41412c413151420b2de42e625af8253
+    digest: dcbc78caddf67820a4fe8ff6a7e7edde89e9e1bdbe248c407ef6cec4528e0553
     tags[3]: draft,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "717be077-49f6-49bc-8221-ea5105ba5ff3"
     kind: spec
     source_path: "memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml"
     title: health
-    summary: "Source: `tools/http/spec-http/src/handlers/health.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: health
     relations:
       parent:
@@ -1155,14 +1377,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 79dcfc2c94cec619707f0f7a84864f13b65646c7a4fd92bac73a668aef71fa5a
+    digest: 4c080f33bf6d04741a4ec7b324a8ff5351673ffc8c084894da083ed1e0baf6ab
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "71b81a55-f5dd-4cbd-b739-40df6bc5d3fc"
     kind: spec
     source_path: ".spec/specs/71b81a55-f5dd-4cbd-b739-40df6bc5d3fc/spec.toml"
     title: "Entity usage counting and feedback ratings (feedback-api curation surface)"
-    summary: "Define the **bootstrap-facing curation surface** of the feedback-api program: a URN-addressed, entity-type-agnostic usage-counting and feedback-rating capability that session bootstrapping feeds. Eac…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: counting,curation,entity,feedback,"feedback-api",ratings,surface,usage
     scope: "A `EntityRef` (URN-addressed `ce://<workspace>/<store>/<entity>`) usage + feedback model delivered by the feedback-api program, independent of the concrete store. Usage counting:** record a usage event for an entity URN (emitted on each session pin). Expose an aggregate count an…"
     non_goals: "The feedback-api program's heavyweight ingestion-at-scale / search-clustering / SLO / abuse-governance slices (tracked separately under b1e9e744's other children). UI/dashboards for curation. Ticket-entity feedback wiring (extension point only)."
@@ -1173,23 +1395,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 798b1a502ab3fa2e1cd96fd8a5b39d22ed71162fda04d0c48243bbe2ae4c48ab
+    digest: 303ae3c8cba77894c48ee3242fe849eef2edde3887aa71f561e45882556ab46f
     tags[3]: draft,"feedback-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "76da5f2d-cea9-49d9-b223-730a0c2a5d6b"
     kind: spec
     source_path: "memory-api/.spec/specs/76da5f2d-cea9-49d9-b223-730a0c2a5d6b/spec.toml"
     title: "Transport-layer e2e matrix and benchmark strategy"
-    summary: "This spec drafts the design for a real transport matrix covering CLI, HTTP, and MCP surfaces across the in-scope memory-api domains."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: benchmark,layer,matrix,strategy,transport,"transport-layer"
-    digest: 266278f76fbedfc8a5551a80aac395c0d086a0109366f5144a97ad6c739c29fb
+    digest: 7a76b7a6158a3b7d4cd64722ed5a5217f5281b9dda93792964f7c860bf8cad77
     tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "77ca6056-180d-4e88-a76a-dcf8ff280c7a"
     kind: spec
     source_path: "memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml"
     title: specs
-    summary: "Source: `tools/http/spec-http/src/handlers/specs.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: specs
     relations:
       parent:
@@ -1198,14 +1420,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 92820ea1642000f1dbd68530dd6d7583d3ccb37c4a575ecea6e844bb031b168a
+    digest: 4c23e5a288cc344caa218f46cac43911d850cc3144c5730c03a6cfb8223f2905
     tags[3]: draft,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "788e91e4-32d7-4ff5-bf68-485235f8211f"
     kind: spec
     source_path: ".spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/spec.toml"
     title: "spec-editor"
-    summary: "`spec-editor` is a **fully interactive, GPU-accelerated specification editor**. It"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: editor,spec,"spec-editor"
     relations:
       children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
@@ -1213,7 +1435,7 @@ entries[185]:
         ".spec/specs/62f6b6d6-eb0c-43cc-ad3e-a75347f2a705/spec.toml","62f6b6d6-eb0c-43cc-ad3e-a75347f2a705",child,spec,""
         ".spec/specs/cbac783c-e3a1-4a31-ac11-a539b39164c5/spec.toml","cbac783c-e3a1-4a31-ac11-a539b39164c5",child,spec,""
         ".spec/specs/ffb89723-178b-435b-8591-c639d3c7d5dd/spec.toml","ffb89723-178b-435b-8591-c639d3c7d5dd",child,spec,""
-    digest: cb58c51b4fe88d091242ba53272c73b005bf744f8c4f1f65ef386505141923cf
+    digest: 1cd5b6397b6af6609879c3dacf5d1bc18aad9230ec951c16f54c8fae315d3f04
     tags[4]: draft,root,"scope:system","spec-editor"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "798c9a3c-404a-4842-874d-484edb4209ef"
@@ -1229,16 +1451,16 @@ entries[185]:
     kind: spec
     source_path: ".spec/specs/7b0ad285-c7df-4b19-a9d7-a11e71bab2ba/spec.toml"
     title: "Cline agent client integration with client-agnostic .agents/ standard"
-    summary: Integrate the Cline Agent Client (uses `.clinerules/` by default) while maintaining client agnosticity. The canonical standard remains `.agents/` + `AGENTS.md` as the source of truth for all agent gu…
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: agent,agents,client,"client-agnostic",cline,integration,standard,with
-    digest: b212f6bf270a8893d844075e6b69b023e6dc96e901ba763414dd743823a8ed42
+    digest: b73f2a34e187873a1cc3430a1ebd2be0fcbe8f3325bcf37d2e996867e166400b
     tags[4]: draft,"repo-guidance",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7b43dfd1-39aa-4585-b5fe-dc57c6d57eba"
     kind: spec
     source_path: "viewer-api/.spec/specs/7b43dfd1-39aa-4585-b5fe-dc57c6d57eba/spec.toml"
     title: "viewer-api: icons + Spinner"
-    summary: Canonical specification for the shared icon set and `Spinner` Dioxus
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: icons,spinner,"viewer-api"
     relations:
       parent:
@@ -1247,23 +1469,50 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 12cedf8349e12dfc44ddefdd32b0fe7ec51de080f49fe4c85b90950034b9b7f0
+    digest: 29a4d3558d24b5cb108fc434dbf2741fbcf3efc0e3848f7c0b1ec86c1c21153c
     tags[3]: draft,"scope:public","viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7be68a48-f4e5-49a2-b9a5-118f07b48b90"
+    kind: spec
+    source_path: ".spec/specs/7be68a48-f4e5-49a2-b9a5-118f07b48b90/spec.toml"
+    title: Quality gates and session data collection for delegated sessions
+    summary: "Define pre- and post-delegation quality gates and the data collection architecture that captures session, tool-call, and delegated-session data needed to measure how often delegated sessions produce …"
+    keywords[8]: collection,data,delegated,delegation,gates,quality,session,sessions
+    scope: "Quality gate schema**: define what a quality gate is, when it is evaluated (pre- and post-delegation), and where gate outcomes are recorded. Data collection points** across existing infrastructure: `session-api` for session and delegated-session records (including per-turn token…"
+    non_goals: "Fixing the capture hook that populates `data_json.usage` (that is ticket [9d527ad1](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml)). Changing model routing or cost policy (that is spec [a4d61b8c Model cost routing](../.spec/specs/a4d61b8c-df1c-454d-ab56-4bce57…"
+    digest: 64445e44f4ec1bce4434e93bb83d9109da8e5a1321c478cbef839e6a808aa383
+    tags[3]: "agent-workflow",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7c9757a7-739f-4dfe-a4de-26f187f3b5aa"
+    kind: spec
+    source_path: ".spec/specs/7c9757a7-739f-4dfe-a4de-26f187f3b5aa/spec.toml"
+    title: "Default agent tool suite: five token-bounded tool categories"
+    summary: "Design call for epic `e342cc4c-a7a4-42de-81fc-572d0497d12b`."
+    keywords[7]: agent,categories,default,five,suite,"token-bounded",tool
+    non_goals: "Reimplementing `peek` or `compact-terminal` behavior. Changing user-facing semantics of existing `peek-cli` modes. Replacing VS Code built-in editing and terminal tools for interactive human use."
+    relations:
+      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/4f5ad264-8e8d-4681-9551-4ec14b73c3b1/spec.toml","4f5ad264-8e8d-4681-9551-4ec14b73c3b1",child,spec,""
+        ".spec/specs/58a1d32c-2643-455c-bf3b-e0ccf0eecd9f/spec.toml","58a1d32c-2643-455c-bf3b-e0ccf0eecd9f",child,spec,""
+        ".spec/specs/63c60c9d-adbe-4ddb-8c1d-6156610d0753/spec.toml","63c60c9d-adbe-4ddb-8c1d-6156610d0753",child,spec,""
+        ".spec/specs/af9ebba9-6de4-4290-ab4a-319c432ded4c/spec.toml","af9ebba9-6de4-4290-ab4a-319c432ded4c",child,spec,""
+    digest: 85586085b5e8fe29b33e744f3749762509ef262fe1c28d10c8288acaa92035eb
+    tags[4]: "agent-tooling",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7e9131d1-6c7a-4e59-9208-5990079040d5"
     kind: spec
     source_path: ".spec/specs/7e9131d1-6c7a-4e59-9208-5990079040d5/spec.toml"
     title: "interview-api: persistent interview sessions and survey synthesis"
-    summary: "Interview and survey workflows are currently ad hoc and difficult to iterate collaboratively. Responses are not reliably preserved as structured records that can be revised, merged, and turned into a…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: interview,"interview-api",persistent,sessions,survey,synthesis
-    digest: 5ebf75465d8e8b31816474b531a9f17bcf6fd500ca790c8d3eb1f6a22cf47480
+    digest: d8274016a7a79286adfb7d93d796e8ba029af049afee716f23c0e5fac883849a
     tags[3]: draft,"interview-api",root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7fd5639f-a62b-4eb4-abe2-215c4bb2d0de"
     kind: spec
     source_path: ".spec/specs/7fd5639f-a62b-4eb4-abe2-215c4bb2d0de/spec.toml"
     title: read_sequence
-    summary: "`WorkspaceManager::read_sequence` reads text through the graph and returns one"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: read,read_sequence,sequence
     relations:
       parent:
@@ -1275,14 +1524,14 @@ entries[185]:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/904871fa-0b97-4484-9540-f2926e32476f/spec.toml","904871fa-0b97-4484-9540-f2926e32476f",child,spec,""
         ".spec/specs/e0913182-7a5e-4c8f-a750-799afd58baae/spec.toml","e0913182-7a5e-4c8f-a750-799afd58baae",child,spec,""
-    digest: 936438648b71fdee0f32b962154e0ecf36f90a8e510c7b8e67ee417a8235d5bd
+    digest: 4dec444cb23aa7d60c1345eff1b95aed9408683c0758e97fe698ec8cdf1eed1a
     tags[3]: "context-stack",draft,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "8074d6f7-b888-4e57-95e6-06dde96384b8"
     kind: spec
     source_path: "memory-api/.spec/specs/8074d6f7-b888-4e57-95e6-06dde96384b8/spec.toml"
     title: "memory-api"
-    summary: Bootstrapped from source analysis.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: memory,"memory-api"
     relations:
       children[19]{canonical_path,entry_id,relation_kind,content_kind,digest}:
@@ -1305,25 +1554,25 @@ entries[185]:
         "memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml","f081e8f4-7d28-4505-9faf-85c65b033b44",child,spec,""
         "memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml","f156fa16-7910-4c98-b69c-f848073dba00",child,spec,""
         "memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml","fded16bb-1a4b-4dd9-a610-c26459d19403",child,spec,""
-    digest: 1cce0ea606a6dd4e75b7a6826c0e04a656b6c0c6b01d1c1bfc07f2c0413cbc76
+    digest: fdff7085cdb72562ec69efe0b228101aa23af98c01d8d1248de30072699c5d7b
     tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "823b22cf-c0dc-46c6-a03d-00cdd3c4c83a"
     kind: spec
     source_path: "memory-api/.spec/specs/823b22cf-c0dc-46c6-a03d-00cdd3c4c83a/spec.toml"
     title: "session-api persistence writer"
-    summary: "Persist `session-api` capture requests into a deterministic filesystem layout that can become the first memory-api-backed session store."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: persistence,"session-api",writer
     scope: "keep the existing `SessionCaptureRequest -> SessionRecord -> SessionStorePlan` flow add the first write path that materializes the planned session directory and JSON files serialize a session manifest and transcript payload in a stable, readable format return explicit IO and ser…"
     non_goals: "watcher-based ingestion CLI, MCP, or HTTP session capture commands query or search APIs over persisted sessions schema migration or retention logic beyond the planned file layout"
-    digest: d51215a4ea38a4b006ec6661ddfc8b756daba64dcb623149e49bc7bd6079d633
+    digest: 92db8d0a4a35a36c43697b3df07609e6120fb8ecd7e792a3e312d0314eeb0cbf
     tags[4]: draft,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "83094beb-d315-4b16-b132-3ae22a528422"
     kind: spec
     source_path: "memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml"
     title: error
-    summary: "Source: `crates/spec-api/src/error.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: error
     relations:
       parent:
@@ -1332,14 +1581,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 2c40b5002c69c6c6779c57408fef215249b2781c3ef2dac80bb4157d98087a1f
+    digest: 90413d1893abceacf351344fae5fa74cba2950af99f4da9d070151098981118a
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "86877b97-2df6-46b5-923d-a9e608655fed"
     kind: spec
     source_path: "memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
     title: "spec-api"
-    summary: Bootstrapped from source analysis.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: spec,"spec-api"
     relations:
       children[7]{canonical_path,entry_id,relation_kind,content_kind,digest}:
@@ -1350,14 +1599,14 @@ entries[185]:
         "memory-api/.spec/specs/597de059-859d-4aae-89ad-bfe2d84462c0/spec.toml","597de059-859d-4aae-89ad-bfe2d84462c0",child,spec,""
         "memory-api/.spec/specs/83094beb-d315-4b16-b132-3ae22a528422/spec.toml","83094beb-d315-4b16-b132-3ae22a528422",child,spec,""
         "memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml","b0b3c0c6-168f-4b00-93b2-e06ce506855a",child,spec,""
-    digest: 8d96f93651b83d3cfc7abd65877fe07de9d7bf20599a9f7619f8bb7b94b504fe
+    digest: 54d1af11d2a68f44a39a17ed276c380a1a68cd100b31ae1dab893b44e67b6e1c
     tags[4]: draft,root,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "86b37a8b-4798-4cfe-971e-d53bb842ae80"
     kind: spec
     source_path: "memory-api/.spec/specs/86b37a8b-4798-4cfe-971e-d53bb842ae80/spec.toml"
     title: index
-    summary: "Source: `crates/memory-api/src/storage/index.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: index
     relations:
       parent:
@@ -1366,14 +1615,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c1d00a8d7fa3ff2fd6a1b070040bb29cd418717c2bd373990a7c582d47e99ff8
+    digest: 95f9d3f5d3260b63289783bedf9c74ed75edd1f002e798559db6f0ff19ddeff2
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "86bb3a01-ef29-4c7b-905b-9582a0d75f40"
     kind: spec
     source_path: "viewer-api/.spec/specs/86bb3a01-ef29-4c7b-905b-9582a0d75f40/spec.toml"
     title: process management
-    summary: "viewer-ctl needs to find and terminate processes that occupy a TCP port."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: management,process
     relations:
       parent:
@@ -1382,23 +1631,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 3336598cb68633718d96260b21802b99d7a9811977e49ca14f70bfe5f1c82f3e
+    digest: 9c14a980989c1212756ad06a52a387ed987b85cd002a1f58731eb098c65ef81e
     tags[3]: draft,"scope:internal","viewer-ctl"
-    generated_at: "1970-01-01T00:00:00Z"
-  - id: "88c88341-5f9c-4e59-87c7-9176e4afc26a"
-    kind: spec
-    source_path: ".spec/specs/88c88341-5f9c-4e59-87c7-9176e4afc26a/spec.toml"
-    title: temp
-    summary: ""
-    keywords[3]: probe,review,temp
-    digest: f9d34b193f38d720415d9528a66bbab7c7c377d5d6a911b9d55932e670e4fceb
-    tags[3]: draft,root,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "8c2bbb42-4ca0-43a3-8196-334218bf543e"
     kind: spec
     source_path: "memory-viewers/.spec/specs/8c2bbb42-4ca0-43a3-8196-334218bf543e/spec.toml"
     title: "spec-viewer: spec-tree component"
-    summary: The `SpecTree` Dioxus component renders the spec hierarchy as a collapsible tree.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: component,spec,"spec-tree","spec-viewer",tree
     relations:
       parent:
@@ -1407,40 +1647,40 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 161247b51d35c18bb259a6c6bb535672c6b320f89ee00ce7c4c135bef6c96eac
+    digest: 6ea1bd08783e8a3e69718047ee31eaacf0c5374919019da246156f574520acb8
     tags[3]: draft,"scope:component","spec-viewer"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "8c4d51ef-c0b6-437d-bc14-672b0802cef2"
     kind: spec
     source_path: "memory-viewers/.spec/specs/8c4d51ef-c0b6-437d-bc14-672b0802cef2/spec.toml"
     title: "ticket-viewer: integrated ticket document and focused full-graph view"
-    summary: "The ticket-viewer main layout still splits ticket reading across separate content and detail panels, while graph mode fetches a fixed-depth root-local subgraph and treats selection changes like graph…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[9]: detail,document,focused,"full-graph",graph,integrated,ticket,"ticket-viewer",view
-    digest: c016b5351bd83b1c04163338f143ecd5a5b168132757111806753db1d3af6364
+    digest: 25d2d88591fcfcf9395fbd9dc01b5d794256dba2980acc975e699acf89cb87ca
     tags[4]: draft,root,"scope:public","ticket-viewer"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "8c880efc-7083-4e1d-bf06-96b8254be913"
     kind: spec
     source_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
     title: "Dynamic session bootstrapping and just-in-time context routing"
-    summary: "Turn `session-api` from a capture/archive-only store into a runtime \"cognitive workspace\" that lets an agent bootstrap every session, proactively gather selective context (rules, specs, tickets) acro…"
+    summary: "<!-- aligned-structure:v2 -->"
     keywords[6]: bootstrapping,context,dynamic,"just-in-time",routing,session
-    scope: "Runtime session contract: `session_context.json` holding `pinned_entities` for tickets, specs, and rules as URNs with `relation`/`reason`, plus timestamps. Bootstrap surface: `session_init`, `session_pin`, `session_unpin`, `session_view` (core lib + CLI + MCP), all headers-only.…"
-    non_goals: "Replacing or rewriting the existing capture/transcript/worktree workflow. Semantic auto-pinning of vague matches (agent-driven only). A server-resident, stateful MCP process (assume the server may restart between turns). Building the full heavyweight `feedback-api` ingestion/sea…"
+    non_goals: "Replacing ticket-api as workflow authority. Copying ticket lifecycle state into session files. Gating core session functionality on the full feedback program. Semantic auto-pinning from vague text matches. Claiming stronger cross-platform replacement or power-loss durability tha…"
     relations:
-      children[4]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+      children[5]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/spec.toml","709f067a-21b6-41b6-8879-3cacef4bacaf",child,spec,""
         ".spec/specs/71b81a55-f5dd-4cbd-b739-40df6bc5d3fc/spec.toml","71b81a55-f5dd-4cbd-b739-40df6bc5d3fc",child,spec,""
         ".spec/specs/a28a88db-2b41-49d2-897c-6dbcdb313255/spec.toml","a28a88db-2b41-49d2-897c-6dbcdb313255",child,spec,""
+        ".spec/specs/c677182e-90da-4ac3-8b94-9e2e97c825cf/spec.toml","c677182e-90da-4ac3-8b94-9e2e97c825cf",child,spec,""
         ".spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/spec.toml","fda5c915-5c37-432f-acf1-8b20c6219fdc",child,spec,""
-    digest: "00540fe5ba6ddad4d59335eed149b35f228366641655f14943c1dd3b4f82592b"
+    digest: e537e75f58d05c455b46dc52f2d493a79ece13fbc75986c895314490ef7c5704
     tags[4]: draft,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "904871fa-0b97-4484-9540-f2926e32476f"
     kind: spec
     source_path: ".spec/specs/904871fa-0b97-4484-9540-f2926e32476f/spec.toml"
     title: induced graph structure
-    summary: This internal child spec records the graph facts that must hold after the
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: graph,induced,structure
     relations:
       parent:
@@ -1449,24 +1689,24 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 98e603be4f89d6fbbf16ffc3193192fad7a5360a833fb85fe7f09ae9e073047e
+    digest: 2cdb7c690918f07d98ad33ca6f47e0a011481b25aff369193e62e0a679aa4e79
     tags[3]: "context-read",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9074b2ef-c8fe-4bb0-a987-87063078c1ff"
     kind: spec
     source_path: ".spec/specs/9074b2ef-c8fe-4bb0-a987-87063078c1ff/spec.toml"
     title: Workflow and health parity for ticket interfaces
-    summary: "Ticket CLI, ticket HTTP, and ticket MCP currently return different workflow and health answers for the same store because parity-critical domain behavior still lives in their interface crates instead…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[9]: contract,cross,health,interfaces,parity,surface,ticket,validation,workflow
-    non_goals: "Consolidated ticket detail/context read parity. That remains adjacent follow-up work under [61cb6557 Add consolidated ticket detail/context read surface](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/tic…"
-    digest: 6d91ee5d9723a5fd18745d09e22f3ed46867538d911572a5318731d5dbb639b4
+    non_goals: "Consolidated ticket detail/context read parity. That remains adjacent follow-up work under [61cb6557 Add consolidated ticket detail/context read surface](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d5…"
+    digest: 1c295ee62f37bbef5c2a4f084edbd6c5f93038906aece0da5bf013d9fdf73283
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9109f12a-cc02-47ae-948f-98008b6c167d"
     kind: spec
     source_path: ".spec/specs/9109f12a-cc02-47ae-948f-98008b6c167d/spec.toml"
     title: Shared rendering pipeline integration for generated store indexes
-    summary: "Define the shared rendering-pipeline integration for generated store indexes so README/index files route through one rendering paradigm instead of per-domain ad hoc renderers. Store-index generation …"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: generated,indexes,integration,pipeline,rendering,shared,store
     scope: "The requirement that store-index markdown routes through `memory-api::generated_markdown`. Per-domain provenance config conventions. Idempotent write contract enabling hook `--check`. Relationship between the markdown surface and the TOON sidecar surface."
     non_goals: "Does not implement any generator's rendering (per-domain generator tickets). Does not change rule entry semantics or the rule sync pipeline. Does not define digest normalization rules (digest-input-contract spec). Does not define git-hook triggers (git-hook-automation spec)."
@@ -1477,14 +1717,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 8855a57171ff805178fbd5e302ec6b5e5e3bb0c80566ce19f36c6954f8247e27
+    digest: dd429aec29651e632f53a4d52f72d84d4e4fc7013bd936c71030876e7dd4926c
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "91b5b5fe-0046-424c-b5e5-3fb961f4d940"
     kind: spec
     source_path: "memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml"
     title: args
-    summary: "Source: `tools/cli/spec-cli/src/cli/args.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: args
     relations:
       parent:
@@ -1493,14 +1733,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1fbafb7677e2ecad25f41853fdc89698eade8f9e85b27c1f786a13f3838c34d5
+    digest: efe96d56684d2c64e8aa7e5f7a76ac577dff975b0702fe3bf55a01e9bdf72699
     tags[3]: draft,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "92112188-8acd-4573-bb22-f784fcf371ca"
     kind: spec
     source_path: ".spec/specs/92112188-8acd-4573-bb22-f784fcf371ca/spec.toml"
     title: insert_first_match
-    summary: "`WorkspaceManager::insert_first_match` induces graph structure from an existing"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: first,insert,insert_first_match,match
     relations:
       parent:
@@ -1509,7 +1749,7 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4837f80b4897ba0c2e2bb477f446eba4bf2b1af4ccdf7695ca25893db0efc05d
+    digest: b3c0c6dc7a49a4428153ad40bf7a4c779515b0131e69d9e7b6a1a4ead789cfc8
     tags[3]: "context-stack",draft,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "954d9807-f357-41e5-9fd4-b1da39e0933d"
@@ -1525,7 +1765,7 @@ entries[185]:
     kind: spec
     source_path: "memory-viewers/.spec/specs/95562129-87d8-4d86-9cd3-c8a09473a6d0/spec.toml"
     title: "spec-viewer: routes and pages"
-    summary: "Defines the Dioxus `Route` enum and the four page-level components for the spec-viewer SPA."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: pages,routes,"spec-viewer"
     relations:
       parent:
@@ -1534,14 +1774,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 24f04e68bd83e1fdc6d14aca6a5fcb70236a3595a9ad382134b37363a07dd589
+    digest: 5e667f9d789ee919d7b4b921e0185eebacbe633810f0717baa527a09ba1f6439
     tags[3]: draft,"scope:component","spec-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "96bc688a-62ac-4083-923f-e507f2bb19fe"
+    kind: spec
+    source_path: ".spec/specs/96bc688a-62ac-4083-923f-e507f2bb19fe/spec.toml"
+    title: Flexible session workflow authoring
+    summary: "Agents can author dense, dynamic session workflow graphs with minimal round trips. Rejections name a copy-ready legal alternative, custom labels use task nodes plus category, and contextual entity re…"
+    keywords[4]: authoring,flexible,session,workflow
+    digest: 10c618fed524552f87536efdb034b40b91a8a6f69a774237756a98753e7d0321
+    tags[4]: active,root,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "96dc0068-d05d-4e61-b785-144272119fa9"
     kind: spec
     source_path: ".spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml"
     title: workflow guidance generation and session capture scaffolding
-    summary: "Generate the requested workflow prompt and agent files from canonical rule-api entries, then seed a bounded first session-api scaffold for storing Copilot chat sessions in the memory-api store."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: capture,generation,guidance,scaffolding,session,workflow
     scope: "add generated root guidance prompts for `/memory-setup`, `/interview`, `/user-training`, `/ticket-next`, `/next`, `/audit`, and `/tdd` add generated root agent files for `testing`, `research`, `interview`, `audit`, and `implement` keep rule-target configs and canonical rule entr…"
     non_goals: "building every future MCP, HTTP, CLI, or UI surface for session capture in one change replacing the existing workflow metadata direction for `doc-api`, `test-api`, or `log-api` hand-authoring prompt or agent files without rule-api-backed generation"
@@ -1554,32 +1803,32 @@ entries[185]:
         digest: ""
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/9e04ff58-9160-4766-b307-74c0fb32a92c/spec.toml","9e04ff58-9160-4766-b307-74c0fb32a92c",child,spec,""
-    digest: d6853009e5a2b8839b86d05a5b5d6e45a33b21a9f8e1bf2defb81b74c6b1cb25
+    digest: 25bd308ca39ed875cc373003c99b028e74996b5848355a383812a648083bfe27
     tags[3]: "context-engine",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "98b4f75d-3628-470d-a5cc-c91b6cc9811a"
     kind: spec
     source_path: ".spec/specs/98b4f75d-3628-470d-a5cc-c91b6cc9811a/spec.toml"
     title: "ticket-viewer: graph focus, property-based rendering, and 2D presentation mode"
-    summary: "The current ticket-viewer graph still centers its presentation around rich DOM ticket cards, limited focus falloff, and a mostly 3D/isometric camera model. That makes dense graphs expensive to render…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: focus,graph,mode,presentation,property,"property-based",rendering,"ticket-viewer"
-    digest: 52c382a81b123f4cb851b984232ee5d76cb26bc9150a42ece8b2742ea2a0bf70
+    digest: 7db138eb3885129d804ff517486c672f54671655bb4315120f8bcb6da3124888
     tags[4]: active,root,"scope:public","ticket-viewer"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9983b865-5082-437a-945a-05c26a56c113"
     kind: spec
     source_path: ".spec/specs/9983b865-5082-437a-945a-05c26a56c113/spec.toml"
     title: submodule branch tracking workflow
-    summary: "Top-level submodules in the repository currently land in detached HEAD state, which makes local commits easy to create without advancing the intended `main` branch in each submodule."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: branch,submodule,tracking,workflow
-    digest: 9314e36b132ffbb28dd97b1145239f498c66a9f225c4e551c5211d7863703169
+    digest: 827f14715d37445da7c65825e1f9ee1eebf263efbb94a6487252965c6f309ed8
     tags[4]: active,"context-engine",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9c33e0fa-2a18-45ba-a837-a04d71638944"
     kind: spec
     source_path: "memory-api/.spec/specs/9c33e0fa-2a18-45ba-a837-a04d71638944/spec.toml"
     title: query
-    summary: "Source: `crates/memory-api/src/model/query.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: query
     relations:
       parent:
@@ -1588,26 +1837,36 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 140a1d8b15d7d06c9352e1354b8cebd13a4acdf4e06f9e8414dc2fada0f61664
+    digest: d348010532c6bd83789f9c800d00b155f6e4ff25bcb6e5a9e18e6a150358894b
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9c3ec5a5-0e1e-4061-b66a-16006611f671"
     kind: spec
     source_path: ".spec/specs/9c3ec5a5-0e1e-4061-b66a-16006611f671/spec.toml"
     title: Store expansion and operational health program
-    summary: "Coordinate the next major store vectors (interview, feedback, health auditing, and scaffold automation) as a dependency-aware program aligned to the cross-store architecture constraints."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: expansion,health,operational,program,store
-    digest: d99550e6c790a8389514cca3138d72df6e66232bf8339b00fe204e64cb5b169a
+    digest: 51a5b603baa1fb587aa7e91c6e7ddb091c9e1faf5dd5914af239a94a5c71a03c
     tags[3]: "context-engine",draft,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9c7c0655-436c-4cd8-a3d3-2d893f1d865c"
+    kind: spec
+    source_path: "memory-api/.spec/specs/9c7c0655-436c-4cd8-a3d3-2d893f1d865c/spec.toml"
+    title: "rule-cli sync-targets: incremental work and normalized path output"
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[8]: incremental,normalized,output,path,paths,"rule-cli","sync-targets",work
+    scope: "`rule sync-targets` (and shared paths in `generate-target`, MCP `generate`) command output and write behavior. Store-level incremental scan for the rule entity store."
+    non_goals: "Changing the rule authoring format or generated-file markup. Changing which targets exist or their rendered content. A filesystem watcher / daemon mode."
+    digest: f36e45812b21617baee01cbcf1e2fcff60737478a9ee5c6f30e31f6a57020093
+    tags[3]: draft,root,"rule-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9e04ff58-9160-4766-b307-74c0fb32a92c"
     kind: spec
     source_path: ".spec/specs/9e04ff58-9160-4766-b307-74c0fb32a92c/spec.toml"
     title: handoff workflow prompts
-    summary: "Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session handoffs that help a new session resume a specific implementation track quickly."
+    summary: "<!-- aligned-structure:v2 -->"
     keywords[3]: handoff,prompts,workflow
-    scope: "add root prompt targets for `/handoff` and `/handoff-tickets` create canonical rule entries for both generated prompt files generate prompt outputs through the existing rule-target workflow make `/handoff` produce a short, paragraph-style, reference-centric jumpstart prompt for …"
-    non_goals: "changing the existing `session-api` storage model or Stop-hook persistence path introducing a new first-class session coordination primitive in this slice implementing board automation beyond the current ticket workflow tools"
+    non_goals: Implementing session persistence in generated prompt text. Reusing one capture run ID across multiple agent executions. Replaying full transcripts by default.
     relations:
       parent:
         canonical_path: ".spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml"
@@ -1615,23 +1874,43 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 5dedf5e07fa3996c008a6a7d5ea3d64003cf0c36858c2bc831998c6dc8032ddd
+    digest: 3165fd5172e6b89e237ff13e19bb3a0b3293e4a4dc424833c2859d0c81a5dc3b
     tags[3]: "context-engine",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9e823b76-cd60-4689-b772-649ebb3a34a1"
+    kind: spec
+    source_path: ".spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/spec.toml"
+    title: "Structured browser result ingestion for test-api"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[5]: browser,ingestion,result,structured,"test-api"
+    digest: 8c2a734ea529ac0901ed23c56eef08b8ec0707a8fd1abb0e5fbfb0f4e2dcacc8
+    tags[4]: draft,root,"scope:internal","test-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9ec6036f-d123-455c-a42a-6bbed35af9c4"
+    kind: spec
+    source_path: ".spec/specs/9ec6036f-d123-455c-a42a-6bbed35af9c4/spec.toml"
+    title: "Explicit workspace-policy layer for ticket scan-root discovery, scan, and query"
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[11]: discovery,explicit,governance,layer,policy,query,scan,"scan-root",ticket,workspace,"workspace-policy"
+    scope: "Policy model + parser + save + compatibility-mode fallback: `memory-api/crates/memory-api/src/workspace_policy.rs`. Discovery filtering: `discover_workspace_scan_roots_with_policy` in `memory-api/crates/memory-api/src/workspace.rs`. Scan-root persistence metadata (`source`, `pol…"
+    non_goals: "Audit-engine scoring internals (the `ticket_graph` trial already honors the same policy file and hardcodes `/test-fixtures/` exclusion for reference findings)."
+    digest: "01713672f2c7e3184e84b9e09eaf0e552879545a212e897a23af33b6448800d9"
+    tags[3]: draft,root,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9ee9387f-5384-42a9-95c4-ecbad1713030"
     kind: spec
     source_path: ".spec/specs/9ee9387f-5384-42a9-95c4-ecbad1713030/spec.toml"
     title: "scaffold: rule-generated domain-store bootstrap instructions and slash skill"
-    summary: "Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and r…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[11]: bootstrap,domain,"domain-store",generated,instructions,rule,"rule-generated",scaffold,skill,slash,store
-    digest: f78479657e9677a80c961b98be3e8555b0ab926378781058834d59813c195282
+    digest: 7f1ba36162d3327e5c6f4c4b89da82434081bd8c17a2d2e8896a8620000028b8
     tags[3]: draft,root,scaffold
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6"
     kind: spec
     source_path: "viewer-api/.spec/specs/a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6/spec.toml"
     title: "viewer-api: TreeView"
-    summary: Canonical specification for the shared `TreeView` Dioxus component
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: tree,treeview,view,"viewer-api"
     relations:
       parent:
@@ -1640,17 +1919,16 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 9dbe732f42457fb9af04b473921eb71c06d330aa7c5f9f48889bfa26f655e6d0
+    digest: 144c66093bb0e43eb57afd641a1f3c0398ea16e5578f661cb3b0f5f7a0ef3be9
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a28a88db-2b41-49d2-897c-6dbcdb313255"
     kind: spec
     source_path: ".spec/specs/a28a88db-2b41-49d2-897c-6dbcdb313255/spec.toml"
     title: Minimal bootstrapper and selective rule loading
-    summary: "Remove the always-on generated instruction load and replace it with a minimal **bootstrapper** plus **discoverable, pinnable** rule entries that each agent renders into its own per-session instructio…"
+    summary: "<!-- aligned-structure:v2 -->"
     keywords[5]: bootstrapper,loading,minimal,rule,selective
-    scope: "Author a minimal **bootstrapper instruction** (<500 tokens) that knows only the search + session tools and drives `session_init` → cascade → pin → agent-side render. Stop generating the always-on `applyTo: \"**\"` instruction bodies as per-turn content. Convert their content into …"
-    non_goals: Changing the canonical rule store format beyond discoverability metadata. Implementing the session pin mechanism (owned by the runtime + CLI/MCP specs); this spec consumes it.
+    non_goals: Changing the canonical rule manifest or search index formats. Automatically selecting rules from vague semantic matches. Rendering ticket or spec bodies into the session instruction set. Removing narrowly scoped instruction files for concrete code paths.
     relations:
       parent:
         canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
@@ -1658,8 +1936,19 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: d4459e061e5a6a78551c2ba3a95c1a5befd08ae0cbe8973e308416b9add65b40
+    digest: 8823b0c75390fcfebfffa38f5719b319ed93bd0a737ff97d666c84fe9771e224
     tags[3]: draft,"rule-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a4d61b8c-df1c-454d-ab56-4bce5706eb15"
+    kind: spec
+    source_path: ".spec/specs/a4d61b8c-df1c-454d-ab56-4bce5706eb15/spec.toml"
+    title: Model cost awareness and tiered model routing for agent sessions
+    summary: "Establish agent-policy guidance for model cost awareness and tiered model routing so that expensive, high-capability models are reserved for large-scope planning, high-level reasoning, and review of …"
+    keywords[7]: agent,awareness,cost,model,routing,sessions,tiered
+    scope: "Agent-workflow guidance surfaced through token-efficiency and session-optimization instruction files. A tiered model ladder describing which tier to use for which class of work. Delegation pattern: large-model sessions use `runSubagent` with a cheaper `model` for command batches…"
+    non_goals: Automatic/programmatic model selection or a router service. Changing the subagent execution engine or model catalog.
+    digest: 73400bcc1831db2a9e22ae116aabcd8972cf9642ab3d79a26d77af9a74d65c74
+    tags[4]: "agent-workflow",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a4f48d84-50ed-4769-a42f-38321ea9600c"
     kind: spec
@@ -1679,54 +1968,72 @@ entries[185]:
     kind: spec
     source_path: "memory-api/.spec/specs/a592900c-f513-4ec2-8dd2-53dbd04aac7b/spec.toml"
     title: "ticket-vscode Rust/WASM port"
-    summary: "Port `memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM core, shipping bot…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: port,rust,rust/wasm,"ticket-vscode",wasm
-    digest: 8e239afc8aa07e297984fbbb67ebc43ce79c883d71b91d19e9eaeb1d89e6b4b0
+    digest: 7f87bb255e2e904113803d4db8ec270f88585b20c43290484bdf205e6e9cd9d5
     tags[4]: reviewed,root,"scope:internal","ticket-vscode"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a595eb0c-f9f1-4e29-a425-120df5334f7d"
     kind: spec
     source_path: ".spec/specs/a595eb0c-f9f1-4e29-a425-120df5334f7d/spec.toml"
     title: Scoped selector contract for board and next workflow discovery
-    summary: "`ticket board show`, `ticket next`, MCP `board_show`/`next_tickets`, and"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: board,contract,discovery,next,scoped,selector,workflow
-    digest: f837381ed4c912bf5f7b9498b41130318b48ed0f4b44ec1807781634062c019a
+    digest: 310092f5fa46fb029b1c8a342a5d30e301e909982a2751a55c2b4fad92b091a8
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a6318461-3a06-4d6d-aabb-7e06c33f4e1b"
     kind: spec
     source_path: "memory-api/.spec/specs/a6318461-3a06-4d6d-aabb-7e06c33f4e1b/spec.toml"
     title: "audit-api ticket dependency topology validation"
-    summary: "`audit-api` should flag orphan tickets so every active ticket participates"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: "audit-api",dependency,ticket,topology,validation
-    digest: 5515721354cc0bfdf34f8921f50f27c66a663c20e12e90c1f5bf6bb1ffdaecb5
+    digest: c8ac403e1a969e7f0cdebac817781855ff1fa04bcf31468580884f1594073bef
     tags[3]: "audit-api",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a67fdd95-a5c7-44f4-a861-8b427f1923cd"
     kind: spec
     source_path: "memory-api/.spec/specs/a67fdd95-a5c7-44f4-a861-8b427f1923cd/spec.toml"
     title: Probe Spec
-    summary: ""
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: probe,spec
-    digest: a514360f90ac5a3103e4f01afc37db6189abc6be991488d1305d0cf5bf4b688f
+    digest: 4f582f6c1ce936f4a612458e2166bca4f4d2900c77f1664d042771709d571e72
     tags[3]: draft,probe,root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a969562b-6920-4fa6-a757-d317e7d442df"
+    kind: spec
+    source_path: ".spec/specs/a969562b-6920-4fa6-a757-d317e7d442df/spec.toml"
+    title: "rule-cli single-target reverse-sync from generated artifacts"
+    summary: "Add a reverse-sync workflow for rule-generated artifacts so edits in a generated file can be written back to the originating rule bodies by canonical rule id."
+    keywords[10]: artifacts,from,generated,reverse,"reverse-sync","rule-cli",single,"single-target",sync,target
+    digest: 41dcc80134eba4177972f05d18a2334bf98c6964748cc35b3182f70f84b5a8a0
+    tags[4]: draft,root,"rule-cli","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a9b7ef39-ace4-4a12-a171-80f54548fc65"
+    kind: spec
+    source_path: ".spec/specs/a9b7ef39-ace4-4a12-a171-80f54548fc65/spec.toml"
+    title: Agent Skill Infrastructure
+    summary: "Governing spec for the agent skill base that unblocks the critical path to context-graph ingestion:"
+    keywords[3]: agent,infrastructure,skill
+    digest: b09b6c6f49fb92d3a7260aec9f9c5ca128fc87266f6fe7c61d53d4e8eee798c7
+    tags[3]: agents,draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "aa769a27-2721-4b9d-880c-5c4e2f8136a7"
     kind: spec
     source_path: ".spec/specs/aa769a27-2721-4b9d-880c-5c4e2f8136a7/spec.toml"
     title: "Memory-system observability and log-api runtime diagnostics"
-    summary: "Define a shared observability contract for `memory-api`, its domain crates, context-stack graph operations, and every CLI, MCP, HTTP, benchmark, test, and long-running server transport so internal op…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: diagnostics,"log-api",logging,"memory-system",observability,runtime
     scope: "This spec covers the architecture and rollout requirements for:"
     non_goals: "Replacing `tracing` with a custom logging facade. Duplicating separate tracing initialization code in every binary. Requiring the unfinished `log-api` store before file logging provides value. Treating trace logs as the durable source of truth for reversible state changes. Captu…"
-    digest: f7f355fc999390fca5ddfb8eab4044e2e75c5fd6f4209a149832320db831459f
+    digest: 3f723b6990823f9cacc1cdad91f96180abfb799f73226b3342902762fb4f4293
     tags[4]: draft,"memory-api",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
     kind: spec
     source_path: "memory-api/.spec/specs/ae5ef697-0ee5-4f74-9dca-2cb268290dae/spec.toml"
     title: workspace
-    summary: "Source: `crates/memory-api/src/workspace.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: workspace
     relations:
       parent:
@@ -1740,25 +2047,54 @@ entries[185]:
         "memory-api/.spec/specs/0b1888f2-7e59-45fb-95d8-1bf14ff7747f/spec.toml","0b1888f2-7e59-45fb-95d8-1bf14ff7747f",child,spec,""
         "memory-api/.spec/specs/b4833ecc-78b6-4406-9a03-9834d211f0ae/spec.toml","b4833ecc-78b6-4406-9a03-9834d211f0ae",child,spec,""
         "memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml","ec22fe34-2d24-4dc5-a067-85121bed3655",child,spec,""
-    digest: b10c18847dc79823407fd919737af0431947806e9b400e3d123bdd39d619646d
+    digest: 6d488affce4ece0bf9eb8ecfa25dcfa940602123f3e5cd13f03151d31b03c623
     tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "af0ae2a0-fe48-4da8-b2f8-9c404f51587f"
+    kind: spec
+    source_path: "memory-api/.spec/specs/af0ae2a0-fe48-4da8-b2f8-9c404f51587f/spec.toml"
+    title: Ticket Move and Health Performance Characterization
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[5]: characterization,health,move,performance,ticket
+    scope: "Extend canonical fixtures with representative root-store and nested-store ticket layouts, path-reference-heavy files, and large-enough ticket populations to reproduce slow move and health operations. Add end-to-end tests that record timings for `plan_move_preflight`, `execute_mo…"
+    non_goals: Optimizing the slow paths in this spec. Defining final SLA thresholds before representative baselines exist.
+    digest: fdca2909c0bfa87dcc69bd19e43e7f0c4ae330dbf6ae6d47ee7ad7eb70ade2e2
+    tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "af9ebba9-6de4-4290-ab4a-319c432ded4c"
+    kind: spec
+    source_path: ".spec/specs/af9ebba9-6de4-4290-ab4a-319c432ded4c/spec.toml"
+    title: "repo-wide search: bounded, capped, counts-first repository search"
+    summary: "Specify a repo-root-scoped, token-bounded search surface so agents locate code"
+    keywords[8]: bounded,capped,"counts-first",repo,"repo-wide",repository,search,wide
+    scope: "Repo-root-scoped literal and regex search with an explicit match cap and an explicit per-file match cap. A counts-only triage mode returning per-file match counts and no content, so the agent can narrow the target set before requesting any lines. A per-match context window, defa…"
+    non_goals: "Replacing `peek_grep` for single-file searching. Semantic or embedding-based search; this contract is exact-match search. Symbol-aware or type-aware reference finding, which is language-server work. Search-and-replace, which belongs to `agent-tooling/file-editing`."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/7c9757a7-739f-4dfe-a4de-26f187f3b5aa/spec.toml"
+        entry_id: "7c9757a7-739f-4dfe-a4de-26f187f3b5aa"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: f044522d71e817c8066bbc138f283e4fbbb5e222ccb9fc2f69d489922c932cf8
+    tags[3]: "agent-tooling",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "afcaccc9-5577-4556-ab6f-cfbe7a77e430"
     kind: spec
     source_path: "memory-api/.spec/specs/afcaccc9-5577-4556-ab6f-cfbe7a77e430/spec.toml"
     title: "ticket-api cross-workspace move contract"
-    summary: "Define the authoritative contract for ticket cross-workspace move behavior over the shared memory-api move kernel."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: contract,cross,"cross-workspace",move,"ticket-api",workspace
     scope: "Ticket entity moves between git-backed workspace stores in one worktree. Preflight visibility checks for inbound and outbound references. Journaled execution, resume, and rollback semantics. Fail-closed board policy for active and stale claims. Surface parity expectations for CL…"
     non_goals: "Cross-worktree moves. Cross-store transaction semantics. Multi-entity batch move."
-    digest: "03608b210ac69f019f91121668111b456c7444dba8c114ca0181c777e12ad020"
+    digest: 476b088334f48017a1f850768481ce0d122391b651c6e779e674bbce47c4de4f
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "afe17aef-793e-419f-93c1-568bf10a2955"
     kind: spec
     source_path: "viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml"
     title: install layout
-    summary: "viewer-ctl installs three classes of artifacts. The layout is fixed and"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: install,layout
     relations:
       parent:
@@ -1767,26 +2103,26 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: "041c71c1424fb1ec8eac7a42e5447a2bd48ea8debe2030a05cda7b153fa998a1"
+    digest: fecbf9cd7dd7d30a50f41b844a47668553f0a3a7305708c398b6101ea97aa329
     tags[3]: draft,"scope:public","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b06c9df8-2866-433a-af73-ae9b1f4a0f0a"
     kind: spec
     source_path: "viewer-api/.spec/specs/b06c9df8-2866-433a-af73-ae9b1f4a0f0a/spec.toml"
     title: "viewer-api: structured tracing for WASM frontend"
-    summary: "Specification for replacing ad-hoc `web_sys::console::log_1!()` calls in the"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: frontend,structured,tracing,"viewer-api",wasm
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "viewer-api/.spec/specs/479e226a-b4ef-4e30-ade0-ebdabbf956ed/spec.toml","479e226a-b4ef-4e30-ade0-ebdabbf956ed",child,spec,""
-    digest: "0437ad4ca993edee2b2b51ce34129c2788bff33834a76bd4c6688c1defc4720c"
+    digest: 7dfe6e73a947224017e975e3b99a9858811602a23cbceb24418bd54fb92db400
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b0b3c0c6-168f-4b00-93b2-e06ce506855a"
     kind: spec
     source_path: "memory-api/.spec/specs/b0b3c0c6-168f-4b00-93b2-e06ce506855a/spec.toml"
     title: slug
-    summary: "Source: `crates/spec-api/src/slug.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: slug
     relations:
       parent:
@@ -1795,14 +2131,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: dfd356925792f41c83a513ffe445748159162b670a52c9fe9e072cc5ad2807c9
+    digest: 71ae516f1dd2d9d7ffc0b99284a356e79e5617147dd8cb2297c915b72ebb8a24
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b3362691-09a0-4028-8daa-13b4c4102c15"
     kind: spec
     source_path: "viewer-api/.spec/specs/b3362691-09a0-4028-8daa-13b4c4102c15/spec.toml"
     title: "viewer-api: layout components"
-    summary: "Canonical specification for the shared **page-shell** Dioxus components"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: components,layout,"viewer-api"
     relations:
       parent:
@@ -1811,14 +2147,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c79a24de7f92f390d519f2f4707a9a22a1a62b775b2b737d8c5457390fec0d0f
+    digest: b9ac9913d5f51a7e9d87bc45147d5e3877626b0c49b31d0ae1044b80117b6f53
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b4833ecc-78b6-4406-9a03-9834d211f0ae"
     kind: spec
     source_path: "memory-api/.spec/specs/b4833ecc-78b6-4406-9a03-9834d211f0ae/spec.toml"
     title: path normalization kernel
-    summary: "Establish one resilient, memory-api-owned path normalization utility kernel that emits Unix-style path strings for transport/UI while preserving typed path safety for filesystem operations, with dete…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: kernel,normalization,path
     scope: "Define one kernel API in `crates/memory-api/src/workspace.rs` (or sibling module) that all CLI/MCP/HTTP path payload surfaces consume. Normalize Windows inputs including: drive-letter (`C:\\repo\\x`) Git Bash (`/c/repo/x`) verbatim drive (`\\\\?\\C:\\repo\\x`) UNC (`\\\\server\\share\\x`) …"
     non_goals: "No change to storage layout (`.ticket`, `.spec`, `.rule`) semantics. No cross-store move workflow redesign (already covered by done ticket `21e6c015`). No transport schema redesign beyond path-field value normalization and explicit error payloads where strict mode is opted in."
@@ -1829,23 +2165,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 523e906202281a7988fa53ace13f4d30c8085562782ba799a6a3fe749f64ba76
+    digest: 7e9c2b6fb305b6b81f39e86a6a98a0ffb9f1f30e2668037ae1d06a573a4235ee
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b4d038e0-ade9-459b-8ba3-92fd81d80e6a"
     kind: spec
     source_path: ".spec/specs/b4d038e0-ade9-459b-8ba3-92fd81d80e6a/spec.toml"
     title: "ticket-api: validation-aware dependency requirements and health model"
-    summary: "`depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has b…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[8]: aware,dependency,health,model,requirements,"ticket-api",validation,"validation-aware"
-    digest: 58851127be4cb8a774f5ae0f1574acdcc833e4cb7dd50d7c581edadcca1e033f
+    digest: fddf736e3d35f249cd7d82732210c8de526724a974fce1c76382cc51cfead570
     tags[3]: draft,root,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b568bb7a-6726-46ac-bb78-fbc1858da4b8"
     kind: spec
     source_path: "viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml"
     title: extension lifecycle
-    summary: "VS Code extensions are TypeScript projects compiled to `out/`. viewer-ctl"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: extension,lifecycle
     relations:
       parent:
@@ -1854,14 +2190,23 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e477c05470139b592791379017ca264991dbb73493263ae7580e284c9b91603b
+    digest: 57209e6c61d51f93bd715e10191715979c032974e5458d8bf2bb3aa3f15b8d4f
     tags[3]: draft,"scope:internal","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b71658f1-8de2-444a-9be1-64b1d8ecce70"
+    kind: spec
+    source_path: ".spec/specs/b71658f1-8de2-444a-9be1-64b1d8ecce70/spec.toml"
+    title: Iteration Loop Workflow
+    summary: "Define how a finished, validated implementation becomes the next self-contained handoff, and which agent owns each phase. This closes the implement → transition → implement loop."
+    keywords[3]: iteration,loop,workflow
+    digest: d27bc00242cb5de166d022ba9375c60324bb17e29187bafc5d3b81e1c6817cf7
+    tags[3]: "agent-tooling",reviewed,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b748e117-a847-474d-92ee-b58723cee612"
     kind: spec
     source_path: "viewer-api/.spec/specs/b748e117-a847-474d-92ee-b58723cee612/spec.toml"
     title: "viewer-api: dev proxy"
-    summary: "Canonical specification for `viewer-api::dev_proxy` — the optional"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: proxy,"viewer-api"
     relations:
       parent:
@@ -1870,14 +2215,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: ff81dfb39c3fba1d16c3939a09355157cfa275a7d65cf92381086ca06aec194b
+    digest: bf7661d0b6d749003a8e66dcced786fc384ffa52c6121cbae854e14882573853
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b7ac0b69-ed06-473a-8fbe-0058a769bf40"
     kind: spec
     source_path: "viewer-api/.spec/specs/b7ac0b69-ed06-473a-8fbe-0058a769bf40/spec.toml"
     title: "viewer-ctl"
-    summary: "`viewer-ctl` is the **lifecycle manager** for context-engine viewer servers,"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: viewer,"viewer-ctl"
     non_goals: "Process supervision** — viewer-ctl does not keep servers alive, restart them on crash, or aggregate logs. Once `start` returns the server is detached (Windows) or replaces the viewer-ctl process (Unix `exec`). Cross-process orchestration** — viewer-ctl manages one component per …"
     relations:
@@ -1890,14 +2235,14 @@ entries[185]:
         "viewer-api/.spec/specs/afe17aef-793e-419f-93c1-568bf10a2955/spec.toml","afe17aef-793e-419f-93c1-568bf10a2955",child,spec,""
         "viewer-api/.spec/specs/b568bb7a-6726-46ac-bb78-fbc1858da4b8/spec.toml","b568bb7a-6726-46ac-bb78-fbc1858da4b8",child,spec,""
         "viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml","c23166c7-2315-4b89-9160-cde7df3086e6",child,spec,""
-    digest: 9077cd035d9f5981c7751fba8e57fbfb6a7a675a0e54f65aabdca5ac109d0155
+    digest: 1dfb6684bfc42ddee7211738731263d445364b8e0eaad2b8d4ead1652688e80f
     tags[4]: draft,root,"scope:system","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b8ddb54c-8939-4bbd-a3b3-2e469caa09da"
     kind: spec
     source_path: ".spec/specs/b8ddb54c-8939-4bbd-a3b3-2e469caa09da/spec.toml"
     title: "context-stack rule-backed README tree"
-    summary: "Give `context-stack` a repo-local rule workspace and generate both its root README and its first-level child README tree from local rules."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: context,"context-stack",readme,"rule-backed",stack,tree
     scope: "This spec covers:"
     relations:
@@ -1907,14 +2252,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: a58cc1e86ebab18c7bd68c5577a0e57409a2f69ee3f96b83a391c33a5fc36eea
+    digest: f9dc390f7ade04e75fae94adfbef5b5c3cb154905f47a976fa6bad11bbd898db
     tags[3]: "context-stack",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b9129cf5-ddad-49f5-9dd0-60fdb72ee306"
     kind: spec
     source_path: "memory-api/.spec/specs/b9129cf5-ddad-49f5-9dd0-60fdb72ee306/spec.toml"
     title: store bootstrap open
-    summary: "The local memory-api store wrappers currently expose two low-level entry points:"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: bootstrap,open,store
     non_goals: "silently changing strict `open(...)` semantics for all callers forcing a scan on every successful `open_or_init(...)` call when the index is already present auto-creating missing `.ticket`, `.spec`, `.rule`, `.test`, or `.log` roots from read-only or server-start entry points ch…"
     relations:
@@ -1924,14 +2269,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c19963401ee1f19e6905411a867858fde8581d0131ef5b10a70bd3b0a926cc26
+    digest: ce9d32e160aaaf24bc69f195bbc2af19215d1b72cb76c559d270d9dde5713745
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b9bf7713-5644-413d-a99d-00866828d534"
     kind: spec
     source_path: ".spec/specs/b9bf7713-5644-413d-a99d-00866828d534/spec.toml"
     title: README shared schema rollout
-    summary: "Standardize repository README generation across `context-engine`, `context-stack`, `memory-viewers`, `memory-api`, and `viewer-api` so the repo-root and first-level child README trees share one rule-…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: readme,rollout,schema,shared
     scope: "This rollout spec coordinates four delivery branches:"
     relations:
@@ -1940,14 +2285,14 @@ entries[185]:
         ".spec/specs/59216a24-598e-48eb-a280-ee8766857c0b/spec.toml","59216a24-598e-48eb-a280-ee8766857c0b",child,spec,""
         ".spec/specs/c163eba4-51c5-496e-88cd-ef8bcd8fe433/spec.toml","c163eba4-51c5-496e-88cd-ef8bcd8fe433",child,spec,""
         ".spec/specs/cde871d1-d390-454e-ae0b-94b152baca15/spec.toml","cde871d1-d390-454e-ae0b-94b152baca15",child,spec,""
-    digest: 7f759867829bf2af36009957fc5a0698b3b215ad9458a850bb437631a4859111
+    digest: 29c372a4e8bb45c455ae8b930829863af214384329d0e70afd227383fd24ec67
     tags[4]: draft,"repo-guidance",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "baaa35ff-4eb6-4288-b4d3-257311b98aa4"
     kind: spec
     source_path: "viewer-api/.spec/specs/baaa35ff-4eb6-4288-b4d3-257311b98aa4/spec.toml"
     title: "viewer-api: store primitives"
-    summary: "Canonical specification for the shared client-side store helpers under"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: primitives,store,"viewer-api"
     relations:
       parent:
@@ -1956,14 +2301,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 2061279675cdd2b36e660d40efa56caaaa45aef718fab35c3a38dd9d8bf22613
+    digest: 5f48e76377bdff73231789273146449d7c77c98c3b8440e71bcd0ddbcad7390b
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bb77b62c-bb18-4274-8ba2-7543f6d81ff5"
     kind: spec
     source_path: "memory-api/.spec/specs/bb77b62c-bb18-4274-8ba2-7543f6d81ff5/spec.toml"
     title: schema_registry
-    summary: "Source: `crates/memory-api/src/model/schema_registry.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: registry,schema,schema_registry
     relations:
       parent:
@@ -1972,14 +2317,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 5cdb90baf50193deb4ecc527b73c6c0e8e71ef070f468375ff8beb0a894fb4a3
+    digest: d2706dd1f27c122791c46140026dd867de8db72deccfe8371322fcdf66094f69
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bbd92962-33f4-4b9e-b301-f4ce9909c135"
     kind: spec
     source_path: ".spec/specs/bbd92962-33f4-4b9e-b301-f4ce9909c135/spec.toml"
     title: insert_sequences
-    summary: "`WorkspaceManager::insert_sequences` performs bulk graph induction over an"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: insert,insert_sequences,sequences
     relations:
       parent:
@@ -1988,53 +2333,53 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 71224cd94b3d9435fe1182266848cdc448e6c1a64cc826f5e4324d3253027488
+    digest: 4a6f8c8d072290787b5336ad7950b5237789f1787e42c01401844d8d92095e0f
     tags[3]: "context-stack",draft,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bca2c4a5-b39e-4896-91f2-8453a1f4ff60"
     kind: spec
     source_path: ".spec/specs/bca2c4a5-b39e-4896-91f2-8453a1f4ff60/spec.toml"
     title: "Generalize graph improvements across all memory-viewers"
-    summary: "The four graph improvements implemented in ticket-viewer need to be generalized to spec-viewer and log-viewer:"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: across,generalization,generalize,graph,improvements,"memory-viewers"
-    digest: ac19c9b20cfce948a716baa91a8d6a14b822f5d60a60d7d266164194ecf2206d
+    digest: faed5f9a87c636732ba9f4a9d7c20455c552053fcc065d77a82bbbc3c6410190
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bcea435e-c397-4e30-846f-c5e58cfa0755"
     kind: spec
     source_path: ".spec/specs/bcea435e-c397-4e30-846f-c5e58cfa0755/spec.toml"
     title: Smooth repository README surfaces
-    summary: "Make the repository-root README surfaces navigable and consistent enough to iterate on without re-auditing the same structural gaps each time."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: readme,repository,smooth,surfaces
     scope: "Manual quick-fix refresh for `context-engine/README.md` and `context-stack/README.md`. Rule-source updates for the generated repository READMEs in `memory-viewers`, `memory-viewers/memory-api`, and `memory-viewers/viewer-api`."
-    digest: 9cfb5b8830a0484a7f3eeb8081f3a19d51e42872efb175492d48696fce859c90
+    digest: 70d5e08685ad9a2a345187673369ac8cdb07317f7ece1556675e24b04cbef392
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "be7d7ae7-bb1f-4438-813d-f69f17d65cf6"
     kind: spec
     source_path: "memory-api/.spec/specs/be7d7ae7-bb1f-4438-813d-f69f17d65cf6/spec.toml"
     title: CLI and Viewer Installation Contract
-    summary: "This spec defines the canonical installation contract for the `memory-api` operator surfaces that are exposed to users through generated README documentation. The goal is to keep one synchronized ins…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: contract,installation,viewer
-    digest: 47f8ea7014a3f50261a8d4b67d8ffd93c3e37f64df68e3973e1e6fe04290b661
+    digest: ac3349d66755653e06737927a22f7116c76cc03ed81730ce4f8f649b544a7642
     tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "beed5b3c-b645-4c80-8eaa-e76978822ef3"
     kind: spec
     source_path: "memory-api/.spec/specs/beed5b3c-b645-4c80-8eaa-e76978822ef3/spec.toml"
     title: Representative Fixture Population
-    summary: "The shared memory workspace fixture provides deterministic, representative data for every in-scope memory domain so matrix tests, benchmark matrices, transport tests, and backfill workflows exercise …"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: fixture,population,representative
     scope: "Populate root and nested worktree fixture stores with many internally consistent entities for tickets, specs, rules, sessions, tests, logs, docs, and audit inputs where the domain has a local store surface. Include cross-store references such as tickets to specs, validation exec…"
     non_goals: "Adding new storage capabilities for domains that are intentionally read-only or append-only. Replacing focused unit tests for each domain. Defining final CI profile selection; that belongs to the later test-profile ticket."
-    digest: a92efee3da2e94e5ab0edf5710bc14bb1d231623dd296a691dd0598a3aac5b74
+    digest: 9169c7b6006ad49bbc5c59c1ab61e08d88f9670517a6ca231a837d76681ab1e4
     tags[4]: draft,"memory-fixtures",root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "bf217ce5-8890-4749-9a2d-deffb6d0f4dd"
     kind: spec
     source_path: ".spec/specs/bf217ce5-8890-4749-9a2d-deffb6d0f4dd/spec.toml"
     title: "Domain-owned thin generator architecture for store indexes"
-    summary: "Define the architecture boundary for store-index generation so each domain owns a **thin** generator while `memory-api` exposes only reusable, domain-agnostic infrastructure. An implementer must be a…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: architecture,"domain-owned",generator,indexes,store,thin
     scope: "The ownership boundary between `memory-api` (generic) and domain crates/CLIs (thin generators). The minimal extension-point surface required to keep generators thin. The push-model dependency direction (no `memory-api -> domain` edges)."
     non_goals: "Does not implement any generator (deferred to the per-domain generator tickets). Does not redefine `IndexEntry` or the TOON sidecar format (owned by `0dba399a` / `e7a0ee3c`). Does not decide git-hook triggers or performance budgets (sibling specs). Does not define the per-field …"
@@ -2045,14 +2390,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: d789ec0c486514dd552bd0793077f0cf49e8284315ba1f799d4b32c038a3a4ba
+    digest: e870411bfacaab057316f604ddbdc9d405a8291051a3ea8e18624035f8cbf44b
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c163eba4-51c5-496e-88cd-ef8bcd8fe433"
     kind: spec
     source_path: ".spec/specs/c163eba4-51c5-496e-88cd-ef8bcd8fe433/spec.toml"
     title: README completeness audit
-    summary: "Add a mechanical completeness check for the README contract so missing generation, parent or child navigation blocks, installable-content sections, or command-doc references fail before review."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: audit,completeness,readme
     scope: "This spec covers:"
     relations:
@@ -2062,14 +2407,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c27607852d194ccd70933acf13184183821187d900f912527a178d003c9f8867
+    digest: c346ccf4d39a4d98e35f8ff80d349584e56580de558d068c35a96fb425d6e0de
     tags[3]: draft,"repo-guidance","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c23166c7-2315-4b89-9160-cde7df3086e6"
     kind: spec
     source_path: "viewer-api/.spec/specs/c23166c7-2315-4b89-9160-cde7df3086e6/spec.toml"
     title: frontend lifecycle
-    summary: "Frontends are static-asset bundles produced by `trunk` (Dioxus/WASM) or"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: frontend,lifecycle
     relations:
       parent:
@@ -2078,14 +2423,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 0e9fd5f55a4e330b2454d7d95d04fb7c51bfff917dda6436a48c30a148d60e5f
+    digest: 4a52857f59f2a3b34403471f0560f4efe90ef9258f9c6c32a33aa247f958df50
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0"
     kind: spec
     source_path: ".spec/specs/c4f7b0ae-9690-4cc2-b25f-c8ec49a504d0/spec.toml"
     title: "peek-cli consumption and level-of-detail validation for generated indexes"
-    summary: "Define the `peek-cli` consumption and level-of-detail (LOD) validation plan for generated store indexes, so generators are reviewed against token-efficient agent consumption, not just correctness. Ge…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: consumption,generated,indexes,"level-of-detail",peek,"peek-cli",validation
     scope: "LOD tiers the markdown rendering must expose for peek consumption. The cross-domain peek validation matrix (markdown + TOON). The invariant that LOD presentation never changes digest or breaks diff stability."
     non_goals: Does not implement LOD rendering (generator tickets). Does not benchmark runtime performance (benchmarking spec `98bc6b1c`). Does not change the digest schema (`0dba399a`).
@@ -2096,14 +2441,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1d5cba4363f04550ab40f7b6d8ff09207d86131b37eb5039d95e4dc9a76d2ec3
+    digest: b72f53b524fbc1ec4bbaf2962869ba6adddb33f12b3cd3dff1d34b0857a14928
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c598ddb2-4d3a-4b81-90ea-8b25a54b8469"
     kind: spec
     source_path: ".spec/specs/c598ddb2-4d3a-4b81-90ea-8b25a54b8469/spec.toml"
     title: "Benchmarking and profiling plan for store-index generation"
-    summary: "Define the benchmarking and profiling plan for store-index generation so hook automation and generator implementations share explicit latency budgets, a repeatable measurement method, and evidence re…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: benchmarking,generation,plan,profiling,"store-index"
     scope: "Latency budgets for incremental and full runs. Criterion + tracing measurement methodology. Representative fixtures and the regression rule. The hand-off of evidence to git-hook automation."
     non_goals: "Does not implement generators (generator tickets). Does not wire git hooks (git-hook-automation spec). Does not redefine digest inputs or rendering behavior."
@@ -2114,7 +2459,7 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4f30bbb21316e24499fa0d0bad6a274f9e8c0aebc243ff0f5404deb86b7c24b1
+    digest: f34923c28cdaa8f17c7d348c8186bf13fb4e823c31492460d14a9f4cefd46f31
     tags[3]: draft,"memory-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c5b11920-6ae8-4686-ae07-b8e9f8100bf8"
@@ -2133,11 +2478,28 @@ entries[185]:
     digest: 92338d7d792b383279f2b1759536496583a874eb6927d701d6b37f42b0c45da9
     tags[3]: draft,"scope:component","spec-viewer"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+    kind: spec
+    source_path: ".spec/specs/c677182e-90da-4ac3-8b94-9e2e97c825cf/spec.toml"
+    title: Durable session workflow graph and handoff continuity
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[6]: continuity,durable,graph,handoff,session,workflow
+    non_goals: "Copying ticket lifecycle state into the session store. Requiring feedback-api for context or workflow persistence. Semantic auto-pinning or replacing the ticket graph. Claiming untested Windows replacement or crash/power-loss durability semantics."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+        entry_id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 67b481cdabec2690f266efd966ef7a63e9a9831ca8cdc1d36492d235715025b2
+    tags[3]: reviewed,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "c6e3cc79-a2de-49f1-9c99-effe1b64a873"
     kind: spec
     source_path: "viewer-api/.spec/specs/c6e3cc79-a2de-49f1-9c99-effe1b64a873/spec.toml"
     title: "viewer-api: client log endpoint"
-    summary: "Canonical specification for `viewer-api::client_log` — the server endpoint"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: client,endpoint,"viewer-api"
     relations:
       parent:
@@ -2146,27 +2508,36 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 12b3db0a12deef65f1a9b31886ffc73d0aeb3a09b7b7093f2cfb3f3688fd2270
+    digest: 9c6f40f280d241685f6f95087b78bc611a61556677e4e43920788896e7585fd2
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c6feacef-a06e-4769-a4cf-5c557be50f7d"
     kind: spec
     source_path: ".spec/specs/c6feacef-a06e-4769-a4cf-5c557be50f7d/spec.toml"
     title: "context-stack"
-    summary: This branch captures the most confident specification material currently
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: context,"context-stack",stack
     relations:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/0c141c86-957c-4b93-b86e-f50a05e84763/spec.toml","0c141c86-957c-4b93-b86e-f50a05e84763",child,spec,""
         ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml","16c3ad95-451d-4c09-a118-ca90bcefed9a",child,spec,""
-    digest: de2b8b3f9fb1c16cac23a478c50754fce881a20b92074454c63d28547c7e1fb6
+    digest: 1373b779253e5f05d29ff870c57356c923c5aa0ba345d085708804de4ca772b3
     tags[4]: "context-stack",draft,root,"scope:system"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c8590004-1532-4559-91a0-8c9065ffa58c"
+    kind: spec
+    source_path: "memory-api/.spec/specs/c8590004-1532-4559-91a0-8c9065ffa58c/spec.toml"
+    title: "Spec-contract v2 — motivation, dependent expectation, computed guards, and positions"
+    summary: "Upgrade the `aligned-structure:v1` spec template into a real contract (`v2`) so specs stop being module-name stubs and become dependable, verifiable contracts consumed by session construction (epic e…"
+    keywords[9]: computed,contract,dependent,expectation,guards,motivation,positions,spec,"spec-contract"
+    digest: e717e8cfa9eeb6e98236ae41a62bc9990cc7e103413fdeffca435006420b9106
+    tags[3]: draft,root,"spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c9b40e5d-1239-4ad6-99b1-0b759a9c4c49"
     kind: spec
     source_path: "viewer-api/.spec/specs/c9b40e5d-1239-4ad6-99b1-0b759a9c4c49/spec.toml"
     title: "viewer-api: pagination + query helpers"
-    summary: "Canonical specification for `viewer-api::pagination` and `viewer-api::query`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: helpers,pagination,query,"viewer-api"
     relations:
       parent:
@@ -2175,14 +2546,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 9169853652fc8e1965aee65aec6d3770a768f05b37638e3dc64d78f3f878221d
+    digest: 264ec4c05c4db3467bd239eb06b07fc77abad7bdc6bd59afd91809a905625174
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "cbac783c-e3a1-4a31-ac11-a539b39164c5"
     kind: spec
     source_path: ".spec/specs/cbac783c-e3a1-4a31-ac11-a539b39164c5/spec.toml"
     title: "spec-editor: section editor"
-    summary: The `SectionPanel` and `SectionEditor` components manage a spec's named subdocuments
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: editor,section,"spec-editor"
     relations:
       parent:
@@ -2191,14 +2562,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 7534e253208926cb6c851cc21a97d5ed3c0bffb4c84c8497fb89e166608912a9
+    digest: b472a365c75ad3956d87f22b51243d39fcee2043d51fc8604e9536cc443c856c
     tags[3]: draft,"scope:component","spec-editor"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "cde871d1-d390-454e-ae0b-94b152baca15"
     kind: spec
     source_path: ".spec/specs/cde871d1-d390-454e-ae0b-94b152baca15/spec.toml"
     title: Shared README schema and validation
-    summary: "Add a shared README schema layer to `rule-api` so repository README targets can inherit a standard structure, enforce required blocks, and expose enough validation detail to fail fast when navigation…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: readme,schema,shared,validation
     scope: "This spec covers:"
     relations:
@@ -2208,7 +2579,7 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c411feb0f86ca42dfbe6e6e6c466529b6c148a4d264ee7ebe67b8cac64d8050c
+    digest: "0746a5afc103ad4b311014206a1246aa992c2d793ee19dfc4bb8ece921891414"
     tags[3]: draft,"rule-api","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "cf5e2942-1a47-43cc-a0ee-14e5774680a6"
@@ -2226,7 +2597,7 @@ entries[185]:
     kind: spec
     source_path: ".spec/specs/cfbb4500-4632-4a95-96a1-838dc4dccfd5/spec.toml"
     title: "memory-viewers aggregate README schema adoption"
-    summary: "Adopt the shared README schema in the aggregate `memory-viewers` repo root and normalize its child blocks after the `memory-api` and `viewer-api` child roots settle."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: adoption,aggregate,memory,"memory-viewers",readme,schema,viewers
     scope: "This spec covers:"
     relations:
@@ -2236,14 +2607,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: fd33892af44bcbc1d2be1ec13b97076f17aaf857708685052d2d014b53b07d25
+    digest: ffac743266dbd3bde534602ad66c0b893e1f2c0fd28d4acffe24b788c1c5a9af
     tags[3]: draft,"memory-viewers","scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d3dea825-4850-4a95-a03d-4884ce85a232"
     kind: spec
     source_path: "memory-api/.spec/specs/d3dea825-4850-4a95-a03d-4884ce85a232/spec.toml"
     title: edge
-    summary: "Source: `crates/memory-api/src/model/edge.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: edge
     relations:
       parent:
@@ -2252,14 +2623,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 66cc5d17989bbc9f0657e4cf7ff5edfebeb573a6cf0d595945d6aedcf007226e
+    digest: 27e3f09287af810c1c9569c3586c9875bb30121e96f587d852799db47e1b35bc
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d4831fdc-9790-4a26-ac32-d675bb6a7792"
     kind: spec
     source_path: "memory-api/.spec/specs/d4831fdc-9790-4a26-ac32-d675bb6a7792/spec.toml"
     title: server
-    summary: "Source: `tools/mcp/spec-mcp/src/server.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: server
     relations:
       parent:
@@ -2268,14 +2639,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e64bc234da0f160b4aecf31684715a43359772084aad4b876e0508eeb0405196
+    digest: 71db176cb0bf39fadbee85aa103d5ae65671888a2417d63c293815c337bf063e
     tags[3]: draft,"scope:public","spec-mcp"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d702ed9e-f75c-4727-8f05-1b2b244ec74f"
     kind: spec
     source_path: "memory-api/.spec/specs/d702ed9e-f75c-4727-8f05-1b2b244ec74f/spec.toml"
     title: "Blocker trees and recently-unblocked workflow ordering"
-    summary: "The current workflow surface has two strong but separate pieces:"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: blocker,ordering,recently,"recently-unblocked",trees,unblocked,workflow
     relations:
       parent:
@@ -2284,37 +2655,28 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 719dff81e5e458a72d191e7becff7a2e6232c6b91c06baf7715471ce1f657d51
+    digest: 9810fbce503d49a378e28f898365f8b6771b3c1a73859720b301c02688e834a1
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d8b515b8-86fd-4366-9fff-1946f43c3030"
     kind: spec
     source_path: "memory-viewers/.spec/specs/d8b515b8-86fd-4366-9fff-1946f43c3030/spec.toml"
     title: "spec-viewer"
-    summary: "`spec-viewer` is a single-process, GPU-accelerated web application for **reading and"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: spec,"spec-viewer",viewer
     relations:
       children[3]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-viewers/.spec/specs/8c2bbb42-4ca0-43a3-8196-334218bf543e/spec.toml","8c2bbb42-4ca0-43a3-8196-334218bf543e",child,spec,""
         "memory-viewers/.spec/specs/95562129-87d8-4d86-9cd3-c8a09473a6d0/spec.toml","95562129-87d8-4d86-9cd3-c8a09473a6d0",child,spec,""
         "memory-viewers/.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/spec.toml","c5b11920-6ae8-4686-ae07-b8e9f8100bf8",child,spec,""
-    digest: 3640f2218fae501990dc5e8a2ad3a0dd1cb22d0c9a5241c7371cf6178bb29431
+    digest: 9c7c22f86c735ff6a33d78eca5452be8a8a7126d1fc08cfd91220f0e3798302f
     tags[4]: draft,root,"scope:system","spec-viewer"
-    generated_at: "1970-01-01T00:00:00Z"
-  - id: "d8c6114b-1188-4bc4-a8fb-dbfd3b1816ee"
-    kind: spec
-    source_path: ".spec/specs/d8c6114b-1188-4bc4-a8fb-dbfd3b1816ee/spec.toml"
-    title: probe
-    summary: ""
-    keywords[1]: probe
-    digest: 81667b44a1487a9627c54b296da4c60d927450953631009ed069cc641d17bd50
-    tags[3]: draft,root,"viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
     kind: spec
     source_path: "memory-api/.spec/specs/db5c02e5-31f5-4a40-bf9c-2227eab412b2/spec.toml"
     title: "spec-http"
-    summary: Bootstrapped from source analysis.
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: http,spec,"spec-http"
     relations:
       children[7]{canonical_path,entry_id,relation_kind,content_kind,digest}:
@@ -2325,14 +2687,14 @@ entries[185]:
         "memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml","4482f2d0-131c-4ea0-91c0-f0bde198eedd",child,spec,""
         "memory-api/.spec/specs/717be077-49f6-49bc-8221-ea5105ba5ff3/spec.toml","717be077-49f6-49bc-8221-ea5105ba5ff3",child,spec,""
         "memory-api/.spec/specs/77ca6056-180d-4e88-a76a-dcf8ff280c7a/spec.toml","77ca6056-180d-4e88-a76a-dcf8ff280c7a",child,spec,""
-    digest: 1f06c53a217a9dff7c0dff06b3f0140d7176cb8242fb484195fde489c1597fa2
+    digest: 3d44f7a28ff3f719741cbb8e8873dcdb9e4c145bca792e889defb27e6aebc67d
     tags[4]: draft,root,"scope:public","spec-http"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ddac3853-65b3-4b6b-b216-81e78e250bb1"
     kind: spec
     source_path: "memory-api/.spec/specs/ddac3853-65b3-4b6b-b216-81e78e250bb1/spec.toml"
     title: "ticket-cli board option naming"
-    summary: "`ticket board` should present the same flag naming style as the rest of `ticket-cli`."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: board,naming,option,"ticket-cli"
     relations:
       parent:
@@ -2341,14 +2703,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: beaf07cfb007a24cef2d1fe7a4a705978a36cd68605149bff294c90d328b27a6
+    digest: b1af0f5f6751cfa7e85cbc23fb40b2e8b685621d7e3a6ddde774e860446dadd4
     tags[3]: draft,"scope:public","ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "de14117a-df7b-4f2a-87b8-55074ade0487"
     kind: spec
     source_path: "memory-api/.spec/specs/de14117a-df7b-4f2a-87b8-55074ade0487/spec.toml"
     title: manifest_format
-    summary: "Source: `crates/memory-api/src/model/manifest_format.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: format,manifest,manifest_format
     relations:
       parent:
@@ -2357,14 +2719,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1c93d1d6e6c52931ff4c8ad6f913dfd56d05ec6bc666ba63b5689e3d941ce672
+    digest: 3322e2e4116cf15d970dd7aadf163e886402eb9167ffe595ae73d224c5e0eacc
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "df67eee9-08a0-4a6e-b1ff-b483599d232d"
     kind: spec
     source_path: "viewer-api/.spec/specs/df67eee9-08a0-4a6e-b1ff-b483599d232d/spec.toml"
     title: "viewer-api: CodeViewer + FileContentViewer"
-    summary: Canonical specification for the shared code/file display Dioxus components
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: code,codeviewer,filecontentviewer,viewer,"viewer-api"
     relations:
       parent:
@@ -2373,14 +2735,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 976d99c54e446477a59a9411c6b87c1f42a0613f1f70fadbff221d5e81a7202b
+    digest: aba866fa496e2b1473810f2bc8e2453f89e6adecf5188dc62b0f4b99cb257345
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e0913182-7a5e-4c8f-a750-799afd58baae"
     kind: spec
     source_path: ".spec/specs/e0913182-7a5e-4c8f-a750-799afd58baae/spec.toml"
     title: "context-read pipeline"
-    summary: "This internal child spec defines the intended `context-read` algorithm for"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: context,"context-read",pipeline,read
     relations:
       parent:
@@ -2389,41 +2751,60 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: "0319c9ddf2ff7f226d0ec9baffd6b59787aa76cdb87cde678280ad81c225cef5"
+    digest: d8e2e23b7f8d00580a0b095f167b7c643e628d08f087148946de40263f63513a
     tags[3]: "context-read",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e09cb882-4146-47c5-b14e-ad35a8f53173"
     kind: spec
     source_path: "memory-api/.spec/specs/e09cb882-4146-47c5-b14e-ad35a8f53173/spec.toml"
     title: Persist dependency edges in tracked ticket files
-    summary: "Dependency edges created through `ticket link` and removed through `ticket unlink` must survive a rebuild from the tracked ticket store, not only the ignored SQLite index."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[10]: backed,dependency,edge,edges,file,files,persist,persistence,ticket,tracked
-    digest: d2cdeb2f3486370be04024f67c12935b121c11fa8b72c2d1615f4fa4dfbd7194
+    digest: 93c399d28c2e441bd878c8149280e156a563e17f7672db6c5bdb47215bec5d64
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e101aa4a-f5c1-413b-abb4-f4360c0a1123"
     kind: spec
     source_path: ".spec/specs/e101aa4a-f5c1-413b-abb4-f4360c0a1123/spec.toml"
     title: Spec system guidance and Spec Agent workflow
-    summary: "Add generated agent guidance for spec-system work so spec creation and updates consistently follow a clear workflow."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: agent,guidance,spec,system,workflow
-    digest: 51d66975636a1c223ce78b074ab2b79a6a9c26240585763c36f415c3ffd65a32
+    digest: 1c6cd4ad46e8798d5f32b46e3b30dc283a610e02c356f2ce026824181e2bd675
     tags[4]: "agent-workflow",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e302d4c3-c24f-4778-bef0-453d3c1997bb"
+    kind: spec
+    source_path: ".spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/spec.toml"
+    title: "Cross-viewer measurable browser and GPU validation"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[6]: browser,cross,"cross-viewer",measurable,validation,viewer
+    digest: 3854b3623955eb4f2671dc17e77e8867a0fe5b791323af7c0459d2e660eb09f0
+    tags[4]: draft,root,"scope:internal","viewer-platform"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e4ac6ae2-3ef6-4104-911d-eb27fae70d1a"
     kind: spec
     source_path: ".spec/specs/e4ac6ae2-3ef6-4104-911d-eb27fae70d1a/spec.toml"
     title: "feedback-api: structured feedback inbox and deep reconciliation search"
-    summary: "User and agent feedback is fragmented, hard to query at scale, and not consistently tied to remediation workflows. Teams need an inbox-like store with structured metadata, deep search, and reconcilia…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[7]: deep,feedback,"feedback-api",inbox,reconciliation,search,structured
-    digest: bd9074e3c084002023c4b5bbf229630fecb1b4709527019d49c71f0416b4330a
+    digest: 87353a81940a200d9d13835458d577890344a47a0658853fd6b559f81f0e6bfd
     tags[3]: draft,"feedback-api",root
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e5294ae5-6bff-44dc-81a9-24a44615b775"
+    kind: spec
+    source_path: "memory-kernel/.spec/specs/e5294ae5-6bff-44dc-81a9-24a44615b775/spec.toml"
+    title: Shared transport harness
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[3]: harness,shared,transport
+    non_goals: "Domain command schemas, MCP tools, and HTTP routes are NOT standardized by this crate. Domains keep command dispatch, MCP tool/handler registration, and HTTP router registration. Frontend viewers and VS Code extensions remain outside the harness. The harness does not own domain …"
+    digest: 7a6d626b7cc6673109ab86754f753bcc642c21a19617810075c174ce8179d839
+    tags[4]: draft,root,"scope:public","transport-harness"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e631e914-1840-4fec-9df5-b50a85c6cf00"
     kind: spec
     source_path: ".spec/specs/e631e914-1840-4fec-9df5-b50a85c6cf00/spec.toml"
     title: insert_sequence
-    summary: "`WorkspaceManager::insert_sequence` induces graph structure from a text string."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: insert,insert_sequence,sequence
     relations:
       parent:
@@ -2432,28 +2813,28 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 72c4c3e49213273531121315d22bd1f5145d2ae55327a8fb0904d396a2c183d1
+    digest: 5325570858986b8f3c7438abd1332258400f0ab37e47a6434385b7f9a4313c43
     tags[3]: "context-stack",draft,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "e815f261-ca7d-4957-8f68-666e1e1dfbfe"
     kind: spec
     source_path: "memory-api/.spec/specs/e815f261-ca7d-4957-8f68-666e1e1dfbfe/spec.toml"
     title: Rule Workspace Topology and Composition
-    summary: "`rule-api` already supports canonical rule storage in `.rule/rules/**`, repo-scoped filtering, hierarchical target outlines, and deterministic generation from a single `rule-targets.yaml`. The next s…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: composition,rule,topology,workspace,workspaces
     non_goals: "Replacing the existing top-level `context-engine/.rule` workflow immediately. Allowing parent repos to mutate child rule entries in place. Hiding rule provenance when multiple workspaces contribute to one target."
     relations:
       children[2]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/3b96ec1c-4e99-48f4-86e5-a36ba24b827a/spec.toml","3b96ec1c-4e99-48f4-86e5-a36ba24b827a",child,spec,""
         "memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml","5de125ad-eb0c-4bcb-8e6d-175df1ba33a6",child,spec,""
-    digest: 3af5daf54c539e72d32e256587ed2caf0ed8593adbc0cfdf0f9b196f317140a2
+    digest: 901ecfa4c72849b3938f27fa16504e4e9d0952c6a52615b6713a5c68b51faad0
     tags[4]: draft,root,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec1013ff-2d5f-4860-8d25-64acb6c60587"
     kind: spec
     source_path: "memory-api/.spec/specs/ec1013ff-2d5f-4860-8d25-64acb6c60587/spec.toml"
     title: bootstrap
-    summary: "Source: `tools/cli/spec-cli/src/cli/commands/bootstrap.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: bootstrap
     relations:
       parent:
@@ -2462,14 +2843,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: "00273dfb688fe3234457797985cab418f2c4c7ac83dfc7f9ed2b69df6bceed67"
+    digest: 4c8869806865170a33b241e2a4fd9180a7e87fb8ffbef610fb276f72182bd73e
     tags[3]: draft,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec22fe34-2d24-4dc5-a067-85121bed3655"
     kind: spec
     source_path: "memory-api/.spec/specs/ec22fe34-2d24-4dc5-a067-85121bed3655/spec.toml"
     title: "Cross-interface best-next ordering"
-    summary: "Best-next-ticket discovery must remain consistent anywhere the repository surfaces candidate work."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: best,"best-next","cross-interface",next,ordering
     relations:
       parent:
@@ -2478,14 +2859,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 0f96e1409baa3300c23ac9f58a828678e13747f962b8a91a7dca442074b5cd61
+    digest: 9d25949e469e3f6b07840436cc948684364501f8652f2c9c147184ccac9a9beb
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ee36710b-1725-436a-a5fc-1e5a7d27f6bb"
     kind: spec
     source_path: "memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml"
     title: cli
-    summary: "Source: `tools/cli/spec-cli/src/cli.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     relations:
       parent:
         canonical_path: "memory-api/.spec/specs/1d6481ff-308b-45ca-ac91-4c2f8d5546f3/spec.toml"
@@ -2495,14 +2876,14 @@ entries[185]:
         digest: ""
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         "memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml","91b5b5fe-0046-424c-b5e5-3fb961f4d940",child,spec,""
-    digest: 7a87b2498c3d0254edcd7dd79097103b0c5f2a39887a44d9017db01e04b8a69a
+    digest: 54818feff2ff47b8e8faf70e099043f3f388bffbdaff185f36368d3141a81102
     tags[3]: draft,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f081e8f4-7d28-4505-9faf-85c65b033b44"
     kind: spec
     source_path: "memory-api/.spec/specs/f081e8f4-7d28-4505-9faf-85c65b033b44/spec.toml"
     title: entity_fs
-    summary: "Source: `crates/memory-api/src/storage/entity_fs.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[2]: entity,entity_fs
     relations:
       parent:
@@ -2511,14 +2892,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 31c1dbc2aef0eabff8497b4b802f1267246837be4522d6fbc7360e3c75efccb2
+    digest: eda1106156ec1f14f073f6073ebed0ce5efec9d82eb7909f2a60b9b0b510cf89
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f153483c-f984-4564-94ac-36234b5cbe3f"
     kind: spec
     source_path: "viewer-api/.spec/specs/f153483c-f984-4564-94ac-36234b5cbe3f/spec.toml"
     title: "viewer-api: WebGPU overlay"
-    summary: Canonical specification for the WebGPU overlay subsystem under
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: overlay,"viewer-api",webgpu,wgpu
     relations:
       parent:
@@ -2527,14 +2908,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: f582edb40c2630e02f7560de4f719bc33429b65a4dc0fb2d18fa2980552c4d88
+    digest: 1ef0c8af154bd21ad01b879c7b4c7b7a57172198e3f80041a9eac85551ade56e
     tags[3]: draft,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f156fa16-7910-4c98-b69c-f848073dba00"
     kind: spec
     source_path: "memory-api/.spec/specs/f156fa16-7910-4c98-b69c-f848073dba00/spec.toml"
     title: search
-    summary: "Source: `crates/memory-api/src/storage/search.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: search
     relations:
       parent:
@@ -2543,8 +2924,19 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 4ca2a7c26fd11ef455ca1c3c4ee794f268cfc4caec5683b70e18ed7f8d7ed108
+    digest: 6cfc87f6d2557ec48190a346fa77b5c87f6d1fcd31d60bc98098375a4fb31ff9
     tags[3]: draft,"memory-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f5e0df47-d0ec-4456-b268-689f2a41ecd7"
+    kind: spec
+    source_path: ".spec/specs/f5e0df47-d0ec-4456-b268-689f2a41ecd7/spec.toml"
+    title: Session Context Packing and Bootstrap Policy
+    summary: "<!-- aligned-structure:v1 -->"
+    keywords[5]: bootstrap,context,packing,policy,session
+    scope: "This spec covers upstream request-shaping policy and future prompt-facing compaction behavior for: tool-result compression and guarding before model reasoning routine-action discipline in workflow prompts and agent guidance bootstrap and handoff policies that prefer durable stat…"
+    non_goals: "assuming that transcript capture itself can reduce the cost of the current request changing the semantics of authoritative stored raw transcripts in this first phase deleting audit-grade raw event history building the full session pin/unpin runtime described in the broader boots…"
+    digest: 6d5a6c5444d138cf85b5147aedaae036474f62d5143d746fadf4600f7fd6be0a
+    tags[4]: "agent-workflow",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f9c32554-9884-41c4-8b5b-d1d32b37e341"
     kind: spec
@@ -2559,25 +2951,25 @@ entries[185]:
     kind: spec
     source_path: ".spec/specs/fa5265cc-e82f-4bbe-b1b5-dad7e6672d06/spec.toml"
     title: "Tracker-improvement effort field"
-    summary: "The built-in `tracker-improvement` ticket schema includes an optional `effort` field used to capture the estimated token budget required to complete the ticket."
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[5]: effort,field,improvement,tracker,"tracker-improvement"
-    digest: 531ab06c13e4ee33b6b9e959d33d7bc5f150f89be37a786765275fd014066357
+    digest: cff3465779697dad8646fb612803ea55214be1a1b91738d055b0124a4b21439d
     tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "fb968dea-b658-4c0d-b138-266bdd2615f9"
     kind: spec
     source_path: ".spec/specs/fb968dea-b658-4c0d-b138-266bdd2615f9/spec.toml"
     title: functional v1 sandbox orchestration layer
-    summary: "Define the first functional sandbox orchestration slice for this repository's agentic workflow system while keeping memory-stack traceability intact. The first delivery target must produce isolated a…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[4]: functional,layer,orchestration,sandbox
-    digest: 7e18d0af4427875fa1faef3c4b7e15d53f3b1752786602afb1c13efbcbb7ed95
+    digest: b80e4e3b5d29489f5e98293dcf4fae4672467054b39a5e84aa337dcec71e3f8b
     tags[3]: "context-engine",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "fda5c915-5c37-432f-acf1-8b20c6219fdc"
     kind: spec
     source_path: ".spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/spec.toml"
     title: "Cascade context gathering via hard cross-store links"
-    summary: "Define the cascade that, at `session_init(ticket_id)`, proactively gathers selective context by following **hard ID links** from the ticket to directly related specs, rules, and tickets across stores…"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[6]: cascade,context,"cross-store",gathering,hard,links
     scope: "Input: a ticket URN/id at `session_init`. Follow **hard ID links only** (D5): ticket→spec via spec↔ticket cross-entity edges; ticket→ticket via `depends_on` edges; rule→ticket/spec via explicit scoped attachment. Emit each as an auto-pin **suggestion** with a `reason`. Resolve e…"
     non_goals: "Semantic auto-pinning of vague matches (agent-driven, out of scope). Creating the hard-link edges themselves (owned by the cross-entity-edge tickets in the memory-api store). Implementing the URN resolver (owned by the cross-store reference tickets)."
@@ -2588,14 +2980,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 91206dad4b98ae67fc8313a4e23f03f6b127837660319ab00ef0fbb3c0205fa1
+    digest: 378df359a50436ecf96156f85810e99daefc993587361d314c157942278691dc
     tags[3]: draft,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "fded16bb-1a4b-4dd9-a610-c26459d19403"
     kind: spec
     source_path: "memory-api/.spec/specs/fded16bb-1a4b-4dd9-a610-c26459d19403/spec.toml"
     title: schema
-    summary: "Source: `crates/memory-api/src/storage/schema.rs`"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[1]: schema
     relations:
       parent:
@@ -2604,14 +2996,14 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: fd3f9dea7a365a9663bdb51958a18a3584b24cab9c03f3392d89aa964483911d
+    digest: 7420a9564200abf16c736f3794f3f6e899afeab9a3b515f18463a0064b328e30
     tags[3]: draft,"memory-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ffb89723-178b-435b-8591-c639d3c7d5dd"
     kind: spec
     source_path: ".spec/specs/ffb89723-178b-435b-8591-c639d3c7d5dd/spec.toml"
     title: "spec-editor: coderef editor"
-    summary: "The `CodeRefEditor` component provides a three-step picker for adding or editing"
+    summary: "<!-- aligned-structure:v1 -->"
     keywords[3]: coderef,editor,"spec-editor"
     relations:
       parent:
@@ -2620,6 +3012,6 @@ entries[185]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 1ad295b64ff710ee85d34a2f518bf04e03f8acacdf556c5f656ee5fbdcf73ee5
+    digest: e8ff78466d25aed73eec4842fc094a448ac2010a140dd65a653fb7f3a2e5ea77
     tags[3]: draft,"scope:component","spec-editor"
     generated_at: "1970-01-01T00:00:00Z"

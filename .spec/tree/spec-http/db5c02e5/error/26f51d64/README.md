@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=26f51d64-3bf7-4907-ae9d-2f006bb7d1fa slug=spec-http/error digest=6f8caba4c9d5 -->
+<!-- spec-index:entry id=26f51d64-3bf7-4907-ae9d-2f006bb7d1fa slug=spec-http/error digest=51489f2b0711 -->
 
 # error
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/error.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=baaa35ff-4eb6-4288-b4d3-257311b98aa4 slug=viewer-api/store-primitives digest=2061279675cd -->
+<!-- spec-index:entry id=baaa35ff-4eb6-4288-b4d3-257311b98aa4 slug=viewer-api/store-primitives digest=5f48e76377bd -->
 
 # viewer-api: store primitives
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared client-side store helpers under
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

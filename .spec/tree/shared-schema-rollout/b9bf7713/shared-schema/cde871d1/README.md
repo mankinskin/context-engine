@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=cde871d1-d390-454e-ae0b-94b152baca15 slug=repo-guidance/readmes/shared-schema digest=c411feb0f86c -->
+<!-- spec-index:entry id=cde871d1-d390-454e-ae0b-94b152baca15 slug=repo-guidance/readmes/shared-schema digest=0746a5afc103 -->
 
 # Shared README schema and validation
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Add a shared README schema layer to `rule-api` so repository README targets can inherit a standard structure, enforce required blocks, and expose enough validation detail to fail fast when navigation…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9ee9387f-5384-42a9-95c4-ecbad1713030 slug=scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill digest=f78479657e96 -->
+<!-- spec-index:entry id=9ee9387f-5384-42a9-95c4-ecbad1713030 slug=scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill digest=7f1ba36162d3 -->
 
 # scaffold: rule-generated domain-store bootstrap instructions and slash skill
 
@@ -10,11 +10,11 @@
 
 ## Summary
 
-Creating new domain stores repeatedly is slow and inconsistent. Teams need one prompt-driven bootstrap flow that generates a minimally functional store while preserving architecture constraints and r…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 
-rule-source and generated-target workflow is explicit and validated slash-command scaffold contract is explicit and architecture-constrained E2E prompt regression tickets and validation requirements are present rollout gating order across drift checks, prompt replay, and full E2…
+The repository has an explicit core profile for a fully operational foundational store. Extension profiles clearly own domain-specific workflows, attached artifacts, and richer query behavior without redefining the shared base. `test`, `log`, and `session` are treated as foundat…
 
 ## Navigation
 

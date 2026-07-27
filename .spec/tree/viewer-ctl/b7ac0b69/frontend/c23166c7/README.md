@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c23166c7-2315-4b89-9160-cde7df3086e6 slug=viewer-ctl/lifecycle/frontend digest=0e9fd5f55a4e -->
+<!-- spec-index:entry id=c23166c7-2315-4b89-9160-cde7df3086e6 slug=viewer-ctl/lifecycle/frontend digest=4a52857f59f2 -->
 
 # frontend lifecycle
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Frontends are static-asset bundles produced by `trunk` (Dioxus/WASM) or
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

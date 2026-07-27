@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=53c70cae-731b-41b5-bd1a-1de9a98eb36f slug=generated-context/git-hook-automation digest=25999655f5e0 -->
+<!-- spec-index:entry id=53c70cae-731b-41b5-bd1a-1de9a98eb36f slug=generated-context/git-hook-automation digest=52ea47d83e55 -->
 
 # Git hook automation for store-index regeneration
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the repository-local git-hook automation contract for store-index regeneration so generator tickets have one concrete execution surface instead of each hand-waving at "pre-commit/post-commit h…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

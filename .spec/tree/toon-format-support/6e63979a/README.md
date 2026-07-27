@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=6e63979a-f29b-4c6f-a4b7-5264fd9c29d4 slug=memory-api/cli/toon-format-support digest=a1ba6b40accd -->
+<!-- spec-index:entry id=6e63979a-f29b-4c6f-a4b7-5264fd9c29d4 slug=memory-api/cli/toon-format-support digest=fdf164999d5d -->
 
 # Add TOON format support across the memory-api CLI suite
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Add a compact TOON machine-readable format alongside existing JSON output across the memory-api CLI suite.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

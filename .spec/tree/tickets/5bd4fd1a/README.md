@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5bd4fd1a-cd0e-4893-9d83-452cd5b533bb slug=ticket-http/api/tickets digest=4831955fe39a -->
+<!-- spec-index:entry id=5bd4fd1a-cd0e-4893-9d83-452cd5b533bb slug=ticket-http/api/tickets digest=f24cf2ed742e -->
 
 # ticket-http: ticket list endpoint
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical contract for the ticket list API consumed by the Dioxus ticket-viewer explorer and related ticket-picking surfaces.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

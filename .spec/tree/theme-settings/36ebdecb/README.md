@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=36ebdecb-0b9e-47be-9f44-fe575aa6ad6f slug=viewer-api/theme-settings digest=de4e23d6d6bf -->
+<!-- spec-index:entry id=36ebdecb-0b9e-47be-9f44-fe575aa6ad6f slug=viewer-api/theme-settings digest=c1f7cb1468a0 -->
 
 # viewer-api: theme settings (canonical)
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical UX and behavior specification for the **shared theme-settings panel** used by every Dioxus viewer (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). The reference implementation …
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

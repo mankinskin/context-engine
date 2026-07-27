@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4482f2d0-131c-4ea0-91c0-f0bde198eedd slug=spec-http/handlers/sections digest=4f982658f17b -->
+<!-- spec-index:entry id=4482f2d0-131c-4ea0-91c0-f0bde198eedd slug=spec-http/handlers/sections digest=c96e855e8a1c -->
 
 # sections
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/handlers/sections.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

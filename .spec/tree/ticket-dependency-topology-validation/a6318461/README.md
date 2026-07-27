@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=a6318461-3a06-4d6d-aabb-7e06c33f4e1b slug=audit-api/ticket-dependency-topology-validation digest=5515721354cc -->
+<!-- spec-index:entry id=a6318461-3a06-4d6d-aabb-7e06c33f4e1b slug=audit-api/ticket-dependency-topology-validation digest=c8ac403e1a96 -->
 
 # audit-api ticket dependency topology validation
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-`audit-api` should flag orphan tickets so every active ticket participates
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

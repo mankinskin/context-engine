@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=a595eb0c-f9f1-4e29-a425-120df5334f7d slug=ticket-api/workflow/scoped-selector-contract digest=f837381ed4c9 -->
+<!-- spec-index:entry id=a595eb0c-f9f1-4e29-a425-120df5334f7d slug=ticket-api/workflow/scoped-selector-contract digest=310092f5fa46 -->
 
 # Scoped selector contract for board and next workflow discovery
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`ticket board show`, `ticket next`, MCP `board_show`/`next_tickets`, and
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

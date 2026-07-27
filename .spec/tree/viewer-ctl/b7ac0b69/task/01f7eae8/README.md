@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=01f7eae8-555d-46e2-bb54-0e0bf2b2da90 slug=viewer-ctl/lifecycle/task digest=c31e96f5a042 -->
+<!-- spec-index:entry id=01f7eae8-555d-46e2-bb54-0e0bf2b2da90 slug=viewer-ctl/lifecycle/task digest=81dc094db9c5 -->
 
 # tasks
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-A task is an ordered list of shell command invocations. Tasks are the
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

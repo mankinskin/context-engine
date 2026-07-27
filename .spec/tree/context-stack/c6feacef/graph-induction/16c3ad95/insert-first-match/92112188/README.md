@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=92112188-8acd-4573-bb22-f784fcf371ca slug=context-stack/graph-induction/insert-first-match digest=4837f80b4897 -->
+<!-- spec-index:entry id=92112188-8acd-4573-bb22-f784fcf371ca slug=context-stack/graph-induction/insert-first-match digest=b3c0c6dc7a49 -->
 
 # insert_first_match
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`WorkspaceManager::insert_first_match` induces graph structure from an existing
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

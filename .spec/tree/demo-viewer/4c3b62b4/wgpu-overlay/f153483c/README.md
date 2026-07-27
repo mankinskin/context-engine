@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=f153483c-f984-4564-94ac-36234b5cbe3f slug=viewer-api/effects/wgpu-overlay digest=f582edb40c26 -->
+<!-- spec-index:entry id=f153483c-f984-4564-94ac-36234b5cbe3f slug=viewer-api/effects/wgpu-overlay digest=1ef0c8af154b -->
 
 # viewer-api: WebGPU overlay
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the WebGPU overlay subsystem under
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

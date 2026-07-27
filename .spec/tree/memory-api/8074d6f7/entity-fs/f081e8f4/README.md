@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=f081e8f4-7d28-4505-9faf-85c65b033b44 slug=memory-api/storage/entity-fs digest=31c1dbc2aef0 -->
+<!-- spec-index:entry id=f081e8f4-7d28-4505-9faf-85c65b033b44 slug=memory-api/storage/entity-fs digest=eda1106156ec -->
 
 # entity_fs
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/storage/entity_fs.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=76da5f2d-cea9-49d9-b223-730a0c2a5d6b slug=test/transport-layer-e2e-matrix digest=266278f76fbe -->
+<!-- spec-index:entry id=76da5f2d-cea9-49d9-b223-730a0c2a5d6b slug=test/transport-layer-e2e-matrix digest=7a76b7a6158a -->
 
 # Transport-layer e2e matrix and benchmark strategy
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-This spec drafts the design for a real transport matrix covering CLI, HTTP, and MCP surfaces across the in-scope memory-api domains.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=ec1013ff-2d5f-4860-8d25-64acb6c60587 slug=spec-cli/cli/commands/bootstrap digest=00273dfb688f -->
+<!-- spec-index:entry id=ec1013ff-2d5f-4860-8d25-64acb6c60587 slug=spec-cli/cli/commands/bootstrap digest=4c8869806865 -->
 
 # bootstrap
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/cli/spec-cli/src/cli/commands/bootstrap.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

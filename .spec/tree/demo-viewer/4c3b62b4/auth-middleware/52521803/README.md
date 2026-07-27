@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=52521803-fd21-4b40-a4e5-6801b823d59d slug=viewer-api/auth-middleware digest=c989ee2d8a35 -->
+<!-- spec-index:entry id=52521803-fd21-4b40-a4e5-6801b823d59d slug=viewer-api/auth-middleware digest=254da753d185 -->
 
 # viewer-api: auth + middleware + error
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the `viewer-api::auth`, `viewer-api::middleware`,
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

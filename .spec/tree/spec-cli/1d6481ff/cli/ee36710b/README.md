@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=ee36710b-1725-436a-a5fc-1e5a7d27f6bb slug=spec-cli/cli digest=7a87b2498c3d -->
+<!-- spec-index:entry id=ee36710b-1725-436a-a5fc-1e5a7d27f6bb slug=spec-cli/cli digest=54818feff2ff -->
 
 # cli
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/cli/spec-cli/src/cli.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

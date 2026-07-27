@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=2860a8db-0c4e-4e94-984a-c10a72a67ffc slug=context-engine/session-worktree-default-workflow digest=db862d94c94d -->
+<!-- spec-index:entry id=2860a8db-0c4e-4e94-984a-c10a72a67ffc slug=context-engine/session-worktree-default-workflow digest=d7a93ae3323b -->
 
 # default worktree-backed session workflow
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Make dedicated git worktrees the default workflow for new agent sessions in this repository so parallel implementation tracks do not share one staging area.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

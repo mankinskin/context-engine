@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c6feacef-a06e-4769-a4cf-5c557be50f7d slug=context-stack digest=de2b8b3f9fb1 -->
+<!-- spec-index:entry id=c6feacef-a06e-4769-a4cf-5c557be50f7d slug=context-stack digest=1373b779253e -->
 
 # context-stack
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-This branch captures the most confident specification material currently
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

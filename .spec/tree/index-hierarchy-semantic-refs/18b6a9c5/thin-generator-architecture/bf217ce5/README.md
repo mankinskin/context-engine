@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=bf217ce5-8890-4749-9a2d-deffb6d0f4dd slug=generated-context/thin-generator-architecture digest=d789ec0c4865 -->
+<!-- spec-index:entry id=bf217ce5-8890-4749-9a2d-deffb6d0f4dd slug=generated-context/thin-generator-architecture digest=e870411bfaca -->
 
 # Domain-owned thin generator architecture for store indexes
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define the architecture boundary for store-index generation so each domain owns a **thin** generator while `memory-api` exposes only reusable, domain-agnostic infrastructure. An implementer must be a…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

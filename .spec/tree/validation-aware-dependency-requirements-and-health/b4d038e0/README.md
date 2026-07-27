@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b4d038e0-ade9-459b-8ba3-92fd81d80e6a slug=ticket-api/validation-aware-dependency-requirements-and-health digest=58851127be4c -->
+<!-- spec-index:entry id=b4d038e0-ade9-459b-8ba3-92fd81d80e6a slug=ticket-api/validation-aware-dependency-requirements-and-health digest=fddf736e3d35 -->
 
 # ticket-api: validation-aware dependency requirements and health model
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-`depends_on` currently expresses structural ordering only. Validation requirements still live implicitly in ticket prose or ad hoc review habits, so the graph cannot answer whether a dependency has b…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

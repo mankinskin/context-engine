@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=cbac783c-e3a1-4a31-ac11-a539b39164c5 slug=spec-editor/section-editor digest=7534e2532089 -->
+<!-- spec-index:entry id=cbac783c-e3a1-4a31-ac11-a539b39164c5 slug=spec-editor/section-editor digest=b472a365c75a -->
 
 # spec-editor: section editor
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `SectionPanel` and `SectionEditor` components manage a spec's named subdocuments
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

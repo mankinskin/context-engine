@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b8ddb54c-8939-4bbd-a3b3-2e469caa09da slug=repo-guidance/readmes/context-stack digest=a58cc1e86eba -->
+<!-- spec-index:entry id=b8ddb54c-8939-4bbd-a3b3-2e469caa09da slug=repo-guidance/readmes/context-stack digest=f9dc390f7ade -->
 
 # context-stack rule-backed README tree
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Give `context-stack` a repo-local rule workspace and generate both its root README and its first-level child README tree from local rules.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

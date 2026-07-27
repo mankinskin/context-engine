@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c163eba4-51c5-496e-88cd-ef8bcd8fe433 slug=repo-guidance/readmes/completeness-audit digest=c27607852d19 -->
+<!-- spec-index:entry id=c163eba4-51c5-496e-88cd-ef8bcd8fe433 slug=repo-guidance/readmes/completeness-audit digest=c346ccf4d39a -->
 
 # README completeness audit
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Add a mechanical completeness check for the README contract so missing generation, parent or child navigation blocks, installable-content sections, or command-doc references fail before review.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

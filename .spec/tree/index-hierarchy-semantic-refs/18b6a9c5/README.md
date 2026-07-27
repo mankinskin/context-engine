@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=18b6a9c5-7d9c-483c-a228-113903ed495f slug=generated-context/index-hierarchy-semantic-refs digest=b5ac845ba43f -->
+<!-- spec-index:entry id=18b6a9c5-7d9c-483c-a228-113903ed495f slug=generated-context/index-hierarchy-semantic-refs digest=bf5393c41424 -->
 
 # Generated context index hierarchy and semantic reference format
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define a generated, human-readable markdown index hierarchy that integrates with the repository structure, and define a compact machine-friendly semantic summary format (TOON) for similarity search, …
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

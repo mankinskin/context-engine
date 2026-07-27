@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9983b865-5082-437a-945a-05c26a56c113 slug=context-engine/submodule-branch-tracking digest=9314e36b132f -->
+<!-- spec-index:entry id=9983b865-5082-437a-945a-05c26a56c113 slug=context-engine/submodule-branch-tracking digest=827f14715d37 -->
 
 # submodule branch tracking workflow
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Top-level submodules in the repository currently land in detached HEAD state, which makes local commits easy to create without advancing the intended `main` branch in each submodule.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

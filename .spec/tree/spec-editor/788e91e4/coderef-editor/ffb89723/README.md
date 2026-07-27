@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=ffb89723-178b-435b-8591-c639d3c7d5dd slug=spec-editor/coderef-editor digest=1ad295b64ff7 -->
+<!-- spec-index:entry id=ffb89723-178b-435b-8591-c639d3c7d5dd slug=spec-editor/coderef-editor digest=e8ff78466d25 -->
 
 # spec-editor: coderef editor
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `CodeRefEditor` component provides a three-step picker for adding or editing
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

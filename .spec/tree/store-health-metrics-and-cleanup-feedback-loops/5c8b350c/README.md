@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5c8b350c-3bd1-4103-ab49-3fb7aea33126 slug=audit-api/store-health-metrics-and-cleanup-feedback-loops digest=e4fc44648a97 -->
+<!-- spec-index:entry id=5c8b350c-3bd1-4103-ab49-3fb7aea33126 slug=audit-api/store-health-metrics-and-cleanup-feedback-loops digest=7df3e141f875 -->
 
 # audit-api: store health metrics and cleanup feedback loops
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-Spec, rule, and ticket stores accumulate stale, conflicting, and low-value entries over time. Current checks are useful but insufficient for sustained curation because they do not combine change acti…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

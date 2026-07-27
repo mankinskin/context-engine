@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=de14117a-df7b-4f2a-87b8-55074ade0487 slug=memory-api/model/manifest-format digest=1c93d1d6e6c5 -->
+<!-- spec-index:entry id=de14117a-df7b-4f2a-87b8-55074ade0487 slug=memory-api/model/manifest-format digest=3322e2e4116c -->
 
 # manifest_format
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/model/manifest_format.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

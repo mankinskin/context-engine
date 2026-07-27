@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=54800731-e07f-4fb2-8802-fd7d2acc8c05 slug=viewer-api/sse digest=447d29d7bc26 -->
+<!-- spec-index:entry id=54800731-e07f-4fb2-8802-fd7d2acc8c05 slug=viewer-api/sse digest=1620a4af2ca7 -->
 
 # viewer-api: SSE streaming
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for `viewer-api::sse` — the server-sent-events
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

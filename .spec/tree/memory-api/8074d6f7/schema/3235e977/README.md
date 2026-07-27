@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=3235e977-b12a-4981-aa09-6edf218bb97d slug=memory-api/model/schema digest=3e23d0ab8c65 -->
+<!-- spec-index:entry id=3235e977-b12a-4981-aa09-6edf218bb97d slug=memory-api/model/schema digest=8fd8b119afd6 -->
 
 # schema
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/model/schema.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

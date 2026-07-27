@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=18d7cbc2-d454-498b-9f10-9f1a0d320f2e slug=spec-editor/body-editor digest=4c2b9ec1e284 -->
+<!-- spec-index:entry id=18d7cbc2-d454-498b-9f10-9f1a0d320f2e slug=spec-editor/body-editor digest=d52f25d72ced -->
 
 # spec-editor: body editor
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `BodyEditor` component is the core authoring surface for a spec's `body.md`.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

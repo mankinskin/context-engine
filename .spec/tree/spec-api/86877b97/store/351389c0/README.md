@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=351389c0-0873-4c3c-bc46-3551459ba1cd slug=spec-api/store digest=e3994b416442 -->
+<!-- spec-index:entry id=351389c0-0873-4c3c-bc46-3551459ba1cd slug=spec-api/store digest=6e26ba5cbce0 -->
 
 # store
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/spec-api/src/store.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

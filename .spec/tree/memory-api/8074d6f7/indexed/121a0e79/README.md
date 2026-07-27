@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=121a0e79-a212-40af-8041-83c1ea11f029 slug=memory-api/storage/indexed digest=54baacf12624 -->
+<!-- spec-index:entry id=121a0e79-a212-40af-8041-83c1ea11f029 slug=memory-api/storage/indexed digest=db3583b95037 -->
 
 # indexed
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/storage/indexed.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

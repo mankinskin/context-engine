@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b748e117-a847-474d-92ee-b58723cee612 slug=viewer-api/dev-proxy digest=ff81dfb39c3f -->
+<!-- spec-index:entry id=b748e117-a847-474d-92ee-b58723cee612 slug=viewer-api/dev-proxy digest=bf7661d0b6d7 -->
 
 # viewer-api: dev proxy
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for `viewer-api::dev_proxy` — the optional
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

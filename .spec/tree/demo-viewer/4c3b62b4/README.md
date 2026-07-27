@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4c3b62b4-1198-4ce2-9ef6-df530f38297e slug=viewer-api/demo-viewer digest=04e614853f78 -->
+<!-- spec-index:entry id=4c3b62b4-1198-4ce2-9ef6-df530f38297e slug=viewer-api/demo-viewer digest=7d7d6310e6a4 -->
 
 # viewer-api: demo-viewer
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The **demo-viewer** is a reference application that lives inside the `viewer-api`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

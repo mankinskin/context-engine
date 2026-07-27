@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4f14356f-c4bd-4554-be1e-35361de241da slug=viewer-api/components/graph3d digest=3baa481fceca -->
+<!-- spec-index:entry id=4f14356f-c4bd-4554-be1e-35361de241da slug=viewer-api/components/graph3d digest=deac831ac47a -->
 
 # viewer-api: Graph3D
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared 3D dependency-graph Dioxus component
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=a592900c-f513-4ec2-8dd2-53dbd04aac7b slug=ticket-vscode/rust-wasm-port digest=8e239afc8aa0 -->
+<!-- spec-index:entry id=a592900c-f513-4ec2-8dd2-53dbd04aac7b slug=ticket-vscode/rust-wasm-port digest=7f87bb255e2e -->
 
 # ticket-vscode Rust/WASM port
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Port `memory-api/tools/ticket-vscode` to a dual-host Rust/WASM-backed architecture without breaking the existing ticket browsing workflow. Target: thin JS/TS host shell + Rust/WASM core, shipping bot…
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

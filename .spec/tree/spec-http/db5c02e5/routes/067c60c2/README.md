@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=067c60c2-6be0-4f51-bbd3-80dcd29b9d35 slug=spec-http/routes digest=8368c040bf0a -->
+<!-- spec-index:entry id=067c60c2-6be0-4f51-bbd3-80dcd29b9d35 slug=spec-http/routes digest=fea22f11774e -->
 
 # routes
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/routes.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

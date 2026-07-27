@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=69f8d8ce-d895-4270-b3f9-0d6c951f2a9a slug=context-engine/agents/prompts/reviews digest=ef82680781e9 -->
+<!-- spec-index:entry id=69f8d8ce-d895-4270-b3f9-0d6c951f2a9a slug=context-engine/agents/prompts/reviews digest=c798251f13a3 -->
 
 # reviews prompt target
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define a reusable generated prompt under `.agents/prompts/reviews.prompt.md` for reviewing the highest-ranked `in-review` tickets using the repository ticket workflow.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

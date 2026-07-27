@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=3fa36e9e-b097-4566-90e4-7d5f8053cd55 slug=viewer-ctl/config digest=8abfc6b8120a -->
+<!-- spec-index:entry id=3fa36e9e-b097-4566-90e4-7d5f8053cd55 slug=viewer-ctl/config digest=63b39e661bf2 -->
 
 # configuration
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The component registry that drives viewer-ctl is a single TOML file at the
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

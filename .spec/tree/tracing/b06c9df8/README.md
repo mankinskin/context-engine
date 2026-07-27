@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b06c9df8-2866-433a-af73-ae9b1f4a0f0a slug=viewer-api/tracing digest=0437ad4ca993 -->
+<!-- spec-index:entry id=b06c9df8-2866-433a-af73-ae9b1f4a0f0a slug=viewer-api/tracing digest=7dfe6e73a947 -->
 
 # viewer-api: structured tracing for WASM frontend
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Specification for replacing ad-hoc `web_sys::console::log_1!()` calls in the
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=226ff55f-eebf-43b8-aa1e-5abf81b99101 slug=spec-api/manifest digest=9a43b98ea675 -->
+<!-- spec-index:entry id=226ff55f-eebf-43b8-aa1e-5abf81b99101 slug=spec-api/manifest digest=d953581147e6 -->
 
 # manifest
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/spec-api/src/manifest.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

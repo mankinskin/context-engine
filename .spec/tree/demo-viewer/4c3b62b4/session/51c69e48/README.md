@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=51c69e48-c8a1-4d45-b050-e06671fe7d71 slug=viewer-api/session digest=b0ce73cc3c81 -->
+<!-- spec-index:entry id=51c69e48-c8a1-4d45-b050-e06671fe7d71 slug=viewer-api/session digest=27383768180d -->
 
 # viewer-api: session
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for `viewer-api::session` — the lightweight server
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

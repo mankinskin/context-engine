@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=9c3ec5a5-0e1e-4061-b66a-16006611f671 slug=program/store-expansion-and-operational-health digest=d99550e6c790 -->
+<!-- spec-index:entry id=9c3ec5a5-0e1e-4061-b66a-16006611f671 slug=program/store-expansion-and-operational-health digest=51a5b603baa1 -->
 
 # Store expansion and operational health program
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-Coordinate the next major store vectors (interview, feedback, health auditing, and scaffold automation) as a dependency-aware program aligned to the cross-store architecture constraints.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

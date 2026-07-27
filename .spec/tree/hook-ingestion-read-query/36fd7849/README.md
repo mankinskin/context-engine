@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=36fd7849-65eb-405e-8cc5-70440f0cb7c2 slug=memory-api/session-api/hook-ingestion-read-query digest=cce5d8f774b1 -->
+<!-- spec-index:entry id=36fd7849-65eb-405e-8cc5-70440f0cb7c2 slug=memory-api/session-api/hook-ingestion-read-query digest=61d23a0f02df -->
 
 # session-api hook ingestion and read query
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Extend `session-api` so repeated Copilot hook captures preserve transcript history as an append-only log and expose a first read/query API over the persisted store.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

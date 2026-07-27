@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=1d62442b-61dc-4eeb-9b7c-e933f84470f2 slug=ticket-api/state-transition-path-unification digest=5b35c0813650 -->
+<!-- spec-index:entry id=1d62442b-61dc-4eeb-9b7c-e933f84470f2 slug=ticket-api/state-transition-path-unification digest=8906c0562c4a -->
 
 # ticket-api state transition path unification
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Unify ticket state transition handling so `update_ticket` and `close_ticket` share one schema-validated transition-path implementation, remove reliance on caller-supplied `from_state`, and support ex…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

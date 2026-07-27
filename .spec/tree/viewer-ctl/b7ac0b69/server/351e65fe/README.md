@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=351e65fe-0629-4a0f-9c19-27dabb36b72f slug=viewer-ctl/lifecycle/server digest=3c98c4fa4961 -->
+<!-- spec-index:entry id=351e65fe-0629-4a0f-9c19-27dabb36b72f slug=viewer-ctl/lifecycle/server digest=7981333f42bc -->
 
 # server lifecycle
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Servers are long-running Rust binaries that bind a TCP port. viewer-ctl owns
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

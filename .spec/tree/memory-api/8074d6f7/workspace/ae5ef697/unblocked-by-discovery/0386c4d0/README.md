@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0386c4d0-15c4-4561-a33f-63b881c852c5 slug=ticket-api/workflow/unblocked-by-discovery digest=dec79d8bcd09 -->
+<!-- spec-index:entry id=0386c4d0-15c4-4561-a33f-63b881c852c5 slug=ticket-api/workflow/unblocked-by-discovery digest=ee375c67578e -->
 
 # CLI reverse-dependency unlock and blocker follow-up discovery
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The ticket CLI needs first-class reverse-dependency workflow support: `ticket unblocked-by <id>` should show which dependents a prerequisite unlocks or still affects, and `ticket next <id>` should sh…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

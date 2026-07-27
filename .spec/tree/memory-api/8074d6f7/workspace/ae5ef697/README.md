@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=ae5ef697-0ee5-4f74-9dca-2cb268290dae slug=memory-api/workspace digest=b10c18847dc7 -->
+<!-- spec-index:entry id=ae5ef697-0ee5-4f74-9dca-2cb268290dae slug=memory-api/workspace digest=6d488affce4e -->
 
 # workspace
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/workspace.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

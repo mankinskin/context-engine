@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=7fd5639f-a62b-4eb4-abe2-215c4bb2d0de slug=context-stack/graph-induction/read-sequence digest=936438648b71 -->
+<!-- spec-index:entry id=7fd5639f-a62b-4eb4-abe2-215c4bb2d0de slug=context-stack/graph-induction/read-sequence digest=4dec444cb23a -->
 
 # read_sequence
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`WorkspaceManager::read_sequence` reads text through the graph and returns one
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=bcea435e-c397-4e30-846f-c5e58cfa0755 slug=context-engine/smooth-repository-readme-surfaces digest=9cfb5b8830a0 -->
+<!-- spec-index:entry id=bcea435e-c397-4e30-846f-c5e58cfa0755 slug=context-engine/smooth-repository-readme-surfaces digest=70d5e08685ad -->
 
 # Smooth repository README surfaces
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Make the repository-root README surfaces navigable and consistent enough to iterate on without re-auditing the same structural gaps each time.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=7b43dfd1-39aa-4585-b5fe-dc57c6d57eba slug=viewer-api/components/icons-spinner digest=12cedf8349e1 -->
+<!-- spec-index:entry id=7b43dfd1-39aa-4585-b5fe-dc57c6d57eba slug=viewer-api/components/icons-spinner digest=29a4d3558d24 -->
 
 # viewer-api: icons + Spinner
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared icon set and `Spinner` Dioxus
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

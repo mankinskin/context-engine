@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=86bb3a01-ef29-4c7b-905b-9582a0d75f40 slug=viewer-ctl/process-management digest=3336598cb686 -->
+<!-- spec-index:entry id=86bb3a01-ef29-4c7b-905b-9582a0d75f40 slug=viewer-ctl/process-management digest=9c14a980989c -->
 
 # process management
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-viewer-ctl needs to find and terminate processes that occupy a TCP port.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

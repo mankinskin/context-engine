@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=beed5b3c-b645-4c80-8eaa-e76978822ef3 slug=memory-fixtures/representative-population digest=a92efee3da2e -->
+<!-- spec-index:entry id=beed5b3c-b645-4c80-8eaa-e76978822ef3 slug=memory-fixtures/representative-population digest=9169c7b6006a -->
 
 # Representative Fixture Population
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The shared memory workspace fixture provides deterministic, representative data for every in-scope memory domain so matrix tests, benchmark matrices, transport tests, and backfill workflows exercise …
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

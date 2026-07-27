@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=f156fa16-7910-4c98-b69c-f848073dba00 slug=memory-api/storage/search digest=4ca2a7c26fd1 -->
+<!-- spec-index:entry id=f156fa16-7910-4c98-b69c-f848073dba00 slug=memory-api/storage/search digest=6cfc87f6d255 -->
 
 # search
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/memory-api/src/storage/search.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

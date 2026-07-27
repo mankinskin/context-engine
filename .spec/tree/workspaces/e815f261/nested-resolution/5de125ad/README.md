@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5de125ad-eb0c-4bcb-8e6d-175df1ba33a6 slug=rule-api/workspaces/nested-resolution digest=e8c84cf7d90e -->
+<!-- spec-index:entry id=5de125ad-eb0c-4bcb-8e6d-175df1ba33a6 slug=rule-api/workspaces/nested-resolution digest=d26eb06fc58b -->
 
 # Nested Workspace Discovery and Target Resolution
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Nested rule workspaces should extend the existing `rule-api` store and target model from "one store + one config" into an explicitly scanned workspace graph. The owning repo workspace remains the uni…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

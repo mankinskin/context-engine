@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=348e17f7-23a8-4e11-bbb3-224cf0bbe9d6 slug=viewer-api/components/tab-bar digest=3a64f9e67515 -->
+<!-- spec-index:entry id=348e17f7-23a8-4e11-bbb3-224cf0bbe9d6 slug=viewer-api/components/tab-bar digest=e4eda8077ee6 -->
 
 # viewer-api: TabBar
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared `TabBar` Dioxus component
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

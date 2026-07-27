@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=ec22fe34-2d24-4dc5-a067-85121bed3655 slug=ticket-api/workflow/best-next-ordering digest=0f96e1409baa -->
+<!-- spec-index:entry id=ec22fe34-2d24-4dc5-a067-85121bed3655 slug=ticket-api/workflow/best-next-ordering digest=9d25949e469e -->
 
 # Cross-interface best-next ordering
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Best-next-ticket discovery must remain consistent anywhere the repository surfaces candidate work.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

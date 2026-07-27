@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5650b307-8408-4ca0-922f-c515dd0bfa27 slug=ticket-viewer/shell digest=34978418090c -->
+<!-- spec-index:entry id=5650b307-8408-4ca0-922f-c515dd0bfa27 slug=ticket-viewer/shell digest=df99b8913e98 -->
 
 # ticket-viewer: shell and header actions
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the ticket-viewer shell-level interaction contract that sits above the existing explorer and theme-settings specs.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

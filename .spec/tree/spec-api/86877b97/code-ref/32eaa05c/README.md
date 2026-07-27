@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=32eaa05c-cef6-4a3b-b506-b5a5410a4674 slug=spec-api/code-ref digest=1df48c541b50 -->
+<!-- spec-index:entry id=32eaa05c-cef6-4a3b-b506-b5a5410a4674 slug=spec-api/code-ref digest=4fe23d93f549 -->
 
 # code_ref
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/spec-api/src/code_ref.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

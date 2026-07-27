@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=42e8d710-2199-4178-9ab3-dea8d61bfc4a slug=ticket-cli/graph-rendering-and-closure-aware-dependency-display digest=3eee9ade04b1 -->
+<!-- spec-index:entry id=42e8d710-2199-4178-9ab3-dea8d61bfc4a slug=ticket-cli/graph-rendering-and-closure-aware-dependency-display digest=3ee1a7b85807 -->
 
 # ticket-cli: graph rendering and closure-aware dependency display
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-The ticket graph is queryable, but operators still have to mentally reconstruct dependency shape, bridge nodes, and parallel tracks from list output. Existing graph-aware next planning improves ranki…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

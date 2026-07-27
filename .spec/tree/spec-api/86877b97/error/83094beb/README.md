@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=83094beb-d315-4b16-b132-3ae22a528422 slug=spec-api/error digest=2c40b5002c69 -->
+<!-- spec-index:entry id=83094beb-d315-4b16-b132-3ae22a528422 slug=spec-api/error digest=90413d1893ab -->
 
 # error
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/spec-api/src/error.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

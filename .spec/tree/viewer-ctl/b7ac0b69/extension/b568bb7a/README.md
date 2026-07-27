@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b568bb7a-6726-46ac-bb78-fbc1858da4b8 slug=viewer-ctl/lifecycle/extension digest=e477c0547013 -->
+<!-- spec-index:entry id=b568bb7a-6726-46ac-bb78-fbc1858da4b8 slug=viewer-ctl/lifecycle/extension digest=57209e6c61d5 -->
 
 # extension lifecycle
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-VS Code extensions are TypeScript projects compiled to `out/`. viewer-ctl
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=77ca6056-180d-4e88-a76a-dcf8ff280c7a slug=spec-http/handlers/specs digest=92820ea16420 -->
+<!-- spec-index:entry id=77ca6056-180d-4e88-a76a-dcf8ff280c7a slug=spec-http/handlers/specs digest=4c23e5a288cc -->
 
 # specs
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/handlers/specs.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

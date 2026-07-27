@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=95562129-87d8-4d86-9cd3-c8a09473a6d0 slug=spec-viewer/routes digest=24f04e68bd83 -->
+<!-- spec-index:entry id=95562129-87d8-4d86-9cd3-c8a09473a6d0 slug=spec-viewer/routes digest=5e667f9d789e -->
 
 # spec-viewer: routes and pages
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Defines the Dioxus `Route` enum and the four page-level components for the spec-viewer SPA.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

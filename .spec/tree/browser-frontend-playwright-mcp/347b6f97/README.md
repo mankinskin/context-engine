@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=347b6f97-5ebf-46c6-a0e1-cc8afc600319 slug=agent-rules/browser-frontend-playwright-mcp digest=79ab84143124 -->
+<!-- spec-index:entry id=347b6f97-5ebf-46c6-a0e1-cc8afc600319 slug=agent-rules/browser-frontend-playwright-mcp digest=3fd2f1df5aac -->
 
 # Prefer MCP Playwright/browser tools for browser frontend validation
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Browser-hosted frontend testing guidance must prefer MCP Playwright/browser tools before repo-local Playwright wrappers or manual browser steps.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

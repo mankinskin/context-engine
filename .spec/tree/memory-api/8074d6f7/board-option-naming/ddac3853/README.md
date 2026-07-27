@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=ddac3853-65b3-4b6b-b216-81e78e250bb1 slug=ticket-cli/board-option-naming digest=beaf07cfb007 -->
+<!-- spec-index:entry id=ddac3853-65b3-4b6b-b216-81e78e250bb1 slug=ticket-cli/board-option-naming digest=b1af0f5f6751 -->
 
 # ticket-cli board option naming
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`ticket board` should present the same flag naming style as the rest of `ticket-cli`.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

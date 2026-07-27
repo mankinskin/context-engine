@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0f684a90-6abe-4028-a9f1-5d2d6322f1b9 slug=spec-http/state digest=7b10f9800605 -->
+<!-- spec-index:entry id=0f684a90-6abe-4028-a9f1-5d2d6322f1b9 slug=spec-http/state digest=2a2e1934cf95 -->
 
 # state
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `tools/http/spec-http/src/state.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

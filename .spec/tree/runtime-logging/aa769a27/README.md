@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=aa769a27-2721-4b9d-880c-5c4e2f8136a7 slug=memory-api/observability/runtime-logging digest=f7f355fc9993 -->
+<!-- spec-index:entry id=aa769a27-2721-4b9d-880c-5c4e2f8136a7 slug=memory-api/observability/runtime-logging digest=3f723b699082 -->
 
 # Memory-system observability and log-api runtime diagnostics
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define a shared observability contract for `memory-api`, its domain crates, context-stack graph operations, and every CLI, MCP, HTTP, benchmark, test, and long-running server transport so internal op…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

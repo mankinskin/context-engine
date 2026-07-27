@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4bd3cd3f-5851-4d9e-b499-978cb7b53275 slug=ticket-api/workflow/graph-aware-best-next digest=b97571f234d9 -->
+<!-- spec-index:entry id=4bd3cd3f-5851-4d9e-b499-978cb7b53275 slug=ticket-api/workflow/graph-aware-best-next digest=855bdbfcd44a -->
 
 # Graph-aware best-next ranking and dependency convergence
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The current best-next contract is deterministic but shallow: default next discovery ranks only dependency-satisfied candidates by candidate workflow state, priority, immediate dependees, and recency.…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

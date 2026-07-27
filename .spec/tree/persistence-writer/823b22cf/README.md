@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=823b22cf-c0dc-46c6-a03d-00cdd3c4c83a slug=memory-api/session-api/persistence-writer digest=d51215a4ea38 -->
+<!-- spec-index:entry id=823b22cf-c0dc-46c6-a03d-00cdd3c4c83a slug=memory-api/session-api/persistence-writer digest=92db8d0a4a35 -->
 
 # session-api persistence writer
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Persist `session-api` capture requests into a deterministic filesystem layout that can become the first memory-api-backed session store.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

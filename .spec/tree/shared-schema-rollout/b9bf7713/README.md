@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b9bf7713-5644-413d-a99d-00866828d534 slug=repo-guidance/readmes/shared-schema-rollout digest=7f759867829b -->
+<!-- spec-index:entry id=b9bf7713-5644-413d-a99d-00866828d534 slug=repo-guidance/readmes/shared-schema-rollout digest=29c372a4e8bb -->
 
 # README shared schema rollout
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Standardize repository README generation across `context-engine`, `context-stack`, `memory-viewers`, `memory-api`, and `viewer-api` so the repo-root and first-level child README trees share one rule-…
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

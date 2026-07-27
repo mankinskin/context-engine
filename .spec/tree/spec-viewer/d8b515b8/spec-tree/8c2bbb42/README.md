@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=8c2bbb42-4ca0-43a3-8196-334218bf543e slug=spec-viewer/spec-tree digest=161247b51d35 -->
+<!-- spec-index:entry id=8c2bbb42-4ca0-43a3-8196-334218bf543e slug=spec-viewer/spec-tree digest=6ea1bd08783e -->
 
 # spec-viewer: spec-tree component
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `SpecTree` Dioxus component renders the spec hierarchy as a collapsible tree.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

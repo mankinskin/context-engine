@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=df67eee9-08a0-4a6e-b1ff-b483599d232d slug=viewer-api/components/code-viewer digest=976d99c54e44 -->
+<!-- spec-index:entry id=df67eee9-08a0-4a6e-b1ff-b483599d232d slug=viewer-api/components/code-viewer digest=aba866fa496e -->
 
 # viewer-api: CodeViewer + FileContentViewer
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared code/file display Dioxus components
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

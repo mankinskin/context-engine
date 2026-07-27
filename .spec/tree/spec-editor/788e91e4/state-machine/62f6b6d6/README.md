@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=62f6b6d6-eb0c-43cc-ad3e-a75347f2a705 slug=spec-editor/state-machine digest=0498203f02e6 -->
+<!-- spec-index:entry id=62f6b6d6-eb0c-43cc-ad3e-a75347f2a705 slug=spec-editor/state-machine digest=0a25fd68a107 -->
 
 # spec-editor: state machine control
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `StateTransition` component surfaces the spec state machine as an interactive
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

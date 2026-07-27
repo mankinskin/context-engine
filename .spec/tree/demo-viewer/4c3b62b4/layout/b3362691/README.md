@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b3362691-09a0-4028-8daa-13b4c4102c15 slug=viewer-api/components/layout digest=c79a24de7f92 -->
+<!-- spec-index:entry id=b3362691-09a0-4028-8daa-13b4c4102c15 slug=viewer-api/components/layout digest=b9ac9913d5f5 -->
 
 # viewer-api: layout components
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Canonical specification for the shared **page-shell** Dioxus components
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

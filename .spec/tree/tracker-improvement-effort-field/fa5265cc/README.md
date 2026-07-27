@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=fa5265cc-e82f-4bbe-b1b5-dad7e6672d06 slug=ticket-api/model/tracker-improvement-effort-field digest=531ab06c13e4 -->
+<!-- spec-index:entry id=fa5265cc-e82f-4bbe-b1b5-dad7e6672d06 slug=ticket-api/model/tracker-improvement-effort-field digest=cff346577969 -->
 
 # Tracker-improvement effort field
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The built-in `tracker-improvement` ticket schema includes an optional `effort` field used to capture the estimated token budget required to complete the ticket.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

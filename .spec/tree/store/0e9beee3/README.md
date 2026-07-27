@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=0e9beee3-9974-48df-ad22-a79504c438af slug=rule-api/store digest=f85b2a05ce3e -->
+<!-- spec-index:entry id=0e9beee3-9974-48df-ad22-a79504c438af slug=rule-api/store digest=a9175204497c -->
 
 # store
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source:
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

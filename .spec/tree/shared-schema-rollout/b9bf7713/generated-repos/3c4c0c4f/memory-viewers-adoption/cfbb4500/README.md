@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=cfbb4500-4632-4a95-96a1-838dc4dccfd5 slug=repo-guidance/readmes/memory-viewers-adoption digest=fd33892af44b -->
+<!-- spec-index:entry id=cfbb4500-4632-4a95-96a1-838dc4dccfd5 slug=repo-guidance/readmes/memory-viewers-adoption digest=ffac743266db -->
 
 # memory-viewers aggregate README schema adoption
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Adopt the shared README schema in the aggregate `memory-viewers` repo root and normalize its child blocks after the `memory-api` and `viewer-api` child roots settle.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

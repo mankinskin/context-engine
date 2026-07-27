@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4dafde12-e894-43d7-aa65-cda9a072be27 slug=viewer-ctl/cli digest=f02b9ce0967d -->
+<!-- spec-index:entry id=4dafde12-e894-43d7-aa65-cda9a072be27 slug=viewer-ctl/cli digest=afa11d2ae7c4 -->
 
 # command-line interface
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The viewer-ctl command-line interface is defined by `clap` in `src/cli.rs`.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

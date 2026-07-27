@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=d8b515b8-86fd-4366-9fff-1946f43c3030 slug=spec-viewer digest=3640f2218fae -->
+<!-- spec-index:entry id=d8b515b8-86fd-4366-9fff-1946f43c3030 slug=spec-viewer digest=9c7c22f86c73 -->
 
 # spec-viewer
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`spec-viewer` is a single-process, GPU-accelerated web application for **reading and
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

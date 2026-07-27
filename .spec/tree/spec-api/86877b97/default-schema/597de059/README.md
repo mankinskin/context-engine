@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=597de059-859d-4aae-89ad-bfe2d84462c0 slug=spec-api/default-schema digest=3282cedc30f2 -->
+<!-- spec-index:entry id=597de059-859d-4aae-89ad-bfe2d84462c0 slug=spec-api/default-schema digest=9d92ecc3ec06 -->
 
 # default_schema
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/spec-api/src/default_schema.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

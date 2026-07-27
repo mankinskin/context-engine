@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=d702ed9e-f75c-4727-8f05-1b2b244ec74f slug=ticket-api/workflow/blocker-trees-and-recently-unblocked-ordering digest=719dff81e5e4 -->
+<!-- spec-index:entry id=d702ed9e-f75c-4727-8f05-1b2b244ec74f slug=ticket-api/workflow/blocker-trees-and-recently-unblocked-ordering digest=9810fbce503d -->
 
 # Blocker trees and recently-unblocked workflow ordering
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-The current workflow surface has two strong but separate pieces:
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

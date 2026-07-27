@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=3ccdde3a-368c-4655-a6c8-20a58822c83d slug=agent-tooling/peek-api digest=3e9fe04aa3df -->
+<!-- spec-index:entry id=3ccdde3a-368c-4655-a6c8-20a58822c83d slug=agent-tooling/peek-api digest=a7c5813c69e1 -->
 
 # peek-api transport layering
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Define a reusable `peek-api` layer that owns token-bounded file inspection and structural skeleton rendering so CLI and MCP transports share one contract and one error model.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

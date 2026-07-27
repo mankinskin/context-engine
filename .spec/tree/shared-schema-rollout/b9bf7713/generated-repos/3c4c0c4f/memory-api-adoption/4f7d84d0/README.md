@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c slug=repo-guidance/readmes/memory-api-adoption digest=be13abf8e5e0 -->
+<!-- spec-index:entry id=4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c slug=repo-guidance/readmes/memory-api-adoption digest=b197a6309f06 -->
 
 # memory-api README schema adoption
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Migrate `memory-api` from bespoke README target structure to the shared schema and extend its generated tool README surfaces with parent links back to the repo root.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

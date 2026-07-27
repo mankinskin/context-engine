@@ -4,16 +4,6 @@
 
 Generated ticket index grouped by state and component. Use this before scanning raw `.ticket/tickets/` folders.
 
-## State: backlog
-
-### Component: agent-tooling
-
-<!-- ticket-index:entry id=9185d8f2-1080-46b1-84da-485f9ad839f6 slug=backlog/agent-tooling digest=cf4a6b5e3156 -->
-#### [9185d8f2] Remove hardcoded token-heavy tool categorization; single default cost + empirical bootstrap
-- summary: The cost gate hardcodes a name-based list (TOKEN_HEAVY_TOOL_SUBSTRINGS) that assigns a flat 75 to specific tools by name. This bakes in assumptions about tools we cannot actually know from their name...
-- ref: `.ticket/tickets/9185d8f2-1080-46b1-84da-485f9ad839f6/ticket.toml`
-
-
 ## State: cancelled
 
 ### Component: cli
@@ -3767,6 +3757,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Research/design precursor for ticket 2cc7680c-7f19-4ad7-8658-29920e60ce1c, created from the 2026-07-25 review (verdict: Needs changes — "do more research and design before implementing").
 - ref: `.ticket/tickets/60114a17-c0ad-43eb-8df6-4741a59d83ce/ticket.toml`
 
+<!-- ticket-index:entry id=15e632f1-515b-43e1-9149-02163056d13d slug=done/workflow-tools digest=5cef4bf4580f -->
+#### [15e632f1] [workflow-tools][foundations] Extract memory-matrix + rewire in-tree consumers to external memory-fixtures
+- priority: `medium`
+- summary: C:/Users/linus/AppData/Local/Temp/ticket-15e632f1-desc.md
+- ref: `.ticket/tickets/15e632f1-515b-43e1-9149-02163056d13d/ticket.toml`
+
 <!-- ticket-index:entry id=f10f52e4-baec-4fd8-9ac8-2e683ad05ee8 slug=done/workflow-tools digest=8f16ff903783 -->
 #### [f10f52e4] [workflow-tools][foundations] Move the transport-harness contract into a memory-kernel spec
 - priority: `high`
@@ -4165,15 +4161,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/a71c2da8-0972-4c2d-9754-0a0e06db5272/ticket.toml`
 
 
-### Component: workflow-tools
-
-<!-- ticket-index:entry id=15e632f1-515b-43e1-9149-02163056d13d slug=in-implementation/workflow-tools digest=abc5e4999ba5 -->
-#### [15e632f1] [workflow-tools][foundations] Extract memory-matrix + rewire in-tree consumers to external memory-fixtures
-- priority: `medium`
-- summary: C:/Users/linus/AppData/Local/Temp/ticket-15e632f1-desc.md
-- ref: `.ticket/tickets/15e632f1-515b-43e1-9149-02163056d13d/ticket.toml`
-
-
 ## State: in-review
 
 ### Component: agent-tooling
@@ -4516,11 +4503,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: agent-tooling
 
-<!-- ticket-index:entry id=9d527ad1-616b-45fb-b67c-64e0396841fe slug=new/agent-tooling digest=781bd8924012 -->
-#### [9d527ad1] Capture partial-but-real token/cost telemetry via mcp-cost-gate (upstream usage data does not exist)
-- summary: Instrument the Copilot capture hook so that token, cost, and model usage data actually reaches the session store. The backend infrastructure landed with ticket `6549b6a7` is complete but reads zero i...
-- ref: `.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml`
-
 <!-- ticket-index:entry id=373072a9-ddc6-42c3-b709-50a7d9659297 slug=new/agent-tooling digest=3ea26e14c391 -->
 #### [373072a9] Delegation decision policy: case → cost-class mapping and allocation strategy
 - summary: Author explicit agent instructions that specify, in an orchestrated session, **in which cases work is delegated and to which model class**, where classes are defined by **capability role** rather tha...
@@ -4546,6 +4528,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Session 51701334 delegated effectively at the top level (orchestrator ~$0.90) but sub-agents thrashed, driving total cost to ~$9. Four design gaps in the current orchestration guidance (`.agents/inst...
 - ref: `.ticket/tickets/6a47ab0f-7e42-463e-afe0-bf51b85249c9/ticket.toml`
 
+<!-- ticket-index:entry id=9d527ad1-616b-45fb-b67c-64e0396841fe slug=new/agent-tooling digest=d55171261819 -->
+#### [9d527ad1] Per-tool-call token-load telemetry via mcp-cost-gate (proxy observes payloads, not usage)
+- summary: Instrument the Copilot capture hook so that token, cost, and model usage data actually reaches the session store. The backend infrastructure landed with ticket `6549b6a7` is complete but reads zero i...
+- ref: `.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml`
+
 <!-- ticket-index:entry id=bc52c543-8c3f-49de-a08b-6791caa65523 slug=new/agent-tooling digest=e75ff3e5b404 -->
 #### [bc52c543] Phase 2: automated auto-tuning of delegation thresholds from the quality/cost metric
 - summary: Phase 2 of the self-optimization loop: **automatically auto-tune the delegation cost-class thresholds** (ticket 373072a9) from the recorded quality/cost metric (ticket 8ad2581e), removing the human-a...
@@ -4566,47 +4553,59 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Integrate the **session-coupled feedback signal** into the delegation loop: the ability to flag specific problem spots and draw attention to particular scenarios, which is mostly coupled to a session.
 - ref: `.ticket/tickets/9b0147e3-2a8e-437d-b839-6be6edcfa2aa/ticket.toml`
 
-<!-- ticket-index:entry id=77eb143b-0322-4c91-b3c4-deccc2b2927c slug=new/agent-tooling digest=555498d1a7ee -->
+<!-- ticket-index:entry id=bac71cc5-d636-4878-b0c1-a404d2257430 slug=new/agent-tooling digest=da0bcda06577 -->
+#### [bac71cc5] [agent-guidance][epic] The instruction corpus costs every turn and did not change behaviour
+- priority: `medium`
+- summary: A roast of the instruction corpus, commissioned during the review of epic `79c4ac3e`, found that the guidance layer is itself a material per-turn cost and that it demonstrably failed to change behavi...
+- ref: `.ticket/tickets/bac71cc5-d636-4878-b0c1-a404d2257430/ticket.toml`
+
+<!-- ticket-index:entry id=77eb143b-0322-4c91-b3c4-deccc2b2927c slug=new/agent-tooling digest=5d63820bda84 -->
 #### [77eb143b] [delegation-cost] Enforce MCP-over-shell in agent templates: 116 of 298 terminal calls were substitutable
 - priority: `high`
 - summary: `run_in_terminal` was the single most-used tool in both analysed sessions — 177 calls in `3e9bc20b`, 121 in `41966513`. Classifying every command shows most of it duplicated capabilities already load...
 - ref: `.ticket/tickets/77eb143b-0322-4c91-b3c4-deccc2b2927c/ticket.toml`
 
-<!-- ticket-index:entry id=46d8b25d-e80c-4170-9601-1c26a7a0bcb8 slug=new/agent-tooling digest=df65414d2039 -->
+<!-- ticket-index:entry id=46d8b25d-e80c-4170-9601-1c26a7a0bcb8 slug=new/agent-tooling digest=9bc262a50700 -->
 #### [46d8b25d] [delegation-cost] Move quality gates before dispatch: ~130 turns of rework came from post-delegation blocks
 - priority: `high`
 - summary: The Orchestrator Agent template grants `tools: [agent]` only — it can plan and delegate, nothing else. In both analysed sessions it made **zero** tool calls. That purity is expensive: every precondit...
 - ref: `.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml`
 
-<!-- ticket-index:entry id=cc3324c9-1da4-4a21-90d0-4128074108b2 slug=new/agent-tooling digest=c8b77fec2528 -->
+<!-- ticket-index:entry id=cc3324c9-1da4-4a21-90d0-4128074108b2 slug=new/agent-tooling digest=c354f0bdaca6 -->
 #### [cc3324c9] [delegation-cost] Pass a shared context bundle to fan-out siblings instead of each rediscovering it
 - priority: `high`
 - summary: Sub-agents are spawned with no shared context, so each rediscovers the same artifacts independently. The orchestrator already holds the digest and does not pass it down.
 - ref: `.ticket/tickets/cc3324c9-1da4-4a21-90d0-4128074108b2/ticket.toml`
 
-<!-- ticket-index:entry id=cd19fed4-44d5-4ef0-848c-19753f1539b0 slug=new/agent-tooling digest=723fd2de638f -->
+<!-- ticket-index:entry id=cd19fed4-44d5-4ef0-848c-19753f1539b0 slug=new/agent-tooling digest=72099d43ffb0 -->
 #### [cd19fed4] [delegation-cost] Scope MCP tool grants per agent template and restore lazy tool discovery for sub-agents
 - priority: `high`
 - summary: Every sub-agent spawned in sessions `3e9bc20b` and `41966513` carried the full MCP tool surface. Empirical probe from subagent `[2]` in `41966513`:
 - ref: `.ticket/tickets/cd19fed4-44d5-4ef0-848c-19753f1539b0/ticket.toml`
 
-<!-- ticket-index:entry id=79c4ac3e-fd53-48bf-babb-43d27555c4bd slug=new/agent-tooling digest=dda513a37022 -->
+<!-- ticket-index:entry id=79c4ac3e-fd53-48bf-babb-43d27555c4bd slug=new/agent-tooling digest=68fd9a0c3853 -->
 #### [79c4ac3e] [delegation-cost][epic] Sub-agent delegation is more expensive than the orchestration it replaces
 - priority: `high`
 - summary: Two orchestrated sessions ran in parallel on 2026-07-27 and were unexpectedly expensive. The cost was **not** in the top-level orchestrator — it made **zero** tool calls in both sessions and only pla...
 - ref: `.ticket/tickets/79c4ac3e-fd53-48bf-babb-43d27555c4bd/ticket.toml`
 
-<!-- ticket-index:entry id=fb14754e-2be8-40a5-a995-488842ba6367 slug=new/agent-tooling digest=dc1feed5dfc8 -->
+<!-- ticket-index:entry id=fb14754e-2be8-40a5-a995-488842ba6367 slug=new/agent-tooling digest=625fc0cd838e -->
 #### [fb14754e] [delegation-cost][handoff] Carry verified physical repo paths in handoff packages and delegation prompts
 - priority: `high`
 - summary: Handoff packages and delegation prompts name crates and components but not their physical location. Sub-agents then guess, fail, and fall back to expensive shell exploration.
 - ref: `.ticket/tickets/fb14754e-2be8-40a5-a995-488842ba6367/ticket.toml`
 
-<!-- ticket-index:entry id=66acb737-71d6-4585-a921-b597f7c88e8e slug=new/agent-tooling digest=c9f9e933e9af -->
+<!-- ticket-index:entry id=66acb737-71d6-4585-a921-b597f7c88e8e slug=new/agent-tooling digest=8fd0f573eb7f -->
 #### [66acb737] [delegation-cost][model-routing] Declare `model:` per agent template; all 24 delegations ran on the same tier
 - priority: `high`
 - summary: All 24 delegations across sessions `3e9bc20b` and `41966513` passed `model: "Claude Sonnet 4.5 (copilot)"`. Not one used a cheaper tier.
 - ref: `.ticket/tickets/66acb737-71d6-4585-a921-b597f7c88e8e/ticket.toml`
+
+<!-- ticket-index:entry id=10d21210-7168-4ed4-8e99-f6fb0e6e08db slug=new/agent-tooling digest=3e36ea2c3a8b -->
+#### [10d21210] [delegation-cost][verification] Define a synthetic benchmark session with a checked-in baseline
+- priority: `high`
+- summary: Nine acceptance criteria across epic `79c4ac3e` and its children are phrased as *"on a comparable follow-up session"* or *"a replayed equivalent of either session"*. Neither phrase is defined. There ...
+- ref: `.ticket/tickets/10d21210-7168-4ed4-8e99-f6fb0e6e08db/ticket.toml`
 
 <!-- ticket-index:entry id=0dd23fe6-6892-4d21-9927-4a81584dc77a slug=new/agent-tooling digest=31f7ea3cf674 -->
 #### [0dd23fe6] [token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features
@@ -4625,9 +4624,9 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Crate name**: `edit-api` (api crate); `edit-cli` (CLI transport); `edit-mcp` (MCP transport).
 - ref: `.ticket/tickets/b8ce7cd8-50d0-4233-8584-3af2a27c07d1/ticket.toml`
 
-<!-- ticket-index:entry id=244c3113-e28f-44d7-b9a8-f5dd45d2895c slug=new/agent-tooling digest=15e9d4bbae41 -->
+<!-- ticket-index:entry id=244c3113-e28f-44d7-b9a8-f5dd45d2895c slug=new/agent-tooling digest=fc105c3a183c -->
 #### [244c3113] filesystem operations: bounded list/stat/move tool suite (api + cli + mcp)
-- summary: Crate name**: `fs-api` (api crate); `fs-cli` (CLI transport); `fs-mcp` (MCP transport).
+- summary: Crate names**: `fs-api` (api crate); `fs-cli` (CLI transport); `fs-mcp` (MCP transport).
 - ref: `.ticket/tickets/244c3113-e28f-44d7-b9a8-f5dd45d2895c/ticket.toml`
 
 <!-- ticket-index:entry id=bd71ecc7-4631-407c-a156-d1d77de2ca33 slug=new/agent-tooling digest=3cf71c6804fb -->
@@ -5171,7 +5170,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: session-api
 
-<!-- ticket-index:entry id=b7c61f0e-ed42-4eef-8d3b-da934d7c0628 slug=new/session-api digest=0d46a093d12f -->
+<!-- ticket-index:entry id=b7c61f0e-ed42-4eef-8d3b-da934d7c0628 slug=new/session-api digest=f6941ed109bf -->
 #### [b7c61f0e] [delegation-cost][session-api] Promote the sub-agent cost analyzer into session-api with real token attribution
 - priority: `high`
 - summary: The entire analysis behind epic `79c4ac3e` was produced by an ad-hoc script written into `tmp/subagent_cost_probe.py` during a single session. It is not durable, not tested, and not reachable from an...
@@ -6673,6 +6672,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Phase E. Update the agent entry points and guidance across all three install sites so an agent starting at any level is pointed at the workflow-skill guidance: (1) context-engine (uses the tools), (2...
 - ref: `.ticket/tickets/67e254b5-8eac-4251-b640-ec3649f250dd/ticket.toml`
 
+<!-- ticket-index:entry id=bfc52d17-8a3f-40d6-a1bd-3c618ad67f69 slug=new/workflow-tools digest=ca7b533e5723 -->
+#### [bfc52d17] [workflow-tools][foundations] Make memory-matrix build standalone against externally resolved domain crates (blocked)
+- priority: `medium`
+- summary: Split out of MATRIX-FOLLOWUP 15e632f1. That ticket carried two criteria: (a) rewire in-tree consumers to the external memory-fixtures git dep, and (b) make memory-matrix build standalone against exte...
+- ref: `.ticket/tickets/bfc52d17-8a3f-40d6-a1bd-3c618ad67f69/ticket.toml`
+
 <!-- ticket-index:entry id=69eb4118-19ec-4b5b-bb12-30e314029cc5 slug=new/workflow-tools digest=636fe5004612 -->
 #### [69eb4118] [workflow-tools][migration] Extract workflow tooling into standalone per-tool repositories and reframe context-engine as a consuming example
 - priority: `high`
@@ -6798,6 +6803,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 
 ### Component: agent-tooling
+
+<!-- ticket-index:entry id=9185d8f2-1080-46b1-84da-485f9ad839f6 slug=ready/agent-tooling digest=47af237d3ede -->
+#### [9185d8f2] Remove hardcoded token-heavy tool categorization; single default cost + empirical bootstrap
+- summary: `Gate::tool_cost()` in memory-api/tools/mcp/mcp-cost-gate/src/gate.rs falls back to a hardcoded static classification whenever the empirical rollup lacks data for a tool. Tools matching `TOKEN_HEAVY_...
+- ref: `.ticket/tickets/9185d8f2-1080-46b1-84da-485f9ad839f6/ticket.toml`
 
 <!-- ticket-index:entry id=e342cc4c-a7a4-42de-81fc-572d0497d12b slug=ready/agent-tooling digest=71524c40d552 -->
 #### [e342cc4c] Token-optimized default agent tool suite: peek + compact-terminal + design call for edit/filesystem/search tools
@@ -7332,6 +7342,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 
 ### Component: workflow-tools
+
+<!-- ticket-index:entry id=26da8f59-5d2d-41d9-9e87-7c74f200a9ce slug=ready/workflow-tools digest=f44bdc470a02 -->
+#### [26da8f59] [workflow-tools][consolidation] Retire legacy ticket-cli/ticket-mcp/ticket-http crates onto the pilot `ticket` crate bins
+- priority: `high`
+- summary: The `ticket` pilot crate (61ce77f9, done) **duplicated** rather than replaced the legacy ticket transports. Both surfaces exist and build today:
+- ref: `.ticket/tickets/26da8f59-5d2d-41d9-9e87-7c74f200a9ce/ticket.toml`
 
 <!-- ticket-index:entry id=0da6894c-dcbb-4196-8ac7-b6fae7c40ec9 slug=ready/workflow-tools digest=3dc117563807 -->
 #### [0da6894c] [workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets

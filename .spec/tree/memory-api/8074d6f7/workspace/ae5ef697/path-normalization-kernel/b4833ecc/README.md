@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b4833ecc-78b6-4406-9a03-9834d211f0ae slug=memory-api/workspace/path-normalization-kernel digest=523e90620228 -->
+<!-- spec-index:entry id=b4833ecc-78b6-4406-9a03-9834d211f0ae slug=memory-api/workspace/path-normalization-kernel digest=7e9c2b6fb305 -->
 
 # path normalization kernel
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Establish one resilient, memory-api-owned path normalization utility kernel that emits Unix-style path strings for transport/UI while preserving typed path safety for filesystem operations, with dete…
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

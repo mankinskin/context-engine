@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=e101aa4a-f5c1-413b-abb4-f4360c0a1123 slug=agent-workflow/spec-system-guidance digest=51d66975636a -->
+<!-- spec-index:entry id=e101aa4a-f5c1-413b-abb4-f4360c0a1123 slug=agent-workflow/spec-system-guidance digest=1c6cd4ad46e8 -->
 
 # Spec system guidance and Spec Agent workflow
 
@@ -11,11 +11,11 @@
 
 ## Summary
 
-Add generated agent guidance for spec-system work so spec creation and updates consistently follow a clear workflow.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 
-A generated `.agents/instructions/spec/spec-system.instructions.md` file exists with guidance for creating and updating specs. A generated `.agents/agents/spec.agent.md` file exists with a workflow for spec authoring and traceability. The guidance explicitly covers linking tests, tic…
+A generated `.agents/instructions/spec-system.instructions.md` file exists with guidance for creating and updating specs. A generated `.agents/agents/spec.agent.md` file exists with a workflow for spec authoring and traceability. The guidance explicitly covers linking tests, tic…
 
 ## Navigation
 

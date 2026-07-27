@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=788e91e4-32d7-4ff5-bf68-485235f8211f slug=spec-editor digest=cb58c51b4fe8 -->
+<!-- spec-index:entry id=788e91e4-32d7-4ff5-bf68-485235f8211f slug=spec-editor digest=1cd5b6397b6a -->
 
 # spec-editor
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`spec-editor` is a **fully interactive, GPU-accelerated specification editor**. It
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

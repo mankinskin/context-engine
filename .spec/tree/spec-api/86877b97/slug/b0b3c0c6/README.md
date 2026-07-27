@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=b0b3c0c6-168f-4b00-93b2-e06ce506855a slug=spec-api/slug digest=dfd356925792 -->
+<!-- spec-index:entry id=b0b3c0c6-168f-4b00-93b2-e06ce506855a slug=spec-api/slug digest=71ae516f1dd2 -->
 
 # slug
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Source: `crates/spec-api/src/slug.rs`
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

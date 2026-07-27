@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=5f9a1652-943f-4d98-8812-a4f7ca1d5e61 slug=repo-guidance/readmes/viewer-api-adoption digest=adfa4475fac6 -->
+<!-- spec-index:entry id=5f9a1652-943f-4d98-8812-a4f7ca1d5e61 slug=repo-guidance/readmes/viewer-api-adoption digest=be20e2840c92 -->
 
 # viewer-api README schema adoption
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Migrate `viewer-api` to the shared README schema and extend its generated child README surfaces with parent links back to the repo root.
+<!-- aligned-structure:v1 -->
 
 ## Acceptance Criteria Excerpt
 

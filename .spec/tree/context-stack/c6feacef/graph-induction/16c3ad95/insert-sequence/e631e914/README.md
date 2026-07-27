@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=e631e914-1840-4fec-9df5-b50a85c6cf00 slug=context-stack/graph-induction/insert-sequence digest=72c4c3e49213 -->
+<!-- spec-index:entry id=e631e914-1840-4fec-9df5-b50a85c6cf00 slug=context-stack/graph-induction/insert-sequence digest=532557085898 -->
 
 # insert_sequence
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-`WorkspaceManager::insert_sequence` induces graph structure from a text string.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 

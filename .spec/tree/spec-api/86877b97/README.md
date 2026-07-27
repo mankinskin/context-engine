@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=86877b97-2df6-46b5-923d-a9e608655fed slug=spec-api digest=8d96f93651b8 -->
+<!-- spec-index:entry id=86877b97-2df6-46b5-923d-a9e608655fed slug=spec-api digest=54d1af11d2a6 -->
 
 # spec-api
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-Bootstrapped from source analysis.
+<!-- aligned-structure:v1 -->
 
 ## Navigation
 
