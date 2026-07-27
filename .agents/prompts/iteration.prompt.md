@@ -23,12 +23,22 @@ Every invocation is a request to run the iteration loop on the described scope. 
 - Do not propose or perform implementation work — not even a small docs edit or a cheap follow-up ticket. Gaps found during review become review findings, interview questions, and next actions in the handoff.
 - If the scope is genuinely unidentifiable, run one anchoring lookup via ticket-mcp/session-mcp before asking the user. Ask only if that lookup also fails.
 
+## Interview Rule
+
+Every open decision the review surfaces must be answered by the user before the loop ends. Decisions are never deferred into the handoff or into next actions.
+
+- After the review returns, enumerate every unresolved question, waiver, ambiguity, conflict, or judgement call. If that list is non-empty, running the Interview phase is mandatory — it is not conditional on the review failing.
+- Ask the user directly, one concrete question at a time, each with options and a recommended default. Do not answer them yourself, do not pick a default silently, and do not declare a question moot without the user saying so.
+- Always-interview items: waiving an unmet acceptance criterion, amending acceptance criteria instead of fixing the gap, which of two conflicting ticket/commit records is authoritative, whether to open a follow-up ticket, and whether to close or return a ticket with partial evidence.
+- The loop may not proceed to Commit, Handoff, or ticket closure while any such question is unanswered.
+- **Next actions must be executable directives, not decisions.** "Update X to Y" or "open ticket Z" — never "decide whether…", "either A or B", or "reconcile X vs Y". A choice appearing in Next actions or in the handoff is a missed interview question.
+
 ## Workflow
 
 1. **Read the slash-command text** and determine the implementation track to iterate (ticket id, current session, or handoff package).
 2. **Anchor on the track.** Read the target ticket(s), current session state, or handoff package. Assume the described work is complete and awaiting review; do not ask the user to confirm this. Proceed directly to step 3.
 3. **Delegate Review phase.** Use the agent tool to invoke the [Review Agent](.agents/agents/review.agent.md) with the target ticket(s). Instruct it to verify acceptance criteria, gather evidence, and return a pass/fail verdict with per-criterion findings, and to perform **no** ticket transitions. Use an explicit model one tier above the cheap threshold (e.g., "Claude Sonnet 4.5 (copilot)").
-4. **Delegate Interview phase — on both the pass and fail paths.** Use the agent tool to invoke the [Interview Agent](.agents/agents/interview.agent.md) to resolve every open question or escalation raised by the review. Use an explicit cheap model. Collect clarifications and update tickets/specs as needed. Do not skip this step on a failed review: a returned package must carry zero open escalations.
+4. **Delegate Interview phase — on both the pass and fail paths, mandatory whenever the review raised anything unresolved.** Enumerate every open question, waiver, conflict, or judgement call from the review. Use the agent tool to invoke the [Interview Agent](.agents/agents/interview.agent.md) to put those questions to the user and collect answers. Use an explicit cheap model. Apply the answers to tickets/specs. Do not skip this step on a passing review, and do not skip it on a failed review: the returned package must carry zero open escalations and zero open decisions.
 5. **Enforce escalation gate.** Confirm all escalations are resolved. If any remain, stop and escalate to the user — no ticket may reach `done`, and no handoff may be marked implementation-ready, while an unresolved user escalation exists.
 6. **Enforce review gate.**
    - If review passes, proceed to step 7.
@@ -53,7 +63,7 @@ Every invocation is a request to run the iteration loop on the described scope. 
 ## Gates
 
 - **Review gate (step 6):** acceptance criteria verified before commit; failures return the ticket to `in-implementation`.
-- **Escalation gate (step 5):** no ticket reaches `done`, and no handoff is implementation-ready, while an unresolved user escalation exists.
+- **Escalation gate (step 5):** no ticket reaches `done`, and no handoff is implementation-ready, while an unresolved user escalation or unanswered review decision exists.
 - **Loop-closure gate (step 9):** every finished implementation terminates in a durable handoff package plus a ticket transition (closed or returned).
 
 ## Ticket Transition Ownership
@@ -80,6 +90,6 @@ End the run with a single inline summary block using **bold-label bullets**, one
 - **Ticket transitions:** state before → state after, per ticket (e.g., `in-implementation` → `done`)
 - **Commits:** the commit sha(s) produced this iteration, or `none`
 - **Handoff package:** a clickable link to the persisted handoff plus a one-line restatement of its `objective` — never the full eight fields
-- **Next actions:** the immediate next steps for the human or next agent. Any unresolved escalation is reported here; there is no separate blockers field.
+- **Next actions:** the immediate next steps for the human or next agent, phrased as executable directives. Never a decision, choice, or open question — those are resolved in the Interview phase. Any unresolved escalation is reported here; there is no separate blockers field.
 
 Omit no field: render `none` when a field is empty. Render all ticket/spec/session/handoff references per the Clickable Reference Policy in [AGENTS.md](../../AGENTS.md).
