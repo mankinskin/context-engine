@@ -25,6 +25,10 @@ Activate this rule when:
 
 **MCP boundary enforcement**: `mcp-cost-gate` middleware injects mandatory `caller_model` field into every MCP tool schema and refuses token-heavy calls from orchestrator-tier models. Fails open if price table unavailable.
 
+**Setting `caller_model` correctly**: Pass the **actual id of the model issuing the call** — the running model's real price-table `model_id`, e.g. `claude-opus-4-8`, `claude-sonnet-4-5`, `claude-haiku-4-5`, `gpt-5`, `gemini-2.5-pro`. Match a `model_id` key in `tools/model-prices/model_prices.json` (query with `sync_model_prices.py --list`).
+- Do **not** pass a generic vendor or product label such as `github-copilot`, `copilot`, `openai`, or `anthropic`. An unrecognized `caller_model` resolves to a **zero-cost budget**, which silently breaks price-awareness enforcement (the gate can no longer distinguish orchestrator-tier from cheap models).
+- When delegating, the sub-agent sets `caller_model` to **its own** model id, not the orchestrator's.
+
 **Tier reference at X=15**:
 
 | Tier | out$/M range | Mode |

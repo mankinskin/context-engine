@@ -1,0 +1,105 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [".agents/instructions/INDEX.md"],
+  "mcp": {
+    "context-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "context-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "ticket-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "ticket-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "spec-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "spec-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "test-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "test-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "feedback-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "feedback-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "session-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "session-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "peek-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "peek-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "rule-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "rule-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "audit-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "audit-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "compact-terminal-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "compact-terminal-mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    },
+    "log-viewer-mcp": {
+      "type": "local",
+      "command": ["mcp-cost-gate", "--", "log-viewer", "--mcp"],
+      "environment": {
+        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": ".session/grants"
+      }
+    }
+  }
+}
