@@ -18,9 +18,19 @@ never specified, and it exists only as an MCP transport -- there is no
 `agent-tooling/peek-api`, and it means the spill/preview contract cannot be
 reused or tested independently of MCP.
 
-## Current Behavior (as implemented)
+## Delivered Implementation
 
-`memory-api/tools/mcp/compact-terminal-mcp` exposes two tools.
+The implementation follows the peek-api layering pattern with three crates:
+
+1. **`memory-api/crates/compact-terminal-api`** -- core execution, inline/spill
+   decision, spill file lifecycle, and bounded spill reading, with
+   transport-independent types and error model.
+2. **`memory-api/tools/cli/compact-terminal-cli`** -- CLI transport exposing
+   `run` and `read-spill` commands for MCP-unavailable fallback scenarios.
+3. **`memory-api/tools/mcp/compact-terminal-mcp`** -- MCP transport adapter
+   delegating to `compact-terminal-api`.
+
+The MCP transport exposes two tools:
 
 `run` -- executes a command via `sh -c` with `command`, optional `cwd`,
 `inline_limit` (default 4096 bytes), and `timeout_secs`.
@@ -33,6 +43,14 @@ reused or tested independently of MCP.
 
 `read_spill` -- reads a bounded window from a spill file produced by `run`,
 addressed either by `start`/`end` line range or by `grep` pattern.
+
+### MCP Transport Contract Note
+
+MCP transports in this repository must call `ServerCapabilities::enable_tools()`
+in their `get_info()` implementation to advertise tool availability to clients.
+Omitting this call makes tools invisible despite wildcard tool grants in agent
+configurations. A regression test (`server_advertises_tools_capability` in
+`compact-terminal-mcp/tests/integration_tests.rs`) guards this requirement.
 
 ## Scope
 
@@ -75,19 +93,29 @@ addressed either by `start`/`end` line range or by `grep` pattern.
 
 ## Traceability
 
-- Parent design call: `agent-tooling/default-tool-suite`
+- Parent design call: `agent-tooling/default-tool-suite` (spec `7c9757a7`)
 - Epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
+- Implementation ticket: `.ticket/tickets/bd5e9aee-f89b-4d38-be80-80d6c8c1a3b5`
 - Layering reference: `agent-tooling/peek-api`
   (`.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d`)
-- Implementation: `memory-api/tools/mcp/compact-terminal-mcp`
+- Implementation: `memory-api/crates/compact-terminal-api`,
+  `memory-api/tools/cli/compact-terminal-cli`,
+  `memory-api/tools/mcp/compact-terminal-mcp`
 - Guidance: `.agents/instructions/orchestration/tool-output.instructions.md`
 
 ## Validation Evidence
 
-Expected before review:
+Verified 2026-07-27:
 
-- `cargo test -p compact-terminal-api`
-- `cargo test -p compact-terminal-mcp`
-- Focused cases: inline boundary (at, just below, just above `inline_limit`),
-  spill handle round-trip through `read_spill` by range and by pattern,
-  non-zero exit propagation, timeout behavior, and missing-handle error.
+- `cargo build` -- warning-free for all three crates
+- `cargo test -p compact-terminal-api` -- 8 tests passed
+- `cargo test -p compact-terminal-mcp` -- 6 tests passed  
+- `cargo test -p compact-terminal-cli` -- 6 tests passed
+- `./target/debug/spec.exe health --all` -- 0 issues across 220 specs
+- MCP capability check: `tools/list` correctly returns `run` and `read_spill`;
+  binary initialize includes `"capabilities":{"tools":{}}`
+
+Coverage includes inline boundary cases (at, just below, just above
+`inline_limit`), spill handle round-trip through `read_spill` by range and by
+pattern, non-zero exit propagation, timeout behavior, missing-handle error, and
+the `enable_tools()` capability requirement.

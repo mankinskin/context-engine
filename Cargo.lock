@@ -2116,18 +2116,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "compact-terminal-api"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "uuid",
+]
+
+[[package]]
+name = "compact-terminal-cli"
+version = "0.1.0"
+dependencies = [
+ "assert_cmd",
+ "clap",
+ "compact-terminal-api",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "compact-terminal-mcp"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "chrono",
+ "compact-terminal-api",
  "rmcp",
  "serde",
  "serde_json",
+ "tempfile",
  "tokio",
  "tracing",
  "tracing-subscriber",
- "uuid",
 ]
 
 [[package]]

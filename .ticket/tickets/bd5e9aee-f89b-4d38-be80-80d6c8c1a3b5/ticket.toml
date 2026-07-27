@@ -1,6 +1,7 @@
 id = "bd5e9aee-f89b-4d38-be80-80d6c8c1a3b5"
 created_at = "2026-07-27T02:39:11.806368100+00:00"
 title = "compact-terminal: extract compact-terminal-api and add CLI transport"
-state = "new"
+state = "in-review"
 component = "agent-tooling"
+status_summary = "Scope delivered: three-crate layering (compact-terminal-api + compact-terminal-cli + compact-terminal-mcp) following peek-api pattern. 4096-byte default inline limit with spill-and-peek behavior for oversized output. Latent bug fix: enable_tools() now called in get_info() so tools are visible to agents. Validation: cargo build warning-free, all tests pass (8+6+6), spec health 0 issues, MCP capability verification confirms tools advertised. Spec 63c60c9d promoted to approved."
 type = "task"
