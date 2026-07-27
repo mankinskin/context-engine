@@ -1,5 +1,9 @@
 # Implement a bounded filesystem operations tool suite
 
+**Crate name**: `fs-api` (api crate); `fs-cli` (CLI transport); `fs-mcp` (MCP transport).
+
+**Implementation note**: This is a **net-new implementation**, not an extraction. The precedent ticket `bd5e9aee` extracted an already-existing `compact-terminal-mcp` into layered api/cli/mcp crates. There is no existing filesystem abstraction in the workspace today. What transfers from that precedent is **only** the three-crate layout and workspace wiring pattern — not any logic. Sizing must reflect net-new implementation cost.
+
 Parent epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
 Spec: `agent-tooling/filesystem-operations` (`58a1d32c-2643-455c-bf3b-e0ccf0eecd9f`)
 

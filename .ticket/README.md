@@ -4,6 +4,16 @@
 
 Generated ticket index grouped by state and component. Use this before scanning raw `.ticket/tickets/` folders.
 
+## State: backlog
+
+### Component: agent-tooling
+
+<!-- ticket-index:entry id=9185d8f2-1080-46b1-84da-485f9ad839f6 slug=backlog/agent-tooling digest=cf4a6b5e3156 -->
+#### [9185d8f2] Remove hardcoded token-heavy tool categorization; single default cost + empirical bootstrap
+- summary: The cost gate hardcodes a name-based list (TOKEN_HEAVY_TOOL_SUBSTRINGS) that assigns a flat 75 to specific tools by name. This bakes in assumptions about tools we cannot actually know from their name...
+- ref: `.ticket/tickets/9185d8f2-1080-46b1-84da-485f9ad839f6/ticket.toml`
+
+
 ## State: cancelled
 
 ### Component: cli
@@ -191,6 +201,24 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/17358907-1f1c-4c3f-b250-3d8220b6c363/ticket.toml`
 
 
+### Component: test-api
+
+<!-- ticket-index:entry id=57a13857-b80e-4d91-99e8-452ccebe4c38 slug=cancelled/test-api digest=30e0f1f56164 -->
+#### [57a13857] [tools] Close transport surface gaps (or document intentional absences)
+- priority: `medium`
+- summary: The transport surfaces are heterogeneous, which forces the e2e matrix (#1) to blanket-block whole domains. Decide and act: build the missing surfaces, or formally document them as out-of-scope so the...
+- ref: `memory-api/.ticket/tickets/57a13857-b80e-4d91-99e8-452ccebe4c38/ticket.toml`
+
+
+### Component: ticket
+
+<!-- ticket-index:entry id=52f2b14f-fd64-5eb2-83a3-a2c99c5680ce slug=cancelled/ticket digest=45004fc10ead -->
+#### [52f2b14f] [feedback-followup][ticket] Address not-helpful feedback on ce://default/ticket/6a47ab0f-7e42-463e-afe0-bf51b85249c9
+- priority: `medium`
+- summary: Explicit feedback was recorded against `ce://default/ticket/6a47ab0f-7e42-463e-afe0-bf51b85249c9` during session `e31bd0e5-ab29-4e76-9284-5f3d2067f40c` (tool call `toolu_01Gkjst5pUyW8UfkdQgamdPA`).
+- ref: `.ticket/tickets/52f2b14f-fd64-5eb2-83a3-a2c99c5680ce/ticket.toml`
+
+
 ### Component: ticket-http
 
 <!-- ticket-index:entry id=b458cba7-54b1-45d8-8c86-17b920416b8b slug=cancelled/ticket-http digest=12b418df5336 -->
@@ -206,6 +234,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 
 ### Component: ticket-viewer
+
+<!-- ticket-index:entry id=2b3a6e2e-4911-4b33-a3a9-9ace11f26637 slug=cancelled/ticket-viewer digest=03e32a803ce8 -->
+#### [2b3a6e2e] Bug: TicketDetail right panel hardcoded colors — port to theme variables
+- priority: `high`
+- summary: `tools/viewer/ticket-viewer/frontend/dioxus/src/components/ticket_detail.rs` builds the right-side ticket detail panel from inline hardcoded hex colors. When the theme is set to PAPER (light) the pan...
+- ref: `memory-viewers/.ticket/tickets/2b3a6e2e-4911-4b33-a3a9-9ace11f26637/ticket.toml`
 
 <!-- ticket-index:entry id=fea28293-5494-49e1-bdb4-8165457b59ca slug=cancelled/ticket-viewer digest=48b4e37b89a4 -->
 #### [fea28293] Feature: Batch operations — multi-select, queue, bulk apply, filter-based updates
@@ -243,6 +277,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Change the ticket-viewer graph mode so the full graph stays visible while the selected ticket becomes the active focus anchor.
 - ref: `memory-api/.ticket/tickets/3526cce3-c934-4c37-b7a8-c7c0979f308d/ticket.toml`
+
+<!-- ticket-index:entry id=6e7a15c9-d8e6-4bbe-bb34-b83bd651896b slug=cancelled/ticket-viewer digest=ab4fc7c5afc9 -->
+#### [6e7a15c9] [ticket-viewer] Keep full workspace graph visible with focused navigation
+- priority: `high`
+- summary: Change the ticket-viewer graph mode so the full graph stays visible while the selected ticket becomes the active focus anchor.
+- ref: `memory-viewers/.ticket/tickets/6e7a15c9-d8e6-4bbe-bb34-b83bd651896b/ticket.toml`
 
 <!-- ticket-index:entry id=0d2e5a7d-f76b-474a-8991-b3a56ea73ac5 slug=cancelled/ticket-viewer digest=51e5b8f0218a -->
 #### [0d2e5a7d] [ticket-viewer][ticket-http][viewer-api] Improve main layout ticket documents and focused full-graph navigation
@@ -338,6 +378,88 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ## State: done
 
+### Component: agent-config
+
+<!-- ticket-index:entry id=9dadecaa-4ec1-4110-aedf-2771e7189cb5 slug=done/agent-config digest=5b95935ae838 -->
+#### [9dadecaa] Delegation policy: prefer workspace agent templates over VS Code built-in agents
+- summary: Fresh-Eyes Review | 2026-07-26**
+- ref: `.ticket/tickets/9dadecaa-4ec1-4110-aedf-2771e7189cb5/ticket.toml`
+
+
+### Component: agent-tooling
+
+<!-- ticket-index:entry id=1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f slug=done/agent-tooling digest=4aec0c423e99 -->
+#### [1fbf2d84] Close the loop: Iteration Agent orchestrates review→interview→commit→handoff into a self-contained next handoff
+- summary: We have deep tooling for *implementing* work but almost none for the post-implementation transition: turning a finished, validated implementation into the next self-contained handoff. Today an implem...
+- ref: `.ticket/tickets/1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f/ticket.toml`
+
+<!-- ticket-index:entry id=ea12b7b0-11c2-42c0-b0a9-d2942093525b slug=done/agent-tooling digest=633d966b4244 -->
+#### [ea12b7b0] Durable cross-session rules: loop-closure + escalation-gate instruction files
+- summary: Add durable cross-session instruction rules so the loop discipline applies to **all** sessions, not just when the Iteration Agent runs.
+- ref: `.ticket/tickets/ea12b7b0-11c2-42c0-b0a9-d2942093525b/ticket.toml`
+
+<!-- ticket-index:entry id=d3af78d7-9486-43c0-aae7-ddd5681d9807 slug=done/agent-tooling digest=2f9117326a22 -->
+#### [d3af78d7] Handoff-package schema spec + session_handoff required-field enforcement
+- summary: Define the **handoff-package schema**: the required fields that make the next implementation session fully self-contained (zero discovery, zero user clarification). Document it as a spec and enforce ...
+- ref: `.ticket/tickets/d3af78d7-9486-43c0-aae7-ddd5681d9807/ticket.toml`
+
+<!-- ticket-index:entry id=858f731c-3d85-4bab-8e0f-73afc098ead0 slug=done/agent-tooling digest=8f441e04a160 -->
+#### [858f731c] Implement Agent phase isolation: strip search + askQuestions tools + phase-separation rule
+- summary: Isolate the implementation phase so it needs **no search and no user-clarification** tooling. Enforce it on the Implement Agent's tool surface and document it as a durable phase-separation rule.
+- ref: `.ticket/tickets/858f731c-3d85-4bab-8e0f-73afc098ead0/ticket.toml`
+
+<!-- ticket-index:entry id=76e831f2-a0fe-4078-be91-681b6fa371c7 slug=done/agent-tooling digest=712ea15123af -->
+#### [76e831f2] Iteration Agent template + prompt (thin orchestrator: review→interview→commit→handoff)
+- summary: Author a new **Iteration Agent** template (`.agents/agents/iteration.agent.md`) and matching prompt (`.agents/prompts/iteration.prompt.md`). It is a **thin orchestrator** for the post-implementation ...
+- ref: `.ticket/tickets/76e831f2-a0fe-4078-be91-681b6fa371c7/ticket.toml`
+
+<!-- ticket-index:entry id=5755b694-b8bc-42c6-869d-34761e8a822c slug=done/agent-tooling digest=a1c89afc52b1 -->
+#### [5755b694] Iteration-loop workflow spec (phases, review→interview→commit→handoff ordering, gates)
+- summary: Author the **iteration-loop workflow spec**: the phase model, canonical ordering, and gates that govern how a finished implementation becomes the next handoff.
+- ref: `.ticket/tickets/5755b694-b8bc-42c6-869d-34761e8a822c/ticket.toml`
+
+<!-- ticket-index:entry id=41ff230b-cedf-4ec3-86cf-9b48a89b8325 slug=done/agent-tooling digest=fe422c85eeb7 -->
+#### [41ff230b] Quality gates and session/tool-call data collection for delegated sessions
+- summary: Establish **quality gates before and after delegated sessions** and collect the underlying data (sessions, tool calls, delegated sessions) needed to understand how often delegated sessions produce sa...
+- ref: `.ticket/tickets/41ff230b-cedf-4ec3-86cf-9b48a89b8325/ticket.toml`
+
+<!-- ticket-index:entry id=84c7757d-9819-4b06-a669-e62366db250a slug=done/agent-tooling digest=cb488b03fccb -->
+#### [84c7757d] Session store: populate tool-metrics, capture tool error text, and count timeouts/hangs as non-success
+- summary: The session store's failure signal is misleading. In session 51701334, only **10 of 554** tool executions (1.8%) recorded `tool_success: false`, yet the session was dominated by friction — 5-minute t...
+- ref: `.ticket/tickets/84c7757d-9819-4b06-a669-e62366db250a/ticket.toml`
+
+<!-- ticket-index:entry id=6549b6a7-8957-4df0-ada5-8fefb49c015c slug=done/agent-tooling digest=4bc946c9ad59 -->
+#### [6549b6a7] Session store: record per-turn/per-sub-agent token and cost with model attribution
+- summary: Session 51701334 (instruction-file migration) cost ~$9 total; the orchestrator model used only ~$0.90, so ~90% of spend went to sub-agents. This spend is currently **unattributable from the session s...
+- ref: `.ticket/tickets/6549b6a7-8957-4df0-ada5-8fefb49c015c/ticket.toml`
+
+<!-- ticket-index:entry id=65819900-1d16-4c53-8b5d-7548c64a75ef slug=done/agent-tooling digest=dec11fb52e3a -->
+#### [65819900] [token-efficiency] Add interface skeletonization utility
+- priority: `medium`
+- summary: Create an interface skeletonization utility that strips implementation bodies and returns only structural information.
+- ref: `.ticket/tickets/65819900-1d16-4c53-8b5d-7548c64a75ef/ticket.toml`
+
+<!-- ticket-index:entry id=d4605cc0-5901-4b68-94d5-e7e3e6cac06f slug=done/agent-tooling digest=2c6721660bea -->
+#### [d4605cc0] [token-efficiency] Add token-bounded file inspection utility
+- priority: `medium`
+- summary: Create a token-bounded file inspection utility that defaults to narrow line windows instead of whole-file reads.
+- ref: `.ticket/tickets/d4605cc0-5901-4b68-94d5-e7e3e6cac06f/ticket.toml`
+
+<!-- ticket-index:entry id=bd5e9aee-f89b-4d38-be80-80d6c8c1a3b5 slug=done/agent-tooling digest=1eada76da987 -->
+#### [bd5e9aee] compact-terminal: extract compact-terminal-api and add CLI transport
+- summary: Parent epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
+- ref: `.ticket/tickets/bd5e9aee-f89b-4d38-be80-80d6c8c1a3b5/ticket.toml`
+
+
+### Component: agent-workflow
+
+<!-- ticket-index:entry id=9577b114-ec11-431b-8740-c488bef05fc9 slug=done/agent-workflow digest=a435c5c2c30a -->
+#### [9577b114] [session-bootstrap][handoff] Require durable session identity and exact resume flow in /handoff
+- priority: `high`
+- summary: Update the generated `/handoff` prompt contract so every handoff persists and carries durable session identity into the receiving run.
+- ref: `.ticket/tickets/9577b114-ec11-431b-8740-c488bef05fc9/ticket.toml`
+
+
 ### Component: audit-api
 
 <!-- ticket-index:entry id=95d4f986-b81c-4951-bae5-4227f2d72a6d slug=done/audit-api digest=1d183fd45113 -->
@@ -351,6 +473,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Add an audit validation rule that flags tickets with neither outgoing depends_on edges nor incoming dependees so every ticket participates in the ticket graph. For legitimately standalone work, creat...
 - ref: `memory-api/.ticket/tickets/a762448e-464c-43da-95b8-e49eb07814ed/ticket.toml`
+
+<!-- ticket-index:entry id=855a1e5d-d998-4caf-b60c-d75a13ca3264 slug=done/audit-api digest=b19a14b6f372 -->
+#### [855a1e5d] [memory-index] Audit store status summary generator
+- priority: `medium`
+- summary: Build a generator that reads the audit-api and emits a compact markdown summary of the current audit status at `.audit/README.md` along with its TOON sidecar at `.audit/index.toon`. The purpose is to...
+- ref: `.ticket/tickets/855a1e5d-d998-4caf-b60c-d75a13ca3264/ticket.toml`
 
 
 ### Component: cli
@@ -450,11 +578,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: All rendering pipeline parameters must be tweakable at runtime via a Bevy resource. This includes SVO parameters, splat generation, AABB screen projection, GPU radix sort, tiled rasterizer, glass eff...
 - ref: `.ticket/tickets/de697c71-9328-4133-8c77-d01e8b885940/ticket.toml`
 
-<!-- ticket-index:entry id=1b65d658-07d0-4d31-881b-6111321b5752 slug=done/context-editor digest=d7a14655082d -->
-#### [1b65d658] SDF Item Cutting: CSG Shader Subtraction, Cut Particles & Liquid Glass Impact Feedback
-- priority: `high`
-- ref: `.ticket/tickets/1b65d658-07d0-4d31-881b-6111321b5752/ticket.toml`
-
 <!-- ticket-index:entry id=947d0a30-1731-445e-a438-2eeab6b1c5bf slug=done/context-editor digest=20e39400acc9 -->
 #### [947d0a30] Style: Theme Palette Driving SVO Materials, PBR Parameters, and Glass Tints
 - priority: `high`
@@ -501,6 +624,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 
 ### Component: context-engine
+
+<!-- ticket-index:entry id=46d89aa2-043a-4c94-8213-2f365aa2d517 slug=done/context-engine digest=45fcc6da15c7 -->
+#### [46d89aa2] Add handoff workflow prompts
+- priority: `medium`
+- summary: Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session jumpstart handoffs. Scope includes rule-target config, canonical prompt rule entries, generated pr...
+- ref: `.ticket/tickets/46d89aa2-043a-4c94-8213-2f365aa2d517/ticket.toml`
 
 <!-- ticket-index:entry id=0dba399a-4691-4173-b921-17e5e6f6ebb8 slug=done/context-engine digest=4acbba52ee72 -->
 #### [0dba399a] [memory-index] Define IndexEntry schema and serde contract
@@ -731,7 +860,30 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/33565741-c3ce-4697-91d3-092a803aaac0/ticket.toml`
 
 
+### Component: log-api
+
+<!-- ticket-index:entry id=d3349747-b2f2-4dd4-b73c-dc016fec80d6 slug=done/log-api digest=305c85ebcc99 -->
+#### [d3349747] [log-api] Add runtime log session model and cross-store links
+- priority: `high`
+- summary: Extend `log-api` beyond validation-only captures so it can represent runtime log sessions for tools, servers, tests, benchmarks, graph operations, journals, and agent sessions.
+- ref: `.ticket/tickets/d3349747-b2f2-4dd4-b73c-dc016fec80d6/ticket.toml`
+
+
+### Component: mcp-cost-gate,model-prices
+
+<!-- ticket-index:entry id=4e7e53f5-b3de-477f-8cbd-f88b6c103bb5 slug=done/mcp-cost-gate,model-prices digest=4c45dda121c9 -->
+#### [4e7e53f5] graded cost + model budget + offset resolution
+- summary: Implement the graded cost model (1–100 scale) for tool classification and budget-based gating decisions.
+- ref: `.ticket/tickets/4e7e53f5-b3de-477f-8cbd-f88b6c103bb5/ticket.toml`
+
+
 ### Component: memory-api
+
+<!-- ticket-index:entry id=6c859ac3-14c9-4d9d-b428-5b0cca03e23a slug=done/memory-api digest=803b55472417 -->
+#### [6c859ac3] [journal] Define generic operation journal schema and store contract
+- priority: `high`
+- summary: Generalize the move kernel's journaling concept into a reusable operation journal contract for memory stores.
+- ref: `.ticket/tickets/6c859ac3-14c9-4d9d-b428-5b0cca03e23a/ticket.toml`
 
 <!-- ticket-index:entry id=8affb65d-605b-4225-819a-af951e0bd318 slug=done/memory-api digest=5e69dd6272cf -->
 #### [8affb65d] [memory-api] Add shared store bootstrap open_or_init helpers
@@ -745,11 +897,70 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Implemented shared workspace/store root normalization for ticket/spec/rule stores, validated ticket create target roots so repo/store paths resolve into .ticket/tickets, removed the ticket workspace ...
 - ref: `memory-api/.ticket/tickets/6124971a-0775-455f-a7b8-840766a43ce3/ticket.toml`
 
+<!-- ticket-index:entry id=026b2eb6-17c6-4d02-b46b-79758f1237a1 slug=done/memory-api digest=8e5481cfb3b9 -->
+#### [026b2eb6] [memory-api] E2E test workspace fixture repository — multi-store, multi-submodule
+- priority: `high`
+- summary: Provide a dedicated, version-controlled **fixture repository** that materializes a realistic multi-store, multi-worktree workspace so every memory tool (ticket, spec, rule, audit, session, test, doc,...
+- ref: `memory-api/.ticket/tickets/026b2eb6-17c6-4d02-b46b-79758f1237a1/ticket.toml`
+
+<!-- ticket-index:entry id=756fed27-96b3-4572-a986-a4f70986984a slug=done/memory-api digest=869c6d558273 -->
+#### [756fed27] [memory-api] Extract shared tracing initialization for all transports
+- priority: `high`
+- summary: Starting shared transport tracing implementation: extract a reusable memory-api tracing initializer from current ticket-http/main patterns and wire it into representative HTTP and MCP tools first.
+- ref: `.ticket/tickets/756fed27-96b3-4572-a986-a4f70986984a/ticket.toml`
+
+<!-- ticket-index:entry id=0a510279-5482-4c4f-8cb5-fad3baa57427 slug=done/memory-api digest=3f1223f8e32b -->
+#### [0a510279] [memory-api] Generalize cross-workspace move into a domain-neutral kernel with per-domain trait specialization
+- priority: `high`
+- summary: Promote the proven ticket-only cross-workspace move (delivered by `505b2cd4`) into a **domain-neutral generic move kernel** in `memory-api` that every domain store reuses through a trait, with **no d...
+- ref: `memory-api/.ticket/tickets/0a510279-5482-4c4f-8cb5-fad3baa57427/ticket.toml`
+
+<!-- ticket-index:entry id=404ddde3-cf6c-4d33-9bb0-43d65c12a3e1 slug=done/memory-api digest=8dd4e497af38 -->
+#### [404ddde3] [memory-api] Normalize move journal paths and shrink rewrite rollback payload
+- priority: `high`
+- summary: A generated move journal mixes Windows and Unix separators in persisted path fields and stores extremely large `previous_content` snapshots for rewritten tracked files.
+- ref: `memory-api/.ticket/tickets/404ddde3-cf6c-4d33-9bb0-43d65c12a3e1/ticket.toml`
+
+<!-- ticket-index:entry id=21e6c015-55c6-4807-8d55-16193ed687ed slug=done/memory-api digest=1978a1068fc3 -->
+#### [21e6c015] [memory-api] Support cross-git-worktree (submodule) entity moves
+- priority: `high`
+- summary: Extend the cross-workspace move contract so an entity can be moved between two stores that live in **different git worktrees** — most importantly across **git submodule boundaries**. This repository ...
+- ref: `memory-api/.ticket/tickets/21e6c015-55c6-4807-8d55-16193ed687ed/ticket.toml`
+
+<!-- ticket-index:entry id=e6bdafbe-3538-47a3-8837-1f8e74fb13e8 slug=done/memory-api digest=9c98ae8b6a74 -->
+#### [e6bdafbe] [memory-api] Track explicit-init-only store creation validation
+- priority: `high`
+- summary: Resumed explicit-init-only validation track and started active execution.
+- ref: `memory-api/.ticket/tickets/e6bdafbe-3538-47a3-8837-1f8e74fb13e8/ticket.toml`
+
+<!-- ticket-index:entry id=94a51f30-8c37-4ea6-b49a-97206d28add3 slug=done/memory-api digest=d61ec73f108d -->
+#### [94a51f30] [memory-api][spec-api][rule-api][audit-api] Adopt generic move kernel across domains and expose move on all transports
+- priority: `high`
+- summary: Now that the domain-neutral move kernel (`0a510279`, `memory_api::storage::move_kernel`) has landed and is proven by the `ticket-api` adapter plus a `spec-api` demonstration adapter, make cross-works...
+- ref: `memory-api/.ticket/tickets/94a51f30-8c37-4ea6-b49a-97206d28add3/ticket.toml`
+
+<!-- ticket-index:entry id=a7f19a7d-42d0-48b7-b89b-98de3c6fa3b4 slug=done/memory-api digest=3960869661e9 -->
+#### [a7f19a7d] [memory-api][test] Refresh cross-domain move matrix + add move benchmark now that the kernel landed
+- priority: `medium`
+- summary: The generic move kernel (`0a510279`) has landed, but the cross-domain operation matrix (`memory-matrix`) still reports `move` as **blocked-with-reason** and its test asserts the blocked state. Update...
+- ref: `memory-api/.ticket/tickets/a7f19a7d-42d0-48b7-b89b-98de3c6fa3b4/ticket.toml`
+
+<!-- ticket-index:entry id=e6e09d6f-a41c-49f7-bc6a-c6d8e822598b slug=done/memory-api digest=c421b7b32f64 -->
+#### [e6e09d6f] [memory-api][ticket-cli][spec-cli][rule-cli] Normalize nested workspace option semantics
+- priority: `high`
+- summary: The ticket direction is right, but the existing plan was too broad to execute safely. The core contract already lives in the workspace design spec, and the remaining implementation should be treated ...
+- ref: `memory-api/.ticket/tickets/e6e09d6f-a41c-49f7-bc6a-c6d8e822598b/ticket.toml`
+
 <!-- ticket-index:entry id=7f7fe4a8-a1d6-44b4-baf9-9500f6db40a5 slug=done/memory-api digest=67637f4a5e0f -->
 #### [7f7fe4a8] [memory-index] Define domain digest input contract for generated index entries
 - priority: `high`
 - summary: `IndexEntry` and `IndexSidecar` already define a generic digest algorithm, but the generator tickets do not define how each domain produces the stable input fields that feed that digest. In particula...
 - ref: `.ticket/tickets/7f7fe4a8-a1d6-44b4-baf9-9500f6db40a5/ticket.toml`
+
+<!-- ticket-index:entry id=3ae150e4-8e85-42c0-93cf-971f814cff65 slug=done/memory-api digest=b2bcd2689890 -->
+#### [3ae150e4] [rule-cli] Fix repo prompt contract test root resolution
+- priority: `medium`
+- ref: `memory-api/.ticket/tickets/3ae150e4-8e85-42c0-93cf-971f814cff65/ticket.toml`
 
 <!-- ticket-index:entry id=9491f6b7-c11b-4d94-aed6-f5c6ea004e8a slug=done/memory-api digest=61636de9f0ef -->
 #### [9491f6b7] [session-api] Plan and scaffold Copilot chat-session capture in memory-api
@@ -769,6 +980,92 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Extract ~75% of ticket-api into a generic `memory-api` crate that provides filesystem-backed entity storage with schema validation, indexing, search, and graph edges. Both ticket-api and the new spec...
 - ref: `memory-api/.ticket/tickets/e0b3e9a8-bd43-472a-8222-f8c5e3321dbd/ticket.toml`
 
+<!-- ticket-index:entry id=d187d817-d3f5-49ca-8925-8d06b5824912 slug=done/memory-api digest=e2cb6c151293 -->
+#### [d187d817] [ticket-cli][spec-cli][rule-cli][audit-cli] Add TOON input and output support
+- priority: `medium`
+- summary: Implemented TOON machine-readable output across the memory-api CLI suite and extended spec-cli structured field decoding to accept TOON next to JSON.
+- ref: `.ticket/tickets/d187d817-d3f5-49ca-8925-8d06b5824912/ticket.toml`
+
+<!-- ticket-index:entry id=3041d7e3-2b34-4597-b354-e0aa6ffb0459 slug=done/memory-api digest=7f5b920602d7 -->
+#### [3041d7e3] [transports] Correlate CLI/MCP/HTTP spans with log sessions and journals
+- priority: `medium`
+- summary: Starting transport correlation implementation: inspect ticket-http, ticket-mcp, and ticket-cli lifecycle entrypoints and propagate stable request/tool correlation plus journal ids through transport s...
+- ref: `.ticket/tickets/3041d7e3-2b34-4597-b354-e0aa6ffb0459/ticket.toml`
+
+
+### Component: memory-kernel
+
+<!-- ticket-index:entry id=e12d8343-24f2-4b5d-8023-5a071238904a slug=done/memory-kernel digest=7d7f7ef72fde -->
+#### [e12d8343] [workflow-tools][foundations] Extract shared storage kernel into memory-kernel repository
+- priority: `high`
+- summary: Phase A extraction: create standalone `memory-kernel` from `memory-api/crates/memory-api`, freeing the legacy package name and supplying the neutral shared substrate for workflow domains.
+- ref: `.ticket/tickets/e12d8343-24f2-4b5d-8023-5a071238904a/ticket.toml`
+
+
+### Component: memory-matrix
+
+<!-- ticket-index:entry id=51e2210c-829b-4f7f-865e-99d120d8fd7d slug=done/memory-matrix digest=bc684f50f868 -->
+#### [51e2210c] [memory-matrix] Add missing-store explicit-init policy coverage
+- priority: `high`
+- summary: The matrix needs explicit missing-store coverage to prove strict read/search/scan paths do not recreate hidden store roots, with explicit create/init as separate positive controls.
+- ref: `memory-api/.ticket/tickets/51e2210c-829b-4f7f-865e-99d120d8fd7d/ticket.toml`
+
+
+### Component: observability
+
+<!-- ticket-index:entry id=ff6637f5-01f6-46c3-b727-e1a19ee0f202 slug=done/observability digest=c776b0f646c2 -->
+#### [ff6637f5] [benchmarks] Capture profiling timings through logs and journals
+- priority: `medium`
+- summary: Define how benchmarks and profiling runs use tracing logs and journal metadata without mixing timing data into deterministic replay state.
+- ref: `.ticket/tickets/ff6637f5-01f6-46c3-b727-e1a19ee0f202/ticket.toml`
+
+<!-- ticket-index:entry id=84673399-75e6-4f36-8a17-4c666001e530 slug=done/observability digest=7e5377bc8ee3 -->
+#### [84673399] [observability] Resolve logging, journaling, and replay architecture boundaries
+- priority: `high`
+- summary: Resolve the core architecture decisions for unified logging, operation journaling, and replayable visualization before implementation proceeds.
+- ref: `.ticket/tickets/84673399-75e6-4f36-8a17-4c666001e530/ticket.toml`
+
+<!-- ticket-index:entry id=529844ac-f7e5-4265-b087-5bd2b597155f slug=done/observability digest=2ce0cf71c7ae -->
+#### [529844ac] [observability][contract] Define cross-store correlation-id contract
+- priority: `high`
+- summary: Define and publish the cross-store correlation-id contract for observability artifacts so logs, journals, replay events, and transport spans can be joined deterministically.
+- ref: `.ticket/tickets/529844ac-f7e5-4265-b087-5bd2b597155f/ticket.toml`
+
+<!-- ticket-index:entry id=8b1eab26-389b-4125-86ec-886c9d48702b slug=done/observability digest=fa3fe591a766 -->
+#### [8b1eab26] [observability][contract] Define deterministic replay vs profiling evidence boundary
+- priority: `high`
+- summary: Define and publish the deterministic replay versus profiling evidence boundary so replay/rollback state remains deterministic while performance diagnostics remain queryable and linked.
+- ref: `.ticket/tickets/8b1eab26-389b-4125-86ec-886c9d48702b/ticket.toml`
+
+<!-- ticket-index:entry id=1c56033e-5c30-46bd-a0bd-2209b8841876 slug=done/observability digest=fb6cd5b1990b -->
+#### [1c56033e] [observability][contract] Publish canonical profiling/tracing phase taxonomy
+- priority: `high`
+- summary: Publish a canonical profiling/tracing phase taxonomy so phase-level timings and completion events are queryable and comparable across observability surfaces.
+- ref: `.ticket/tickets/1c56033e-5c30-46bd-a0bd-2209b8841876/ticket.toml`
+
+<!-- ticket-index:entry id=72b3545c-ceb9-4cb2-a8d4-c146fc9b460a slug=done/observability digest=3b338fd5292b -->
+#### [72b3545c] [observability][governance] Define profiling metadata retention and redaction policy
+- priority: `medium`
+- summary: Define and publish the governance policy for profiling metadata retention, rotation/sampling, and redaction across observability artifacts.
+- ref: `.ticket/tickets/72b3545c-ceb9-4cb2-a8d4-c146fc9b460a/ticket.toml`
+
+<!-- ticket-index:entry id=de8719bf-a58a-41d1-891e-2b87894e6c02 slug=done/observability digest=0009fbf8aea5 -->
+#### [de8719bf] [profiling][benchmarks] Emit standardized run metadata and percentile summaries
+- priority: `high`
+- ref: `.ticket/tickets/de8719bf-a58a-41d1-891e-2b87894e6c02/ticket.toml`
+
+<!-- ticket-index:entry id=1b34dbe7-7055-45ae-8c3c-068adef1ca84 slug=done/observability digest=b79a84303f52 -->
+#### [1b34dbe7] [profiling][ticket-api] Decompose integration and workflow sub-phase timings
+- priority: `high`
+- summary: Decompose ticket-api integration and workflow recompute profiling into explicit sub-phase timings aligned with observability phase taxonomy.
+- ref: `.ticket/tickets/1b34dbe7-7055-45ae-8c3c-068adef1ca84/ticket.toml`
+
+<!-- ticket-index:entry id=87ff70d7-36a8-453d-9ce2-3fec830b163f slug=done/observability digest=ac47f60a4814 -->
+#### [87ff70d7] [profiling][validation] Validate profile evidence linkage across ticket/spec/journal
+- priority: `medium`
+- summary: Validate that profiling evidence produced in the ff6637f5 track is linkable across ticket, spec, and journal artifacts while keeping replay payload deterministic.
+- ref: `.ticket/tickets/87ff70d7-36a8-453d-9ce2-3fec830b163f/ticket.toml`
+
 
 ### Component: repo-guidance
 
@@ -777,6 +1074,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: The repository guidance does not consistently enforce one workflow for normal engineering work.
 - ref: `.ticket/tickets/762d9ac9-e0e0-4f02-b60f-21c79e3c26f6/ticket.toml`
+
+<!-- ticket-index:entry id=14ff41fa-818e-4a4e-8747-f79a33d174c2 slug=done/repo-guidance digest=86a52e7f0957 -->
+#### [14ff41fa] [agents][rule] Add token-optimized agentic engineering skill target
+- priority: `medium`
+- summary: Implemented generated rule target for `.agents/skills/token-optimized-agentic-engineering.SKILL.md`, created canonical `.skill` rule entry, translated source guidance to English, and verified target ...
+- ref: `.ticket/tickets/14ff41fa-818e-4a4e-8747-f79a33d174c2/ticket.toml`
 
 <!-- ticket-index:entry id=088c8c40-7615-486c-88bb-1534902377d1 slug=done/repo-guidance digest=a185bc2bd00c -->
 #### [088c8c40] [memory-api] Adopt shared README schema and parent-linked tool READMEs
@@ -958,6 +1261,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Implemented shared generated-output newline preparation in rule-api so rewrites adapt to the existing file's newline sequence while new files stay canonical LF. Wired the behavior into rule-cli and r...
 - ref: `memory-api/.ticket/tickets/f76169f7-239d-4993-a0a2-0709414acb7f/ticket.toml`
 
+<!-- ticket-index:entry id=9336a096-4399-467e-a7d8-fac30080d71f slug=done/rule-api digest=9e2810955fce -->
+#### [9336a096] [memory-index] Rule store catalog generator
+- priority: `high`
+- summary: Build a generator that reads the rule store (rule-api) and emits a grouped catalog at `.rule/README.md` with its TOON sidecar at `.rule/index.toon`. The purpose is to give agents a compact, browsable...
+- ref: `.ticket/tickets/9336a096-4399-467e-a7d8-fac30080d71f/ticket.toml`
+
 <!-- ticket-index:entry id=e057932b-aaa8-43f5-be33-91dbf7399057 slug=done/rule-api digest=d70d4d805805 -->
 #### [e057932b] [rule-api] Backfill existing rule workspaces to body.md storage
 - priority: `high`
@@ -991,11 +1300,29 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Expose the `session-api` capabilities (check-in, lookup, query, range peeking, and skeleton peeking) through dedicated CLI and MCP surfaces so that agents and users can interact with sessions cleanly.
 - ref: `.ticket/tickets/f76b0fa9-d880-45da-b039-b483e904ee2f/ticket.toml`
 
+<!-- ticket-index:entry id=70cd7056-c342-4433-ad60-5bc798f61aa6 slug=done/session-api digest=81d5d258de92 -->
+#### [70cd7056] [session-api] Durable session workflow persistence and mutation
+- priority: `high`
+- summary: Implement the durable logical session workspace and mutable workflow graph defined by spec `memory-api/session-api/durable-session-workflow` (`c677182e-90da-4ac3-8b94-9e2e97c825cf`).
+- ref: `memory-api/.ticket/tickets/70cd7056-c342-4433-ad60-5bc798f61aa6/ticket.toml`
+
+<!-- ticket-index:entry id=cf4d1e1a-5315-4aa8-b836-5a90996e63c4 slug=done/session-api digest=f27894a9b59f -->
+#### [cf4d1e1a] [session-api] Fix: Resolve session workspace relative to tool execution
+- priority: `high`
+- summary: Fix a bug where the `.memory-api` folder is created inside the nested `memory-viewers/memory-api` folder even when the ticket tool is run from the `context-engine` root. The session workspace should ...
+- ref: `.ticket/tickets/cf4d1e1a-5315-4aa8-b836-5a90996e63c4/ticket.toml`
+
 <!-- ticket-index:entry id=c8f79641-6f99-4401-9b08-ad960a8d785c slug=done/session-api digest=c4710403fa5a -->
 #### [c8f79641] [session-api] Persist session captures to filesystem store
 - priority: `high`
 - summary: Implement the next `session-api` batch in the nested `memory-api` workspace by turning the current store plan into a real filesystem write path.
 - ref: `memory-api/.ticket/tickets/c8f79641-6f99-4401-9b08-ad960a8d785c/ticket.toml`
+
+<!-- ticket-index:entry id=cc4b0289-b6fd-412f-a97a-497f05f572f4 slug=done/session-api digest=111f7c588392 -->
+#### [cc4b0289] [session-api] Render session workflow as terminal and Mermaid graphs
+- priority: `high`
+- summary: Render the durable session workflow as a compact terminal dependency graph or deterministic Mermaid flowchart.
+- ref: `memory-api/.ticket/tickets/cc4b0289-b6fd-412f-a97a-497f05f572f4/ticket.toml`
 
 <!-- ticket-index:entry id=e663f9e9-ac52-4c0e-8e07-d17c8a15b48d slug=done/session-api digest=e47192ef4337 -->
 #### [e663f9e9] [session-api] Wire VS Code Copilot stop-hook session capture
@@ -1003,11 +1330,76 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Implement the first external integration slice for session capture by wiring VS Code GitHub Copilot chat hooks to the existing `session-api` persistence path.
 - ref: `.ticket/tickets/e663f9e9-ac52-4c0e-8e07-d17c8a15b48d/ticket.toml`
 
+<!-- ticket-index:entry id=0647a212-9d2e-4943-9627-f854ce3f14c4 slug=done/session-api digest=52adfa31f6e3 -->
+#### [0647a212] [session-api][handoff] Persist handoff records and resume durable session workspaces
+- priority: `high`
+- summary: Persist structured session handoffs and resume the same durable workspace under a new capture run.
+- ref: `memory-api/.ticket/tickets/0647a212-9d2e-4943-9627-f854ce3f14c4/ticket.toml`
+
+<!-- ticket-index:entry id=fc86f42d-3fc0-4f07-911a-525098248dcf slug=done/session-api digest=d9a987b19ed2 -->
+#### [fc86f42d] [session-api][store] Unify session identity: link runtime context to session_id and stamp transcripts
+- priority: `high`
+- summary: Establish the missing join between a runtime continuity thread and its captured transcripts so handoffs and context can be session-owned (subticket 1 of the flattening tracker). Foundational — no dir...
+- ref: `memory-api/.ticket/tickets/fc86f42d-3fc0-4f07-911a-525098248dcf/ticket.toml`
+
 <!-- ticket-index:entry id=e2189e9d-8ea7-4747-bda9-51e573ba51ca slug=done/session-api digest=40d7654b3f3c -->
 #### [e2189e9d] [session-api][worktree] Implement session check-in and worktree assignment surfaces
 - priority: `high`
 - summary: Implement the first executable slice of the default worktree-backed session workflow after `68a49ca7` locks the contract.
 - ref: `.ticket/tickets/e2189e9d-8ea7-4747-bda9-51e573ba51ca/ticket.toml`
+
+<!-- ticket-index:entry id=67d7c279-6661-461b-8204-7a1bd7e028c5 slug=done/session-api digest=6cdd41994f55 -->
+#### [67d7c279] [session-optimization] Deduplicate captured events (raw_event_json vs data_json, complete vs result)
+- priority: `medium`
+- summary: Stop storing each captured event's payload twice, which makes session review and replay disproportionately expensive.
+- ref: `memory-api/.ticket/tickets/67d7c279-6661-461b-8204-7a1bd7e028c5/ticket.toml`
+
+<!-- ticket-index:entry id=6737a239-60fa-44af-8bf3-a60f8eb1e8a8 slug=done/session-api digest=01288c618eaf -->
+#### [6737a239] budget-offset grants
+- summary: Implement durable, auditable budget-offset grants in session-api with create/list/revoke operations and grant_id-based resolution.
+- ref: `.ticket/tickets/6737a239-60fa-44af-8bf3-a60f8eb1e8a8/ticket.toml`
+
+<!-- ticket-index:entry id=b64cc71d-8594-4617-b3fb-3057fca0b56b slug=done/session-api digest=e3b838dc5397 -->
+#### [b64cc71d] session-api tool_metrics core
+- summary: Implement the core data model and computation primitives for empirical tool token metrics derived from session transcripts.
+- ref: `.ticket/tickets/b64cc71d-8594-4617-b3fb-3057fca0b56b/ticket.toml`
+
+<!-- ticket-index:entry id=c81f3938-0b4b-42a0-bbf1-888ddd9d2262 slug=done/session-api digest=677ef3885c68 -->
+#### [c81f3938] upward escalation workflow
+- summary: Implement durable escalation record and workflow for sub-agents to request capability/offset upward, with async resolution queue.
+- ref: `.ticket/tickets/c81f3938-0b4b-42a0-bbf1-888ddd9d2262/ticket.toml`
+
+
+### Component: session-cli,session-mcp
+
+<!-- ticket-index:entry id=66c85d65-98bc-4432-b6f6-6c41664645f8 slug=done/session-cli,session-mcp digest=ad985221789b -->
+#### [66c85d65] tool_metrics surfaces + rollup writer
+- summary: Expose tool_metrics computation via CLI and MCP surfaces, and wire automatic rollup refresh on session persist.
+- ref: `.ticket/tickets/66c85d65-98bc-4432-b6f6-6c41664645f8/ticket.toml`
+
+
+### Component: session-workflow
+
+<!-- ticket-index:entry id=47cc50db-8efa-4945-87fe-d30fe1f6bc61 slug=done/session-workflow digest=b3762c5e0742 -->
+#### [47cc50db] Implement upstream tool-result guards and compact prompt views
+- priority: `p1`
+- summary: Build coded support that reduces what GitHub Copilot sends or reuses in model-facing context by guarding tool results upstream and emitting compact prompt-facing state views.
+- ref: `.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml`
+
+<!-- ticket-index:entry id=1c1ebfd1-4478-401f-a9ad-efcc2ff53b16 slug=done/session-workflow digest=d00b08f64312 -->
+#### [1c1ebfd1] Reduce model-bound Copilot context in bootstrap and handoff flows
+- priority: `p1`
+- summary: Reduce low-value context that reaches GitHub Copilot model APIs by tightening upstream workflow guidance, tool-result handling, and bootstrap or handoff behavior.
+- ref: `.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml`
+
+
+### Component: spec
+
+<!-- ticket-index:entry id=a9514081-35c2-4162-b62d-3baf4a14ec8b slug=done/spec digest=2eb0d2da5fb7 -->
+#### [a9514081] [spec] Define explicit-init-only memory store contract
+- priority: `high`
+- summary: Owning spec updated: explicit-init-only contract now forbids implicit root creation and defines validation matrix.
+- ref: `memory-api/.ticket/tickets/a9514081-35c2-4162-b62d-3baf4a14ec8b/ticket.toml`
 
 
 ### Component: spec-api
@@ -1035,6 +1427,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: The proposed rule-target-backed spec workflow is still theoretical until at least one real spec stops duplicating canonical prose and proves the migration path end to end.
 - ref: `memory-api/.ticket/tickets/7f869c33-15ff-4959-8161-731844eef21b/ticket.toml`
+
+<!-- ticket-index:entry id=b9757ba7-3b2c-4f92-919d-f3c443ceb69c slug=done/spec-api digest=6a2497793fe2 -->
+#### [b9757ba7] [memory-index] Spec store hierarchy generator
+- priority: `high`
+- summary: Build a generator that reads the spec store (spec-api) and emits a hierarchical markdown folder tree under `.spec/`, with `.spec/index.toon` as the machine-readable TOON sidecar. The purpose is to gi...
+- ref: `.ticket/tickets/b9757ba7-3b2c-4f92-919d-f3c443ceb69c/ticket.toml`
 
 <!-- ticket-index:entry id=87a35ccb-d91c-4ce8-93b3-e150bb5afe1d slug=done/spec-api digest=78ae0c9182cc -->
 #### [87a35ccb] [rule-cli][rule-mcp] Route spec-doc targets through spec-owned generation
@@ -1088,6 +1486,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Build tooling to analyze existing Rust crate source code and generate initial spec files documenting the current implementation. This is for interfaces that are already implemented but not yet docume...
 - ref: `memory-api/.ticket/tickets/d12e6ca5-a83f-41c6-b612-219d4c2e82e3/ticket.toml`
+
+<!-- ticket-index:entry id=a0b59873-abe9-4e62-84a3-c233635b4cd6 slug=done/spec-api digest=e8a4d76979d6 -->
+#### [a0b59873] spec + validation
+- summary: Create or update spec and validation for the complete tool-metrics → graded-cost-gate → grant → escalation workflow.
+- ref: `.ticket/tickets/a0b59873-abe9-4e62-84a3-c233635b4cd6/ticket.toml`
 
 
 ### Component: spec-cli
@@ -1171,6 +1574,75 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `memory-api/.ticket/tickets/4f2d2a5e-5df1-4bd8-9b65-0d4de0a0a5c1/ticket.toml`
 
 
+### Component: test-api
+
+<!-- ticket-index:entry id=03ed4121-ec7e-4d5f-adb4-4d3846af8031 slug=done/test-api digest=a94e564d7969 -->
+#### [03ed4121] [bench] Cross-domain benchmark matrix with per-operation latency budgets
+- priority: `high`
+- summary: Provide Criterion benchmarks for the same `domain × operation` matrix as the test suite, each asserting a reasonable maximum-latency budget, and ingest the results into `test-api`.
+- ref: `memory-api/.ticket/tickets/03ed4121-ec7e-4d5f-adb4-4d3846af8031/ticket.toml`
+
+<!-- ticket-index:entry id=93b8a331-da80-4fef-b13d-7f277cadb15f slug=done/test-api digest=33b84aae43b3 -->
+#### [93b8a331] [design][test] Browser & TypeScript automated test integration strategy (design session)
+- priority: `high`
+- summary: Created `.spec/specs/9e823b76-cd60-4689-b772-649ebb3a34a1/` defining the repository-native subprocess runner, structured reporter/result adapter, provenance, retry/outcome, blocked-capability, artifa...
+- ref: `memory-api/.ticket/tickets/93b8a331-da80-4fef-b13d-7f277cadb15f/ticket.toml`
+
+<!-- ticket-index:entry id=9138f4e7-2757-4d23-9676-3306608a429e slug=done/test-api digest=572af78a7c21 -->
+#### [9138f4e7] [memory-api] Representative fixture population — all domains, realistic volumes
+- priority: `high`
+- summary: Replace the 4-entity stub fixture with a **synthesized** representative workspace so operations run against real data instead of self-seeded throwaway stores.
+- ref: `memory-api/.ticket/tickets/9138f4e7-2757-4d23-9676-3306608a429e/ticket.toml`
+
+<!-- ticket-index:entry id=2b0f31e5-1067-45e9-93ff-ef273c26020e slug=done/test-api digest=e586a4bb2e11 -->
+#### [2b0f31e5] [test-api] Benchmark result model + Criterion ingest + latency budgets
+- priority: `high`
+- summary: Let `test-api` record benchmark results (not just pass/fail validations) and compare them against per-operation maximum-latency budgets, ingesting existing Criterion output.
+- ref: `memory-api/.ticket/tickets/2b0f31e5-1067-45e9-93ff-ef273c26020e/ticket.toml`
+
+<!-- ticket-index:entry id=a03d8a97-2b31-4f1a-a2cb-b33848af2f2a slug=done/test-api digest=2195e29be310 -->
+#### [a03d8a97] [test-api] Execution provenance + persisted per-cell evidence
+- priority: `high`
+- summary: Make stored executions individually discoverable and traceable to the exact test. Today the per-cell matrix executions are written to the ephemeral fixture tempdir and discarded; the committed roll-u...
+- ref: `memory-api/.ticket/tickets/a03d8a97-2b31-4f1a-a2cb-b33848af2f2a/ticket.toml`
+
+<!-- ticket-index:entry id=124c6621-b39d-4009-b599-a3e5503d08f6 slug=done/test-api digest=c0507082ba9e -->
+#### [124c6621] [test-api] Execution timing model + slow-test query
+- priority: `high`
+- summary: Make `test-api` capture how long each validation took and let callers query for slow runs, so the unified surface can flag "unreasonably slow" operations.
+- ref: `memory-api/.ticket/tickets/124c6621-b39d-4009-b599-a3e5503d08f6/ticket.toml`
+
+<!-- ticket-index:entry id=90de77b1-7784-4b26-81d1-9039277a9bec slug=done/test-api digest=eed4c3e5c462 -->
+#### [90de77b1] [test-api] Store-index generator — run/status/issue/timing summary
+- priority: `high`
+- summary: Generate a committed `test-api` store-index that summarizes all validation and benchmark runs — statuses, issues, and timings — following the domain-owned thin-generator architecture used by the othe...
+- ref: `memory-api/.ticket/tickets/90de77b1-7784-4b26-81d1-9039277a9bec/ticket.toml`
+
+<!-- ticket-index:entry id=7a524627-bb48-47c8-a3d8-9c8b9303f0f3 slug=done/test-api digest=4ccecab3ef4c -->
+#### [7a524627] [test-api][log-api] Validation runner harness — cargo test/bench to executions + log capture
+- priority: `high`
+- summary: Provide a runner that executes test/benchmark suites, captures their output and timing, and records them into `test-api` (executions/benchmarks) and `log-api` (stdout/stderr/summary) — the "execute" ...
+- ref: `memory-api/.ticket/tickets/7a524627-bb48-47c8-a3d8-9c8b9303f0f3/ticket.toml`
+
+<!-- ticket-index:entry id=26d6353a-6613-48ad-96c5-d4bd8ad5180f slug=done/test-api digest=9cb003af54c2 -->
+#### [26d6353a] [test-cli][log] test/log CLI + audit failed & slow query surface
+- priority: `medium`
+- summary: Give `test-api` and `log-api` a user-facing surface (CLI, optional HTTP) and an audit query that answers: "which validations failed, and which are unreasonably slow?".
+- ref: `memory-api/.ticket/tickets/26d6353a-6613-48ad-96c5-d4bd8ad5180f/ticket.toml`
+
+<!-- ticket-index:entry id=260e37d7-ae90-43e4-871b-3c18937189ca slug=done/test-api digest=bb7241a067d9 -->
+#### [260e37d7] [test] Audit hygiene for memory-matrix — split lib.rs, fix llvm-cov
+- priority: `medium`
+- summary: Clear the audit findings against `memory-matrix` so the crate passes a clean audit.
+- ref: `memory-api/.ticket/tickets/260e37d7-ae90-43e4-871b-3c18937189ca/ticket.toml`
+
+<!-- ticket-index:entry id=751f0e71-a857-484f-a45e-09717f086321 slug=done/test-api digest=571722d154cc -->
+#### [751f0e71] [test] Cross-domain operation test matrix — get/search/CRUD/move/scan x all domains
+- priority: `high`
+- summary: Implement an end-to-end test matrix that exercises the basic operations of **every memory domain** against the representative fixture, recording each run as a `test-api` `ValidationExecution` with a ...
+- ref: `memory-api/.ticket/tickets/751f0e71-a857-484f-a45e-09717f086321/ticket.toml`
+
+
 ### Component: ticket-api
 
 <!-- ticket-index:entry id=261e7567-e234-43d5-881b-c481e34131f8 slug=done/ticket-api digest=139137109d54 -->
@@ -1218,11 +1690,40 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Migrate the 201 agent documentation files from `agents/` into the ticket system as structured, filterable ticket content. Add schema fields so all tickets can be queried by category, tags, workflow s...
 - ref: `memory-api/.ticket/tickets/6bb1e3fd-646d-424c-a216-826cf5f06867/ticket.toml`
 
+<!-- ticket-index:entry id=c5e9bb39-d784-4d0c-8de1-3885013cddce slug=done/ticket-api digest=b7f00924d6aa -->
+#### [c5e9bb39] [memory-index] Ticket store index generator with git hook integration
+- priority: `high`
+- summary: Build a generator that reads the ticket store (ticket-api) and emits a committed markdown index co-located in `.ticket/README.md` along with its TOON sidecar at `.ticket/index.toon`. The purpose is t...
+- ref: `.ticket/tickets/c5e9bb39-d784-4d0c-8de1-3885013cddce/ticket.toml`
+
 <!-- ticket-index:entry id=82652305-ab94-4270-847c-a5209c2dcd44 slug=done/ticket-api digest=2960a64a0614 -->
 #### [82652305] [spec][P0] Refactor ticket-api to depend on memory-api
 - priority: `critical`
 - summary: After memory-api is extracted, refactor ticket-api to be a thin domain layer on top of memory-api, keeping only ticket-specific logic.
 - ref: `memory-api/.ticket/tickets/82652305-ab94-4270-847c-a5209c2dcd44/ticket.toml`
+
+<!-- ticket-index:entry id=731f3579-0678-4eb8-a45c-53020830fba8 slug=done/ticket-api digest=a451f6217d0c -->
+#### [731f3579] [ticket-api] Add built-in `task` schema and health check for ticket types missing a schema
+- summary: Many tickets have `type = "task"`, but no schema was registered for the `task` type. Transitions/close operations failed with `no schema for type 'task'` (see the schema lookup in `memory-api/crates/...
+- ref: `.ticket/tickets/731f3579-0678-4eb8-a45c-53020830fba8/ticket.toml`
+
+<!-- ticket-index:entry id=bc691249-5a2d-409e-8e7b-2602d80cf61e slug=done/ticket-api digest=2212dca3509c -->
+#### [bc691249] [ticket-api] Add journaled storage-layer execution for cross-workspace ticket moves
+- priority: `high`
+- summary: Execute a supported move safely at the storage layer, with resumable journal state and rollback when a step fails.
+- ref: `memory-api/.ticket/tickets/bc691249-5a2d-409e-8e7b-2602d80cf61e/ticket.toml`
+
+<!-- ticket-index:entry id=eb6033a8-f15b-4024-952e-5c86dc108939 slug=done/ticket-api digest=2794eb95fff0 -->
+#### [eb6033a8] [ticket-api] Add move preflight planner and destination-visibility validation
+- priority: `high`
+- summary: Build the read-only planning layer for `ticket move` that decides whether a move is supported and enumerates every object the execution phase would touch.
+- ref: `memory-api/.ticket/tickets/eb6033a8-f15b-4024-952e-5c86dc108939/ticket.toml`
+
+<!-- ticket-index:entry id=013b57bd-2e8c-4d4d-87c8-6f8687a195c8 slug=done/ticket-api digest=9a7c4da33c6a -->
+#### [013b57bd] [ticket-api] Add targeted incremental reconcile modes for move and maintenance tooling
+- priority: `high`
+- summary: Provide targeted reconcile/scan modes so move flows and internal tooling can update only the touched ticket set instead of walking unrelated roots.
+- ref: `.ticket/tickets/013b57bd-2e8c-4d4d-87c8-6f8687a195c8/ticket.toml`
 
 <!-- ticket-index:entry id=429f6f1d-6429-4601-bfac-b572fdb4dbff slug=done/ticket-api digest=14b61682ec28 -->
 #### [429f6f1d] [ticket-api] Child workspaces surface parent dependency entries
@@ -1236,17 +1737,35 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Provide a first-class, safe operation to move a ticket from one `memory-api` workspace store to another and automatically preserve the references that can be preserved safely, while refusing unsuppor...
 - ref: `memory-api/.ticket/tickets/13e9ce28-ff35-4898-8dda-6d333dc1f222/ticket.toml`
 
+<!-- ticket-index:entry id=505b2cd4-f21d-4e8d-8e6a-ae06a5b69854 slug=done/ticket-api digest=295425d7f353 -->
+#### [505b2cd4] [ticket-api] Deliver safe cross-workspace ticket move for git-backed stores
+- priority: `high`
+- summary: Implement a safe, reviewable `ticket move` capability for git-backed `memory-api` workspaces that relocates a ticket into a different workspace store and preserves correctness of the owning store, re...
+- ref: `memory-api/.ticket/tickets/505b2cd4-f21d-4e8d-8e6a-ae06a5b69854/ticket.toml`
+
 <!-- ticket-index:entry id=3b6a2a26-bd4e-44ce-ba15-41594b809b9a slug=done/ticket-api digest=c618c5822a2f -->
 #### [3b6a2a26] [ticket-api] Derive blocker and unlock trees with frontier leaf metrics
 - priority: `high`
 - summary: Extend the shared workflow layer with explicit blocker and unlock tree derivation.
 - ref: `.ticket/tickets/3b6a2a26-bd4e-44ce-ba15-41594b809b9a/ticket.toml`
 
+<!-- ticket-index:entry id=22cd3001-0127-4a27-8834-721250ff39ff slug=done/ticket-api digest=f97b379fe44e -->
+#### [22cd3001] [ticket-api] Enforce board safety and migrate historical board rows during ticket moves
+- priority: `medium`
+- summary: Handle board-state references safely during a ticket move so live ownership is never silently lost.
+- ref: `memory-api/.ticket/tickets/22cd3001-0127-4a27-8834-721250ff39ff/ticket.toml`
+
 <!-- ticket-index:entry id=a4c31280-66d3-44a3-9a5d-13d4fbde1bfe slug=done/ticket-api digest=e0a6cf803f70 -->
 #### [a4c31280] [ticket-api] Fix health false positives for description and resolved dependencies
 - priority: `high`
 - summary: Fix ticket health false positives across CLI, HTTP, and MCP surfaces.
 - ref: `.ticket/tickets/a4c31280-66d3-44a3-9a5d-13d4fbde1bfe/ticket.toml`
+
+<!-- ticket-index:entry id=3e4718af-3fd3-40a4-ac89-d298c99c806a slug=done/ticket-api digest=7de841de9209 -->
+#### [3e4718af] [ticket-api] Make workflow-facts recompute incremental during scan and move reconcile
+- priority: `high`
+- summary: Reduce `rebuild_workflow_facts_ms` by recomputing only the workflow facts touched by a changed ticket or move operation.
+- ref: `.ticket/tickets/3e4718af-3fd3-40a4-ac89-d298c99c806a/ticket.toml`
 
 <!-- ticket-index:entry id=3d72029b-cf2d-49bb-9dde-00587304b857 slug=done/ticket-api digest=b722d9631b9a -->
 #### [3d72029b] [ticket-api] Materialize recent-unblock and blocker-progress facts
@@ -1266,11 +1785,53 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Make aggregate scan the single source of truth for both index visibility and search visibility.
 - ref: `.ticket/tickets/dd2947da-d4d2-4c8a-9a9a-3633060ff4c5/ticket.toml`
 
+<!-- ticket-index:entry id=3a26572a-5e1a-4a57-aefa-9b342886a5ca slug=done/ticket-api digest=ac65c045a86e -->
+#### [3a26572a] [ticket-api] Rewrite repo path references that cite the moved ticket folder
+- priority: `medium`
+- summary: Automatically update repo-local text references that cite the moved ticket's old folder path so specs, tests, and docs do not point at a stale store location after the move.
+- ref: `memory-api/.ticket/tickets/3a26572a-5e1a-4a57-aefa-9b342886a5ca/ticket.toml`
+
+<!-- ticket-index:entry id=385f2521-b318-403b-a4ea-195a47e5c453 slug=done/ticket-api digest=b4e288cf05ff -->
+#### [385f2521] [ticket-api] Unify multi-step state transitions across update and close flows
+- priority: `high`
+- summary: `ticket update` currently enforces a single-step state transition and optionally accepts `from_state`, which duplicates the current store state and rejects legitimate fast-forward workflows such as `...
+- ref: `.ticket/tickets/385f2521-b318-403b-a4ea-195a47e5c453/ticket.toml`
+
+<!-- ticket-index:entry id=da27c074-8c9e-4613-b8b9-bf02c72b50f7 slug=done/ticket-api digest=5f4d5fd7e878 -->
+#### [da27c074] [ticket-api] Validate cross-workspace ticket move flows end to end
+- priority: `high`
+- summary: Validated the injected-failure recovery and transport smoke coverage for cross-workspace ticket move flows.
+- ref: `memory-api/.ticket/tickets/da27c074-8c9e-4613-b8b9-bf02c72b50f7/ticket.toml`
+
 <!-- ticket-index:entry id=7f4aaa05-584a-42a8-a06f-d0b263ad929e slug=done/ticket-api digest=1bf195f536a9 -->
 #### [7f4aaa05] [ticket-api][bug] update_ticket resets state to new on field/description patch; transition_states silently no-ops
 - priority: `high`
 - summary: Fixed the state machine regression in ticket-api `update()` function where:
 - ref: `memory-api/.ticket/tickets/7f4aaa05-584a-42a8-a06f-d0b263ad929e/ticket.toml`
+
+<!-- ticket-index:entry id=875919d5-558c-46a8-a83f-02a6756a1e0e slug=done/ticket-api digest=a6fc3c6cc990 -->
+#### [875919d5] [ticket-api][memory-api] Batch residual SQLite and index writes during scan reconciliation
+- priority: `high`
+- summary: Remove avoidable per-entity SQLite and remaining index-write churn from scan reconciliation after the Tantivy batching fix.
+- ref: `.ticket/tickets/875919d5-558c-46a8-a83f-02a6756a1e0e/ticket.toml`
+
+<!-- ticket-index:entry id=bf094901-cdb6-4b25-8ccd-3eb7716f9d20 slug=done/ticket-api digest=de2ae1225e6f -->
+#### [bf094901] [ticket-api][memory-api] Eliminate full-store rescans and per-document search commits from scan/move hot paths
+- priority: `high`
+- summary: Remove the major performance regressions surfaced by the move-domain E2E and perf scan tests in the ticket store hot path.
+- ref: `.ticket/tickets/bf094901-cdb6-4b25-8ccd-3eb7716f9d20/ticket.toml`
+
+<!-- ticket-index:entry id=23f4e2eb-e916-401e-b398-9ad59c06c5e3 slug=done/ticket-api digest=f4da12a03e25 -->
+#### [23f4e2eb] [ticket-api][memory-api] Investigate & fix ~100s ticket get latency
+- priority: `critical`
+- summary: Root-cause and fix the severe per-invocation latency of `ticket get` (and likely all CLI store operations), measured at **96–107s** for a single get in this workspace, and establish a defended latenc...
+- ref: `memory-api/.ticket/tickets/23f4e2eb-e916-401e-b398-9ad59c06c5e3/ticket.toml`
+
+<!-- ticket-index:entry id=cadf78e8-a243-4d1c-8c1b-451978bb05ea slug=done/ticket-api digest=28c1bf104e7c -->
+#### [cadf78e8] [ticket-api][memory-api] Track remaining store scan/index/move performance follow-ups
+- priority: `high`
+- summary: Tracks remaining store scan/index/move performance follow-ups after baseline hot-path fixes.
+- ref: `.ticket/tickets/cadf78e8-a243-4d1c-8c1b-451978bb05ea/ticket.toml`
 
 <!-- ticket-index:entry id=dc70628a-3a84-4441-ad46-f59b7757e1f7 slug=done/ticket-api digest=e13b15268d00 -->
 #### [dc70628a] [ticket-api][spec] Extend workspace-ownership specs with move/relink contract
@@ -1302,7 +1863,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The workflow discovery surfaces currently build scope locally and inconsistently.
 - ref: `.ticket/tickets/0e375356-b74e-48c4-8f1d-77cd28e055bc/ticket.toml`
 
-<!-- ticket-index:entry id=cf4246c3-6539-4f1c-a876-6d34073db7b3 slug=done/ticket-api digest=a669d9ac623c -->
+<!-- ticket-index:entry id=cf4246c3-6539-4f1c-a876-6d34073db7b3 slug=done/ticket-api digest=0befd5086500 -->
 #### [cf4246c3] [ticket-api][ticket-cli][ticket-mcp][ticket-http] Track workflow and health surface convergence
 - priority: `high`
 - summary: Turn the current workflow and health surface inconsistency diagnosis into one coordinated implementation track with a ticket-api-owned minimal core, explicit adapter-boundary cleanup, and reproducibl...
@@ -1389,17 +1950,17 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The tracker-improvement schema has 11 states with a strict transition chain:
 - ref: `memory-api/.ticket/tickets/f77ff07e-c250-4740-8da8-8cf065564f8a/ticket.toml`
 
-<!-- ticket-index:entry id=0c660fde-39ed-4d59-9ddf-f9d98c2b7740 slug=done/ticket-cli digest=ab44ecfc98f4 -->
-#### [0c660fde] Plan: ticket list --include-deleted — visibility into soft-deleted tickets
-- priority: `high`
-- summary: Soft-deleted tickets (`deleted = true`) are completely invisible to the CLI:
-- ref: `memory-api/.ticket/tickets/0c660fde-39ed-4d59-9ddf-f9d98c2b7740/ticket.toml`
-
 <!-- ticket-index:entry id=a48475e3-42fc-44f6-88b2-0f4a86930a31 slug=done/ticket-cli digest=afabcf2b29eb -->
 #### [a48475e3] Plan: ticket list --where — structured field-value filtering
 - priority: `high`
 - summary: `ticket list` currently supports `--state` and `--type` filters only.
 - ref: `memory-api/.ticket/tickets/a48475e3-42fc-44f6-88b2-0f4a86930a31/ticket.toml`
+
+<!-- ticket-index:entry id=53176121-eb55-4aa9-a1d6-5075db1c163b slug=done/ticket-cli digest=56b5f9bedded -->
+#### [53176121] [ticket-cli] Add `ticket move` CLI with dry-run and recovery guidance
+- priority: `high`
+- summary: Expose the move planner and executor through `ticket-cli` so operators can preview, apply, resume, and roll back a move from the command line.
+- ref: `memory-api/.ticket/tickets/53176121-eb55-4aa9-a1d6-5075db1c163b/ticket.toml`
 
 <!-- ticket-index:entry id=d39e9e08-5104-461b-83ff-bd4361e967d9 slug=done/ticket-cli digest=5fc71c9f4ab9 -->
 #### [d39e9e08] [ticket-cli] Add blockers command and nested tree rendering
@@ -1417,6 +1978,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [8de93812] [ticket-cli] Canonicalize board subcommand option naming
 - priority: `medium`
 - ref: `.ticket/tickets/8de93812-3a8c-4937-9f09-05a9a9b86309/ticket.toml`
+
+<!-- ticket-index:entry id=74fd59ca-8253-4e18-99bd-0b1fa204c6d6 slug=done/ticket-cli digest=6e7d0da49165 -->
+#### [74fd59ca] [ticket-cli] Remove constant blocker-progress field from board show JSON recommendations
+- priority: `medium`
+- summary: `ticket board show --json` currently includes `recommended_next[].last_blocker_progress_at`, but recommended-next items are sourced from the actionable queue where that field is always null by contra...
+- ref: `.ticket/tickets/74fd59ca-8253-4e18-99bd-0b1fa204c6d6/ticket.toml`
 
 <!-- ticket-index:entry id=15837e16-8755-4eb1-8b36-6c4453899e46 slug=done/ticket-cli digest=c40a48b4a4f8 -->
 #### [15837e16] [ticket-cli][ticket-mcp] Integrate recent-unblock ordering into workflow surfaces
@@ -1462,6 +2029,18 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Add `created_at` field to the `TicketSummary` struct in the ticket-http handler so the frontend can sort tickets by creation date.
 - ref: `memory-api/.ticket/tickets/d3a8b66a-8efc-493e-9993-3b5a68b0a7f7/ticket.toml`
 
+<!-- ticket-index:entry id=23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b slug=done/ticket-http digest=56ed4fd265d2 -->
+#### [23f1c81b] [ticket-http] Add no-auto-init E2E for missing .ticket workspace
+- priority: `high`
+- summary: HTTP read probes against a configured workspace path with no on-disk `.ticket` root must not auto-create stores. The regression target is workspace-resolved read/list probes.
+- ref: `memory-api/.ticket/tickets/23f1c81b-3c71-4b4b-9e6f-81ee7c43a30b/ticket.toml`
+
+<!-- ticket-index:entry id=373a3317-4dfd-456a-a86e-523f4e7692f0 slug=done/ticket-http digest=214ebc5891a6 -->
+#### [373a3317] [ticket-http] Add ticket move endpoint for workspace relocation
+- priority: `medium`
+- summary: Expose the move capability over HTTP for remote tooling and UI-driven workflows.
+- ref: `memory-api/.ticket/tickets/373a3317-4dfd-456a-a86e-523f4e7692f0/ticket.toml`
+
 <!-- ticket-index:entry id=700b9763-17f8-436e-ace0-45b88bedd1d7 slug=done/ticket-http digest=12612dfefa6b -->
 #### [700b9763] [ticket-http] Design: workspace-aware ticket references for child-workspace frontend endpoints
 - priority: `high`
@@ -1505,6 +2084,30 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: The ticket-mcp server currently exposes only read-only tools:
 - ref: `memory-api/.ticket/tickets/58fe9f39-50c2-4e1c-8bdc-336ed5d6da6e/ticket.toml`
+
+<!-- ticket-index:entry id=84d19fab-9086-4eb2-9d1b-f6bbbae62ceb slug=done/ticket-mcp digest=eebcb606bf77 -->
+#### [84d19fab] [ticket-mcp] Expose ticket move planning and execution over MCP
+- priority: `medium`
+- summary: Expose the move capability to MCP clients so agents can dry-run and apply safe workspace moves without shelling out to the CLI.
+- ref: `memory-api/.ticket/tickets/84d19fab-9086-4eb2-9d1b-f6bbbae62ceb/ticket.toml`
+
+
+### Component: ticket-query
+
+<!-- ticket-index:entry id=f6aa9048-c300-4f64-bf20-157d439dd7ca slug=done/ticket-query digest=fbc267470674 -->
+#### [f6aa9048] [spec][ticket-query] Specify expressive query and ordering contract
+- priority: `high`
+- summary: The current ticket query contract is not expressive enough for focused discovery.
+- ref: `.ticket/tickets/f6aa9048-c300-4f64-bf20-157d439dd7ca/ticket.toml`
+
+
+### Component: ticket-system
+
+<!-- ticket-index:entry id=6848ffa2-4e31-4985-beff-cba01af9b7ca slug=done/ticket-system digest=9f570fb7ecc7 -->
+#### [6848ffa2] [ticket-system] Add effort field for token-budget estimates
+- priority: `medium`
+- summary: Extend ticket ordering so `board`, `next`, `list`, and similar listing surfaces account for the new `effort` field.
+- ref: `.ticket/tickets/6848ffa2-4e31-4985-beff-cba01af9b7ca/ticket.toml`
 
 
 ### Component: ticket-viewer
@@ -1700,6 +2303,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Package the ported extension so it activates in both the desktop/remote Node host and the web extension host, and add the harnesses that validate both.
 - ref: `memory-api/.ticket/tickets/362448d4-ccf1-4b9d-90f3-d4577da83a65/ticket.toml`
 
+<!-- ticket-index:entry id=50307cce-5a93-4668-9481-a3af5985ea1b slug=done/ticket-vscode digest=5b1e0d93638e -->
+#### [50307cce] [ticket-vscode] Cover no-.ticket server launch without implicit init
+- priority: `high`
+- summary: The VS Code extension starts the ticket server without `--index-root` when no `.ticket` workspace is detected. That extension-equivalent path must be covered so future changes cannot reintroduce impl...
+- ref: `memory-api/.ticket/tickets/50307cce-5a93-4668-9481-a3af5985ea1b/ticket.toml`
+
 <!-- ticket-index:entry id=011563c2-59e7-48f1-a61f-d8fdc80d2f6e slug=done/ticket-vscode digest=1ad587cc30c7 -->
 #### [011563c2] [ticket-vscode] Extract portable Rust core for ticket/domain logic
 - priority: `high`
@@ -1711,6 +2320,18 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Use the new planning spec `ticket-vscode/rust-wasm-port` as the canonical design surface for the migration.
 - ref: `memory-api/.ticket/tickets/93f7e422-1e41-4145-b8ba-0dcf7fc730ac/ticket.toml`
+
+<!-- ticket-index:entry id=694d74b4-028b-4602-8090-d6200d577d4a slug=done/ticket-vscode digest=4ba264e8c4e7 -->
+#### [694d74b4] [ticket-vscode] Integrate Rust/WASM core into TS hosts and remove replaced legacy logic
+- priority: `high`
+- summary: Removed the remaining TS-only fallback paths from ticket-vscode host/provider code, switched ticket navigation to VS Code external-URI routing, and updated provider tests to inject a core mock so the...
+- ref: `memory-api/.ticket/tickets/694d74b4-028b-4602-8090-d6200d577d4a/ticket.toml`
+
+<!-- ticket-index:entry id=44abe1d4-5727-45f8-be3b-d1ca5bf4c1ae slug=done/ticket-vscode digest=bc5387a0573a -->
+#### [44abe1d4] [ticket-vscode] Move ticket 694d74b4 into the memory-api workspace store
+- priority: `medium`
+- summary: Relocate ticket `694d74b4-028b-4602-8090-d6200d577d4a` ("[ticket-vscode] Integrate Rust/WASM core into TS hosts and remove replaced legacy logic") from the root store into the memory-api store so it ...
+- ref: `memory-api/.ticket/tickets/44abe1d4-5727-45f8-be3b-d1ca5bf4c1ae/ticket.toml`
 
 <!-- ticket-index:entry id=8735fa5d-0550-40f1-9ee8-7b83a44a7fd1 slug=done/ticket-vscode digest=20334d246d75 -->
 #### [8735fa5d] [ticket-vscode] Prefer PATH ticket-viewer before debug fallback
@@ -1806,6 +2427,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Add a repository-level configuration file for the repo QA tool so users can exclude paths from audits.
 - ref: `.ticket/tickets/f2afb9ab-e15e-4943-a5d8-c0c9b5628eb0/ticket.toml`
 
+<!-- ticket-index:entry id=6cc88405-62f2-4e36-b95e-a37f498175eb slug=done/unspecified digest=e7a293b36b27 -->
+#### [6cc88405] Add literal task/category example to MCP workflow schema
+- summary: Review of ticket 3c6da958-f494-408f-b7dd-cc43997b8ead found AC1 incomplete: `WorkflowAddNodeInput.category` explains the custom-label redirect in prose but does not show the literal copy-ready field ...
+- ref: `.ticket/tickets/6cc88405-62f2-4e36-b95e-a37f498175eb/ticket.toml`
+
 <!-- ticket-index:entry id=b2392ff7-6b7f-4b48-99b7-adf1142a3fc0 slug=done/unspecified digest=d1262c69a676 -->
 #### [b2392ff7] Add repository QA MCP audit tool
 - summary: Add a single-endpoint Rust tool for agents to audit repository quality and track findings in a synchronized local database.
@@ -1817,17 +2443,21 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Create a reusable rule-generated prompt in `.agents/prompts/reviews.prompt.md` that reviews the highest-ranked `in-review` tickets using the ticket system.
 - ref: `.ticket/tickets/4c937720-4e35-4db6-bce7-608fdad5b6c5/ticket.toml`
 
+<!-- ticket-index:entry id=729b72ac-9688-48be-847d-c864ffa037be slug=done/unspecified digest=ac276888a216 -->
+#### [729b72ac] Add session-workflow authoring instruction guidance file
+- summary: No guidance file documents how to author session workflows, so agents rediscover the node-kind model and URN rules by trial and error (session `aedf210d`, turns 60→63). The Review Agent mode even ins...
+- ref: `.ticket/tickets/729b72ac-9688-48be-847d-c864ffa037be/ticket.toml`
+
 <!-- ticket-index:entry id=dcc6ad3f-6266-4940-96e1-2f26656cae57 slug=done/unspecified digest=f98c32730e0f -->
 #### [dcc6ad3f] Advanced Voxel Tools: Fill, Smooth, Extrude, Clone
 - priority: `high`
 - summary: Beyond basic paint/carve, the world editor needs advanced manipulation tools: flood-fill enclosed regions, smooth surfaces (averaging neighbors), extrude faces outward, and clone/stamp regions.
 - ref: `.ticket/tickets/dcc6ad3f-6266-4940-96e1-2f26656cae57/ticket.toml`
 
-<!-- ticket-index:entry id=1211b2d8-93f9-4b1a-8973-10ee9937ba3d slug=done/unspecified digest=8688a662109a -->
-#### [1211b2d8] Combat System: SDF Hit Detection, Damage Model & Voxel Destruction VFX
-- priority: `high`
-- summary: Combat in this RPG uses real-time SDF collision between weapon swings and player/NPC capsules. There are no hitboxes or animation frames — a weapon's SDF sweep volume is tested against target SDFs on...
-- ref: `.ticket/tickets/1211b2d8-93f9-4b1a-8973-10ee9937ba3d/ticket.toml`
+<!-- ticket-index:entry id=524bee64-3ba0-480b-80c7-4ab56cd45784 slug=done/unspecified digest=a33c02768b80 -->
+#### [524bee64] Batch session workflow node/edge creation tools
+- summary: Every workflow node and edge is created one call at a time. Building a densely-linked graph (e.g. 4 review criteria + edges) multiplies both round-trips and the cost of any single schema mistake. In ...
+- ref: `.ticket/tickets/524bee64-3ba0-480b-80c7-4ab56cd45784/ticket.toml`
 
 <!-- ticket-index:entry id=86b0a60e-9e9b-41c5-ba1e-a0f372587dbe slug=done/unspecified digest=8a1b6e687c3f -->
 #### [86b0a60e] Core Voxel Editor: Paint, Carve, and Ray-Octree Intersection
@@ -1864,12 +2494,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Rendering millions of voxels simultaneously via ray marching limits world size. We need a Level of Detail (LOD) architecture that leverages the SVO tree structure to dynamically group distant geometr...
 - ref: `.ticket/tickets/4c58e8fb-73ad-4173-b5ee-3b87eafd3940/ticket.toml`
 
-<!-- ticket-index:entry id=3fec54f1-9c8f-4059-a366-7da6e9a1a645 slug=done/unspecified digest=62c75245dbef -->
-#### [3fec54f1] Force Compute Shader & SVO Collision
-- priority: `high`
-- summary: Particles must respond to complex physical forces (explosions, attraction, vortices) efficiently on the GPU. Furthermore, they need to physically collide with the Sparse Voxel Octree (SVO), bouncing ...
-- ref: `.ticket/tickets/3fec54f1-9c8f-4059-a366-7da6e9a1a645/ticket.toml`
-
 <!-- ticket-index:entry id=c6c150d9-eba5-4370-8283-c759bac302ef slug=done/unspecified digest=801c2abffab1 -->
 #### [c6c150d9] GPU Buffer Infrastructure: Double-Buffered SVO, Splat Buffers, and Bind Groups
 - priority: `high`
@@ -1894,6 +2518,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Once basic glass refraction works (T3a), three visual effects add realism: chromatic aberration (spectral RGB split), pseudo-caustics (refraction divergence → brightness), and mipmap-based frosted bl...
 - ref: `.ticket/tickets/5008909b-e6f2-40a4-897c-8cd359efc292/ticket.toml`
 
+<!-- ticket-index:entry id=15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e slug=done/unspecified digest=e1ceb102fdf3 -->
+#### [15c39147] Global clickable-reference policy rendered across agent targets
+- summary: Define one global, format-switchable clickable-reference policy and render it into the global agent contract.
+- ref: `.ticket/tickets/15c39147-4dac-4bdf-9b4f-b8b51e2a6c6e/ticket.toml`
+
 <!-- ticket-index:entry id=bce0d2fb-8ac3-4be3-af42-47f5b6928caa slug=done/unspecified digest=7dfd2c12ec11 -->
 #### [bce0d2fb] Impl: Extract HypergraphViewCore to viewer-api as primary graph component
 - ref: `viewer-api/.ticket/tickets/bce0d2fb-8ac3-4be3-af42-47f5b6928caa/ticket.toml`
@@ -1906,6 +2535,16 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [f4f5da07] Improve board immediate action wording
 - summary: Adjust `ticket board show` immediate action text so the suggested ticket includes its current state immediately after `Start`, wraps the title in quotes, and escapes inner quotes correctly.
 - ref: `.ticket/tickets/f4f5da07-8889-42ed-b32d-8638e811be76/ticket.toml`
+
+<!-- ticket-index:entry id=1a7ae853-7588-409d-b172-b2d2bfbed3fb slug=done/unspecified digest=5b768b0a5ff3 -->
+#### [1a7ae853] Make session workflow tools flexible and self-correcting for dynamic workflow authoring
+- summary: Session workflow tools force agents through restrictive, single-item, closed-schema calls that produce avoidable failure cascades. In session `aedf210d-134c-4a8d-ab7c-2060f82f95d4` (turns 60→62→63), ...
+- ref: `.ticket/tickets/1a7ae853-7588-409d-b172-b2d2bfbed3fb/ticket.toml`
+
+<!-- ticket-index:entry id=445a2d76-5795-4d7a-aec8-d1536ec61416 slug=done/unspecified digest=cd1f338961bc -->
+#### [445a2d76] Model price awareness: enforce orchestrator mode for expensive models
+- summary: Implement "context stack price awareness" so that an agent automatically switches into an **orchestrator mode** based on the cost of its own underlying model. In orchestrator mode the agent delegates...
+- ref: `.ticket/tickets/445a2d76-5795-4d7a-aec8-d1536ec61416/ticket.toml`
 
 <!-- ticket-index:entry id=75b12c5a-a0cf-4810-b5b6-a65319dc95a7 slug=done/unspecified digest=73fa6f9a04d0 -->
 #### [75b12c5a] Motion-Blurred Particle Splatting
@@ -1937,11 +2576,21 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: bevy_rapier3d needs collision shapes derived from the SVO for character physics and rigid body dynamics. This ticket implements the bridge that converts dirty SVO chunks into Rapier colliders using g...
 - ref: `.ticket/tickets/a5ab9013-94ce-4055-8d03-400236209958/ticket.toml`
 
+<!-- ticket-index:entry id=dbb8fc83-a319-4f40-8124-149a24361068 slug=done/unspecified digest=64522b92b475 -->
+#### [dbb8fc83] Register task and epic ticket workflow schemas
+- summary: The ticket store can create `task` and `epic` records but cannot transition or update them because no workflow schema is registered for either type. Independent review of the session-workflow flexibi...
+- ref: `.ticket/tickets/dbb8fc83-a319-4f40-8124-149a24361068/ticket.toml`
+
 <!-- ticket-index:entry id=c7659e24-3687-4581-bc4c-54bfc7e19267 slug=done/unspecified digest=b1739a933d95 -->
 #### [c7659e24] Render Graph + Pipeline: Custom Nodes, Canvas Setup, and Mipmap Generation
 - priority: `high`
 - summary: Bevy's render graph must host 7 custom nodes executing in sequence, plus canvas/WebGPU initialization and mipmap generation for frosted glass. This ticket wires the render graph — it does NOT impleme...
 - ref: `.ticket/tickets/c7659e24-3687-4581-bc4c-54bfc7e19267/ticket.toml`
+
+<!-- ticket-index:entry id=781dd9ad-74a6-41a1-9dac-4fda185780d7 slug=done/unspecified digest=ceb13c821b77 -->
+#### [781dd9ad] Self-correcting session workflow rejection errors (embed alternative pattern)
+- summary: When a session workflow mutation is rejected, the error lists allowed values but does not tell the agent what to do instead. Observed in session `aedf210d` (turns 60, 62): the `kind` rejection and th...
+- ref: `.ticket/tickets/781dd9ad-74a6-41a1-9dac-4fda185780d7/ticket.toml`
 
 <!-- ticket-index:entry id=d54f034c-b6ab-4c8d-bb81-a287d05834a1 slug=done/unspecified digest=c33be0af621c -->
 #### [d54f034c] Simplify ticket state machine: drop in-refinement and in-validation, enforce e2e testing and explicit user review
@@ -1949,17 +2598,21 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The current `tracker-improvement` state machine has **8 states** with 6
 - ref: `.ticket/tickets/d54f034c-b6ab-4c8d-bb81-a287d05834a1/ticket.toml`
 
-<!-- ticket-index:entry id=89c3189b-381d-4020-8757-39a675791c20 slug=done/unspecified digest=367f6603306e -->
-#### [89c3189b] Skill System: Spell SDFs, Procedural Shader Effects & Volumetric Magic
-- priority: `high`
-- summary: Magic spells in this RPG are not pre-canned animations — they are transient SDF volumes injected into the ray-marching loop, generating real-time volumetric lighting, refraction, and physical effects...
-- ref: `.ticket/tickets/89c3189b-381d-4020-8757-39a675791c20/ticket.toml`
-
 <!-- ticket-index:entry id=5070c6b3-a37a-47fa-8dcf-69f805c1a2d2 slug=done/unspecified digest=f2a0d9db1b30 -->
 #### [5070c6b3] Sort Key Construction & Tiled Depth Ordering for Voxel Splats
 - priority: `high`
 - summary: The second rendering stage: project each `VoxelSplat`'s bounding box to screen-space, compute tile membership, and construct composite sort keys `(tile_id << 12) | depth` for the GPU radix sort (T6c)...
 - ref: `.ticket/tickets/5070c6b3-a37a-47fa-8dcf-69f805c1a2d2/ticket.toml`
+
+<!-- ticket-index:entry id=dac1c75b-e738-4211-8869-30e9ee12f313 slug=done/unspecified digest=e51ab32552b9 -->
+#### [dac1c75b] Strip ticket/spec transition authority from Review Agent
+- summary: Enforce the D2 policy decision: **the Iteration Agent owns ALL ticket state transitions.** The Review Agent is now strictly verdict-only and must never call `close_ticket`, never pass `to_state` to `...
+- ref: `.ticket/tickets/dac1c75b-e738-4211-8869-30e9ee12f313/ticket.toml`
+
+<!-- ticket-index:entry id=3c6da958-f494-408f-b7dd-cc43997b8ead slug=done/unspecified digest=9427c597cb8c -->
+#### [3c6da958] Surface `category` and add non-gating anchor URN for any workflow node kind
+- summary: The workflow node model already carries a free-text `category` field that exists "so agents never hit an expressiveness wall for labels that do not drive behavior" (memory-api/crates/session-api/src/...
+- ref: `.ticket/tickets/3c6da958-f494-408f-b7dd-cc43997b8ead/ticket.toml`
 
 <!-- ticket-index:entry id=c5115990-529c-47ad-91bf-4dd1f8602d44 slug=done/unspecified digest=2544456ac2a5 -->
 #### [c5115990] Voxel Inventory: Mini-SVO Items, Glass UI Rendering & Drag-to-World
@@ -2147,6 +2800,16 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Validate that the draftboard behaves correctly under the failure modes and concurrency patterns it is explicitly meant to manage.
 - ref: `memory-api/.ticket/tickets/be38e809-781f-498c-915e-afaca1d1d3e0/ticket.toml`
 
+<!-- ticket-index:entry id=60a2a388-c8b6-4e25-a80a-0ba686f11bf9 slug=done/unspecified digest=4a8e467d8f4a -->
+#### [60a2a388] [LOG-1b] doc-viewer + spec-viewer: wire init_tracing_full with file logging
+- summary: `doc-viewer` and `spec-viewer` (if they have `main.rs` entry points) currently use `init_tracing()` (console-only) or have no explicit tracing setup. Logs are lost in detached mode.
+- ref: `memory-viewers/.ticket/tickets/60a2a388-c8b6-4e25-a80a-0ba686f11bf9/ticket.toml`
+
+<!-- ticket-index:entry id=12197242-b7b4-4212-83a8-4b0b65a4bd7b slug=done/unspecified digest=b03615113fd0 -->
+#### [12197242] [LOG-2a] Audit and normalise context-* tracing field names for log-viewer compatibility
+- summary: The `crates/context-{insert,read,search,trace}` crates emit `tracing` spans and events but field names, targets, and event shapes are not uniform. The log-viewer parser (`crates/context-api/src/log_p...
+- ref: `memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml`
+
 <!-- ticket-index:entry id=c179ef57-6866-451d-ba7f-f7923ad1374b slug=done/unspecified digest=707c689fe677 -->
 #### [c179ef57] [LOG-5a] Scaffold log-viewer-dioxus crate with trunk build and API client
 - summary: The current log-viewer frontend is a Preact/Vite application. Per the Dioxus Viewer Platform epic (`35a6d14b`), all viewer frontends should be ported to Rust/Dioxus 0.7 compiled to WASM via `trunk`. ...
@@ -2158,9 +2821,227 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Browser-hosted frontend guidance requires Playwright coverage, but it does not explicitly tell agents to try the MCP Playwright/browser tools first before falling back to repo-local wrappers or manua...
 - ref: `.ticket/tickets/fe5232d9-537a-4217-b8c0-b8e3ca81d95b/ticket.toml`
 
+<!-- ticket-index:entry id=6bd67a7a-2a76-4dd7-a897-b4d325476621 slug=done/unspecified digest=a6fa80239691 -->
+#### [6bd67a7a] [architecture][workspace] Dynamic multi-store discovery and cross-store references
+- priority: `high`
+- summary: Implement recursive multi-store workspace discovery and cross-store reference integration with URN-based identities across local and nested workspaces.
+- ref: `.ticket/tickets/6bd67a7a-2a76-4dd7-a897-b4d325476621/ticket.toml`
+
+<!-- ticket-index:entry id=7e318b2a-a381-49a1-aee9-18758a4b80fd slug=done/unspecified digest=9208cbcaa38a -->
+#### [7e318b2a] [architecture][workspace] Late store onboarding reconciliation
+- priority: `high`
+- summary: Support absent-then-present store integration and late onboarding reconciliation.
+- ref: `.ticket/tickets/7e318b2a-a381-49a1-aee9-18758a4b80fd/ticket.toml`
+
+<!-- ticket-index:entry id=fa3e0a51-0caa-4a33-bfe2-1b173feaa979 slug=done/unspecified digest=48d76a77e0ec -->
+#### [fa3e0a51] [architecture][workspace] Recursive automatic store discovery
+- priority: `high`
+- summary: Implement fully automatic recursive store discovery across local and nested workspaces.
+- ref: `.ticket/tickets/fa3e0a51-0caa-4a33-bfe2-1b173feaa979/ticket.toml`
+
+<!-- ticket-index:entry id=82d6ada4-ac35-45a7-9df6-7b7501d58e70 slug=done/unspecified digest=fab4165eab77 -->
+#### [82d6ada4] [architecture][workspace] URN cross-store reference model and resolver
+- priority: `high`
+- summary: Implement URN-based cross-store reference model and resolver APIs.
+- ref: `.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml`
+
+<!-- ticket-index:entry id=635b7e37-8bed-4622-a38d-ef87bb08f46c slug=done/unspecified digest=4ee06b7b3049 -->
+#### [635b7e37] [audit-api] Derive spec fulfillment rollups from store-owned evidence
+- summary: Teach `audit-api` to report derived spec fulfillment status by reading store-owned expectation and evidence metadata.
+- ref: `.ticket/tickets/635b7e37-8bed-4622-a38d-ef87bb08f46c/ticket.toml`
+
+<!-- ticket-index:entry id=2663a981-d279-45dc-abc0-42270491dca6 slug=done/unspecified digest=76287e764cd4 -->
+#### [2663a981] [audit-cli] Add unified session_audit interface for latest or explicit session
+- summary: Expose session audit through audit-cli unified audit interface.
+- ref: `.ticket/tickets/2663a981-d279-45dc-abc0-42270491dca6/ticket.toml`
+
+<!-- ticket-index:entry id=c991d769-27b4-4567-b9d1-95173af02c5a slug=done/unspecified digest=e104eed1fb8a -->
+#### [c991d769] [audit-roadmap][file_length][batch-1] memory-api (88)
+- summary: Resolve the current file_length batch for memory-api and reduce findings from baseline using strict largest-first splits.
+- ref: `.ticket/tickets/c991d769-27b4-4567-b9d1-95173af02c5a/ticket.toml`
+
+<!-- ticket-index:entry id=e92dd945-9607-4001-88d7-634a8ab28b5c slug=done/unspecified digest=6f13d892c7d9 -->
+#### [e92dd945] [audit-roadmap][file_length][batch-1a] memory-api core crates (7)
+- priority: `high`
+- summary: Split remaining **core crate** file_length offenders with behavior-preserving module extractions and focused validation.
+- ref: `.ticket/tickets/e92dd945-9607-4001-88d7-634a8ab28b5c/ticket.toml`
+
+<!-- ticket-index:entry id=3e11a5fa-498b-47ae-80aa-1c7cb9a79be4 slug=done/unspecified digest=2525e6597270 -->
+#### [3e11a5fa] [audit-roadmap][file_length][batch-1b] memory-api rules+fixtures (3)
+- priority: `high`
+- summary: Split remaining **rule + fixture** file_length offenders with narrow helper/test-module extraction.
+- ref: `.ticket/tickets/3e11a5fa-498b-47ae-80aa-1c7cb9a79be4/ticket.toml`
+
+<!-- ticket-index:entry id=22d67e25-9766-4cab-aed8-638d6fce222c slug=done/unspecified digest=f278ba74eb17 -->
+#### [22d67e25] [audit-roadmap][file_length][batch-1c] memory-api ticket surfaces (5)
+- priority: `high`
+- summary: Split remaining **ticket surfaces (HTTP/CLI/MCP)** file_length offenders while preserving external behavior.
+- ref: `.ticket/tickets/22d67e25-9766-4cab-aed8-638d6fce222c/ticket.toml`
+
+<!-- ticket-index:entry id=5c7296f6-533f-47d9-8fe8-ffd4c80d8ca8 slug=done/unspecified digest=e37bc6d27892 -->
+#### [5c7296f6] [audit-roadmap][file_length][batch-1d] memory-api tools+matrix tail (3)
+- priority: `medium`
+- summary: Split remaining **cross-cutting tooling/matrix** file_length offenders to close out the tail of batch-1.
+- ref: `.ticket/tickets/5c7296f6-533f-47d9-8fe8-ffd4c80d8ca8/ticket.toml`
+
+<!-- ticket-index:entry id=ac990dfe-083d-413c-ba4a-7cfbbda677b0 slug=done/unspecified digest=3e5e0ab5fe8e -->
+#### [ac990dfe] [audit-roadmap][stability] Clear compiler/test/coverage findings
+- summary: Clear the audit-roadmap stability category (compiler_warning, test_execution, coverage) for this roadmap slice.
+- ref: `.ticket/tickets/ac990dfe-083d-413c-ba4a-7cfbbda677b0/ticket.toml`
+
+<!-- ticket-index:entry id=9347c9f8-f3f0-49e7-8ca1-df77a0cca499 slug=done/unspecified digest=205fcae20924 -->
+#### [9347c9f8] [audit-roadmap][stability][batch-1] compiler_warning (1)
+- summary: Resolve the stability compiler_warning finding. This is an aggregate metric finding representing ALL compiler warnings, not a single warning.
+- ref: `.ticket/tickets/9347c9f8-f3f0-49e7-8ca1-df77a0cca499/ticket.toml`
+
+<!-- ticket-index:entry id=f2d8f807-447e-41a2-80db-2fca03d5b9ee slug=done/unspecified digest=8dc2a6c202f2 -->
+#### [f2d8f807] [audit-roadmap][stability][batch-2] test_execution (1)
+- summary: Resolve the current stability batch for test_execution and reduce 1 findings from the baseline.
+- ref: `.ticket/tickets/f2d8f807-447e-41a2-80db-2fca03d5b9ee/ticket.toml`
+
+<!-- ticket-index:entry id=1ff5c55a-d279-45a6-9451-7dbfb191c0e7 slug=done/unspecified digest=fc6c599d2c2b -->
+#### [1ff5c55a] [audit-roadmap][stability][batch-3] coverage (1)
+- summary: Resolve the current stability batch for coverage and reduce 1 findings from the baseline.
+- ref: `.ticket/tickets/1ff5c55a-d279-45a6-9451-7dbfb191c0e7/ticket.toml`
+
+<!-- ticket-index:entry id=40edd5d1-a02f-4c47-b791-1a5212641085 slug=done/unspecified digest=99c200abdaaa -->
+#### [40edd5d1] [audit-roadmap][stability][dead_code] context-stack dead_code triage
+- summary: Triage `dead_code` compiler warnings in the `context-stack` submodule (split off from parent `9347c9f8` mechanical pass).
+- ref: `.ticket/tickets/40edd5d1-a02f-4c47-b791-1a5212641085/ticket.toml`
+
+<!-- ticket-index:entry id=ef9eb7fb-1140-402b-983e-0ab5ba2bfaff slug=done/unspecified digest=cac964e0b56e -->
+#### [ef9eb7fb] [audit-roadmap][stability][dead_code] log-viewer dead_code triage
+- summary: Triage `dead_code` compiler warnings in the `log-viewer` frontend (`tools/viewer/log-viewer`, root repo — split off from parent `9347c9f8` mechanical pass).
+- ref: `.ticket/tickets/ef9eb7fb-1140-402b-983e-0ab5ba2bfaff/ticket.toml`
+
+<!-- ticket-index:entry id=cde503fd-3042-4ab3-8cff-dcb605e09af8 slug=done/unspecified digest=204e753a2ce2 -->
+#### [cde503fd] [audit-roadmap][stability][dead_code] memory-viewers dead_code triage
+- summary: Triage `dead_code` compiler warnings in the `memory-viewers` submodule (split off from parent `9347c9f8` mechanical pass).
+- ref: `.ticket/tickets/cde503fd-3042-4ab3-8cff-dcb605e09af8/ticket.toml`
+
+<!-- ticket-index:entry id=9c329f10-b2b0-412c-ab5a-14a52bddec76 slug=done/unspecified digest=dc43dc02bdeb -->
+#### [9c329f10] [audit-roadmap][stability][dead_code] viewer-api dead_code triage
+- summary: Triage `dead_code` compiler warnings in the `viewer-api` submodule (split off from parent `9347c9f8` mechanical pass). Largest concentration.
+- ref: `.ticket/tickets/9c329f10-b2b0-412c-ab5a-14a52bddec76/ticket.toml`
+
+<!-- ticket-index:entry id=15cf86fd-66ef-483e-b934-1f7c72352f67 slug=done/unspecified digest=3f5d0a31b66c -->
+#### [15cf86fd] [audit-roadmap][static_complexity][batch-1 follow-up] context-cli output cluster (2)
+- summary: Residual static_complexity follow-up split out of batch 1c9e7b3e after singleton reductions.
+- ref: `.ticket/tickets/15cf86fd-66ef-483e-b934-1f7c72352f67/ticket.toml`
+
+<!-- ticket-index:entry id=7cfc8996-3dbc-49c5-b359-be493c094a4a slug=done/unspecified digest=a2ec8369bcbe -->
+#### [7cfc8996] [audit-roadmap][static_complexity][batch-1 follow-up] context-cli repl cluster (2)
+- summary: Residual static_complexity follow-up split out of batch 1c9e7b3e after singleton reductions.
+- ref: `.ticket/tickets/7cfc8996-3dbc-49c5-b359-be493c094a4a/ticket.toml`
+
+<!-- ticket-index:entry id=409a3919-296e-4a62-bd1a-77a8212bf43f slug=done/unspecified digest=27d90b79e731 -->
+#### [409a3919] [audit-roadmap][static_complexity][batch-1 follow-up] context-insert vertex cluster (4)
+- summary: Residual static_complexity follow-up split out of batch 1c9e7b3e after singleton reductions.
+- ref: `.ticket/tickets/409a3919-296e-4a62-bd1a-77a8212bf43f/ticket.toml`
+
+<!-- ticket-index:entry id=ebf4b601-0f9e-471c-9283-1390cda1eb41 slug=done/unspecified digest=0bcc67969012 -->
+#### [ebf4b601] [audit-roadmap][static_complexity][batch-1 follow-up] context-trace debug_to_json cluster (5)
+- summary: Residual static_complexity follow-up split out of batch 1c9e7b3e after singleton reductions.
+- ref: `.ticket/tickets/ebf4b601-0f9e-471c-9283-1390cda1eb41/ticket.toml`
+
+<!-- ticket-index:entry id=3661f22c-ebc8-4f6d-ab66-6bada28d6f03 slug=done/unspecified digest=5fb08bcc576e -->
+#### [3661f22c] [audit-roadmap][static_complexity][batch-1 follow-up] context-trace formatter cluster (2)
+- summary: Residual static_complexity follow-up split out of batch 1c9e7b3e after singleton reductions.
+- ref: `.ticket/tickets/3661f22c-ebc8-4f6d-ab66-6bada28d6f03/ticket.toml`
+
+<!-- ticket-index:entry id=a8721506-7528-468b-a756-1e21f210fbbe slug=done/unspecified digest=65a388d8c872 -->
+#### [a8721506] [audit-roadmap][static_complexity][batch-1 follow-up] context-trace search_path cluster (2)
+- summary: Residual static_complexity follow-up split out of batch 1c9e7b3e after singleton reductions.
+- ref: `.ticket/tickets/a8721506-7528-468b-a756-1e21f210fbbe/ticket.toml`
+
+<!-- ticket-index:entry id=1c9e7b3e-32e8-4233-8fd4-0244c3d9aab0 slug=done/unspecified digest=7b0b668202b7 -->
+#### [1c9e7b3e] [audit-roadmap][static_complexity][batch-1] context-stack (38)
+- summary: Resolve the current static_complexity batch for context-stack and reduce 38 findings from the baseline.
+- ref: `.ticket/tickets/1c9e7b3e-32e8-4233-8fd4-0244c3d9aab0/ticket.toml`
+
+<!-- ticket-index:entry id=d1ef4001-a2a3-4ef4-a1a1-bdfac49c68e2 slug=done/unspecified digest=2ca9f612a282 -->
+#### [d1ef4001] [audit-roadmap][static_complexity][batch-2] tools (29)
+- summary: Resolve the current static_complexity batch for tools and reduce 29 findings from the baseline.
+- ref: `.ticket/tickets/d1ef4001-a2a3-4ef4-a1a1-bdfac49c68e2/ticket.toml`
+
+<!-- ticket-index:entry id=1a2b326d-cf0c-4935-83a7-b80cf0ff0f32 slug=done/unspecified digest=4f99afe15ee8 -->
+#### [1a2b326d] [audit-roadmap][ticket_graph] Clear ticket graph findings
+- summary: Eliminate ticket_graph findings by repairing dependency graph hygiene, orphan handling, and lifecycle consistency across all ticket stores.
+- ref: `.ticket/tickets/1a2b326d-cf0c-4935-83a7-b80cf0ff0f32/ticket.toml`
+
+<!-- ticket-index:entry id=6e89260d-2b89-4e0d-9f03-ed10907de19d slug=done/unspecified digest=e9a1cf6985ff -->
+#### [6e89260d] [audit-roadmap][ticket_graph] Resolve context-engine dependency_convergence findings (21)
+- summary: After audit-roadmap batch-1 (ca788fe3) cleared all 104 orphan_ticket_count findings in the context-engine `.ticket` store, 21 `dependency_convergence_count` findings remain. Each flags a dependent ti...
+- ref: `.ticket/tickets/6e89260d-2b89-4e0d-9f03-ed10907de19d/ticket.toml`
+
+<!-- ticket-index:entry id=ca788fe3-67e9-4b5f-97d4-521bbc657bd6 slug=done/unspecified digest=79e694303b67 -->
+#### [ca788fe3] [audit-roadmap][ticket_graph][batch-1] context-engine .ticket store (125)
+- summary: Resolve the current ticket_graph batch for context-engine .ticket store and reduce 125 findings from the baseline.
+- ref: `.ticket/tickets/ca788fe3-67e9-4b5f-97d4-521bbc657bd6/ticket.toml`
+
+<!-- ticket-index:entry id=ba482d65-2443-4a85-964b-c9c605c6ee75 slug=done/unspecified digest=8e24068d4b28 -->
+#### [ba482d65] [audit-roadmap][ticket_graph][batch-2] memory-api .ticket store (54)
+- summary: Resolve the current ticket_graph batch for memory-api .ticket store and reduce 54 findings from the baseline.
+- ref: `.ticket/tickets/ba482d65-2443-4a85-964b-c9c605c6ee75/ticket.toml`
+
+<!-- ticket-index:entry id=22877505-d20f-481d-9ae6-34f7b812901d slug=done/unspecified digest=63998173cba9 -->
+#### [22877505] [audit-roadmap][ticket_graph][batch-2][blocker] memory-api orphan findings persist after explicit graph links (38)
+- summary: Explain why memory-api orphan findings persisted at 38 after explicit depends_on links in chunk-2, and determine whether the issue is graph data, audit interpretation, or index staleness.
+- ref: `.ticket/tickets/22877505-d20f-481d-9ae6-34f7b812901d/ticket.toml`
+
+<!-- ticket-index:entry id=024bcc29-284e-4726-a1a2-96360608865a slug=done/unspecified digest=7dac481504b3 -->
+#### [024bcc29] [audit-roadmap][ticket_graph][batch-3] viewer-api .ticket store (50)
+- summary: Resolve the current ticket_graph batch for viewer-api .ticket store and reduce 50 findings from the baseline.
+- ref: `.ticket/tickets/024bcc29-284e-4726-a1a2-96360608865a/ticket.toml`
+
+<!-- ticket-index:entry id=4e68dc40-a953-45e5-a1aa-e0aecdbcf696 slug=done/unspecified digest=72a5b3b7b71f -->
+#### [4e68dc40] [audit-roadmap][ticket_graph][batch-4] memory-viewers .ticket store (23)
+- summary: Resolve the current ticket_graph batch for memory-viewers .ticket store and reduce 23 findings from the baseline.
+- ref: `.ticket/tickets/4e68dc40-a953-45e5-a1aa-e0aecdbcf696/ticket.toml`
+
+<!-- ticket-index:entry id=cc8e9a36-6fd7-4fb9-adc2-d5456917de34 slug=done/unspecified digest=b051c6001059 -->
+#### [cc8e9a36] [audit-roadmap][ticket_graph][batch-5] context-stack/context-editor/misc stores (6)
+- summary: Resolve the current ticket_graph batch for context-stack/context-editor/misc stores and reduce 6 findings from the baseline.
+- ref: `.ticket/tickets/cc8e9a36-6fd7-4fb9-adc2-d5456917de34/ticket.toml`
+
+<!-- ticket-index:entry id=d760a9bb-b970-4a97-8e38-fb4d78a5ea10 slug=done/unspecified digest=ffb47835e381 -->
+#### [d760a9bb] [benchmarks] Capture structured tracing for Criterion and Rust perf harnesses
+- summary: Starting benchmark/perf tracing implementation: inspect ticket-api perf tests and representative Criterion benches, then add structured run-level tracing that preserves benchmark usefulness.
+- ref: `.ticket/tickets/d760a9bb-b970-4a97-8e38-fb4d78a5ea10/ticket.toml`
+
+<!-- ticket-index:entry id=37dc83ab-af5c-4746-9c02-b27ffb8215a9 slug=done/unspecified digest=c4852e23dc19 -->
+#### [37dc83ab] [bug] Tantivy 0.22.1 fastfield panic breaks spec/store full-text search
+- summary: Full-text search across the spec store (and any store backed by the same Tantivy index path) is non-functional. `spec scan --force` panics inside Tantivy and incremental scans silently fail to popula...
+- ref: `.ticket/tickets/37dc83ab-af5c-4746-9c02-b27ffb8215a9/ticket.toml`
+
 <!-- ticket-index:entry id=cf77062c-f663-4ed4-beca-9303795cf973 slug=done/unspecified digest=bbfca086bff4 -->
 #### [cf77062c] [ci] Split viewer workflows to memory-viewers
 - ref: `.ticket/tickets/cf77062c-f663-4ed4-beca-9303795cf973/ticket.toml`
+
+<!-- ticket-index:entry id=7c281aec-092c-448d-bf26-94522e07b4e8 slug=done/unspecified digest=a37ed2650a34 -->
+#### [7c281aec] [content-materialization][memory-api] G-B.1 retro-fix: typed MoveError variant for interoperability-contract violation (replace string marker)
+- summary: Replace the stringly-typed journal contract marker with a typed error variant.
+- ref: `memory-api/.ticket/tickets/7c281aec-092c-448d-bf26-94522e07b4e8/ticket.toml`
+
+<!-- ticket-index:entry id=fa6e2c19-5fd8-4305-90c7-f1f4bea8df36 slug=done/unspecified digest=9837e31bec03 -->
+#### [fa6e2c19] [content-materialization][memory-api] G-B.2 retro-fix: trait-based interoperability contract (replace runtime validate_interoperability_contract)
+- summary: Convert the runtime `validate_interoperability_contract` / `interoperability_gaps` plumbing into a trait-based contract where the type system can enforce the shared minimum interoperability set plus ...
+- ref: `memory-api/.ticket/tickets/fa6e2c19-5fd8-4305-90c7-f1f4bea8df36/ticket.toml`
+
+<!-- ticket-index:entry id=17483930-36a1-4bf7-864b-e30ded445db3 slug=done/unspecified digest=b796d61feaaa -->
+#### [17483930] [content-materialization][rule-api] G-B: Rust code-design policy — typed errors, trait contracts, trait inheritance
+- summary: Author canonical Rust code-design policy as rule-api content and drive the first retro-fixes. Learnings to encode:
+- ref: `memory-api/.ticket/tickets/17483930-36a1-4bf7-864b-e30ded445db3/ticket.toml`
+
+<!-- ticket-index:entry id=6875dff6-7191-46aa-9358-9567430969f1 slug=done/unspecified digest=4cf452548d9c -->
+#### [6875dff6] [content-materialization][rule-api] G-C: Rule-introduces-spec — status-conditioned spec presentation in session construction
+- summary: Require that every spec is introduced/explained in-session by a governing PolicyRule, conditioned on implementation status:
+- ref: `memory-api/.ticket/tickets/6875dff6-7191-46aa-9358-9567430969f1/ticket.toml`
+
+<!-- ticket-index:entry id=633a38b8-7200-4979-9ce9-8c296ccc78bd slug=done/unspecified digest=d76b57eb484f -->
+#### [633a38b8] [content-materialization][spec-api] G-A: Spec-contract v2 — motivation, dependent-expectation, computed guards, positions
+- summary: Extend the `aligned-structure:v1` spec template into a real contract shape. Every spec must declare:
+- ref: `memory-api/.ticket/tickets/633a38b8-7200-4979-9ce9-8c296ccc78bd/ticket.toml`
 
 <!-- ticket-index:entry id=e3340271-557d-4d1c-bef7-db73712f468e slug=done/unspecified digest=5e7f1da4e9f2 -->
 #### [e3340271] [context-editor] SVO-Accelerated Ray Marching: Per-Voxel SDF Evaluation, Hi-Z Occlusion & Fragment Optimizations
@@ -2174,16 +3055,250 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The final rendering stage: bin sorted voxel splats into 16×16 pixel tiles, then composite them per-pixel with front-to-back alpha blending in a fragment shader. Each pixel evaluates a **ray-box SDF**...
 - ref: `.ticket/tickets/194ade77-6922-4be8-8c5b-4423173abcf6/ticket.toml`
 
+<!-- ticket-index:entry id=87001cb8-46c4-4921-a336-dc0cf0c1f66a slug=done/unspecified digest=4224a515c768 -->
+#### [87001cb8] [doc-api] Add documentation-validation evidence identities for spec fulfillment
+- summary: Extend `doc-api` with documentation-validation identities and coverage metadata that can satisfy or block spec acceptance clauses.
+- ref: `.ticket/tickets/87001cb8-46c4-4921-a336-dc0cf0c1f66a/ticket.toml`
+
+<!-- ticket-index:entry id=363e26d6-0b4d-469e-a53b-5c3424262085 slug=done/unspecified digest=e9463ef5bda4 -->
+#### [363e26d6] [e2e] Correlate Playwright browser runs with backend tracing sessions
+- summary: Starting Playwright/backend tracing correlation work: inspect shared viewer E2E runtime, server log surfaces, and existing client-log/tracing helpers to introduce a stable per-test correlation id.
+- ref: `.ticket/tickets/363e26d6-0b4d-469e-a53b-5c3424262085/ticket.toml`
+
 <!-- ticket-index:entry id=2e52bd26-1a93-4c62-b712-024a567a934a slug=done/unspecified digest=24cba0cc7e55 -->
 #### [2e52bd26] [handoff][ticket-workflow] Work package: regression-resistant best-next-ticket workflow
 - summary: Bundle the "best next ticket to implement" hardening work into a single handoff package that another engineer or agent can pick up without needing to reconstruct the backlog from chat history.
 - ref: `.ticket/tickets/2e52bd26-1a93-4c62-b712-024a567a934a/ticket.toml`
+
+<!-- ticket-index:entry id=1f7a7d60-e7ea-49c4-80c4-dee78e8862be slug=done/unspecified digest=8c9cfbb99531 -->
+#### [1f7a7d60] [hooks][rule] Show sync-targets failure output in pre-commit
+- ref: `.ticket/tickets/1f7a7d60-e7ea-49c4-80c4-dee78e8862be/ticket.toml`
+
+<!-- ticket-index:entry id=30606247-06cd-4246-905b-bad49d2dd289 slug=done/unspecified digest=486713c22325 -->
+#### [30606247] [instruction-governance] Add instruction precedence + exception matrix in AGENTS.md
+- summary: Added an explicit instruction precedence + exception matrix to AGENTS through the canonical rule system, then regenerated AGENTS via target-scoped generation.
+- ref: `.ticket/tickets/30606247-06cd-4246-905b-bad49d2dd289/ticket.toml`
+
+<!-- ticket-index:entry id=e416e4e8-cab2-41ad-9fcf-63da5f444e0a slug=done/unspecified digest=0fe6cece2524 -->
+#### [e416e4e8] [instruction-governance] Consolidate duplicated instruction guidance and keep pointer surfaces minimal
+- summary: Final consolidation pass completed for instruction-governance track.
+- ref: `.ticket/tickets/e416e4e8-cab2-41ad-9fcf-63da5f444e0a/ticket.toml`
+
+<!-- ticket-index:entry id=f19dcafa-8349-4375-96ab-401a7d0eb17c slug=done/unspecified digest=19533d9ca918 -->
+#### [f19dcafa] [instruction-governance] Deduplicate spec-system.instructions and add explicit exceptions
+- summary: Deduplicated `spec-system.instructions.md` and added explicit precedence/exception handling aligned with the AGENTS instruction-precedence matrix.
+- ref: `.ticket/tickets/f19dcafa-8349-4375-96ab-401a7d0eb17c/ticket.toml`
+
+<!-- ticket-index:entry id=18e7a4d1-6ac3-402a-be3f-9f588795f006 slug=done/unspecified digest=576ecda9b569 -->
+#### [18e7a4d1] [instruction-governance] Narrow over-broad applyTo patterns in instruction files
+- summary: Narrowed over-broad `applyTo` selectors in instruction frontmatter to reduce unintended rule activation.
+- ref: `.ticket/tickets/18e7a4d1-6ac3-402a-be3f-9f588795f006/ticket.toml`
+
+<!-- ticket-index:entry id=cf7f79a6-6011-4060-811d-a3831de4c3b7 slug=done/unspecified digest=366e17535267 -->
+#### [cf7f79a6] [instruction-governance] Resolve formatting-rule conflict (backticks vs linkified paths)
+- summary: Resolved the formatting-rule conflict by making precedence/exception behavior explicit and adding a canonical formatting policy that selects linkified file references over backticks for file/path cit...
+- ref: `.ticket/tickets/cf7f79a6-6011-4060-811d-a3831de4c3b7/ticket.toml`
+
+<!-- ticket-index:entry id=e1d8be15-0542-4804-bb0f-6a4b4fb4b073 slug=done/unspecified digest=9d11809c9bfe -->
+#### [e1d8be15] [instruction-governance] Tracker: instruction-system cleanup and conflict resolution
+- summary: Instruction-governance cleanup track completed.
+- ref: `.ticket/tickets/e1d8be15-0542-4804-bb0f-6a4b4fb4b073/ticket.toml`
+
+<!-- ticket-index:entry id=0805fb76-f99b-45a5-87c6-5a8e65bdb2da slug=done/unspecified digest=d9a2d959d859 -->
+#### [0805fb76] [log-api] Bootstrap validation-log identities for spec fulfillment
+- summary: Bootstrap the first `log-api` entities for validation-log capture and retrieval linked from `test-api` executions.
+- ref: `.ticket/tickets/0805fb76-f99b-45a5-87c6-5a8e65bdb2da/ticket.toml`
+
+<!-- ticket-index:entry id=f3a58d3c-5961-4ee4-a32d-b51343a5a275 slug=done/unspecified digest=b0deaf99646c -->
+#### [f3a58d3c] [memory-api] Cross-store edge health: shared resolver + policy-aware parent-workspace warning (parity across all stores)
+- summary: Store-scoped health checks report `dangling_edge` ERRORS for `depends_on` edges that point to entities in a DIFFERENT store/workspace (e.g. memory-api tickets depending on root-store architecture tic...
+- ref: `memory-api/.ticket/tickets/f3a58d3c-5961-4ee4-a32d-b51343a5a275/ticket.toml`
+
+<!-- ticket-index:entry id=e8e3ef17-313f-4cb7-aa9c-6447a18d36a3 slug=done/unspecified digest=afc26b34f0e3 -->
+#### [e8e3ef17] [memory-api] Implement path normalization kernel and migrate CLI/MCP/HTTP path surfaces
+- summary: Implement the path normalization utility kernel specified in the design spec and migrate all transport-facing path surfaces to it.
+- ref: `memory-api/.ticket/tickets/e8e3ef17-313f-4cb7-aa9c-6447a18d36a3/ticket.toml`
+
+<!-- ticket-index:entry id=45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d slug=done/unspecified digest=8a22d8a15f8f -->
+#### [45f5f58e] [memory-api] Incremental entity-store scan (mtime/hash short-circuit)
+- summary: Make `EntityStore::scan` skip re-integration for unchanged entities so sync-targets (and other store consumers) do not re-read+re-index every rule every run.
+- ref: `memory-api/.ticket/tickets/45f5f58e-4a6e-40b9-bf03-1bc9dc5ca43d/ticket.toml`
+
+<!-- ticket-index:entry id=e3961a54-ea4c-4ce6-aee9-da67a15bf2c7 slug=done/unspecified digest=f263daf129b3 -->
+#### [e3961a54] [memory-api] Path normalization kernel design + UNC/verbatim regression guard tests
+- summary: Implementation-ready design for a single resilient path normalization utility kernel in memory-api, focused on Unix-style canonical path rendering across Windows/Unix environments, including explicit...
+- ref: `memory-api/.ticket/tickets/e3961a54-ea4c-4ce6-aee9-da67a15bf2c7/ticket.toml`
+
+<!-- ticket-index:entry id=64a7cb3a-b35f-4953-9368-0d7afc89fb53 slug=done/unspecified digest=92ac42bb7213 -->
+#### [64a7cb3a] [memory-api] Sync install contract README section with canonical rule entry
+- ref: `.ticket/tickets/64a7cb3a-b35f-4953-9368-0d7afc89fb53/ticket.toml`
+
+<!-- ticket-index:entry id=15ce7eab-4048-48f2-9296-4c427f23455d slug=done/unspecified digest=0897e0d392bf -->
+#### [15ce7eab] [memory-api][move-kernel] Emit tracing spans for journaled move execution
+- summary: Starting implementation on move-kernel tracing spans/events so journal phase timings are visible through the tracing pipeline as well as the MoveJournal artifact.
+- ref: `.ticket/tickets/15ce7eab-4048-48f2-9296-4c427f23455d/ticket.toml`
+
+<!-- ticket-index:entry id=8ad77570-6dbe-4647-9d58-bf324a82b4fc slug=done/unspecified digest=8744ff37f03d -->
+#### [8ad77570] [memory-matrix] Promote subprocess failure-bundle log_session_ids linkage
+- summary: Close the remaining observability gap where subprocess failure bundles still emit empty `linkage.log_session_ids` when runtime log session capture is unavailable.
+- ref: `.ticket/tickets/8ad77570-6dbe-4647-9d58-bf324a82b4fc/ticket.toml`
+
+<!-- ticket-index:entry id=bf8ef22e-ea06-45de-9f90-a2fee0e4cc6e slug=done/unspecified digest=e0e97ef7572d -->
+#### [bf8ef22e] [repo-guidance][rule-api] Add implement agent target from canonical rules
+- summary: The repository generates custom agents for research, testing, interview, and audit, but it does not provide a dedicated implement agent that is optimized for surgical execution once the scope is clea...
+- ref: `.ticket/tickets/bf8ef22e-ea06-45de-9f90-a2fee0e4cc6e/ticket.toml`
+
+<!-- ticket-index:entry id=37d7fac3-cc7d-44b9-b6e1-f199fca8e901 slug=done/unspecified digest=ba8209fcb3da -->
+#### [37d7fac3] [repo-guidance][spec-api] Overhaul behavior-first spec contract and guidance
+- summary: Overhaul the repository guidance for describing target behavior so specs become concise behavior contracts anchored by the spec store, entity references, validation triangulation, and related impleme...
+- ref: `.ticket/tickets/37d7fac3-cc7d-44b9-b6e1-f199fca8e901/ticket.toml`
 
 <!-- ticket-index:entry id=0e1dca8b-2869-4c43-b62b-79eb5f6f3a17 slug=done/unspecified digest=0bca153a6e6e -->
 #### [0e1dca8b] [repo] Keep submodules on main instead of detached HEADs
 - priority: `high`
 - summary: Top-level submodules `memory-viewers` and `context-stack` are checked out in detached HEAD state, and local commits in those submodules are not naturally advancing `origin/main`. Update repository-ow...
 - ref: `.ticket/tickets/0e1dca8b-2869-4c43-b62b-79eb5f6f3a17/ticket.toml`
+
+<!-- ticket-index:entry id=efdcbb83-b198-4444-ba92-df39079d3004 slug=done/unspecified digest=7a4a2fe658aa -->
+#### [efdcbb83] [rule-api] Add structured tracing for RuleStore runtime operations
+- summary: Reopening RuleStore tracing ticket to resolve the remaining rule-api test failures blocking closure, then rerun full crate validation.
+- ref: `.ticket/tickets/efdcbb83-b198-4444-ba92-df39079d3004/ticket.toml`
+
+<!-- ticket-index:entry id=66df8683-1e3e-44d5-9052-4bb72277dc57 slug=done/unspecified digest=dc8dc9162c9a -->
+#### [66df8683] [rule-audit][prompts] Deduplicate high-overlap rules from fresh overlap audit
+- summary: Goal: reduce the high-overlap rule pairs surfaced by the fresh rule-overlap audit and leave a cleaner, more canonical prompt/instruction rule set for future regenerations.
+- ref: `.ticket/tickets/66df8683-1e3e-44d5-9052-4bb72277dc57/ticket.toml`
+
+<!-- ticket-index:entry id=68c61b92-af6b-4331-99fd-5a77dd3512e1 slug=done/unspecified digest=191197b6fc2e -->
+#### [68c61b92] [rule-cli] Improve generate-target errors for config directories and output-path targets
+- ref: `.ticket/tickets/68c61b92-af6b-4331-99fd-5a77dd3512e1/ticket.toml`
+
+<!-- ticket-index:entry id=f4f955b0-a827-4fce-882d-4df2f5903891 slug=done/unspecified digest=8887f9974548 -->
+#### [f4f955b0] [rule-cli] Make scan output explain diagnostics and counters
+- ref: `.ticket/tickets/f4f955b0-a827-4fce-882d-4df2f5903891/ticket.toml`
+
+<!-- ticket-index:entry id=2dc02b9b-7e94-4cb4-82c4-83e4359792cb slug=done/unspecified digest=6337fc445d49 -->
+#### [2dc02b9b] [rule-cli] Normalize path separators in sync-targets output
+- summary: Every path field in sync-targets output must use `/` separators on all hosts.
+- ref: `memory-api/.ticket/tickets/2dc02b9b-7e94-4cb4-82c4-83e4359792cb/ticket.toml`
+
+<!-- ticket-index:entry id=6e7f9bd6-80e8-4f0d-86d9-128eb257eb32 slug=done/unspecified digest=489c08e31475 -->
+#### [6e7f9bd6] [rule-cli] sync-targets: incremental work + normalized path output
+- summary: Tracker for fixing two `rule sync-targets` defects.
+- ref: `memory-api/.ticket/tickets/6e7f9bd6-80e8-4f0d-86d9-128eb257eb32/ticket.toml`
+
+<!-- ticket-index:entry id=69b38924-485a-41fb-bdc8-1423b5d82cc2 slug=done/unspecified digest=124ecd999cba -->
+#### [69b38924] [rule-cli] sync-targets: skip unchanged writes, single collection pass, reuse SpecStore
+- summary: Reduce redundant per-run work in sync_targets_payload without changing generated content.
+- ref: `memory-api/.ticket/tickets/69b38924-485a-41fb-bdc8-1423b5d82cc2/ticket.toml`
+
+<!-- ticket-index:entry id=331f331d-b618-42db-9284-195c2e410a11 slug=done/unspecified digest=0e47f17fdeb8 -->
+#### [331f331d] [rule-cli] v1 reverse-sync from generated artifacts (file-only sync-rules)
+- summary: Implement v1 reverse-sync for generated rule artifacts using canonical `rule-api:entry` ids so generated-file edits can update existing rule bodies in place.
+- ref: `.ticket/tickets/331f331d-b618-42db-9284-195c2e410a11/ticket.toml`
+
+<!-- ticket-index:entry id=665b727c-09b1-43e0-8795-eb67e2758aea slug=done/unspecified digest=a43e6d2629fb -->
+#### [665b727c] [rule-cli][rule-api] Allow rule-targets directories for generate-target configs
+- ref: `.ticket/tickets/665b727c-09b1-43e0-8795-eb67e2758aea/ticket.toml`
+
+<!-- ticket-index:entry id=e7a31e70-e8f8-4369-aae4-98cc7f35db7c slug=done/unspecified digest=6c3366e98f96 -->
+#### [e7a31e70] [rule-cli][rule-api] Require explicit child-workspace scans for render commands
+- ref: `.ticket/tickets/e7a31e70-e8f8-4369-aae4-98cc7f35db7c/ticket.toml`
+
+<!-- ticket-index:entry id=0da01943-4bab-44eb-bc4b-c803f6526b26 slug=done/unspecified digest=e12677c9ed71 -->
+#### [0da01943] [rules][copilot] Integrate RTK section into generated copilot instructions
+- ref: `.ticket/tickets/0da01943-4bab-44eb-bc4b-c803f6526b26/ticket.toml`
+
+<!-- ticket-index:entry id=6b2dc497-188c-44f5-9106-bf35deecb7a1 slug=done/unspecified digest=0864e58b2e88 -->
+#### [6b2dc497] [session-api] Add init/pin/unpin/view to session-cli and session-mcp
+- summary: Expose runtime context, workflow, rendering, handoff/resume, and finish operations through CLI and MCP.
+- ref: `memory-api/.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml`
+
+<!-- ticket-index:entry id=627d4152-36a7-4b24-9a9c-5f047abcac60 slug=done/unspecified digest=37467b16d5f4 -->
+#### [627d4152] [session-api] Implement session_audit and schema_version tagging for persisted sessions
+- summary: Implement `session_audit` in session-api and tag persisted session records with a schema version.
+- ref: `.ticket/tickets/627d4152-36a7-4b24-9a9c-5f047abcac60/ticket.toml`
+
+<!-- ticket-index:entry id=412964a3-e1c3-47da-94ad-268ff20441c0 slug=done/unspecified digest=427b4605dd02 -->
+#### [412964a3] [session-api] Runtime session-context model (pinned_entities, init/pin/unpin)
+- priority: `high`
+- summary: Extend `session-api` from a write/archive store into the durable read/runtime foundation used by pinned context and the session workflow.
+- ref: `memory-api/.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml`
+
+<!-- ticket-index:entry id=2d8d0487-1680-424c-816d-01925e187e62 slug=done/unspecified digest=67bb265d3133 -->
+#### [2d8d0487] [session-api][audit-cli] Add session_audit in unified audit interface with schema-versioned sessions
+- summary: Plan and deliver a `session_audit` feature in session-api and expose it through audit-cli's unified audit interface for reviewing a specific session id or the latest persisted session.
+- ref: `.ticket/tickets/2d8d0487-1680-424c-816d-01925e187e62/ticket.toml`
+
+<!-- ticket-index:entry id=5e99cc3e-5b9e-4ca1-a54c-cbdf82444b50 slug=done/unspecified digest=401f120aeeda -->
+#### [5e99cc3e] [session-api][audit-cli] Define spec contract for session_audit and session schema version
+- summary: Create/update the owning spec contract for session audit reporting and schema-versioned persisted session artifacts.
+- ref: `.ticket/tickets/5e99cc3e-5b9e-4ca1-a54c-cbdf82444b50/ticket.toml`
+
+<!-- ticket-index:entry id=474eb962-b68f-4651-b980-c4c9233b2710 slug=done/unspecified digest=e42d44969192 -->
+#### [474eb962] [session-api][audit-cli] Plan policy-file updates for session_audit and schema-version guidance
+- summary: Updated handoff policy sources and regenerated prompts to require upfront shorthand/placeholder legends, explicit ticket legends, and unresolved-reference guards. Validated generated handoff and hand...
+- ref: `.ticket/tickets/474eb962-b68f-4651-b980-c4c9233b2710/ticket.toml`
+
+<!-- ticket-index:entry id=f1161fae-b1fc-4cc1-baae-18c0eb7e7868 slug=done/unspecified digest=a63031a6260e -->
+#### [f1161fae] [session-api][audit-cli] Validate session_audit feature and evidence package
+- summary: Validate and package review evidence for session audit + schema versioning changes.
+- ref: `.ticket/tickets/f1161fae-b1fc-4cc1-baae-18c0eb7e7868/ticket.toml`
+
+<!-- ticket-index:entry id=6b1edff1-bc32-40c7-b3a9-fb1292b0213f slug=done/unspecified digest=b5f0d092ffb8 -->
+#### [6b1edff1] [session-api][remediation] Authoritative finish, live ticket state, atomic durability, and CLI contract
+- priority: `high`
+- summary: Repairs correctness holes found during independent review of the durable
+- ref: `memory-api/.ticket/tickets/6b1edff1-bc32-40c7-b3a9-fb1292b0213f/ticket.toml`
+
+<!-- ticket-index:entry id=afa00b5c-c736-4d75-b157-d3e9ce90d819 slug=done/unspecified digest=7d950a775240 -->
+#### [afa00b5c] [session-bootstrap][design] Define bootstrap contract, session_context schema, and ADRs
+- summary: Planning/design ticket for the [session-bootstrap] epic. Produces the specs and the resolved decisions.
+- ref: `memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml`
+
+<!-- ticket-index:entry id=b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6 slug=done/unspecified digest=35654bc6a361 -->
+#### [b4a8dc5e] [session-bootstrap][rules] Minimal bootstrapper + selective instruction loading
+- summary: Operationalizes decision **D7**: stop force-loading static guidance; make it discoverable and agent-rendered.
+- ref: `memory-api/.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml`
+
+<!-- ticket-index:entry id=1400919a-84b9-49ff-8e8a-92a7d9068594 slug=done/unspecified digest=c5c80510bba2 -->
+#### [1400919a] [session-optimization] Resolve tool-calling reliability and session evidence gaps
+- priority: `high`
+- summary: Track and resolve high-impact tool-calling reliability and session-evidence quality issues observed in session `a0228f9f-bbac-4c82-b1e6-8a628aa91ec1`.
+- ref: `.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml`
+
+<!-- ticket-index:entry id=c851f3af-433a-496e-a586-28631de142ce slug=done/unspecified digest=8c852ea6c9b5 -->
+#### [c851f3af] [session-optimization] empty assistant.message events create session-noise
+- priority: `medium`
+- summary: Raw session events include high-volume empty assistant-message records during tool-heavy phases, inflating artifacts and obscuring meaningful narration.
+- ref: `.ticket/tickets/c851f3af-433a-496e-a586-28631de142ce/ticket.toml`
+
+<!-- ticket-index:entry id=b6cdc89d-30fc-4303-aaba-f959abfeda4b slug=done/unspecified digest=cecadb185a32 -->
+#### [b6cdc89d] [session-optimization] run_in_terminal sync enters ambiguous background state
+- priority: `high`
+- summary: `run_in_terminal` in `mode=sync` moved a command to background despite no explicit timeout and no clear completion signal, then required repeated polling and eventual manual termination.
+- ref: `.ticket/tickets/b6cdc89d-30fc-4303-aaba-f959abfeda4b/ticket.toml`
+
+<!-- ticket-index:entry id=7769da57-a8f6-4e72-a860-c8263d5a360e slug=done/unspecified digest=6359ba32dbeb -->
+#### [7769da57] [session-optimization] session events miss structured tool result payloads
+- priority: `high`
+- summary: Session events capture tool start/complete envelopes but omit structured tool result payloads, reducing post-session debuggability for tool-calling failures.
+- ref: `.ticket/tickets/7769da57-a8f6-4e72-a860-c8263d5a360e/ticket.toml`
+
+<!-- ticket-index:entry id=c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d slug=done/unspecified digest=743f415d95a1 -->
+#### [c73d4a6b] [spec-api] Add native expectation, acceptance, and evidence fields
+- summary: Extend `spec-api` with native fields and validation for expected properties, acceptance clauses, and evidence requirements.
+- ref: `.ticket/tickets/c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d/ticket.toml`
+
+<!-- ticket-index:entry id=e813f958-f0ee-42c3-a732-e26516eef311 slug=done/unspecified digest=160ba182c0c3 -->
+#### [e813f958] [spec-api] Add structured tracing for SpecStore runtime operations
+- summary: Starting SpecStore tracing implementation: add structured spans/events for open/init/open_or_init/scan and slug-index rebuild flows, then validate targeted spec-api tests.
+- ref: `.ticket/tickets/e813f958-f0ee-42c3-a732-e26516eef311/ticket.toml`
+
+<!-- ticket-index:entry id=b744bcf5-05a5-4601-bbe1-caae9d42ea5f slug=done/unspecified digest=88a806f355b5 -->
+#### [b744bcf5] [spec-api] Expectation-oriented spec contract and model
+- summary: Redefine the specification contract and the native `spec-api` model so the repository can represent expected properties, acceptance clauses, and evidence requirements without relying on free-form pro...
+- ref: `.ticket/tickets/b744bcf5-05a5-4601-bbe1-caae9d42ea5f/ticket.toml`
 
 <!-- ticket-index:entry id=830de529-2818-49fd-a792-3b59dd99a748 slug=done/unspecified digest=50361b8570ac -->
 #### [830de529] [spec-api] Normalize spec create target roots into .spec/specs
@@ -2199,6 +3314,25 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [eaeaf157] [spec-cli] Normalize refs validate workspace_root JSON paths on Windows
 - summary: Fix `spec refs <id> validate` so its JSON `workspace_root` output uses slash-normalized paths on Windows, matching existing expectations in the command tests and the output contract already used by `...
 - ref: `.ticket/tickets/eaeaf157-85c3-4caf-a538-4f6ebb2a5ec7/ticket.toml`
+
+<!-- ticket-index:entry id=59d96577-09a8-44a7-b0ea-3d51b3a6fb05 slug=done/unspecified digest=54ef3a6048a5 -->
+#### [59d96577] [spec-cli][spec-mcp] Make spec workflows root-aware across nested .spec stores
+- summary: Fixed Windows workspace-root normalization in spec-cli refs payload rendering. Focused validation now passes (spec-cli refs tests plus package slices). Recorded native .test evidence under vt-spec-ro...
+- ref: `memory-api/.ticket/tickets/59d96577-09a8-44a7-b0ea-3d51b3a6fb05/ticket.toml`
+
+<!-- ticket-index:entry id=c666f0b3-f1e6-4073-852f-e494bf5c1272 slug=done/unspecified digest=1719a4365d3a -->
+#### [c666f0b3] [spec-cli][spec-mcp][spec-http] Expose expectation and evidence parity across transports
+- summary: Expose the expectation and evidence model consistently through `spec-cli`, `spec-mcp`, and `spec-http`, with one shared parity contract.
+- ref: `.ticket/tickets/c666f0b3-f1e6-4073-852f-e494bf5c1272/ticket.toml`
+
+<!-- ticket-index:entry id=38bbb8e2-19d1-4522-8577-dd922e70d6b7 slug=done/unspecified digest=88d91be48ee3 -->
+#### [38bbb8e2] [spec-system] Migrate all specs to aligned behavior-first structure
+- summary: Migrate all existing specs in the workspace store to the aligned behavior-first structure.
+- ref: `.ticket/tickets/38bbb8e2-19d1-4522-8577-dd922e70d6b7/ticket.toml`
+
+<!-- ticket-index:entry id=690578c4-1c47-430b-9258-4edaa0a82d73 slug=done/unspecified digest=751615159027 -->
+#### [690578c4] [spec-system] Repair six missed aligned behavior-first spec bodies
+- ref: `.ticket/tickets/690578c4-1c47-430b-9258-4edaa0a82d73/ticket.toml`
 
 <!-- ticket-index:entry id=2d2c3e94-3d55-457f-8c06-ace46f4b3d89 slug=done/unspecified digest=349156548330 -->
 #### [2d2c3e94] [spec-viewer][P5.1] Multi-spec tabs via TabsStore
@@ -2240,15 +3374,45 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Migrate a first set of root workflow architecture specs to rule-backed `spec-doc` generation so repeated important sections stop drifting. Start with the three workflow metadata specs that share a pl...
 - ref: `.ticket/tickets/19bb3b4c-61fe-4270-91db-3ea27a819445/ticket.toml`
 
+<!-- ticket-index:entry id=86bf3da2-b6cc-4fc7-898d-044403283550 slug=done/unspecified digest=22a5f823664a -->
+#### [86bf3da2] [test-api] Bootstrap validation specification and execution identities for spec fulfillment
+- summary: Bootstrap the first `test-api` entities for validation specifications, executions, and outcomes used by expectation-oriented spec fulfillment.
+- ref: `.ticket/tickets/86bf3da2-b6cc-4fc7-898d-044403283550/ticket.toml`
+
 <!-- ticket-index:entry id=6f3dcdfc-bf2f-45d7-9776-0f0a360ac199 slug=done/unspecified digest=583e875f214a -->
 #### [6f3dcdfc] [test-cli] Add test-result store and `test` CLI for validation evidence
 - summary: `test-api` currently only defines validation identities (`ValidationSpec`, `ValidationExecution`) with no persistence and no CLI. Validation results are being written verbatim into ticket description...
 - ref: `.ticket/tickets/6f3dcdfc-bf2f-45d7-9776-0f0a360ac199/ticket.toml`
 
-<!-- ticket-index:entry id=185419e0-bea4-4c7b-abda-1e92193f32e7 slug=done/unspecified digest=3afc40f19cb4 -->
+<!-- ticket-index:entry id=185419e0-bea4-4c7b-abda-1e92193f32e7 slug=done/unspecified digest=e9316c86a556 -->
 #### [185419e0] [ticket-api] Allow bidirectional ticket state transitions by default
 - summary: Ticket state transitions should work in both directions by default using the same state transition interface. We should not require every schema to spell out reverse edges when the validator can trea...
-- ref: `.ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/185419e0-bea4-4c7b-abda-1e92193f32e7/ticket.toml`
+
+<!-- ticket-index:entry id=835b332b-8c1f-4423-bf21-4fac7aa7c8f7 slug=done/unspecified digest=9de011370ebf -->
+#### [835b332b] [ticket-api] Health + state-guard: stop warning on ready→ready; flag/guard only tickets progressed ahead of their dependencies
+- summary: The health check emits `unblocked_with_deps` (info) whenever a `ready` ticket has non-terminal dependencies. But `ready` does not mean "unblocked" — it means "groomed". A `ready → ready` dependency c...
+- ref: `memory-api/.ticket/tickets/835b332b-8c1f-4423-bf21-4fac7aa7c8f7/ticket.toml`
+
+<!-- ticket-index:entry id=ca7e0388-ee5c-41c7-8385-7de6817ce261 slug=done/unspecified digest=128a3a8a6b65 -->
+#### [ca7e0388] [ticket-api] Lease-release capability — owner/stale release semantics + transport parity + orphaned-lease cleanup
+- summary: `TicketStore::release_lease(ticket_id, requester)` added in memory-api/crates/ticket-api/src/storage/store/board.rs with the semantics:
+- ref: `memory-api/.ticket/tickets/ca7e0388-ee5c-41c7-8385-7de6817ce261/ticket.toml`
+
+<!-- ticket-index:entry id=c680b137-01a1-4d13-b219-39af86eaa71b slug=done/unspecified digest=eae0ece43162 -->
+#### [c680b137] [ticket-api] Promote health_check to a ticket-api call with CLI/MCP/HTTP transport parity
+- summary: The original premise ("health_check has no CLI parity") is outdated. `ticket-api::health::collect_findings` already exists and a `ticket health` CLI subcommand, MCP `health_check`, and HTTP `/api/gra...
+- ref: `memory-api/.ticket/tickets/c680b137-01a1-4d13-b219-39af86eaa71b/ticket.toml`
+
+<!-- ticket-index:entry id=dda04f91-3e03-46bb-a553-d9a172139027 slug=done/unspecified digest=8d592f5234f9 -->
+#### [dda04f91] [ticket-api][watcher] Add reconcile lifecycle tracing
+- summary: Starting watcher reconcile tracing implementation: instrument reconcile_once and run_watch_loop with lifecycle spans/events and focused validation.
+- ref: `.ticket/tickets/dda04f91-3e03-46bb-a553-d9a172139027/ticket.toml`
+
+<!-- ticket-index:entry id=07836f41-7fa5-4e41-8411-1c7cf8aeee75 slug=done/unspecified digest=c9e1a27aa724 -->
+#### [07836f41] [ticket-cli] Make get/search/list workspace-aware across nested roots
+- summary: `ticket get <id>` was not workspace-aware and failed with a raw path error when the ticket lived under a different ticket root.
+- ref: `memory-api/.ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml`
 
 <!-- ticket-index:entry id=68a08b34-000b-4585-8354-4b1a26a15f4b slug=done/unspecified digest=acad30e56d98 -->
 #### [68a08b34] [ticket-cli] Scope-aware board and next for multi-root workspaces
@@ -2259,6 +3423,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [02723a9b] [ticket-cli][ticket-viewer] Fix nested-workspace discovery and stale list races
 - summary: Two ticket discovery paths are still unreliable for nested child workspaces.
 - ref: `.ticket/tickets/02723a9b-23ff-47b1-8306-0480be087ddd/ticket.toml`
+
+<!-- ticket-index:entry id=d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110 slug=done/unspecified digest=b3cbba43ab47 -->
+#### [d1770bd5] [ticket-store] Relocate misplaced ticket and spec directories
+- summary: Generated: 2026-06-28
+- ref: `.ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/ticket.toml`
 
 <!-- ticket-index:entry id=5d5c7bbb-fac2-49ba-aa19-37bf6e2aac34 slug=done/unspecified digest=0dfdb9071e20 -->
 #### [5d5c7bbb] [ticket-viewer] Add cache invalidation for graph layout on ticket updates
@@ -2288,6 +3457,16 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [aac045c2] [ticket-viewer][viewer-api] Fix graph node-card lag during camera/drag (per-frame DOM thrashing)
 - summary: Eliminate the per-frame inefficiency that makes DOM node cards visibly lag behind the GPU-drawn edge endpoints while orbiting/panning the camera or dragging nodes in the WebGPU graph. Reactivity must...
 - ref: `.ticket/tickets/aac045c2-9455-4338-9942-32466ff2e6b1/ticket.toml`
+
+<!-- ticket-index:entry id=46d16755-309b-479f-aab2-624c3fa7ce9b slug=done/unspecified digest=17de0c602375 -->
+#### [46d16755] [ticket-vscode] Fix canonical workspace selection when server exposes path-based or shared workspace ids
+- summary: Implemented and validated canonical workspace resolution for ticket-vscode. The extension now maps detected local .ticket roots to canonical server workspace ids by label/path and otherwise prefers a...
+- ref: `.ticket/tickets/46d16755-309b-479f-aab2-624c3fa7ce9b/ticket.toml`
+
+<!-- ticket-index:entry id=e83264db-e634-4c7c-811d-4413a1e3416a slug=done/unspecified digest=feb03668e428 -->
+#### [e83264db] [ticket-vscode] Prevent aborted list tickets request after server start
+- priority: `high`
+- ref: `memory-api/.ticket/tickets/e83264db-e634-4c7c-811d-4413a1e3416a/ticket.toml`
 
 <!-- ticket-index:entry id=6dc44fbb-4480-4bad-853c-79b8171dd73b slug=done/unspecified digest=79dca26288dd -->
 #### [6dc44fbb] [viewer-api] Anchor SVG edge endpoints to world_to_screen instead of getBoundingClientRect
@@ -2327,6 +3506,77 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [b4127011] [viewer-api][P4] FilterPanel shell with JQ presets and results list
 - summary: Port doc-viewer's filter panel (basic dropdown filters + JQ presets + custom JQ input + results list) to a generic Dioxus shell.
 - ref: `viewer-api/.ticket/tickets/b4127011-4e08-47bc-ac73-3d3761f29587/ticket.toml`
+
+<!-- ticket-index:entry id=8d6895a5-dce8-47c1-98ce-212fd0ae2e08 slug=done/unspecified digest=3adaac4517c2 -->
+#### [8d6895a5] [viewer-api][audit] Fix viewer-api-dioxus compile failure and restore llvm-cov coverage collection
+- ref: `.ticket/tickets/8d6895a5-dce8-47c1-98ce-212fd0ae2e08/ticket.toml`
+
+<!-- ticket-index:entry id=618f6ce4-e7b3-48f2-9c9e-840247a119da slug=done/unspecified digest=53fddfb5b258 -->
+#### [618f6ce4] [workflow] Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment
+- summary: Coordinate the bounded evidence-store bootstrap across `doc-api`, `test-api`, and `log-api` so spec acceptance clauses can resolve authoritative documentation, validation, and log evidence without wr...
+- ref: `.ticket/tickets/618f6ce4-e7b3-48f2-9c9e-840247a119da/ticket.toml`
+
+<!-- ticket-index:entry id=bc19467f-b4d4-48c3-be92-b551d4fe6679 slug=done/unspecified digest=b1d9a098598f -->
+#### [bc19467f] [workflow] Expectation-oriented spec contract rollout
+- summary: Coordinate the rollout that redefines specifications around intended properties, acceptance criteria, and store-owned evidence while migrating the affected specs and tickets homogeneously.
+- ref: `.ticket/tickets/bc19467f-b4d4-48c3-be92-b551d4fe6679/ticket.toml`
+
+<!-- ticket-index:entry id=577df498-d468-448f-afc1-3e35e48e5f12 slug=done/unspecified digest=996613c3c179 -->
+#### [577df498] [workflow] Homogeneously migrate remaining expectation-oriented specs and tickets
+- summary: Homogeneously migrate the remaining affected expectation-oriented specs and tickets after the pilot proves the contract.
+- ref: `.ticket/tickets/577df498-d468-448f-afc1-3e35e48e5f12/ticket.toml`
+
+<!-- ticket-index:entry id=6e5306fb-c1b3-4aec-991d-fabaf3096e23 slug=done/unspecified digest=e21c4c77192a -->
+#### [6e5306fb] [workflow] Pilot expectation-oriented spec contract on one workflow spec and one README-rollout spec
+- summary: Pilot the expectation-oriented spec contract on one workflow spec and one README-rollout spec.
+- ref: `.ticket/tickets/6e5306fb-c1b3-4aec-991d-fabaf3096e23/ticket.toml`
+
+<!-- ticket-index:entry id=aaa90ee6-1358-41ad-b19e-61abdc3f1dc2 slug=done/unspecified digest=c3f6d403847b -->
+#### [aaa90ee6] [workflow] Store-owned spec evidence integration
+- summary: Integrate store-owned acceptance evidence so specs can be satisfied or blocked by native documentation, validation, and log records rather than by wrapper-owned artifact payloads.
+- ref: `.ticket/tickets/aaa90ee6-1358-41ad-b19e-61abdc3f1dc2/ticket.toml`
+
+<!-- ticket-index:entry id=51d53f8f-5636-4185-b629-806816059caa slug=done/unspecified digest=9cab133f7e06 -->
+#### [51d53f8f] [workspace-policy] 1/6 Policy file parser + in-memory WorkspacePolicy object
+- priority: `high`
+- summary: Add a `WorkspacePolicy` type parsed from `.ticket/workspace-policy.toml`, with documented defaults and an absent-file compatibility mode.
+- ref: `.ticket/tickets/51d53f8f-5636-4185-b629-806816059caa/ticket.toml`
+
+<!-- ticket-index:entry id=6312c5c4-858a-4953-98cf-2f1258de2093 slug=done/unspecified digest=f98b0e13fedf -->
+#### [6312c5c4] [workspace-policy] 2/6 Apply policy in discover_workspace_scan_roots
+- priority: `high`
+- summary: Make `discover_workspace_scan_roots` policy-aware so unwanted workspaces are never added as scan roots.
+- ref: `.ticket/tickets/6312c5c4-858a-4953-98cf-2f1258de2093/ticket.toml`
+
+<!-- ticket-index:entry id=eecbcee9-d82d-469f-b728-56f7e5598006 slug=done/unspecified digest=7c5f2a0cde6c -->
+#### [eecbcee9] [workspace-policy] 3/6 Scan-root policy metadata + scan-time enforcement
+- priority: `high`
+- summary: Extend scan-root persistence with auditability metadata and enforce policy at scan time so roots not allowed by policy are skipped.
+- ref: `.ticket/tickets/eecbcee9-d82d-469f-b728-56f7e5598006/ticket.toml`
+
+<!-- ticket-index:entry id=42094bd4-f818-460e-b48f-b1be3bcc1c80 slug=done/unspecified digest=465aa2704062 -->
+#### [42094bd4] [workspace-policy] 4/6 Query-time final guard for policy-allowed roots
+- priority: `high`
+- summary: Harden the existing query visibility guard so it only surfaces tickets under active, policy-allowed roots — the final defense even if stale/ignored roots exist in the index.
+- ref: `.ticket/tickets/42094bd4-f818-460e-b48f-b1be3bcc1c80/ticket.toml`
+
+<!-- ticket-index:entry id=c5ff717e-8b7e-480c-ab9a-fda0527d6966 slug=done/unspecified digest=d22d938067e7 -->
+#### [c5ff717e] [workspace-policy] 5/6 CLI/API surfaces for policy management
+- priority: `medium`
+- summary: Expose commands to inspect and edit the workspace policy and to rescan with policy applied.
+- ref: `.ticket/tickets/c5ff717e-8b7e-480c-ab9a-fda0527d6966/ticket.toml`
+
+<!-- ticket-index:entry id=25677720-ec54-4f95-915d-0049a67942cb slug=done/unspecified digest=e478fc11ae41 -->
+#### [25677720] [workspace-policy] 6/6 Regression tests across discovery/scan/query
+- priority: `high`
+- summary: Prove the policy contract end to end with focused regression tests.
+- ref: `.ticket/tickets/25677720-ec54-4f95-915d-0049a67942cb/ticket.toml`
+
+<!-- ticket-index:entry id=65d5885b-ec09-450e-b6c8-1607ec3e51c3 slug=done/unspecified digest=3c4e5c4f024b -->
+#### [65d5885b] [workspace-policy] Explicit workspace-policy layer for ticket scan-root discovery
+- priority: `high`
+- summary: There is no explicit workspace-policy layer today — only discovery behavior plus scan roots. Because of this, indexed tickets can leak when discovery or stored roots pull in workspaces that were not ...
+- ref: `.ticket/tickets/65d5885b-ec09-450e-b6c8-1607ec3e51c3/ticket.toml`
 
 <!-- ticket-index:entry id=5bf1951a-dce4-4efb-80d6-89fe4fa01573 slug=done/unspecified digest=f0c8645afd53 -->
 #### [5bf1951a] ticket-vscode: Fix tree view state grouping — show only same-state tickets per folder with dependency hierarchy
@@ -2478,6 +3728,15 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `viewer-api/.ticket/tickets/29897f92-59bf-45f9-b963-caa7bfad71c8/ticket.toml`
 
 
+### Component: viewer-platform-spec
+
+<!-- ticket-index:entry id=7d951620-76c5-4b24-90ce-e7d08d2dd188 slug=done/viewer-platform-spec digest=1e91a937eaf3 -->
+#### [7d951620] [viewer-platform][spec] Define measurable browser and GPU validation contract
+- priority: `high`
+- summary: Created the focused `aligned-structure:v2` cross-viewer browser and GPU validation contract in `.spec/specs/e302d4c3-c24f-4778-bef0-453d3c1997bb/`.
+- ref: `memory-viewers/.ticket/tickets/7d951620-76c5-4b24-90ce-e7d08d2dd188/ticket.toml`
+
+
 ### Component: viewer-tools
 
 <!-- ticket-index:entry id=46d94c15-7a2d-4190-a1dc-93cd2b3a293b slug=done/viewer-tools digest=04e5fbc65667 -->
@@ -2494,15 +3753,120 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/6d4d9a66-ed28-45e1-93f6-a6595c4593b3/ticket.toml`
 
 
+### Component: workflow-tools
+
+<!-- ticket-index:entry id=61ce77f9-b6be-4667-9727-ffbd6bf6b8f4 slug=done/workflow-tools digest=fafad25bacda -->
+#### [61ce77f9] [workflow-tools][extraction] Extract ticket as first per-tool {domain} crate (pilot)
+- priority: `high`
+- summary: Action 3 of the workflow-tools extraction epic (69eb4118). Reviewer selected
+- ref: `.ticket/tickets/61ce77f9-b6be-4667-9727-ffbd6bf6b8f4/ticket.toml`
+
+<!-- ticket-index:entry id=60114a17-c0ad-43eb-8df6-4741a59d83ce slug=done/workflow-tools digest=5e4b7bafdc00 -->
+#### [60114a17] [workflow-tools][foundations] Design memory-kernel transport-harness reference-proof integration tests
+- priority: `high`
+- summary: Research/design precursor for ticket 2cc7680c-7f19-4ad7-8658-29920e60ce1c, created from the 2026-07-25 review (verdict: Needs changes — "do more research and design before implementing").
+- ref: `.ticket/tickets/60114a17-c0ad-43eb-8df6-4741a59d83ce/ticket.toml`
+
+<!-- ticket-index:entry id=f10f52e4-baec-4fd8-9ac8-2e683ad05ee8 slug=done/workflow-tools digest=8f16ff903783 -->
+#### [f10f52e4] [workflow-tools][foundations] Move the transport-harness contract into a memory-kernel spec
+- priority: `high`
+- summary: Review follow-up from ticket dbe0e955-c1b4-414d-820c-10c3fbbb5d3d.
+- ref: `.ticket/tickets/f10f52e4-baec-4fd8-9ac8-2e683ad05ee8/ticket.toml`
+
+<!-- ticket-index:entry id=9451f439-9a08-45bb-810e-771721ac1189 slug=done/workflow-tools digest=fd20db67f60d -->
+#### [9451f439] [workflow-tools][foundations] Register memory-kernel as a context-engine submodule
+- priority: `high`
+- summary: Review follow-up from ticket dbe0e955-c1b4-414d-820c-10c3fbbb5d3d.
+- ref: `.ticket/tickets/9451f439-9a08-45bb-810e-771721ac1189/ticket.toml`
+
+<!-- ticket-index:entry id=2cc7680c-7f19-4ad7-8658-29920e60ce1c slug=done/workflow-tools digest=c4369c2247f8 -->
+#### [2cc7680c] [workflow-tools][foundations] Replace trivial transport reference with realistic domain wiring
+- priority: `high`
+- summary: Review follow-up from ticket dbe0e955-c1b4-414d-820c-10c3fbbb5d3d.
+- ref: `.ticket/tickets/2cc7680c-7f19-4ad7-8658-29920e60ce1c/ticket.toml`
+
+<!-- ticket-index:entry id=dbe0e955-c1b4-414d-820c-10c3fbbb5d3d slug=done/workflow-tools digest=7aafb4cf1509 -->
+#### [dbe0e955] [workflow-tools][foundations] Shared transport-harness crate for cli/mcp/http scaffolding reused by domain-crate binaries
+- priority: `high`
+- summary: Phase A foundation. Provide a shared transport-harness library crate that factors out the common cli / mcp / http scaffolding (argument parsing, MCP server setup, HTTP router/error mapping, output fo...
+- ref: `.ticket/tickets/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d/ticket.toml`
+
+<!-- ticket-index:entry id=1c452ff1-6edc-47c8-a73d-d07ce9b4d473 slug=done/workflow-tools digest=3f58df108d6e -->
+#### [1c452ff1] [workflow-tools][foundations] Stabilize viewer-api and memory-fixtures as standalone shared dependencies
+- priority: `high`
+- summary: Phase A. Stabilize the shared, non-domain support libraries as standalone dependencies consumable by every per-tool repo: the `viewer-api` framework (+ viewer-ctl, already its own repo) and shared te...
+- ref: `.ticket/tickets/1c452ff1-6edc-47c8-a73d-d07ce9b4d473/ticket.toml`
+
+<!-- ticket-index:entry id=a78ec124-1540-4d18-b3f0-cb02bca7764c slug=done/workflow-tools digest=881fa30d1793 -->
+#### [a78ec124] [workflow-tools][pilot] Align ticket crate memory-fixtures dep to git pin (gates PILOT closure)
+- priority: `medium`
+- summary: Reviewer approved PILOT-TICKET (61ce77f9) on substance but gated closure on a convention fix.
+- ref: `.ticket/tickets/a78ec124-1540-4d18-b3f0-cb02bca7764c/ticket.toml`
+
+<!-- ticket-index:entry id=4f284d45-e520-4d22-945e-f54bdd3c0175 slug=done/workflow-tools digest=367e6f799aa8 -->
+#### [4f284d45] [workflow-tools][provisioning] Create GitHub repositories for extracted workflow tooling (user action)
+- priority: `high`
+- summary: Phase 0 provisioning is complete as of 2026-07-25.
+- ref: `.ticket/tickets/4f284d45-e520-4d22-945e-f54bdd3c0175/ticket.toml`
+
+
+### Component: workspace-tooling
+
+<!-- ticket-index:entry id=d505282b-ba78-4ddc-9071-20060630a86f slug=done/workspace-tooling digest=f4f59398d52d -->
+#### [d505282b] [mcp-config] Register and activate local agent MCP servers in VS Code Copilot
+- priority: `high`
+- summary: Make locally installed MCP binaries discoverable and correctly identified from GitHub Copilot Chat in this VS Code workspace.
+- ref: `.ticket/tickets/d505282b-ba78-4ddc-9071-20060630a86f/ticket.toml`
+
+
 ## State: in-implementation
 
 ### Component: agent-tooling
 
-<!-- ticket-index:entry id=9b9df133-d809-4900-b56a-afae4efcdd08 slug=in-implementation/agent-tooling digest=e63b5a2cec7b -->
-#### [9b9df133] [token-efficiency] Track token-efficient agent tooling rollout
+<!-- ticket-index:entry id=4f066c96-b398-4aba-93f1-7d0fd4da39ba slug=in-implementation/agent-tooling digest=a5b86e32999d -->
+#### [4f066c96] [token-efficiency] Add compact terminal MCP tool
 - priority: `high`
-- summary: Goal: coordinate the workspace-wide token-efficiency rollout for agent-facing tooling and guidance.
-- ref: `.ticket/tickets/9b9df133-d809-4900-b56a-afae4efcdd08/ticket.toml`
+- summary: Implement a compact terminal MCP tool that returns short outputs inline and truncates long outputs automatically.
+- ref: `.ticket/tickets/4f066c96-b398-4aba-93f1-7d0fd4da39ba/ticket.toml`
+
+<!-- ticket-index:entry id=685b577e-9e5e-4c96-86de-ce5420db46bc slug=in-implementation/agent-tooling digest=b76f71ce5b73 -->
+#### [685b577e] [token-efficiency] Add pre-flight write validation gates
+- priority: `high`
+- summary: Strengthen local pre-flight validation so expensive syntax-debugging loops are rejected before code is saved or finalized.
+- ref: `.ticket/tickets/685b577e-9e5e-4c96-86de-ce5420db46bc/ticket.toml`
+
+<!-- ticket-index:entry id=72c1e92d-65e1-445b-9365-e3384d9da088 slug=in-implementation/agent-tooling digest=2d5c707e9fd5 -->
+#### [72c1e92d] [token-efficiency] Generate static `.agent/repo_map.toon`
+- priority: `high`
+- summary: Add a generated root-level `repo_map.toon` workspace map for low-token structural awareness.
+- ref: `.ticket/tickets/72c1e92d-65e1-445b-9365-e3384d9da088/ticket.toml`
+
+<!-- ticket-index:entry id=06cfe998-c2e1-48a4-83e9-11e85e7c40f4 slug=in-implementation/agent-tooling digest=89cbf7f3d693 -->
+#### [06cfe998] [token-efficiency] Introduce peek-api with peek-cli and peek-mcp transport layers
+- priority: `high`
+- summary: Introduce a proper `peek-api` library crate and move the current `peek-cli` logic behind the repository’s standard `*-api` layering so `peek-cli` and a new `peek-mcp` become thin transport adapters.
+- ref: `.ticket/tickets/06cfe998-c2e1-48a4-83e9-11e85e7c40f4/ticket.toml`
+
+<!-- ticket-index:entry id=e29e24ba-1f7e-43b3-97bd-c20d53b76df8 slug=in-implementation/agent-tooling digest=e0e6aee66ecf -->
+#### [e29e24ba] [token-efficiency] Make MCP update tools accept sparse payloads and return minimal changed fields
+- priority: `high`
+- summary: Make MCP update tools accept sparse payloads that include only the keys being changed, and return minimal response payloads that include only changed or directly relevant fields.
+- ref: `.ticket/tickets/e29e24ba-1f7e-43b3-97bd-c20d53b76df8/ticket.toml`
+
+<!-- ticket-index:entry id=f93e5db5-4f20-4e23-8832-498c4591938f slug=in-implementation/agent-tooling digest=6ff8cf49fa29 -->
+#### [f93e5db5] [token-efficiency] Replace repo_map Python generation with peek-api folder skeleton tree output
+- priority: `high`
+- summary: Replace the current Python-based repo-map generation flow with a repo-aware `peek-api` skeleton/tree renderer that can accept a folder path, apply compaction/filtering rules, and emit a tree-shaped s...
+- ref: `.ticket/tickets/f93e5db5-4f20-4e23-8832-498c4591938f/ticket.toml`
+
+
+### Component: agent-workflow
+
+<!-- ticket-index:entry id=f227c217-6fda-452e-ae35-4208eb3974f5 slug=in-implementation/agent-workflow digest=4f1bc11174c0 -->
+#### [f227c217] [token-efficiency] Update guidance for compact agent workflows
+- priority: `medium`
+- summary: Update the repository guidance so agent workflows consistently prefer compact/default outputs and verbose-on-demand expansion.
+- ref: `.ticket/tickets/f227c217-6fda-452e-ae35-4208eb3974f5/ticket.toml`
 
 
 ### Component: context-editor
@@ -2539,9 +3903,9 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: context-read
 
-<!-- ticket-index:entry id=978ce8a5-3936-467b-aca8-822eeecd1eb0 slug=in-implementation/context-read digest=2f7fe007bade -->
+<!-- ticket-index:entry id=978ce8a5-3936-467b-aca8-822eeecd1eb0 slug=in-implementation/context-read digest=eb04df83b882 -->
 #### [978ce8a5] Plan: Expansion loop redesign — cursor-advancing decomposition
-- summary: tags: `#plan` `#context-read` `#context-insert` `#algorithm` `#expansion` `#overlap` `#refactoring`
+- summary: This session did **not** implement the full `context-read` expansion-loop redesign, but it cleared the public API and test-wrapper layers that were masking the deeper engine issue.
 - ref: `context-stack/.ticket/tickets/978ce8a5-3936-467b-aca8-822eeecd1eb0/ticket.toml`
 
 <!-- ticket-index:entry id=bfe43d0d-2870-4146-b651-1464a55ec7aa slug=in-implementation/context-read digest=cedeecdc8f4c -->
@@ -2556,57 +3920,18 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/9f8d842e-3c7c-4470-b840-dd69b92380b5/ticket.toml`
 
 
-### Component: documentation-tooling
-
-<!-- ticket-index:entry id=0ffac34a-4e33-426c-8eef-ef6482ab3bde slug=in-implementation/documentation-tooling digest=35b048885974 -->
-#### [0ffac34a] Implement Docker harness for documented install and deinstall flows
-- priority: `high`
-- summary: After the Docker validation strategy is defined, the repository still needs a runnable harness that executes the documented installation and deinstallation steps in clean containers and proves that t...
-- ref: `.ticket/tickets/0ffac34a-4e33-426c-8eef-ef6482ab3bde/ticket.toml`
-
-
 ### Component: memory-api
 
-<!-- ticket-index:entry id=8ab31960-f3fa-4a2b-b2ac-f807e1a15fdc slug=in-implementation/memory-api digest=cdd3f462cf6a -->
-#### [8ab31960] [memory-api][ticket-api][ticket-cli][ticket-mcp][ticket-http] Implement expressive ticket query and ordering
+<!-- ticket-index:entry id=0fdce225-9cef-46ed-92d9-83c852c2d084 slug=in-implementation/memory-api digest=c4b3fd935c38 -->
+#### [0fdce225] [memory-api][cli][mcp] Require explicit workspace for entity creation
 - priority: `high`
-- summary: The repository has the pieces of a query engine, but not the complete interface needed for focused ticket discovery.
-- ref: `.ticket/tickets/8ab31960-f3fa-4a2b-b2ac-f807e1a15fdc/ticket.toml`
+- ref: `memory-api/.ticket/tickets/0fdce225-9cef-46ed-92d9-83c852c2d084/ticket.toml`
 
-<!-- ticket-index:entry id=e6e09d6f-a41c-49f7-bc6a-c6d8e822598b slug=in-implementation/memory-api digest=a8bcbb96946e -->
-#### [e6e09d6f] [memory-api][ticket-cli][spec-cli][rule-cli] Normalize nested workspace option semantics
-- priority: `high`
-- summary: Shared nested-workspace resolution exists in progress, but review found that spec now overloads workspace-root for store selection, refs validation, and bootstrap source relativization while rule sti...
-- ref: `memory-api/.ticket/tickets/e6e09d6f-a41c-49f7-bc6a-c6d8e822598b/ticket.toml`
-
-<!-- ticket-index:entry id=ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b slug=in-implementation/memory-api digest=569430b4fcbc -->
+<!-- ticket-index:entry id=ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b slug=in-implementation/memory-api digest=8b311c96d6c6 -->
 #### [ef0ebf38] [memory-api][ticket-cli][spec-cli][rule-cli] Unify child-workspace resolution across CLI tools
 - priority: `high`
 - summary: Current child-workspace resolution across the CLI tools is inconsistent even though store selection already uses a shared workspace-root/index-root resolver.
-- ref: `.ticket/tickets/ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b/ticket.toml`
-
-
-### Component: repo-guidance
-
-<!-- ticket-index:entry id=7b8d2e81-6f00-486c-a839-ca5eb77dc109 slug=in-implementation/repo-guidance digest=f245232f1255 -->
-#### [7b8d2e81] [readmes][generated-repos] Adopt shared README schema in memory-viewers family
-- priority: `high`
-- summary: The already-generated README surfaces in `memory-api`, `viewer-api`, and `memory-viewers` still use bespoke target layouts. They need to adopt the shared schema and fill the missing parent or child n...
-- ref: `.ticket/tickets/7b8d2e81-6f00-486c-a839-ca5eb77dc109/ticket.toml`
-
-<!-- ticket-index:entry id=37dfe6cc-0d8d-4b85-b1cb-e9c262a9de5f slug=in-implementation/repo-guidance digest=4ab9fbdda666 -->
-#### [37dfe6cc] [repo-guidance][cline] Integrate Cline agent client with client-agnostic .agents/ standard
-- priority: `medium`
-- ref: `.ticket/tickets/37dfe6cc-0d8d-4b85-b1cb-e9c262a9de5f/ticket.toml`
-
-
-### Component: rule-api
-
-<!-- ticket-index:entry id=f15d9e8b-72d2-44d9-965d-9fecbbc02d7f slug=in-implementation/rule-api digest=cb7925e4ea60 -->
-#### [f15d9e8b] Build rule-api for generated agent instruction docs
-- priority: `high`
-- summary: Agent-facing markdown guidance is duplicated across context-engine, memory-viewers, memory-api, and viewer-api. The duplicated files are currently copy-pasted and several are byte-identical. This cre...
-- ref: `memory-api/.ticket/tickets/f15d9e8b-72d2-44d9-965d-9fecbbc02d7f/ticket.toml`
+- ref: `memory-api/.ticket/tickets/ef0ebf38-7f55-4bd7-bf0c-0b416650ee0b/ticket.toml`
 
 
 ### Component: spec-api
@@ -2622,6 +3947,21 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Author the canonical specification database covering the spec-system crates
 - ref: `memory-api/.ticket/tickets/13a57a83-df99-4031-87e2-844772758ebb/ticket.toml`
+
+
+### Component: ticket-api
+
+<!-- ticket-index:entry id=27558fde-37b0-43eb-86c6-cfbe2d99a0b8 slug=in-implementation/ticket-api digest=bb80f6deab3e -->
+#### [27558fde] [ticket-mcp][ticket-http] Workspace-resolution parity — nested-root awareness + pure transport (first run)
+- priority: `high`
+- summary: The first parity run. Establishes the shared-resolver adoption + pure-transport audit pattern that the spec/rule/audit domains will reuse.
+- ref: `memory-api/.ticket/tickets/27558fde-37b0-43eb-86c6-cfbe2d99a0b8/ticket.toml`
+
+<!-- ticket-index:entry id=7599ed31-598e-458e-8651-9bfe6c57ffd9 slug=in-implementation/ticket-api digest=fec46937f8e8 -->
+#### [7599ed31] [ticket-store][cleanup] Migrate misplaced context-engine-workspace tickets into the memory-api store
+- priority: `high`
+- summary: Every entity must live in the **lowest-level store that contains all of the code the entity is concerned with**:
+- ref: `memory-api/.ticket/tickets/7599ed31-598e-458e-8651-9bfe6c57ffd9/ticket.toml`
 
 
 ### Component: ticket-cli
@@ -2649,17 +3989,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: ticket-viewer
 
-<!-- ticket-index:entry id=4a228c24-d466-4782-9160-c492f727007a slug=in-implementation/ticket-viewer digest=d12944b91292 -->
-#### [4a228c24] Feature: Full-text search UI with field predicates
-- priority: `medium`
-- summary: The ticket-viewer sidebar works well for browsing known tickets, but it is too slow when users only know part of a title, body phrase, or ticket id. The viewer needs an in-app search surface that can...
-- ref: `memory-viewers/.ticket/tickets/4a228c24-d466-4782-9160-c492f727007a/ticket.toml`
-
-<!-- ticket-index:entry id=1f39ba8f-650b-417d-b664-1878f08af669 slug=in-implementation/ticket-viewer digest=627e4f966793 -->
-#### [1f39ba8f] [ticket-viewer] Add graph review E2E coverage
+<!-- ticket-index:entry id=a34d9891-5cd3-403c-8576-f3a55a50047e slug=in-implementation/ticket-viewer digest=25a4d7457977 -->
+#### [a34d9891] [ticket-viewer] Consolidate detail panel into content panel (compact header, inline edit, metadata footer)
 - priority: `high`
-- summary: Add release Playwright coverage for the graph review checklist items around layout restoration and zoom-driven node detail interactions.
-- ref: `memory-viewers/.ticket/tickets/1f39ba8f-650b-417d-b664-1878f08af669/ticket.toml`
+- summary: W1. The right details panel duplicates the floating content panel, but the content panel lacks the details panel's interactive buttons and edit capability. Remove the details panel and extend the con...
+- ref: `memory-viewers/.ticket/tickets/a34d9891-5cd3-403c-8576-f3a55a50047e/ticket.toml`
 
 <!-- ticket-index:entry id=f121b24b-61b0-41b4-9567-8ffc2417d7cb slug=in-implementation/ticket-viewer digest=6b70b1c97f9f -->
 #### [f121b24b] [ticket-viewer] Feature: keyboard navigation in explorer + quick-search
@@ -2667,29 +4001,17 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Ticket selection in the current ticket-viewer is still predominantly mouse-driven.
 - ref: `memory-viewers/.ticket/tickets/f121b24b-61b0-41b4-9567-8ffc2417d7cb/ticket.toml`
 
-<!-- ticket-index:entry id=60092819-f725-48ec-93f0-aba195ef81eb slug=in-implementation/ticket-viewer digest=c201c0eba317 -->
-#### [60092819] [ticket-viewer] Fix graph layout defaults and isometric settings
-- priority: `high`
-- summary: Record graph layout/defaults implementation and move the ticket to review.
-- ref: `memory-viewers/.ticket/tickets/60092819-f725-48ec-93f0-aba195ef81eb/ticket.toml`
-
 <!-- ticket-index:entry id=4a9b49fd-58e0-404c-a120-47ef277dcf9f slug=in-implementation/ticket-viewer digest=0b9c39cf930a -->
 #### [4a9b49fd] [ticket-viewer] Keep filtered explorer state authoritative under live refresh
 - priority: `high`
 - summary: Keep the filtered explorer authoritative under overlapping requests, SSE updates, snapshot refreshes, and workspace switches, and lock the full redesign with focused tests.
 - ref: `.ticket/tickets/4a9b49fd-58e0-404c-a120-47ef277dcf9f/ticket.toml`
 
-<!-- ticket-index:entry id=6e7a15c9-d8e6-4bbe-bb34-b83bd651896b slug=in-implementation/ticket-viewer digest=677b27329eb1 -->
-#### [6e7a15c9] [ticket-viewer] Keep full workspace graph visible with focused navigation
+<!-- ticket-index:entry id=10c94251-1c0c-4542-a282-ea3d75a205b5 slug=in-implementation/ticket-viewer digest=488ad3f20b90 -->
+#### [10c94251] [ticket-viewer][viewer-api] Graph focus and 2D presentation follow-up
 - priority: `high`
-- summary: Change the ticket-viewer graph mode so the full graph stays visible while the selected ticket becomes the active focus anchor.
-- ref: `memory-viewers/.ticket/tickets/6e7a15c9-d8e6-4bbe-bb34-b83bd651896b/ticket.toml`
-
-<!-- ticket-index:entry id=4629b9d9-3bd0-4ef6-82b6-d6e609c16cac slug=in-implementation/ticket-viewer digest=862a5f614f89 -->
-#### [4629b9d9] [ticket-viewer] Migrate list/detail/search flows to workspace-aware ticket references
-- priority: `high`
-- summary: >Frontend migration is in progress; root-route mixed-workspace history/files flow is validated and asset follow-up investigation continues.
-- ref: `memory-api/.ticket/tickets/4629b9d9-3bd0-4ef6-82b6-d6e609c16cac/ticket.toml`
+- summary: Track the next graph-viewer interaction and presentation upgrade for ticket-viewer: property-based node rendering, stronger selection semantics, panel-aware framing, an optional fixed 2D camera mode,...
+- ref: `.ticket/tickets/10c94251-1c0c-4542-a282-ea3d75a205b5/ticket.toml`
 
 <!-- ticket-index:entry id=929bc26a-5296-4d64-b1b2-2ec580c0659c slug=in-implementation/ticket-viewer digest=8c6ea691dc92 -->
 #### [929bc26a] [ticket-viewer][viewer-api] Make graph framing panel-aware and keep nodes behind UI panels
@@ -2702,12 +4024,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Refine graph node selection and focus falloff so the selected ticket stays emphasized, linked context remains visible, and clicking outside the graph clears selection.
 - ref: `.ticket/tickets/923c866a-fecd-4ddb-8be0-00ca4cb22af9/ticket.toml`
-
-<!-- ticket-index:entry id=800f09ed-beb0-4a12-be93-1392e45eadb8 slug=in-implementation/ticket-viewer digest=06e8e83d8de1 -->
-#### [800f09ed] [ticket-viewer][viewer-api] Tighten graph layout and enlarge rich nodes
-- priority: `high`
-- summary: Make the default ticket graph easier to read by tightening the layout, enlarging visible node tiers, and giving rich ticket nodes a more cubic high-LOD presentation.
-- ref: `memory-viewers/.ticket/tickets/800f09ed-beb0-4a12-be93-1392e45eadb8/ticket.toml`
 
 
 ### Component: ticket-vscode
@@ -2731,24 +4047,51 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Move the context-stack submodule from crates/context-stack to context-stack at the repository root, remove the deprecated humans/, agents/, scripts/, and tools/http/ directories, and update the works...
 - ref: `.ticket/tickets/b4f444ee-4858-4d13-8cdb-690a33115611/ticket.toml`
 
+<!-- ticket-index:entry id=5f9542bf-483a-4da6-9c78-fcbe588af973 slug=in-implementation/unspecified digest=516839add540 -->
+#### [5f9542bf] [audit-roadmap][static_complexity] Reduce complexity findings
+- summary: Reduce static_complexity findings from 108 to zero through staged complexity reduction, not broad rewrites.
+- ref: `.ticket/tickets/5f9542bf-483a-4da6-9c78-fcbe588af973/ticket.toml`
+
+<!-- ticket-index:entry id=7f7ef435-0504-40cf-8d6c-dd96477a0223 slug=in-implementation/unspecified digest=d64d5782b7fb -->
+#### [7f7ef435] [content-materialization][workspace] G-E: De-submodularize — real dependency imports instead of nested submodules (gated)
+- summary: Replace nested git submodule links (context-engine → memory-viewers → memory-api/viewer-api) with real dependency-level imports / install-path deps on remote releases. Treat context-engine as a stand...
+- ref: `memory-api/.ticket/tickets/7f7ef435-0504-40cf-8d6c-dd96477a0223/ticket.toml`
+
+<!-- ticket-index:entry id=9c95c1e4-3cdb-428e-b9de-800684651226 slug=in-implementation/unspecified digest=8c27450960cb -->
+#### [9c95c1e4] [feedback-api] Event ingestion, metadata normalization, and retention policy
+- priority: `high`
+- summary: Define feedback event ingestion for human and privileged-agent authors, normalize metadata, and establish retention/privacy boundaries.
+- ref: `memory-api/.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml`
+
 <!-- ticket-index:entry id=90279c46-6c9b-42a5-a60e-3ac8bfad346a slug=in-implementation/unspecified digest=8b410b22c1e5 -->
 #### [90279c46] [hooks][rule] Make pre-commit validate only repo-local rule targets
 - ref: `.ticket/tickets/90279c46-6c9b-42a5-a60e-3ac8bfad346a/ticket.toml`
 
-<!-- ticket-index:entry id=afa00b5c-c736-4d75-b157-d3e9ce90d819 slug=in-implementation/unspecified digest=0d714d4f6bf5 -->
-#### [afa00b5c] [session-bootstrap][design] Define bootstrap contract, session_context schema, and ADRs
-- summary: Planning/design ticket for the [session-bootstrap] epic. Produces the specs and the resolved decisions.
-- ref: `memory-api/.ticket/tickets/afa00b5c-c736-4d75-b157-d3e9ce90d819/ticket.toml`
+<!-- ticket-index:entry id=fdf53556-2d84-4964-9575-f40032a02e85 slug=in-implementation/unspecified digest=993697c54e83 -->
+#### [fdf53556] [ticket-api][ticket-cli][ticket-mcp] Ticket state-transition recovery contract: report current + allowed next states, intermediate states, HTTP parity, inspection command
+- summary: Carved from the **original scope** of 8bb97b73. That parent session delivered and validated only the **session-mcp** enum-rejection slice; its REVIEWER NOTE flags the ticket-transition scope as NOT d...
+- ref: `.ticket/tickets/fdf53556-2d84-4964-9575-f40032a02e85/ticket.toml`
 
-<!-- ticket-index:entry id=effba966-f0a8-4d7d-b289-b7feba826cf8 slug=in-implementation/unspecified digest=b72da120ddee -->
-#### [effba966] [session-bootstrap][epic] Dynamic session bootstrapping & context routing redesign
-- summary: Tracking ticket for redesigning the agent workflow from always-on static metacognition into just-in-time, session-scoped context curation. Source: `DESIGN_SESSION_BOOTSTRAPPING.md`. Contract: spec `m...
-- ref: `.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml`
+<!-- ticket-index:entry id=8a3ad90a-eaf3-4638-ad85-51c98549f581 slug=in-implementation/unspecified digest=4ba383036979 -->
+#### [8a3ad90a] [ticket-cli][ticket-api] Safe dangling-edge remediation workflow
+- priority: `high`
+- summary: Add a safer, first-class workflow to remediate dangling ticket edges reported by `ticket health`.
+- ref: `.ticket/tickets/8a3ad90a-eaf3-4638-ad85-51c98549f581/ticket.toml`
+
+<!-- ticket-index:entry id=7d857543-be6b-42ba-8b7e-608b5bd7c046 slug=in-implementation/unspecified digest=380b91406a28 -->
+#### [7d857543] [ticket-mcp][spec-mcp][rule-api] Self-describing capability catalog for ticket/spec/rule surfaces (CLI + MCP parity)
+- summary: Carved from the **original scope** of 5ad77aba. That parent session delivered and validated only the **session-mcp** `session_capabilities` slice; its REVIEWER NOTE flags the broader ticket/spec/rule...
+- ref: `.ticket/tickets/7d857543-be6b-42ba-8b7e-608b5bd7c046/ticket.toml`
 
 <!-- ticket-index:entry id=edc9aba9-11be-42f2-bdd7-35e3c5a2ce23 slug=in-implementation/unspecified digest=f8e20ff18dcf -->
 #### [edc9aba9] [ticket-vscode] Fix canonical workspace selection when server exposes path-based or shared workspace ids
 - summary: The ticket-vscode extension can list tickets from the wrong workspace when the ticket-viewer server returns canonical workspace ids that do not match VS Code folder names. In the current workspace it...
 - ref: `.ticket/tickets/edc9aba9-11be-42f2-bdd7-35e3c5a2ce23/ticket.toml`
+
+<!-- ticket-index:entry id=7db89f25-9395-45b3-a35d-8c5c219067f8 slug=in-implementation/unspecified digest=99ba43076b0f -->
+#### [7db89f25] [viewer-api] Eliminate per-frame DOM reflow: analytic node rects + skip unchanged LOD writes
+- summary: Node cards still trail GPU-drawn edges during orbit/pan/drag. Root cause confirmed by reading graph3d/render.rs: the per-frame render loop performs read-after-write DOM layout thrashing.
+- ref: `.ticket/tickets/7db89f25-9395-45b3-a35d-8c5c219067f8/ticket.toml`
 
 <!-- ticket-index:entry id=e14f893f-042d-45cc-b748-f48860a640c5 slug=in-implementation/unspecified digest=7ce247f8876a -->
 #### [e14f893f] ticket-viewer WgpuOverlay panics with `unreachable` when overlay enabled (default-ON regression)
@@ -2759,23 +4102,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: viewer-api
 
-<!-- ticket-index:entry id=35a6d14b-25b0-4b24-b59f-d0d733cacd20 slug=in-implementation/viewer-api digest=63d515f70c2f -->
-#### [35a6d14b] Epic: Dioxus Viewer Platform — viewer-api-dioxus + ticket-viewer Dioxus frontend
-- priority: `critical`
-- summary: Port the viewer-api frontend library and ticket-viewer SPA from TypeScript/Preact to Rust/Dioxus 0.7, compiled to WASM via `trunk` (Trunk WASM bundler). Adds full ticket mutation capabilities powered...
-- ref: `viewer-api/.ticket/tickets/35a6d14b-25b0-4b24-b59f-d0d733cacd20/ticket.toml`
-
 <!-- ticket-index:entry id=bb1c32f5-5275-4e4f-85ae-a0fba09c522a slug=in-implementation/viewer-api digest=8d7177d6479a -->
 #### [bb1c32f5] [viewer-api] Extract a reusable Dioxus page header shell
 - priority: `high`
 - summary: Extract a reusable Dioxus page-header shell in viewer-api-dioxus so viewer routes stop composing ad-hoc header behavior inline.
 - ref: `viewer-api/.ticket/tickets/bb1c32f5-5275-4e4f-85ae-a0fba09c522a/ticket.toml`
-
-<!-- ticket-index:entry id=322ba030-160c-41d3-8a12-42936ae92858 slug=in-implementation/viewer-api digest=2543f1e386ae -->
-#### [322ba030] [viewer-api][ticket-viewer] Add multi-level graph node detail rendering
-- priority: `high`
-- summary: Introduce multiple graph node detail levels so zoomed-out views stay legible and zoomed-in views can show rich ticket content.
-- ref: `memory-viewers/.ticket/tickets/322ba030-160c-41d3-8a12-42936ae92858/ticket.toml`
 
 <!-- ticket-index:entry id=68eaae1f-b230-4aab-8572-cbf41d1d3b6d slug=in-implementation/viewer-api digest=ca3a639a979e -->
 #### [68eaae1f] [viewer-api][ticket-viewer] Add optional 2D graph mode and presentation keyframing
@@ -2798,350 +4129,312 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `viewer-api/.ticket/tickets/dbd048a0-08b4-458d-b860-29b8ce5119e3/ticket.toml`
 
 
-## State: in-review
+### Component: viewer-api-performance
 
-### Component: agent-tooling
-
-<!-- ticket-index:entry id=4f066c96-b398-4aba-93f1-7d0fd4da39ba slug=in-review/agent-tooling digest=d234e53e0f67 -->
-#### [4f066c96] [token-efficiency] Add compact terminal MCP tool
-- priority: `high`
-- summary: Implement a compact terminal MCP tool that returns short outputs inline and truncates long outputs automatically.
-- ref: `.ticket/tickets/4f066c96-b398-4aba-93f1-7d0fd4da39ba/ticket.toml`
-
-<!-- ticket-index:entry id=65819900-1d16-4c53-8b5d-7548c64a75ef slug=in-review/agent-tooling digest=27f07c9c4954 -->
-#### [65819900] [token-efficiency] Add interface skeletonization utility
-- priority: `medium`
-- summary: Create an interface skeletonization utility that strips implementation bodies and returns only structural information.
-- ref: `.ticket/tickets/65819900-1d16-4c53-8b5d-7548c64a75ef/ticket.toml`
-
-<!-- ticket-index:entry id=685b577e-9e5e-4c96-86de-ce5420db46bc slug=in-review/agent-tooling digest=f95c376ffea2 -->
-#### [685b577e] [token-efficiency] Add pre-flight write validation gates
-- priority: `high`
-- summary: Strengthen local pre-flight validation so expensive syntax-debugging loops are rejected before code is saved or finalized.
-- ref: `.ticket/tickets/685b577e-9e5e-4c96-86de-ce5420db46bc/ticket.toml`
-
-<!-- ticket-index:entry id=d4605cc0-5901-4b68-94d5-e7e3e6cac06f slug=in-review/agent-tooling digest=2793299c4ce7 -->
-#### [d4605cc0] [token-efficiency] Add token-bounded file inspection utility
-- priority: `medium`
-- summary: Create a token-bounded file inspection utility that defaults to narrow line windows instead of whole-file reads.
-- ref: `.ticket/tickets/d4605cc0-5901-4b68-94d5-e7e3e6cac06f/ticket.toml`
-
-<!-- ticket-index:entry id=72c1e92d-65e1-445b-9365-e3384d9da088 slug=in-review/agent-tooling digest=670c0736143a -->
-#### [72c1e92d] [token-efficiency] Generate static `repo_map.toon`
-- priority: `high`
-- summary: Add a generated root-level `repo_map.toon` workspace map for low-token structural awareness.
-- ref: `.ticket/tickets/72c1e92d-65e1-445b-9365-e3384d9da088/ticket.toml`
-
-<!-- ticket-index:entry id=06cfe998-c2e1-48a4-83e9-11e85e7c40f4 slug=in-review/agent-tooling digest=8e67994535db -->
-#### [06cfe998] [token-efficiency] Introduce peek-api with peek-cli and peek-mcp transport layers
-- priority: `high`
-- summary: Introduce a proper `peek-api` library crate and move the current `peek-cli` logic behind the repository’s standard `*-api` layering so `peek-cli` and a new `peek-mcp` become thin transport adapters.
-- ref: `.ticket/tickets/06cfe998-c2e1-48a4-83e9-11e85e7c40f4/ticket.toml`
-
-<!-- ticket-index:entry id=e29e24ba-1f7e-43b3-97bd-c20d53b76df8 slug=in-review/agent-tooling digest=a7ad35080ee0 -->
-#### [e29e24ba] [token-efficiency] Make MCP update tools accept sparse payloads and return minimal changed fields
-- priority: `high`
-- summary: Make MCP update tools accept sparse payloads that include only the keys being changed, and return minimal response payloads that include only changed or directly relevant fields.
-- ref: `.ticket/tickets/e29e24ba-1f7e-43b3-97bd-c20d53b76df8/ticket.toml`
-
-<!-- ticket-index:entry id=f93e5db5-4f20-4e23-8832-498c4591938f slug=in-review/agent-tooling digest=f1aea6618e6b -->
-#### [f93e5db5] [token-efficiency] Replace repo_map Python generation with peek-api folder skeleton tree output
-- priority: `high`
-- summary: Replace the current Python-based repo-map generation flow with a repo-aware `peek-api` skeleton/tree renderer that can accept a folder path, apply compaction/filtering rules, and emit a tree-shaped s...
-- ref: `.ticket/tickets/f93e5db5-4f20-4e23-8832-498c4591938f/ticket.toml`
-
-
-### Component: agent-workflow
-
-<!-- ticket-index:entry id=f227c217-6fda-452e-ae35-4208eb3974f5 slug=in-review/agent-workflow digest=3e92b5221e4a -->
-#### [f227c217] [token-efficiency] Update guidance for compact agent workflows
-- priority: `medium`
-- summary: Update the repository guidance so agent workflows consistently prefer compact/default outputs and verbose-on-demand expansion.
-- ref: `.ticket/tickets/f227c217-6fda-452e-ae35-4208eb3974f5/ticket.toml`
-
-
-### Component: audit-api
-
-<!-- ticket-index:entry id=855a1e5d-d998-4caf-b60c-d75a13ca3264 slug=in-review/audit-api digest=9fe9d9d33711 -->
-#### [855a1e5d] [memory-index] Audit store status summary generator
-- priority: `medium`
-- summary: Build a generator that reads the audit-api and emits a compact markdown summary of the current audit status at `.audit/README.md` along with its TOON sidecar at `.audit/index.toon`. The purpose is to...
-- ref: `.ticket/tickets/855a1e5d-d998-4caf-b60c-d75a13ca3264/ticket.toml`
-
-
-### Component: context-engine
-
-<!-- ticket-index:entry id=46d89aa2-043a-4c94-8213-2f365aa2d517 slug=in-review/context-engine digest=3f0f66297c72 -->
-#### [46d89aa2] Add handoff workflow prompts
-- priority: `medium`
-- summary: Add generated `/handoff` and `/handoff-tickets` prompt surfaces for short, reference-centric session jumpstart handoffs. Scope includes rule-target config, canonical prompt rule entries, generated pr...
-- ref: `.ticket/tickets/46d89aa2-043a-4c94-8213-2f365aa2d517/ticket.toml`
-
-
-### Component: memory-api
-
-<!-- ticket-index:entry id=d187d817-d3f5-49ca-8925-8d06b5824912 slug=in-review/memory-api digest=39efd71ea5ce -->
-#### [d187d817] [ticket-cli][spec-cli][rule-cli][audit-cli] Add TOON input and output support
-- priority: `medium`
-- summary: Implemented TOON machine-readable output across the memory-api CLI suite and extended spec-cli structured field decoding to accept TOON next to JSON.
-- ref: `.ticket/tickets/d187d817-d3f5-49ca-8925-8d06b5824912/ticket.toml`
-
-
-### Component: repo-guidance
-
-<!-- ticket-index:entry id=14ff41fa-818e-4a4e-8747-f79a33d174c2 slug=in-review/repo-guidance digest=65180f499bff -->
-#### [14ff41fa] [agents][rule] Add token-optimized agentic engineering skill target
-- priority: `medium`
-- summary: Implemented generated rule target for `.agents/skills/token-optimized-agentic-engineering.SKILL.md`, created canonical `.skill` rule entry, translated source guidance to English, and verified target ...
-- ref: `.ticket/tickets/14ff41fa-818e-4a4e-8747-f79a33d174c2/ticket.toml`
-
-
-### Component: rule-api
-
-<!-- ticket-index:entry id=9336a096-4399-467e-a7d8-fac30080d71f slug=in-review/rule-api digest=99b5f6f9a3ff -->
-#### [9336a096] [memory-index] Rule store catalog generator
-- priority: `high`
-- summary: Build a generator that reads the rule store (rule-api) and emits a grouped catalog at `.rule/README.md` with its TOON sidecar at `.rule/index.toon`. The purpose is to give agents a compact, browsable...
-- ref: `.ticket/tickets/9336a096-4399-467e-a7d8-fac30080d71f/ticket.toml`
-
-
-### Component: session-api
-
-<!-- ticket-index:entry id=cf4d1e1a-5315-4aa8-b836-5a90996e63c4 slug=in-review/session-api digest=05ed813e6e82 -->
-#### [cf4d1e1a] [session-api] Fix: Resolve session workspace relative to tool execution
-- priority: `high`
-- summary: Fix a bug where the `.memory-api` folder is created inside the nested `memory-viewers/memory-api` folder even when the ticket tool is run from the `context-engine` root. The session workspace should ...
-- ref: `.ticket/tickets/cf4d1e1a-5315-4aa8-b836-5a90996e63c4/ticket.toml`
-
-
-### Component: spec-api
-
-<!-- ticket-index:entry id=b9757ba7-3b2c-4f92-919d-f3c443ceb69c slug=in-review/spec-api digest=6c63c35fcc71 -->
-#### [b9757ba7] [memory-index] Spec store hierarchy generator
-- priority: `high`
-- summary: Build a generator that reads the spec store (spec-api) and emits a hierarchical markdown folder tree under `.spec/`, with `.spec/index.toon` as the machine-readable TOON sidecar. The purpose is to gi...
-- ref: `.ticket/tickets/b9757ba7-3b2c-4f92-919d-f3c443ceb69c/ticket.toml`
-
-
-### Component: ticket-api
-
-<!-- ticket-index:entry id=c5e9bb39-d784-4d0c-8de1-3885013cddce slug=in-review/ticket-api digest=02b1bbcf5b99 -->
-#### [c5e9bb39] [memory-index] Ticket store index generator with git hook integration
-- priority: `high`
-- summary: Build a generator that reads the ticket store (ticket-api) and emits a committed markdown index co-located in `.ticket/README.md` along with its TOON sidecar at `.ticket/index.toon`. The purpose is t...
-- ref: `.ticket/tickets/c5e9bb39-d784-4d0c-8de1-3885013cddce/ticket.toml`
-
-<!-- ticket-index:entry id=bc691249-5a2d-409e-8e7b-2602d80cf61e slug=in-review/ticket-api digest=70470cc5cc08 -->
-#### [bc691249] [ticket-api] Add journaled storage-layer execution for cross-workspace ticket moves
-- priority: `high`
-- summary: Execute a supported move safely at the storage layer, with resumable journal state and rollback when a step fails.
-- ref: `memory-api/.ticket/tickets/bc691249-5a2d-409e-8e7b-2602d80cf61e/ticket.toml`
-
-<!-- ticket-index:entry id=eb6033a8-f15b-4024-952e-5c86dc108939 slug=in-review/ticket-api digest=59c39f0ea64d -->
-#### [eb6033a8] [ticket-api] Add move preflight planner and destination-visibility validation
-- priority: `high`
-- summary: Build the read-only planning layer for `ticket move` that decides whether a move is supported and enumerates every object the execution phase would touch.
-- ref: `memory-api/.ticket/tickets/eb6033a8-f15b-4024-952e-5c86dc108939/ticket.toml`
-
-<!-- ticket-index:entry id=505b2cd4-f21d-4e8d-8e6a-ae06a5b69854 slug=in-review/ticket-api digest=e8881c53141b -->
-#### [505b2cd4] [ticket-api] Deliver safe cross-workspace ticket move for git-backed stores
-- priority: `high`
-- summary: Implement a safe, reviewable `ticket move` capability for git-backed `memory-api` workspaces that relocates a ticket into a different workspace store and preserves correctness of the owning store, re...
-- ref: `memory-api/.ticket/tickets/505b2cd4-f21d-4e8d-8e6a-ae06a5b69854/ticket.toml`
-
-<!-- ticket-index:entry id=22cd3001-0127-4a27-8834-721250ff39ff slug=in-review/ticket-api digest=43a6f34b9a52 -->
-#### [22cd3001] [ticket-api] Enforce board safety and migrate historical board rows during ticket moves
-- priority: `medium`
-- summary: Handle board-state references safely during a ticket move so live ownership is never silently lost.
-- ref: `memory-api/.ticket/tickets/22cd3001-0127-4a27-8834-721250ff39ff/ticket.toml`
-
-<!-- ticket-index:entry id=3a26572a-5e1a-4a57-aefa-9b342886a5ca slug=in-review/ticket-api digest=7c1430e9048b -->
-#### [3a26572a] [ticket-api] Rewrite repo path references that cite the moved ticket folder
-- priority: `medium`
-- summary: Automatically update repo-local text references that cite the moved ticket's old folder path so specs, tests, and docs do not point at a stale store location after the move.
-- ref: `memory-api/.ticket/tickets/3a26572a-5e1a-4a57-aefa-9b342886a5ca/ticket.toml`
-
-<!-- ticket-index:entry id=385f2521-b318-403b-a4ea-195a47e5c453 slug=in-review/ticket-api digest=8360e1b3c93b -->
-#### [385f2521] [ticket-api] Unify multi-step state transitions across update and close flows
-- priority: `high`
-- summary: `ticket update` currently enforces a single-step state transition and optionally accepts `from_state`, which duplicates the current store state and rejects legitimate fast-forward workflows such as `...
-- ref: `.ticket/tickets/385f2521-b318-403b-a4ea-195a47e5c453/ticket.toml`
-
-<!-- ticket-index:entry id=da27c074-8c9e-4613-b8b9-bf02c72b50f7 slug=in-review/ticket-api digest=db1cc57b4cb9 -->
-#### [da27c074] [ticket-api] Validate cross-workspace ticket move flows end to end
-- priority: `high`
-- summary: Prove the move contract with focused automated coverage and one real consumer scenario before using the tool on `694d74b4`.
-- ref: `memory-api/.ticket/tickets/da27c074-8c9e-4613-b8b9-bf02c72b50f7/ticket.toml`
-
-
-### Component: ticket-cli
-
-<!-- ticket-index:entry id=53176121-eb55-4aa9-a1d6-5075db1c163b slug=in-review/ticket-cli digest=91c7e4e679ba -->
-#### [53176121] [ticket-cli] Add `ticket move` CLI with dry-run and recovery guidance
-- priority: `high`
-- summary: Expose the move planner and executor through `ticket-cli` so operators can preview, apply, resume, and roll back a move from the command line.
-- ref: `memory-api/.ticket/tickets/53176121-eb55-4aa9-a1d6-5075db1c163b/ticket.toml`
-
-<!-- ticket-index:entry id=74fd59ca-8253-4e18-99bd-0b1fa204c6d6 slug=in-review/ticket-cli digest=82227f01ef41 -->
-#### [74fd59ca] [ticket-cli] Remove constant blocker-progress field from board show JSON recommendations
-- priority: `medium`
-- summary: `ticket board show --json` currently includes `recommended_next[].last_blocker_progress_at`, but recommended-next items are sourced from the actionable queue where that field is always null by contra...
-- ref: `.ticket/tickets/74fd59ca-8253-4e18-99bd-0b1fa204c6d6/ticket.toml`
-
-
-### Component: ticket-http
-
-<!-- ticket-index:entry id=373a3317-4dfd-456a-a86e-523f4e7692f0 slug=in-review/ticket-http digest=074f7326e70d -->
-#### [373a3317] [ticket-http] Add ticket move endpoint for workspace relocation
-- priority: `medium`
-- summary: Expose the move capability over HTTP for remote tooling and UI-driven workflows.
-- ref: `memory-api/.ticket/tickets/373a3317-4dfd-456a-a86e-523f4e7692f0/ticket.toml`
-
-
-### Component: ticket-mcp
-
-<!-- ticket-index:entry id=84d19fab-9086-4eb2-9d1b-f6bbbae62ceb slug=in-review/ticket-mcp digest=5c2505f2c535 -->
-#### [84d19fab] [ticket-mcp] Expose ticket move planning and execution over MCP
-- priority: `medium`
-- summary: Expose the move capability to MCP clients so agents can dry-run and apply safe workspace moves without shelling out to the CLI.
-- ref: `memory-api/.ticket/tickets/84d19fab-9086-4eb2-9d1b-f6bbbae62ceb/ticket.toml`
-
-
-### Component: ticket-query
-
-<!-- ticket-index:entry id=f6aa9048-c300-4f64-bf20-157d439dd7ca slug=in-review/ticket-query digest=afb2f724390b -->
-#### [f6aa9048] [spec][ticket-query] Specify expressive query and ordering contract
-- priority: `high`
-- summary: The current ticket query contract is not expressive enough for focused discovery.
-- ref: `.ticket/tickets/f6aa9048-c300-4f64-bf20-157d439dd7ca/ticket.toml`
-
-
-### Component: ticket-system
-
-<!-- ticket-index:entry id=6848ffa2-4e31-4985-beff-cba01af9b7ca slug=in-review/ticket-system digest=a12a9436f4bb -->
-#### [6848ffa2] [ticket-system] Add effort field for token-budget estimates
-- priority: `medium`
-- summary: Extend ticket ordering so `board`, `next`, `list`, and similar listing surfaces account for the new `effort` field.
-- ref: `.ticket/tickets/6848ffa2-4e31-4985-beff-cba01af9b7ca/ticket.toml`
-
-
-### Component: ticket-viewer
-
-<!-- ticket-index:entry id=10c94251-1c0c-4542-a282-ea3d75a205b5 slug=in-review/ticket-viewer digest=10e636801c24 -->
-#### [10c94251] [ticket-viewer][viewer-api] Graph focus and 2D presentation follow-up
-- priority: `high`
-- summary: Track the next graph-viewer interaction and presentation upgrade for ticket-viewer: property-based node rendering, stronger selection semantics, panel-aware framing, an optional fixed 2D camera mode,...
-- ref: `.ticket/tickets/10c94251-1c0c-4542-a282-ea3d75a205b5/ticket.toml`
-
-
-### Component: ticket-vscode
-
-<!-- ticket-index:entry id=694d74b4-028b-4602-8090-d6200d577d4a slug=in-review/ticket-vscode digest=844df011a0dd -->
-#### [694d74b4] [ticket-vscode] Integrate Rust/WASM core into TS hosts and remove replaced legacy logic
-- priority: `high`
-- summary: The Rust/WASM core (`ticket-vscode-core`) is built, tested, and packaged, but it is **not yet wired into the live extension code path**. Today only `core_version()` is called as a smoke check in `src...
-- ref: `.ticket/tickets/694d74b4-028b-4602-8090-d6200d577d4a/ticket.toml`
-
-
-### Component: unspecified
-
-<!-- ticket-index:entry id=635b7e37-8bed-4622-a38d-ef87bb08f46c slug=in-review/unspecified digest=4ee6597083a3 -->
-#### [635b7e37] [audit-api] Derive spec fulfillment rollups from store-owned evidence
-- summary: Teach `audit-api` to report derived spec fulfillment status by reading store-owned expectation and evidence metadata.
-- ref: `.ticket/tickets/635b7e37-8bed-4622-a38d-ef87bb08f46c/ticket.toml`
-
-<!-- ticket-index:entry id=37dc83ab-af5c-4746-9c02-b27ffb8215a9 slug=in-review/unspecified digest=0a623fb1802d -->
-#### [37dc83ab] [bug] Tantivy 0.22.1 fastfield panic breaks spec/store full-text search
-- summary: Full-text search across the spec store (and any store backed by the same Tantivy index path) is non-functional. `spec scan --force` panics inside Tantivy and incremental scans silently fail to popula...
-- ref: `.ticket/tickets/37dc83ab-af5c-4746-9c02-b27ffb8215a9/ticket.toml`
-
-<!-- ticket-index:entry id=87001cb8-46c4-4921-a336-dc0cf0c1f66a slug=in-review/unspecified digest=597c1ab86eee -->
-#### [87001cb8] [doc-api] Add documentation-validation evidence identities for spec fulfillment
-- summary: Extend `doc-api` with documentation-validation identities and coverage metadata that can satisfy or block spec acceptance clauses.
-- ref: `.ticket/tickets/87001cb8-46c4-4921-a336-dc0cf0c1f66a/ticket.toml`
-
-<!-- ticket-index:entry id=1f7a7d60-e7ea-49c4-80c4-dee78e8862be slug=in-review/unspecified digest=799170adc7b7 -->
-#### [1f7a7d60] [hooks][rule] Show sync-targets failure output in pre-commit
-- ref: `.ticket/tickets/1f7a7d60-e7ea-49c4-80c4-dee78e8862be/ticket.toml`
-
-<!-- ticket-index:entry id=0805fb76-f99b-45a5-87c6-5a8e65bdb2da slug=in-review/unspecified digest=16d199926c1b -->
-#### [0805fb76] [log-api] Bootstrap validation-log identities for spec fulfillment
-- summary: Bootstrap the first `log-api` entities for validation-log capture and retrieval linked from `test-api` executions.
-- ref: `.ticket/tickets/0805fb76-f99b-45a5-87c6-5a8e65bdb2da/ticket.toml`
-
-<!-- ticket-index:entry id=64a7cb3a-b35f-4953-9368-0d7afc89fb53 slug=in-review/unspecified digest=4190f4ed48ec -->
-#### [64a7cb3a] [memory-api] Sync install contract README section with canonical rule entry
-- ref: `.ticket/tickets/64a7cb3a-b35f-4953-9368-0d7afc89fb53/ticket.toml`
-
-<!-- ticket-index:entry id=099ac71e-bffa-4a5b-89f3-2ca3bc875bac slug=in-review/unspecified digest=ab8d51052e24 -->
+<!-- ticket-index:entry id=099ac71e-bffa-4a5b-89f3-2ca3bc875bac slug=in-implementation/viewer-api-performance digest=d69ee45d6c2d -->
 #### [099ac71e] [profiling] Validate browser profiling pipeline (trace capture + wasm benches)
 - priority: `high`
 - summary: Phase-1 implementation is landed and compiles; this ticket covers the remaining
 - ref: `.ticket/tickets/099ac71e-bffa-4a5b-89f3-2ca3bc875bac/ticket.toml`
 
-<!-- ticket-index:entry id=bf8ef22e-ea06-45de-9f90-a2fee0e4cc6e slug=in-review/unspecified digest=acae63716a74 -->
-#### [bf8ef22e] [repo-guidance][rule-api] Add implement agent target from canonical rules
-- summary: The repository generates custom agents for research, testing, interview, and audit, but it does not provide a dedicated implement agent that is optimized for surgical execution once the scope is clea...
-- ref: `.ticket/tickets/bf8ef22e-ea06-45de-9f90-a2fee0e4cc6e/ticket.toml`
 
-<!-- ticket-index:entry id=68c61b92-af6b-4331-99fd-5a77dd3512e1 slug=in-review/unspecified digest=a5a3cff1e534 -->
-#### [68c61b92] [rule-cli] Improve generate-target errors for config directories and output-path targets
-- ref: `.ticket/tickets/68c61b92-af6b-4331-99fd-5a77dd3512e1/ticket.toml`
+### Component: workflow-policy
 
-<!-- ticket-index:entry id=f4f955b0-a827-4fce-882d-4df2f5903891 slug=in-review/unspecified digest=fc9c0fd3a76f -->
-#### [f4f955b0] [rule-cli] Make scan output explain diagnostics and counters
-- ref: `.ticket/tickets/f4f955b0-a827-4fce-882d-4df2f5903891/ticket.toml`
+<!-- ticket-index:entry id=6e72756f-11c6-405f-8d74-0ab608172871 slug=in-implementation/workflow-policy digest=b5e2665b4d5c -->
+#### [6e72756f] [workflow-policy] Tracker: durable store bootstrap, benchmark, and tracing/log guidance
+- priority: `high`
+- summary: Create one durable policy track for repository workflows that are currently too expensive to rediscover ad hoc:
+- ref: `.ticket/tickets/6e72756f-11c6-405f-8d74-0ab608172871/ticket.toml`
 
-<!-- ticket-index:entry id=665b727c-09b1-43e0-8795-eb67e2758aea slug=in-review/unspecified digest=6ff8bab034f1 -->
-#### [665b727c] [rule-cli][rule-api] Allow rule-targets directories for generate-target configs
-- ref: `.ticket/tickets/665b727c-09b1-43e0-8795-eb67e2758aea/ticket.toml`
+<!-- ticket-index:entry id=a2c469c4-c62b-444d-81ed-6c936bee8ba3 slug=in-implementation/workflow-policy digest=da7bc4cf0dc1 -->
+#### [a2c469c4] [workflow-policy][benchmarks] Research and define end-to-end benchmark and execution-evidence policy
+- priority: `high`
+- summary: Research and codify one repository workflow for end-to-end tool benchmarking that measures latency, throughput, and load behavior, records executable anchors, and produces durable metrics/evidence su...
+- ref: `.ticket/tickets/a2c469c4-c62b-444d-81ed-6c936bee8ba3/ticket.toml`
 
-<!-- ticket-index:entry id=e7a31e70-e8f8-4369-aae4-98cc7f35db7c slug=in-review/unspecified digest=66dedb4b0ea3 -->
-#### [e7a31e70] [rule-cli][rule-api] Require explicit child-workspace scans for render commands
-- ref: `.ticket/tickets/e7a31e70-e8f8-4369-aae4-98cc7f35db7c/ticket.toml`
+<!-- ticket-index:entry id=79dd2d35-267b-4395-8316-0761df45f3c5 slug=in-implementation/workflow-policy digest=908d771ce74b -->
+#### [79dd2d35] [workflow-policy][memory-store] Research and define minimal domain-store bootstrap policy
+- priority: `high`
+- summary: Research and codify the minimal, repeatable bootstrap policy for creating a new memory-backed store that can immediately perform CRUD, validate entity schemas, participate in workspace hierarchy reso...
+- ref: `.ticket/tickets/79dd2d35-267b-4395-8316-0761df45f3c5/ticket.toml`
 
-<!-- ticket-index:entry id=0da01943-4bab-44eb-bc4b-c803f6526b26 slug=in-review/unspecified digest=769aad40c0be -->
-#### [0da01943] [rules][copilot] Integrate RTK section into generated copilot instructions
-- ref: `.ticket/tickets/0da01943-4bab-44eb-bc4b-c803f6526b26/ticket.toml`
+<!-- ticket-index:entry id=a71c2da8-0972-4c2d-9754-0a0e06db5272 slug=in-implementation/workflow-policy digest=20d2121f20a6 -->
+#### [a71c2da8] [workflow-policy][tracing][log-api] Research and define tracing instrumentation and log execution policy
+- priority: `high`
+- summary: Research and codify the repository policy for tracing instrumentation, runtime log capture, and managing generated logs plus executions through `log-api` without collapsing distinct stores into one o...
+- ref: `.ticket/tickets/a71c2da8-0972-4c2d-9754-0a0e06db5272/ticket.toml`
 
-<!-- ticket-index:entry id=c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d slug=in-review/unspecified digest=1bdea200ef89 -->
-#### [c73d4a6b] [spec-api] Add native expectation, acceptance, and evidence fields
-- summary: Extend `spec-api` with native fields and validation for expected properties, acceptance clauses, and evidence requirements.
-- ref: `.ticket/tickets/c73d4a6b-2610-4e69-9fc3-bfedcf2ec53d/ticket.toml`
 
-<!-- ticket-index:entry id=b744bcf5-05a5-4601-bbe1-caae9d42ea5f slug=in-review/unspecified digest=1c3a03212961 -->
-#### [b744bcf5] [spec-api] Expectation-oriented spec contract and model
-- summary: Redefine the specification contract and the native `spec-api` model so the repository can represent expected properties, acceptance clauses, and evidence requirements without relying on free-form pro...
-- ref: `.ticket/tickets/b744bcf5-05a5-4601-bbe1-caae9d42ea5f/ticket.toml`
+### Component: workflow-tools
 
-<!-- ticket-index:entry id=59d96577-09a8-44a7-b0ea-3d51b3a6fb05 slug=in-review/unspecified digest=ad9a06427cea -->
-#### [59d96577] [spec-cli][spec-mcp] Make spec workflows root-aware across nested .spec stores
-- summary: Spec workflows are not root-aware enough across nested `.spec` stores.
-- ref: `.ticket/tickets/59d96577-09a8-44a7-b0ea-3d51b3a6fb05/ticket.toml`
+<!-- ticket-index:entry id=15e632f1-515b-43e1-9149-02163056d13d slug=in-implementation/workflow-tools digest=abc5e4999ba5 -->
+#### [15e632f1] [workflow-tools][foundations] Extract memory-matrix + rewire in-tree consumers to external memory-fixtures
+- priority: `medium`
+- summary: C:/Users/linus/AppData/Local/Temp/ticket-15e632f1-desc.md
+- ref: `.ticket/tickets/15e632f1-515b-43e1-9149-02163056d13d/ticket.toml`
 
-<!-- ticket-index:entry id=c666f0b3-f1e6-4073-852f-e494bf5c1272 slug=in-review/unspecified digest=341fd1418e20 -->
-#### [c666f0b3] [spec-cli][spec-mcp][spec-http] Expose expectation and evidence parity across transports
-- summary: Expose the expectation and evidence model consistently through `spec-cli`, `spec-mcp`, and `spec-http`, with one shared parity contract.
-- ref: `.ticket/tickets/c666f0b3-f1e6-4073-852f-e494bf5c1272/ticket.toml`
 
-<!-- ticket-index:entry id=86bf3da2-b6cc-4fc7-898d-044403283550 slug=in-review/unspecified digest=de383cbd8f56 -->
-#### [86bf3da2] [test-api] Bootstrap validation specification and execution identities for spec fulfillment
-- summary: Bootstrap the first `test-api` entities for validation specifications, executions, and outcomes used by expectation-oriented spec fulfillment.
-- ref: `.ticket/tickets/86bf3da2-b6cc-4fc7-898d-044403283550/ticket.toml`
+## State: in-review
 
-<!-- ticket-index:entry id=07836f41-7fa5-4e41-8411-1c7cf8aeee75 slug=in-review/unspecified digest=e19a15a6db3f -->
-#### [07836f41] [ticket-cli] Make get/search/list workspace-aware across nested roots
-- summary: `ticket get <id>` was not workspace-aware and failed with a raw path error when the ticket lived under a different ticket root.
-- ref: `.ticket/tickets/07836f41-7fa5-4e41-8411-1c7cf8aeee75/ticket.toml`
+### Component: agent-tooling
 
-<!-- ticket-index:entry id=d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110 slug=in-review/unspecified digest=4995c614e754 -->
-#### [d1770bd5] [ticket-store] Relocate misplaced ticket and spec directories
-- ref: `.ticket/tickets/d1770bd5-dc7e-42ca-a5d0-2bc0cbc91110/ticket.toml`
+<!-- ticket-index:entry id=37b5026f-add9-4568-8953-fd5607fb91dc slug=in-review/agent-tooling digest=f1e60db770d2 -->
+#### [37b5026f] Migrate .agents/instructions into nested workflow folders
+- summary: Tracking ticket for migrating .agents/instructions/ into nested workflow folders.
+- ref: `.ticket/tickets/37b5026f-add9-4568-8953-fd5607fb91dc/ticket.toml`
 
-<!-- ticket-index:entry id=46d16755-309b-479f-aab2-624c3fa7ce9b slug=in-review/unspecified digest=7a7aade2434c -->
-#### [46d16755] [ticket-vscode] Fix canonical workspace selection when server exposes path-based or shared workspace ids
-- summary: Implemented and validated canonical workspace resolution for ticket-vscode. The extension now maps detected local .ticket roots to canonical server workspace ids by label/path and otherwise prefers a...
-- ref: `.ticket/tickets/46d16755-309b-479f-aab2-624c3fa7ce9b/ticket.toml`
+
+### Component: context-stack
+
+<!-- ticket-index:entry id=1dffcf23-8a95-4f45-8163-27e4e58048c7 slug=in-review/context-stack digest=2be8455ebabf -->
+#### [1dffcf23] [context-stack] Define replayable graph-operation journal format for log-viewer
+- priority: `high`
+- summary: Define a replayable graph-operation format for context-stack operations that fits log-viewer visualizations and links to trace logs and journals.
+- ref: `.ticket/tickets/1dffcf23-8a95-4f45-8163-27e4e58048c7/ticket.toml`
+
+
+### Component: feedback-api
+
+<!-- ticket-index:entry id=c7542933-3052-45c8-99e6-3e09f40cc9b9 slug=in-review/feedback-api digest=86b7d73f47c5 -->
+#### [c7542933] [feedback-api] Core curation surface — URN usage counting + entity ratings (bootstrap gate)
+- priority: `high`
+- summary: This is the **minimal, self-contained core** of the feedback-api program that session bootstrapping gates on — NOT the full program. It exists so the session-bootstrap epic can depend on a small, shi...
+- ref: `memory-api/.ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml`
+
+<!-- ticket-index:entry id=6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc slug=in-review/feedback-api digest=5148ad374056 -->
+#### [6b0002bf] [feedback-api][activation] Wire feedback discovery, collection, and analyzer loop (ring activation)
+- priority: `high`
+- summary: Make the feedback system actually usable and self-driving. The feedback-api crate, schema, transports, and redistributed ring edges exist and compile, but the ring has never fired: 3 of 4 edges have ...
+- ref: `memory-api/.ticket/tickets/6b0002bf-c15b-4cc7-ac38-fbf66a07d1bc/ticket.toml`
+
+<!-- ticket-index:entry id=3d4c4739-3138-40be-947d-556e5f7de53a slug=in-review/feedback-api digest=64bb74f23888 -->
+#### [3d4c4739] [feedback-api][analyzer] Backtraceable, verifiable follow-up ticket format; re-enable synthesis behind it
+- priority: `high`
+- summary: The stop-hook (`crates/session-api/src/bin/copilot-capture-hook.rs`) currently only logs structured signals — auto-ticket synthesis was paused after the naive miner created 522 false-positive tickets...
+- ref: `memory-api/.ticket/tickets/3d4c4739-3138-40be-947d-556e5f7de53a/ticket.toml`
+
+<!-- ticket-index:entry id=fb6aa078-1f8b-4a76-99bd-3a26190b1208 slug=in-review/feedback-api digest=0d0b4a19924e -->
+#### [fb6aa078] [feedback-api][design] First-class feedback-api crate boundary and unified FeedbackEntry schema v1
+- priority: `high`
+- summary: Define and enforce feedback-api crate boundaries, a single versioned FeedbackEntry schema, AND the correct topology of the feedback ring: the ring is NOT a module — it is an emergent distributed loop...
+- ref: `memory-api/.ticket/tickets/fb6aa078-1f8b-4a76-99bd-3a26190b1208/ticket.toml`
+
+<!-- ticket-index:entry id=b4954d6c-0451-49ed-8939-11f6568558f5 slug=in-review/feedback-api digest=8b8a8468a5a3 -->
+#### [b4954d6c] [feedback-api][ingestion] Mine explicit feedback-ingestion tool calls from structured session metadata
+- priority: `high`
+- summary: The highest-fidelity feedback signal is an explicit feedback-ingestion tool call the agent already made during a session. It carries an unambiguous target entity + rating + note in structured argumen...
+- ref: `memory-api/.ticket/tickets/b4954d6c-0451-49ed-8939-11f6568558f5/ticket.toml`
+
+<!-- ticket-index:entry id=a7601cb7-6c92-4891-aa55-07ab46125bb8 slug=in-review/feedback-api digest=08676678dc24 -->
+#### [a7601cb7] [feedback-api][provenance] Extend FeedbackProvenance with session/turn/tool-call backtrace refs
+- priority: `high`
+- summary: `FeedbackProvenance` currently carries only `session_id`, `author`, `executed_at` (crates/feedback-api/src/lib.rs). The removed transcript miner even dropped `session_id` entirely, so mined entries w...
+- ref: `memory-api/.ticket/tickets/a7601cb7-6c92-4891-aa55-07ab46125bb8/ticket.toml`
+
+<!-- ticket-index:entry id=16e112a7-5ab0-45a5-87c8-7d89d07ffd16 slug=in-review/feedback-api digest=11b9bdb3f382 -->
+#### [16e112a7] [feedback-api][signals] Define failed-tool-call to entity mapping and recording policy
+- priority: `medium`
+- summary: `mine_structured_feedback_signals` now detects `FailedToolCall` signals (`event_meta.tool_success == Some(false)`), but a failed tool call has no inherent target entity. We must decide, with evidence...
+- ref: `memory-api/.ticket/tickets/16e112a7-5ab0-45a5-87c8-7d89d07ffd16/ticket.toml`
+
+<!-- ticket-index:entry id=3fa60398-3154-46ee-aca5-8d87541bac1e slug=in-review/feedback-api digest=f909e8452a87 -->
+#### [3fa60398] [feedback-api][signals] Deterministic BFS entity queue for structured feedback mining
+- priority: `medium`
+- summary: Structured feedback mining must iterate discovered entities deterministically. Per the agreed design (decision #2): iterate breadth-first, and only queue newly-discovered entities for detection after...
+- ref: `memory-api/.ticket/tickets/3fa60398-3154-46ee-aca5-8d87541bac1e/ticket.toml`
+
+
+### Component: log-api
+
+<!-- ticket-index:entry id=db9bad13-ae43-4300-8037-7165c0e9a7b0 slug=in-review/log-api digest=2000277043ce -->
+#### [db9bad13] [log-api][test-api][journal] Normalize artifact routing for executions, runtime sessions, and journals
+- priority: `high`
+- summary: Normalize the artifact-routing contract between `test-api` executions, `log-api` runtime sessions, and operation journals so validation runners, benchmark harnesses, and transport diagnostics all emi...
+- ref: `.ticket/tickets/db9bad13-ae43-4300-8037-7165c0e9a7b0/ticket.toml`
+
+
+### Component: mcp-transports
+
+<!-- ticket-index:entry id=2318f63f-7113-4987-87b7-ca26afa04d11 slug=in-review/mcp-transports digest=e26658a4bded -->
+#### [2318f63f] [mcp] Report unique server identities for local Copilot registrations
+- priority: `high`
+- summary: Make feedback-mcp, session-mcp, peek-mcp, rule-mcp, audit-mcp, and compact-terminal-mcp report their true package identities in MCP initialize responses so VS Code Copilot can distinguish and activat...
+- ref: `memory-api/.ticket/tickets/2318f63f-7113-4987-87b7-ca26afa04d11/ticket.toml`
+
+
+### Component: memory-api
+
+<!-- ticket-index:entry id=2e41c96d-fe9f-4cf2-b941-6f0d452f237c slug=in-review/memory-api digest=37cd8ef040d8 -->
+#### [2e41c96d] [memory-api] Create domain instrumentation and journaling coverage map
+- priority: `high`
+- summary: Map major operations across memory-domain crates to required spans, events, result summaries, and journal requirements before broad instrumentation begins.
+- ref: `.ticket/tickets/2e41c96d-fe9f-4cf2-b941-6f0d452f237c/ticket.toml`
+
+
+### Component: memory-matrix
+
+<!-- ticket-index:entry id=cc78d33d-1744-4945-bb77-f0fd1142568e slug=in-review/memory-matrix digest=5cfc73d4254b -->
+#### [cc78d33d] [memory-matrix] Subprocess failure bundle capture for transport cells
+- priority: `high`
+- summary: Make matrix harness failures for subprocess-driven transport cells actionable on first failure, without ad hoc stderr plumbing.
+- ref: `memory-api/.ticket/tickets/cc78d33d-1744-4945-bb77-f0fd1142568e/ticket.toml`
+
+
+### Component: repo-guidance
+
+<!-- ticket-index:entry id=321f6a3a-8bfb-4a8e-95bc-64ff845812ed slug=in-review/repo-guidance digest=ade9b2d273a8 -->
+#### [321f6a3a] [repo-guidance] Model cost-awareness and tiered model-routing guidance
+- priority: `high`
+- summary: Add durable agent-policy guidance that encourages model cost awareness and delegation of cheap, routine work to smaller/cheaper models via subagents — especially inside sessions driven by large, expe...
+- ref: `.ticket/tickets/321f6a3a-8bfb-4a8e-95bc-64ff845812ed/ticket.toml`
+
+
+### Component: session-api
+
+<!-- ticket-index:entry id=11d3b412-7d70-4144-932d-589256af488a slug=in-review/session-api digest=402de5729153 -->
+#### [11d3b412] [session-api] Record active model per transcript turn
+- priority: `medium`
+- summary: Session metadata already carries a single `model` field, but a session may route across multiple models (a large model delegating subtasks to cheaper ones). To make model routing observable, capture ...
+- ref: `memory-api/.ticket/tickets/11d3b412-7d70-4144-932d-589256af488a/ticket.toml`
+
+<!-- ticket-index:entry id=d8cb1b87-48a2-4a99-b741-48cfaed44711 slug=in-review/session-api digest=7ad9f023c34d -->
+#### [d8cb1b87] [session-api][audit] Remediate default file-length findings
+- priority: `high`
+- summary: The repository audit default is `max_file_lines = 400`. A prior tracker update incorrectly used a non-default per-run override as the acceptance criterion. That override has been removed from the liv...
+- ref: `memory-api/.ticket/tickets/d8cb1b87-48a2-4a99-b741-48cfaed44711/ticket.toml`
+
+<!-- ticket-index:entry id=7a4f9c3d-bf5f-4849-93c7-b8c2706dac61 slug=in-review/session-api digest=afa76d8e9279 -->
+#### [7a4f9c3d] [session-api][store] Flatten .session layout under sessions/<session_id>/ and relocate local pointers/locks
+- priority: `high`
+- summary: Relocate runtime context/handoffs/finish to be owned directly by `sessions/<session_id>/`, move local-only pointers/locks to `.session/local/`, and remove the `runtime/workspaces/` nesting (subticket...
+- ref: `memory-api/.ticket/tickets/7a4f9c3d-bf5f-4849-93c7-b8c2706dac61/ticket.toml`
+
+<!-- ticket-index:entry id=4817a5cc-5e91-4280-b7ed-aed296a480b3 slug=in-review/session-api digest=ee063377e015 -->
+#### [4817a5cc] [session-api][store] Git-tracking policy: track durable session artifacts, ignore local pointers/locks
+- priority: `high`
+- summary: Make durable session artifacts persist in git for later feedback/research loops, while keeping machine-local pointers/locks ignored (subticket 4 of the flattening tracker). Depends on the flattened l...
+- ref: `memory-api/.ticket/tickets/4817a5cc-5e91-4280-b7ed-aed296a480b3/ticket.toml`
+
+
+### Component: test-api
+
+<!-- ticket-index:entry id=1e8f6866-9dda-4b2c-9f41-27ac83ee61d5 slug=in-review/test-api digest=e0bb274f0b4d -->
+#### [1e8f6866] [test-api] prune_execution_runs silently deletes unrelated ticket-linked evidence (global keep-2-runs policy)
+- priority: `critical`
+- summary: `TestStoreConfig::record_execution` (memory-api/crates/test-api/src/store.rs) unconditionally calls `self.prune_execution_runs(2)` after every write. This function computes, across **every** executio...
+- ref: `memory-api/.ticket/tickets/1e8f6866-9dda-4b2c-9f41-27ac83ee61d5/ticket.toml`
+
+<!-- ticket-index:entry id=905d05ae-b367-44f8-9988-a671702d8a32 slug=in-review/test-api digest=639a12f5da31 -->
+#### [905d05ae] [test-api][test-mcp] Fix record/list .test store routing split; aggregate discoverable stores on read
+- priority: `high`
+- summary: `test-mcp`'s write tools (`test_record_spec`, `test_record_execution`) resolve their `.test` store root per-call from an explicit `workspace` argument via `config_for_workspace` (walks upward from th...
+- ref: `memory-api/.ticket/tickets/905d05ae-b367-44f8-9988-a671702d8a32/ticket.toml`
+
+<!-- ticket-index:entry id=387843e4-815e-4424-97fa-9855a464b5e6 slug=in-review/test-api digest=6a442ea75c8b -->
+#### [387843e4] [test] Transport-layer e2e matrix — CLI/HTTP/MCP x domains
+- priority: `high`
+- summary: Validate each basic operation (`get`/`search`/CRUD/`move`/`scan`) through the **real transport surfaces** of every domain, not just in-process storage, so regressions in `ticket-http`, `spec-mcp`, `t...
+- ref: `memory-api/.ticket/tickets/387843e4-815e-4424-97fa-9855a464b5e6/ticket.toml`
+
+
+### Component: ticket-viewer
+
+<!-- ticket-index:entry id=4a228c24-d466-4782-9160-c492f727007a slug=in-review/ticket-viewer digest=ef78f02d9131 -->
+#### [4a228c24] Feature: Full-text search UI with field predicates
+- priority: `medium`
+- summary: The ticket-viewer sidebar works well for browsing known tickets, but it is too slow when users only know part of a title, body phrase, or ticket id. The viewer needs an in-app search surface that can...
+- ref: `memory-viewers/.ticket/tickets/4a228c24-d466-4782-9160-c492f727007a/ticket.toml`
+
+<!-- ticket-index:entry id=1f39ba8f-650b-417d-b664-1878f08af669 slug=in-review/ticket-viewer digest=9737dbbcc44a -->
+#### [1f39ba8f] [ticket-viewer] Add graph review E2E coverage
+- priority: `high`
+- summary: Add release Playwright coverage for the graph review checklist items around layout restoration and zoom-driven node detail interactions.
+- ref: `memory-viewers/.ticket/tickets/1f39ba8f-650b-417d-b664-1878f08af669/ticket.toml`
+
+<!-- ticket-index:entry id=60092819-f725-48ec-93f0-aba195ef81eb slug=in-review/ticket-viewer digest=d6d55168f1dd -->
+#### [60092819] [ticket-viewer] Fix graph layout defaults and isometric settings
+- priority: `high`
+- summary: Record graph layout/defaults implementation and move the ticket to review.
+- ref: `memory-viewers/.ticket/tickets/60092819-f725-48ec-93f0-aba195ef81eb/ticket.toml`
+
+<!-- ticket-index:entry id=f2d19fdc-9d3a-4eb0-ad62-cc42ded75541 slug=in-review/ticket-viewer digest=50aea4d0a6a6 -->
+#### [f2d19fdc] [ticket-viewer] Fix wasm32 build regression from mechanical unused cleanup (dep_graph/page.rs, store.rs)
+- priority: `high`
+- summary: Commit 4bb0961 ("chore(warnings): apply mechanical unused cleanup in dioxus viewers") was applied under native-target checking only and broke the wasm32 build of ticket-viewer-dioxus. It:
+- ref: `memory-viewers/.ticket/tickets/f2d19fdc-9d3a-4eb0-ad62-cc42ded75541/ticket.toml`
+
+<!-- ticket-index:entry id=800f09ed-beb0-4a12-be93-1392e45eadb8 slug=in-review/ticket-viewer digest=b1a03e09e252 -->
+#### [800f09ed] [ticket-viewer][viewer-api] Tighten graph layout and enlarge rich nodes
+- priority: `high`
+- summary: Make the default ticket graph easier to read by tightening the layout, enlarging visible node tiers, and giving rich ticket nodes a more cubic high-LOD presentation.
+- ref: `memory-viewers/.ticket/tickets/800f09ed-beb0-4a12-be93-1392e45eadb8/ticket.toml`
+
+
+### Component: unspecified
+
+<!-- ticket-index:entry id=c96f325f-5b45-4f2d-aed6-85648106d3ea slug=in-review/unspecified digest=4f40b106e261 -->
+#### [c96f325f] [audit instructions] Focus audit guidance on executing target-context audits and canonical findings summaries
+- summary: Refocus the audit agent guidance on executing audit tools against the requested target context, surfacing findings, and summarizing results in a canonical findings-and-recommendations format.
+- ref: `.ticket/tickets/c96f325f-5b45-4f2d-aed6-85648106d3ea/ticket.toml`
+
+<!-- ticket-index:entry id=e179f11a-52b5-432e-a13a-330bb3fc5c92 slug=in-review/unspecified digest=cf667ef6c607 -->
+#### [e179f11a] [audit-roadmap][static_complexity][batch-3] memory-api (28)
+- summary: Resolve the current static_complexity batch for memory-api and reduce 28 findings from the baseline.
+- ref: `.ticket/tickets/e179f11a-52b5-432e-a13a-330bb3fc5c92/ticket.toml`
+
+<!-- ticket-index:entry id=5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d slug=in-review/unspecified digest=3fab1af9f0fa -->
+#### [5d4078fa] [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback
+- summary: Close the open loop so the system improves itself. The ring is an **emergent distributed loop**, not a module: every domain writes feedback into the feedback-api hub and reacts to outcomes. Extends t...
+- ref: `memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml`
+
+<!-- ticket-index:entry id=f97d7086-999b-41e0-8ded-7829251223cd slug=in-review/unspecified digest=061b54837a83 -->
+#### [f97d7086] [planning][workspace-policy] unify recovery hints across memory-api stores
+- ref: `.ticket/tickets/f97d7086-999b-41e0-8ded-7829251223cd/ticket.toml`
+
+<!-- ticket-index:entry id=b3155a94-230e-416b-be0e-5948d6d2193a slug=in-review/unspecified digest=94a4c9c57b7d -->
+#### [b3155a94] [session-api][hook] Fix Stop hook transcript capture robustness and workspace slug consistency
+- summary: Validation passed: cargo test -p session-api (28 passed). End-to-end hook invocation with transcriptPath/workspaceSlug + modern transcript events persists turns and is readable via session-cli peek-s...
+- ref: `memory-api/.ticket/tickets/b3155a94-230e-416b-be0e-5948d6d2193a/ticket.toml`
+
+<!-- ticket-index:entry id=203248cb-0694-481b-a634-ba7d70962750 slug=in-review/unspecified digest=8b0e563351da -->
+#### [203248cb] [session-api][session-mcp] Separate behavioral vs descriptive workflow node kinds; add Spec kind
+- summary: The session workflow `kind` field conflates two orthogonal concerns and gets the restriction
+- ref: `.ticket/tickets/203248cb-0694-481b-a634-ba7d70962750/ticket.toml`
+
+<!-- ticket-index:entry id=7f1ed44f-73f3-40c9-9647-d899c64ec507 slug=in-review/unspecified digest=eb80a14c012f -->
+#### [7f1ed44f] [session-mcp][schema] Enum-constrain and document workflow mutation parameters
+- summary: The session-mcp workflow mutation tools accept enum-valued parameters typed as bare `String`,
+- ref: `.ticket/tickets/7f1ed44f-73f3-40c9-9647-d899c64ec507/ticket.toml`
+
+<!-- ticket-index:entry id=3eaceaae-254e-4a9f-ab19-c1eed2080931 slug=in-review/unspecified digest=13cd2d118977 -->
+#### [3eaceaae] [session-mcp][session-api] Surface and echo workspace_session_id inline
+- summary: `workspace_session_id` is a mandatory parameter on every session-mcp workflow call
+- ref: `.ticket/tickets/3eaceaae-254e-4a9f-ab19-c1eed2080931/ticket.toml`
+
+<!-- ticket-index:entry id=d5771b88-ca1d-41b2-8b59-0c911a34b37f slug=in-review/unspecified digest=0490390f692d -->
+#### [d5771b88] [ticket-api] Repair move-planner invisible-reference fixture visibility
+- summary: `storage::move_planner::tests::preflight_reports_invisible_reference_visibility_and_path_refs` failed during setup with `StorageError::NotFound` for its target-only fixture ticket UUID. The fixture a...
+- ref: `memory-api/.ticket/tickets/d5771b88-ca1d-41b2-8b59-0c911a34b37f/ticket.toml`
+
+<!-- ticket-index:entry id=16d8aed9-cc29-4820-bfc7-4ae2f202f262 slug=in-review/unspecified digest=0affa16679d3 -->
+#### [16d8aed9] [ticket-api][ticket-cli] Auto-walk allowed transition paths by default; make strict single-hop an opt-out flag
+- summary: Review finding on fdf53556 (FUP-ERR). The reviewer rejected the strict single-hop default: FUP-ERR made `update --to-state` block skipped-waypoint transitions (e.g. `new -> in-implementation`) with a...
+- ref: `.ticket/tickets/16d8aed9-cc29-4820-bfc7-4ae2f202f262/ticket.toml`
+
+<!-- ticket-index:entry id=8bb97b73-9dbc-43ee-9939-46b3ddf2612f slug=in-review/unspecified digest=ffa09a83410e -->
+#### [8bb97b73] [ticket-cli][ticket-mcp][session-mcp] Explain invalid state/enum transitions with allowed values
+- summary: Invalid transitions and enum-valued parameters are enforced, but they are not explained
+- ref: `.ticket/tickets/8bb97b73-9dbc-43ee-9939-46b3ddf2612f/ticket.toml`
+
+<!-- ticket-index:entry id=2ffd479a-ca4b-4265-a1c5-f0081b2e531e slug=in-review/unspecified digest=fba8830aa962 -->
+#### [2ffd479a] [ticket-mcp] Canonicalize workspace resolution across all tools
+- summary: `ticket-mcp` accepted an explicit checkout path but did not refresh its root workspace policy at startup. A root `.ticket` index could therefore omit child stores that its `workspace-policy.toml` exp...
+- ref: `memory-api/.ticket/tickets/2ffd479a-ca4b-4265-a1c5-f0081b2e531e/ticket.toml`
+
+<!-- ticket-index:entry id=5ad77aba-c7f7-4058-854e-dd0412746c7c slug=in-review/unspecified digest=826d0671e41d -->
+#### [5ad77aba] [ticket-mcp][spec-mcp][rule-api][session-mcp] Add self-describing capability catalog and help surfaces
+- summary: The ticket/spec/rule/session tool surfaces are not self-describing enough for operators or agents.
+- ref: `.ticket/tickets/5ad77aba-c7f7-4058-854e-dd0412746c7c/ticket.toml`
 
 <!-- ticket-index:entry id=20b6a09a-080a-480b-8f09-79cbf7bc20bd slug=in-review/unspecified digest=3409fb50cda4 -->
 #### [20b6a09a] [token-efficiency] Omit default workspace and schema from ticket outputs
@@ -3149,50 +4442,198 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Implemented shared ticket output normalization to omit default workspace/schema metadata across CLI and MCP responses; validated with focused ticket-api, ticket-cli, and ticket-mcp tests.
 - ref: `.ticket/tickets/20b6a09a-080a-480b-8f09-79cbf7bc20bd/ticket.toml`
 
-<!-- ticket-index:entry id=7db89f25-9395-45b3-a35d-8c5c219067f8 slug=in-review/unspecified digest=a2abd57f4569 -->
-#### [7db89f25] [viewer-api] Eliminate per-frame DOM reflow: analytic node rects + skip unchanged LOD writes
-- summary: Node cards still trail GPU-drawn edges during orbit/pan/drag. Root cause confirmed by reading graph3d/render.rs: the per-frame render loop performs read-after-write DOM layout thrashing.
-- ref: `.ticket/tickets/7db89f25-9395-45b3-a35d-8c5c219067f8/ticket.toml`
+<!-- ticket-index:entry id=528af270-a65c-4311-88ed-7a2e87d468bf slug=in-review/unspecified digest=cde62e164a3b -->
+#### [528af270] [workspace-policy] 7/6 Cleanup retro fixture references + audit boundary rule
+- priority: `high`
+- summary: Workspace-policy rollout should prevent future indexing/visibility of excluded workspaces, but the store currently contains historical "retro" tickets and cross-workspace edges that reference fixture...
+- ref: `.ticket/tickets/528af270-a65c-4311-88ed-7a2e87d468bf/ticket.toml`
 
-<!-- ticket-index:entry id=8d6895a5-dce8-47c1-98ce-212fd0ae2e08 slug=in-review/unspecified digest=89dbc4f41cc8 -->
-#### [8d6895a5] [viewer-api][audit] Fix viewer-api-dioxus compile failure and restore llvm-cov coverage collection
-- ref: `.ticket/tickets/8d6895a5-dce8-47c1-98ce-212fd0ae2e08/ticket.toml`
 
-<!-- ticket-index:entry id=618f6ce4-e7b3-48f2-9c9e-840247a119da slug=in-review/unspecified digest=b730b656e01b -->
-#### [618f6ce4] [workflow] Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment
-- summary: Coordinate the bounded evidence-store bootstrap across `doc-api`, `test-api`, and `log-api` so spec acceptance clauses can resolve authoritative documentation, validation, and log evidence without wr...
-- ref: `.ticket/tickets/618f6ce4-e7b3-48f2-9c9e-840247a119da/ticket.toml`
+### Component: viewer-api
 
-<!-- ticket-index:entry id=bc19467f-b4d4-48c3-be92-b551d4fe6679 slug=in-review/unspecified digest=1689e19e05c6 -->
-#### [bc19467f] [workflow] Expectation-oriented spec contract rollout
-- summary: Coordinate the rollout that redefines specifications around intended properties, acceptance criteria, and store-owned evidence while migrating the affected specs and tickets homogeneously.
-- ref: `.ticket/tickets/bc19467f-b4d4-48c3-be92-b551d4fe6679/ticket.toml`
+<!-- ticket-index:entry id=322ba030-160c-41d3-8a12-42936ae92858 slug=in-review/viewer-api digest=a6b79daeedff -->
+#### [322ba030] [viewer-api][ticket-viewer] Add multi-level graph node detail rendering
+- priority: `high`
+- summary: Introduce multiple graph node detail levels so zoomed-out views stay legible and zoomed-in views can show rich ticket content.
+- ref: `memory-viewers/.ticket/tickets/322ba030-160c-41d3-8a12-42936ae92858/ticket.toml`
 
-<!-- ticket-index:entry id=577df498-d468-448f-afc1-3e35e48e5f12 slug=in-review/unspecified digest=8541dde0bdd5 -->
-#### [577df498] [workflow] Homogeneously migrate remaining expectation-oriented specs and tickets
-- summary: Homogeneously migrate the remaining affected expectation-oriented specs and tickets after the pilot proves the contract.
-- ref: `.ticket/tickets/577df498-d468-448f-afc1-3e35e48e5f12/ticket.toml`
+<!-- ticket-index:entry id=6ccbe0b7-0b6c-44fc-989b-db66c963b623 slug=in-review/viewer-api digest=32099e650f05 -->
+#### [6ccbe0b7] [viewer-api][ticket-viewer] Fix FileTree left-panel formatting and resize/render performance
+- priority: `high`
+- summary: W3. The left file-tree panel is badly formatted and expensive to render; widening the panel is sluggish and laggy.
+- ref: `memory-viewers/.ticket/tickets/6ccbe0b7-0b6c-44fc-989b-db66c963b623/ticket.toml`
 
-<!-- ticket-index:entry id=6e5306fb-c1b3-4aec-991d-fabaf3096e23 slug=in-review/unspecified digest=aa9392cdd870 -->
-#### [6e5306fb] [workflow] Pilot expectation-oriented spec contract on one workflow spec and one README-rollout spec
-- summary: Pilot the expectation-oriented spec contract on one workflow spec and one README-rollout spec.
-- ref: `.ticket/tickets/6e5306fb-c1b3-4aec-991d-fabaf3096e23/ticket.toml`
 
-<!-- ticket-index:entry id=aaa90ee6-1358-41ad-b19e-61abdc3f1dc2 slug=in-review/unspecified digest=76bd55da6465 -->
-#### [aaa90ee6] [workflow] Store-owned spec evidence integration
-- summary: Integrate store-owned acceptance evidence so specs can be satisfied or blocked by native documentation, validation, and log records rather than by wrapper-owned artifact payloads.
-- ref: `.ticket/tickets/aaa90ee6-1358-41ad-b19e-61abdc3f1dc2/ticket.toml`
+### Component: workspace-ownership
+
+<!-- ticket-index:entry id=6ded2540-206b-4ffd-bdb6-23459a16ab1d slug=in-review/workspace-ownership digest=85c8273a6648 -->
+#### [6ded2540] [workspace] Relocate viewer and peek crates into owning repositories
+- priority: `high`
+- summary: Move repository-owned packages to their canonical Git submodule owners without changing package names or runtime behavior.
+- ref: `.ticket/tickets/6ded2540-206b-4ffd-bdb6-23459a16ab1d/ticket.toml`
 
 
 ## State: new
 
+### Component: agent-harness
+
+<!-- ticket-index:entry id=5bb96360-90e3-43d5-b03b-d568d163eeff slug=new/agent-harness digest=e37031b581f8 -->
+#### [5bb96360] [agent-harness] Agent-driven interactive chat UI (UI sandbox interaction protocol + skill)
+- priority: `high`
+- summary: Make the agent a first-class driver of the shared chat UI ("UI sandbox") — the common interface between agent and user. Through the chat surface the agent controls a virtual world: rendering UI scene...
+- ref: `.ticket/tickets/5bb96360-90e3-43d5-b03b-d568d163eeff/ticket.toml`
+
+<!-- ticket-index:entry id=b947e0d3-2f1b-4b88-b885-990367ac8563 slug=new/agent-harness digest=e3438b0b8c80 -->
+#### [b947e0d3] [agent-harness][UI1] agent-shared: agent->UI interaction protocol + response envelope
+- priority: `high`
+- summary: Define a typed, versioned agent->UI interaction protocol in `agent-shared`, enumerating every interaction the agent may perform in the UI sandbox. This is the foundation all other chat-UI-interaction...
+- ref: `.ticket/tickets/b947e0d3-2f1b-4b88-b885-990367ac8563/ticket.toml`
+
+<!-- ticket-index:entry id=3dd84de0-474a-4797-ba83-787c907ae55b slug=new/agent-harness digest=7240d03c68ce -->
+#### [3dd84de0] [agent-harness][UI2] agent-core: emit interaction directives + correlate user responses
+- priority: `high`
+- summary: Let the `agent-core` ReAct loop emit UI-sandbox interaction directives as part of a normal turn, and correlate user responses back into the same session.
+- ref: `.ticket/tickets/3dd84de0-474a-4797-ba83-787c907ae55b/ticket.toml`
+
+<!-- ticket-index:entry id=11db5933-2a39-4fa1-adcc-119ec572e8bd slug=new/agent-harness digest=98486b808865 -->
+#### [11db5933] [agent-harness][UI3] agent-uapi: render agent-driven interactions in Dioxus WASM chat UI
+- priority: `high`
+- summary: Render every agent-driven interaction kind in the Dioxus WASM browser chat UI (the OpenCode-style target surface), and send user responses back over the websocket.
+- ref: `.ticket/tickets/11db5933-2a39-4fa1-adcc-119ec572e8bd/ticket.toml`
+
+<!-- ticket-index:entry id=cdf1e535-335a-4ffb-88ba-17fd72c05b69 slug=new/agent-harness digest=f6e2f1b5a328 -->
+#### [cdf1e535] [agent-harness][UI4] agent-uapi: render/degrade agent-driven interactions in Ratatui TUI
+- priority: `medium`
+- summary: Handle every agent-driven interaction kind in the Ratatui TUI chat surface, with explicit, observable graceful degradation where the terminal cannot render an interaction (e.g. images, rich scene/col...
+- ref: `.ticket/tickets/cdf1e535-335a-4ffb-88ba-17fd72c05b69/ticket.toml`
+
+<!-- ticket-index:entry id=f834173b-8524-4702-8dea-7f865ba060c7 slug=new/agent-harness digest=90acc204c8c7 -->
+#### [f834173b] [agent-harness][UI5] Skill: UI-sandbox interactions the agent can perform
+- priority: `medium`
+- summary: Author a skill that documents the UI-sandbox interactions the agent can perform, so any agent loop can discover and correctly use the chat-UI interaction protocol.
+- ref: `.ticket/tickets/f834173b-8524-4702-8dea-7f865ba060c7/ticket.toml`
+
+
 ### Component: agent-tooling
+
+<!-- ticket-index:entry id=9d527ad1-616b-45fb-b67c-64e0396841fe slug=new/agent-tooling digest=781bd8924012 -->
+#### [9d527ad1] Capture partial-but-real token/cost telemetry via mcp-cost-gate (upstream usage data does not exist)
+- summary: Instrument the Copilot capture hook so that token, cost, and model usage data actually reaches the session store. The backend infrastructure landed with ticket `6549b6a7` is complete but reads zero i...
+- ref: `.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml`
+
+<!-- ticket-index:entry id=373072a9-ddc6-42c3-b709-50a7d9659297 slug=new/agent-tooling digest=3ea26e14c391 -->
+#### [373072a9] Delegation decision policy: case → cost-class mapping and allocation strategy
+- summary: Author explicit agent instructions that specify, in an orchestrated session, **in which cases work is delegated and to which model class**, where classes are defined by **capability role** rather tha...
+- ref: `.ticket/tickets/373072a9-ddc6-42c3-b709-50a7d9659297/ticket.toml`
+
+<!-- ticket-index:entry id=8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb slug=new/agent-tooling digest=95f36a7fe472 -->
+#### [8ad2581e] Delegation quality/cost metric and self-optimization loop
+- summary: Define and record the **delegation quality/cost metric** that lets the system compare expensive and cheaper models and find the cheapest model that meets our standards, closing the self-optimization ...
+- ref: `.ticket/tickets/8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb/ticket.toml`
+
+<!-- ticket-index:entry id=9c9e2edc-81fc-489e-9153-bf4ac0bf1a13 slug=new/agent-tooling digest=9c31534517f6 -->
+#### [9c9e2edc] Dynamic argument-based cost estimation in cost gate
+- summary: The cost gate assigns each tool a single per-tool cost that does not vary with the call. Under the single-default model (ticket 9185d8f2), every not-yet-measured tool shares one default cost. This ig...
+- ref: `.ticket/tickets/9c9e2edc-81fc-489e-9153-bf4ac0bf1a13/ticket.toml`
+
+<!-- ticket-index:entry id=22c55989-2e69-4457-8474-9583714771e0 slug=new/agent-tooling digest=b7922107a14d -->
+#### [22c55989] Escalation policy: triggers for higher cost class vs. user consultation
+- summary: Define the escalation half of the policy: when the orchestrating agent should stop delegating downward and instead **escalate to a higher capability role / cost class**, and when it should **consult ...
+- ref: `.ticket/tickets/22c55989-2e69-4457-8474-9583714771e0/ticket.toml`
+
+<!-- ticket-index:entry id=6a47ab0f-7e42-463e-afe0-bf51b85249c9 slug=new/agent-tooling digest=0c4ca7aeb805 -->
+#### [6a47ab0f] Orchestration policy: delegation floor, verify-output enforcement, timeout playbook, sanctioned validation primitive
+- summary: Session 51701334 delegated effectively at the top level (orchestrator ~$0.90) but sub-agents thrashed, driving total cost to ~$9. Four design gaps in the current orchestration guidance (`.agents/inst...
+- ref: `.ticket/tickets/6a47ab0f-7e42-463e-afe0-bf51b85249c9/ticket.toml`
+
+<!-- ticket-index:entry id=bc52c543-8c3f-49de-a08b-6791caa65523 slug=new/agent-tooling digest=e75ff3e5b404 -->
+#### [bc52c543] Phase 2: automated auto-tuning of delegation thresholds from the quality/cost metric
+- summary: Phase 2 of the self-optimization loop: **automatically auto-tune the delegation cost-class thresholds** (ticket 373072a9) from the recorded quality/cost metric (ticket 8ad2581e), removing the human-a...
+- ref: `.ticket/tickets/bc52c543-8c3f-49de-a08b-6791caa65523/ticket.toml`
+
+<!-- ticket-index:entry id=ae313316-b790-4035-888c-d9f07499adb5 slug=new/agent-tooling digest=2e69d44c2edf -->
+#### [ae313316] Self-optimizing delegation & escalation policy for orchestrated sessions
+- summary: Extend the model price-awareness / orchestrator design (feature 445a2d76) with an explicit, self-optimizing policy that governs *when and how* an orchestrating agent delegates versus escalates inside...
+- ref: `.ticket/tickets/ae313316-b790-4035-888c-d9f07499adb5/ticket.toml`
+
+<!-- ticket-index:entry id=8c67b96a-b88f-4710-b8e2-f65e59c4e61e slug=new/agent-tooling digest=6663a01dd3ed -->
+#### [8c67b96a] Session handoff record should own the full handoff package; ticket should only reference it
+- summary: The persisted session handoff record is thin. `session_handoff` accepts only `workspace`, `workspace_session_id`, and a `validation[]` array of gates, producing a record with `handoff_id`, `outgoing_...
+- ref: `.ticket/tickets/8c67b96a-b88f-4710-b8e2-f65e59c4e61e/ticket.toml`
+
+<!-- ticket-index:entry id=9b0147e3-2a8e-437d-b839-6be6edcfa2aa slug=new/agent-tooling digest=90b74c88d675 -->
+#### [9b0147e3] Session-coupled feedback signal integration + implementation-status audit
+- summary: Integrate the **session-coupled feedback signal** into the delegation loop: the ability to flag specific problem spots and draw attention to particular scenarios, which is mostly coupled to a session.
+- ref: `.ticket/tickets/9b0147e3-2a8e-437d-b839-6be6edcfa2aa/ticket.toml`
+
+<!-- ticket-index:entry id=77eb143b-0322-4c91-b3c4-deccc2b2927c slug=new/agent-tooling digest=555498d1a7ee -->
+#### [77eb143b] [delegation-cost] Enforce MCP-over-shell in agent templates: 116 of 298 terminal calls were substitutable
+- priority: `high`
+- summary: `run_in_terminal` was the single most-used tool in both analysed sessions — 177 calls in `3e9bc20b`, 121 in `41966513`. Classifying every command shows most of it duplicated capabilities already load...
+- ref: `.ticket/tickets/77eb143b-0322-4c91-b3c4-deccc2b2927c/ticket.toml`
+
+<!-- ticket-index:entry id=46d8b25d-e80c-4170-9601-1c26a7a0bcb8 slug=new/agent-tooling digest=df65414d2039 -->
+#### [46d8b25d] [delegation-cost] Move quality gates before dispatch: ~130 turns of rework came from post-delegation blocks
+- priority: `high`
+- summary: The Orchestrator Agent template grants `tools: [agent]` only — it can plan and delegate, nothing else. In both analysed sessions it made **zero** tool calls. That purity is expensive: every precondit...
+- ref: `.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml`
+
+<!-- ticket-index:entry id=cc3324c9-1da4-4a21-90d0-4128074108b2 slug=new/agent-tooling digest=c8b77fec2528 -->
+#### [cc3324c9] [delegation-cost] Pass a shared context bundle to fan-out siblings instead of each rediscovering it
+- priority: `high`
+- summary: Sub-agents are spawned with no shared context, so each rediscovers the same artifacts independently. The orchestrator already holds the digest and does not pass it down.
+- ref: `.ticket/tickets/cc3324c9-1da4-4a21-90d0-4128074108b2/ticket.toml`
+
+<!-- ticket-index:entry id=cd19fed4-44d5-4ef0-848c-19753f1539b0 slug=new/agent-tooling digest=723fd2de638f -->
+#### [cd19fed4] [delegation-cost] Scope MCP tool grants per agent template and restore lazy tool discovery for sub-agents
+- priority: `high`
+- summary: Every sub-agent spawned in sessions `3e9bc20b` and `41966513` carried the full MCP tool surface. Empirical probe from subagent `[2]` in `41966513`:
+- ref: `.ticket/tickets/cd19fed4-44d5-4ef0-848c-19753f1539b0/ticket.toml`
+
+<!-- ticket-index:entry id=79c4ac3e-fd53-48bf-babb-43d27555c4bd slug=new/agent-tooling digest=dda513a37022 -->
+#### [79c4ac3e] [delegation-cost][epic] Sub-agent delegation is more expensive than the orchestration it replaces
+- priority: `high`
+- summary: Two orchestrated sessions ran in parallel on 2026-07-27 and were unexpectedly expensive. The cost was **not** in the top-level orchestrator — it made **zero** tool calls in both sessions and only pla...
+- ref: `.ticket/tickets/79c4ac3e-fd53-48bf-babb-43d27555c4bd/ticket.toml`
+
+<!-- ticket-index:entry id=fb14754e-2be8-40a5-a995-488842ba6367 slug=new/agent-tooling digest=dc1feed5dfc8 -->
+#### [fb14754e] [delegation-cost][handoff] Carry verified physical repo paths in handoff packages and delegation prompts
+- priority: `high`
+- summary: Handoff packages and delegation prompts name crates and components but not their physical location. Sub-agents then guess, fail, and fall back to expensive shell exploration.
+- ref: `.ticket/tickets/fb14754e-2be8-40a5-a995-488842ba6367/ticket.toml`
+
+<!-- ticket-index:entry id=66acb737-71d6-4585-a921-b597f7c88e8e slug=new/agent-tooling digest=c9f9e933e9af -->
+#### [66acb737] [delegation-cost][model-routing] Declare `model:` per agent template; all 24 delegations ran on the same tier
+- priority: `high`
+- summary: All 24 delegations across sessions `3e9bc20b` and `41966513` passed `model: "Claude Sonnet 4.5 (copilot)"`. Not one used a cheaper tier.
+- ref: `.ticket/tickets/66acb737-71d6-4585-a921-b597f7c88e8e/ticket.toml`
 
 <!-- ticket-index:entry id=0dd23fe6-6892-4d21-9927-4a81584dc77a slug=new/agent-tooling digest=31f7ea3cf674 -->
 #### [0dd23fe6] [token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features
 - priority: `medium`
 - summary: Audit the currently active execute-style MCP surfaces and adjacent terminal-execution tooling to determine whether they already support terminal reuse, follow-up input, resumable execution, or persis...
 - ref: `.ticket/tickets/0dd23fe6-6892-4d21-9927-4a81584dc77a/ticket.toml`
+
+<!-- ticket-index:entry id=9b9df133-d809-4900-b56a-afae4efcdd08 slug=new/agent-tooling digest=9afb691cf2f2 -->
+#### [9b9df133] [token-efficiency] Track token-efficient agent tooling rollout
+- priority: `high`
+- summary: Goal: coordinate the workspace-wide token-efficiency rollout for agent-facing tooling and guidance.
+- ref: `.ticket/tickets/9b9df133-d809-4900-b56a-afae4efcdd08/ticket.toml`
+
+<!-- ticket-index:entry id=b8ce7cd8-50d0-4233-8584-3af2a27c07d1 slug=new/agent-tooling digest=a05b5f1a6bb9 -->
+#### [b8ce7cd8] file editing: context-anchored differential patching tool suite (api + cli + mcp)
+- summary: Crate name**: `edit-api` (api crate); `edit-cli` (CLI transport); `edit-mcp` (MCP transport).
+- ref: `.ticket/tickets/b8ce7cd8-50d0-4233-8584-3af2a27c07d1/ticket.toml`
+
+<!-- ticket-index:entry id=244c3113-e28f-44d7-b9a8-f5dd45d2895c slug=new/agent-tooling digest=15e9d4bbae41 -->
+#### [244c3113] filesystem operations: bounded list/stat/move tool suite (api + cli + mcp)
+- summary: Crate name**: `fs-api` (api crate); `fs-cli` (CLI transport); `fs-mcp` (MCP transport).
+- ref: `.ticket/tickets/244c3113-e28f-44d7-b9a8-f5dd45d2895c/ticket.toml`
+
+<!-- ticket-index:entry id=bd71ecc7-4631-407c-a156-d1d77de2ca33 slug=new/agent-tooling digest=3cf71c6804fb -->
+#### [bd71ecc7] repo-wide search: bounded counts-first search tool suite (api + cli + mcp)
+- summary: Crate name**: `search-api` (api crate); `search-cli` (CLI transport); `search-mcp` (MCP transport).
+- ref: `.ticket/tickets/bd71ecc7-4631-407c-a156-d1d77de2ca33/ticket.toml`
 
 
 ### Component: agent-workflow
@@ -3204,13 +4645,22 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/f18e6885-c193-4159-82c5-d164e470437b/ticket.toml`
 
 
+### Component: audit
+
+<!-- ticket-index:entry id=afb71e41-95a2-4881-bf6c-7e7e3c96056d slug=new/audit digest=cc1b08439224 -->
+#### [afb71e41] [workflow-tools][per-tool] Extract audit tool as a single `audit` domain crate (api + transport bins)
+- priority: `high`
+- summary: Phase B. Extract the audit tool into its own `audit` repository (owner mankinskin), built as a single `audit` domain crate per contract `0da6894c`: the crate lib re-exports the internal `audit-api` c...
+- ref: `.ticket/tickets/afb71e41-95a2-4881-bf6c-7e7e3c96056d/ticket.toml`
+
+
 ### Component: audit-api
 
-<!-- ticket-index:entry id=632974d1-ce70-446a-b210-068840041116 slug=new/audit-api digest=a22dec2cfee6 -->
+<!-- ticket-index:entry id=632974d1-ce70-446a-b210-068840041116 slug=new/audit-api digest=626ba7865261 -->
 #### [632974d1] [audit-mcp][audit-http] Workspace-resolution parity — nested-root awareness + pure transport
 - priority: `medium`
 - summary: Follow-up after the ticket-domain first run. Adopt the shared memory-api resolver + pure-transport pattern for the audit transports.
-- ref: `.ticket/tickets/632974d1-ce70-446a-b210-068840041116/ticket.toml`
+- ref: `memory-api/.ticket/tickets/632974d1-ce70-446a-b210-068840041116/ticket.toml`
 
 <!-- ticket-index:entry id=0d601ffd-73c9-4b1e-8f6f-05e32fd8c0ef slug=new/audit-api digest=80bcacf98d77 -->
 #### [0d601ffd] [memory-index] Audit index auto-rerun on file changes via git hooks
@@ -3245,6 +4695,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: tags: `#plan` `#context-api` `#context-cli` `#ux` `#read` `#cli` `#repl`
 - ref: `.ticket/tickets/b786f1f5-8d04-4586-8e30-a532069bbd81/ticket.toml`
 
+<!-- ticket-index:entry id=0727b7dd-b90b-4edb-8c16-2d6220506585 slug=new/context-api digest=477a73ef4864 -->
+#### [0727b7dd] Plan: Context API — master multi-phase architecture plan
+- summary: tags: `#context-api` `#architecture` `#multi-phase` `#api-design` `#plan`
+- ref: `.ticket/tickets/0727b7dd-b90b-4edb-8c16-2d6220506585/ticket.toml`
+
 
 ### Component: context-editor
 
@@ -3253,6 +4708,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `critical`
 - summary: A single-binary, GPU-accelerated tool that merges the log-viewer, doc-viewer,
 - ref: `.ticket/tickets/e7da478e-b18e-4551-a385-d39e81d09a41/ticket.toml`
+
+<!-- ticket-index:entry id=1b65d658-07d0-4d31-881b-6111321b5752 slug=new/context-editor digest=1f7fea616117 -->
+#### [1b65d658] SDF Item Cutting: CSG Shader Subtraction, Cut Particles & Liquid Glass Impact Feedback
+- priority: `high`
+- ref: `.ticket/tickets/1b65d658-07d0-4d31-881b-6111321b5752/ticket.toml`
 
 <!-- ticket-index:entry id=8922e00c-98ac-4604-ae01-29acca066b61 slug=new/context-editor digest=2ea01c22f08b -->
 #### [8922e00c] [context-editor] Epic: Direct SVO Ray Marching — Replace Tiled Forward+ Pipeline
@@ -3298,6 +4758,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Track completion of the v1 sandbox orchestration implementation after planning and design are complete.
 - ref: `.ticket/tickets/6bebc161-63e6-4177-9958-0e36ffcd92bc/ticket.toml`
+
+<!-- ticket-index:entry id=92741a14-d718-4f49-8843-040432a3d8da slug=new/context-engine digest=dfc6b9b95b6b -->
+#### [92741a14] [workflow-tools][context-engine] Reframe context-engine as a consuming example with workflow-tools as an installed dependency
+- priority: `high`
+- summary: Phase E. Reframe context-engine as an instantiated example of a target environment: it retains only the context-stack (context-api/insert/read/search/trace) plus its own generated artifacts, and cons...
+- ref: `.ticket/tickets/92741a14-d718-4f49-8843-040432a3d8da/ticket.toml`
 
 
 ### Component: context-insert
@@ -3403,10 +4869,19 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Regression** — this test was previously passing. It now panics.
 - ref: `.ticket/tickets/f8afe331-41e2-4563-ad6a-456837afb1f8/ticket.toml`
 
-<!-- ticket-index:entry id=f41f08a8-fad9-4a20-b3a4-58bc1cc4d6ef slug=new/context-trace digest=134db28c7ba8 -->
+<!-- ticket-index:entry id=f41f08a8-fad9-4a20-b3a4-58bc1cc4d6ef slug=new/context-trace digest=456c699ecdee -->
 #### [f41f08a8] [Bug] edge_repeated_single_char: panic — pattern width mismatch in T2w4 token (RC-3)
-- summary: cargo test -p context-cli --test cli_integration -- edge_repeated_single_char --nocapture
+- summary: The **public `context-cli` integration test now passes** because `context-api::read_sequence` was redirected through the corrected public exact-root insert path before reading the root back.
 - ref: `.ticket/tickets/f41f08a8-fad9-4a20-b3a4-58bc1cc4d6ef/ticket.toml`
+
+
+### Component: doc
+
+<!-- ticket-index:entry id=a57886e4-e076-4542-8b16-87dde43d62b0 slug=new/doc digest=1c2b0814e454 -->
+#### [a57886e4] [workflow-tools][per-tool] Extract doc tool as a single `doc` domain crate (api + transport bins) + viewer frontend
+- priority: `high`
+- summary: Phase B. Extract the doc tool into its own `doc` repository (owner mankinskin), built as a single `doc` domain crate per contract `0da6894c`: the crate lib re-exports the internal `doc-api` crate and...
+- ref: `.ticket/tickets/a57886e4-e076-4542-8b16-87dde43d62b0/ticket.toml`
 
 
 ### Component: doc-cli
@@ -3434,13 +4909,31 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/88cd4cb8-8b31-48b6-9c13-28522d939b0b/ticket.toml`
 
 
-### Component: feedback-api
+### Component: feedback
 
-<!-- ticket-index:entry id=c7542933-3052-45c8-99e6-3e09f40cc9b9 slug=new/feedback-api digest=3ed97d8fe0f1 -->
-#### [c7542933] [feedback-api] Core curation surface — URN usage counting + entity ratings (bootstrap gate)
+<!-- ticket-index:entry id=bdd35984-235a-45eb-971d-a57719bf2c74 slug=new/feedback digest=f0cf0c37d61f -->
+#### [bdd35984] [workflow-tools][per-tool] Extract feedback tool as a single `feedback` domain crate (api + transport bins)
 - priority: `high`
-- summary: This is the **minimal, self-contained core** of the feedback-api program that session bootstrapping gates on — NOT the full program. It exists so the session-bootstrap epic can depend on a small, shi...
-- ref: `.ticket/tickets/c7542933-3052-45c8-99e6-3e09f40cc9b9/ticket.toml`
+- summary: Phase B. Extract the feedback tool into its own `feedback` repository (owner mankinskin), built as a single `feedback` domain crate per contract `0da6894c`: the crate lib re-exports the internal `fee...
+- ref: `.ticket/tickets/bdd35984-235a-45eb-971d-a57719bf2c74/ticket.toml`
+
+
+### Component: interview
+
+<!-- ticket-index:entry id=f2882a13-58bd-4f42-b25c-092b564373c9 slug=new/interview digest=b74af329b32d -->
+#### [f2882a13] [workflow-tools][per-tool] Pre-create interview tool repo as a single `interview` domain crate skeleton (placeholder)
+- priority: `medium`
+- summary: Phase B. Pre-create the `interview` repository (owner mankinskin) as a placeholder for the interview tool, scaffolded per contract `0da6894c`: a single `interview` domain crate skeleton whose lib wil...
+- ref: `.ticket/tickets/f2882a13-58bd-4f42-b25c-092b564373c9/ticket.toml`
+
+
+### Component: log
+
+<!-- ticket-index:entry id=2736c3dc-ac19-4095-8a4a-e0a61340c58b slug=new/log digest=05ff68e0f4b0 -->
+#### [2736c3dc] [workflow-tools][per-tool] Extract log tool as a single `log` domain crate (api + transport bins) + viewer frontend
+- priority: `high`
+- summary: Phase B. Extract the log tool into its own `log` repository (owner mankinskin), built as a single `log` domain crate per contract `0da6894c`: the crate lib re-exports the internal `log-api` crate and...
+- ref: `.ticket/tickets/2736c3dc-ac19-4095-8a4a-e0a61340c58b/ticket.toml`
 
 
 ### Component: log-api
@@ -3450,6 +4943,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Add a first-class `log-api` for workflow validation log capture, indexing, and retrieval in the memory system.
 - ref: `.ticket/tickets/501d4932-a48e-4c8a-a4f3-8c31be0bdd23/ticket.toml`
+
+<!-- ticket-index:entry id=aa94d02e-9620-4db6-9974-36699cd56537 slug=new/log-api digest=3dcebb547746 -->
+#### [aa94d02e] [log-api] Add live indexing and search for active logs and journals
+- priority: `high`
+- summary: Add incremental indexing/search over active JSONL logs and operation journal metadata.
+- ref: `.ticket/tickets/aa94d02e-9620-4db6-9974-36699cd56537/ticket.toml`
 
 
 ### Component: log-viewer
@@ -3467,13 +4966,51 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/bf295665-a075-4cfb-9a86-f54e96918695/ticket.toml`
 
 
+### Component: mcp-cost-gate
+
+<!-- ticket-index:entry id=8c4d1d9c-1004-4539-9880-0a0e8aa03dd3 slug=new/mcp-cost-gate digest=352636b83de5 -->
+#### [8c4d1d9c] [mcp-cost-gate] Re-tune graded-cost calibration from real rollup data
+- summary: The graded cost-gate calibration constants shipped as provisional placeholders:
+- ref: `.ticket/tickets/8c4d1d9c-1004-4539-9880-0a0e8aa03dd3/ticket.toml`
+
+
 ### Component: memory-api
 
-<!-- ticket-index:entry id=39239e48-828a-41d8-a697-9cf02e980da9 slug=new/memory-api digest=db06937369b8 -->
+<!-- ticket-index:entry id=9faa3f5f-e2e1-469d-994e-1bb8b90d5ab4 slug=new/memory-api digest=8bbbf674738e -->
+#### [9faa3f5f] [delegation-cost][mcp] Unify `workspace` parameter semantics and make rejections actionable across spec-mcp/test-mcp
+- priority: `high`
+- summary: The `workspace` parameter is overloaded across the memory-api MCP servers. Read tools accept the slug `"default"`; write tools require an explicit absolute store path. Nothing in the tool schema says...
+- ref: `.ticket/tickets/9faa3f5f-e2e1-469d-994e-1bb8b90d5ab4/ticket.toml`
+
+<!-- ticket-index:entry id=35cd05c1-45f7-4d65-b943-7c000570928f slug=new/memory-api digest=089da5a4be58 -->
+#### [35cd05c1] [journal] Adapt move kernel journals to the generic operation-journal envelope
+- priority: `medium`
+- summary: Bridge the existing domain-neutral move kernel journal to the generalized operation-journal model without breaking current move APIs.
+- ref: `.ticket/tickets/35cd05c1-45f7-4d65-b943-7c000570928f/ticket.toml`
+
+<!-- ticket-index:entry id=39239e48-828a-41d8-a697-9cf02e980da9 slug=new/memory-api digest=e10a6e0a5029 -->
 #### [39239e48] [memory-api] Transport-layer workspace-resolution parity (tracker)
 - priority: `high`
 - summary: Make workspace resolution a generic memory-api capability consumed identically by every transport (cli, mcp, http) across every entity domain, and keep transports pure (parse + dispatch only). Fix th...
-- ref: `.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml`
+- ref: `memory-api/.ticket/tickets/39239e48-828a-41d8-a697-9cf02e980da9/ticket.toml`
+
+<!-- ticket-index:entry id=e268a1e8-3f3a-433f-b4a0-d58c590b8d29 slug=new/memory-api digest=22800552ba29 -->
+#### [e268a1e8] [memory-api][bootstrap] Implement core-profile minimal-store fixture and template smoke path
+- priority: `high`
+- summary: Implement one concrete core-profile fixture and template smoke path for newly bootstrapped durable stores so the foundational memory-store contract is exercised by code, not only by policy text.
+- ref: `.ticket/tickets/e268a1e8-3f3a-433f-b4a0-d58c590b8d29/ticket.toml`
+
+<!-- ticket-index:entry id=8ab31960-f3fa-4a2b-b2ac-f807e1a15fdc slug=new/memory-api digest=4502c7f8f169 -->
+#### [8ab31960] [memory-api][ticket-api][ticket-cli][ticket-mcp][ticket-http] Implement expressive ticket query and ordering
+- priority: `high`
+- summary: The repository has the pieces of a query engine, but not the complete interface needed for focused ticket discovery.
+- ref: `.ticket/tickets/8ab31960-f3fa-4a2b-b2ac-f807e1a15fdc/ticket.toml`
+
+<!-- ticket-index:entry id=d893ed4c-a6a2-4fe4-94c5-175d4da13a9b slug=new/memory-api digest=e0111595caac -->
+#### [d893ed4c] [ticket-mcp][memory-api] Enumerate discovered descendant stores in list_workspaces for viewer domain selection
+- priority: `medium`
+- summary: W7. Descendant .ticket stores are already discovered and folded into the aggregated default index (verified: memory-viewers/viewer-api/memory-api tickets appear in .ticket/index.toon), but list_works...
+- ref: `memory-viewers/.ticket/tickets/d893ed4c-a6a2-4fe4-94c5-175d4da13a9b/ticket.toml`
 
 
 ### Component: memory-index
@@ -3485,12 +5022,47 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/64bffa35-b622-452e-a469-5330d912ae8c/ticket.toml`
 
 
+### Component: model-prices
+
+<!-- ticket-index:entry id=2ac80674-fee8-43a9-b858-5f75f0221e41 slug=new/model-prices digest=1cd47a271f69 -->
+#### [2ac80674] [repo-hygiene] Untrack committed cost_gate .pyc and gitignore __pycache__
+- summary: `tools/model-prices/__pycache__/cost_gate.cpython-314.pyc` is tracked in git (committed in 086f8b62 and updated in 9af02308). There is no `.pyc` / `__pycache__` entry in `.gitignore`, so compiled Pyt...
+- ref: `.ticket/tickets/2ac80674-fee8-43a9-b858-5f75f0221e41/ticket.toml`
+
+
 ### Component: ngrams
 
 <!-- ticket-index:entry id=a25e3cad-5bf2-4432-9c89-3a6dd67ee774 slug=new/ngrams digest=8066bae7330c -->
 #### [a25e3cad] Plan: ngrams oracle validation — compare ngrams against oracle
 - summary: tags: `#plan` `#testing` `#validation` `#ngrams` `#context-read` `#context-api` `#integration`
 - ref: `.ticket/tickets/a25e3cad-5bf2-4432-9c89-3a6dd67ee774/ticket.toml`
+
+
+### Component: observability
+
+<!-- ticket-index:entry id=bce26d30-0a79-40b4-812a-c14b4a246de5 slug=new/observability digest=c7816e8a7210 -->
+#### [bce26d30] [docs-tests] Validate unified logging and journaling architecture end to end
+- priority: `medium`
+- summary: Create the documentation and validation matrix for the unified logging and journaling design.
+- ref: `.ticket/tickets/bce26d30-0a79-40b4-812a-c14b4a246de5/ticket.toml`
+
+
+### Component: peek
+
+<!-- ticket-index:entry id=6af0deab-3390-4b64-a6ae-35bed5d29730 slug=new/peek digest=bd8164c221c3 -->
+#### [6af0deab] [workflow-tools][per-tool] Extract peek tool as a single `peek` domain crate (api + transport bins incl. compact-terminal)
+- priority: `medium`
+- summary: Phase B. Extract the peek tool into its own `peek` repository (owner mankinskin), built as a single `peek` domain crate per contract `0da6894c`: the crate lib re-exports the internal `peek-api` crate...
+- ref: `.ticket/tickets/6af0deab-3390-4b64-a6ae-35bed5d29730/ticket.toml`
+
+
+### Component: performance-validation
+
+<!-- ticket-index:entry id=ef3f4a91-734f-47aa-a9cf-fdfdb60ac2db slug=new/performance-validation digest=241752891652 -->
+#### [ef3f4a91] [profiling] Performance profiling & benchmark matrix (tracker)
+- priority: `high`
+- summary: Parent tracker for performance profiling and benchmarking across context-engine and the viewer platform. It combines native storage/transport measurement with browser/WASM rendering evidence without ...
+- ref: `.ticket/tickets/ef3f4a91-734f-47aa-a9cf-fdfdb60ac2db/ticket.toml`
 
 
 ### Component: repo-guidance
@@ -3519,6 +5091,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: `memory-viewers` is the aggregate repo root for the generated family, but its README target still has a bespoke structure and its child-block behavior needs to be normalized after the child repos ado...
 - ref: `.ticket/tickets/26f570e2-6a2f-4604-9347-a3ac7d0314c3/ticket.toml`
 
+<!-- ticket-index:entry id=7b8d2e81-6f00-486c-a839-ca5eb77dc109 slug=new/repo-guidance digest=2b00dee376a5 -->
+#### [7b8d2e81] [readmes][generated-repos] Adopt shared README schema in memory-viewers family
+- priority: `high`
+- summary: The already-generated README surfaces in `memory-api`, `viewer-api`, and `memory-viewers` still use bespoke target layouts. They need to adopt the shared schema and fill the missing parent or child n...
+- ref: `.ticket/tickets/7b8d2e81-6f00-486c-a839-ca5eb77dc109/ticket.toml`
+
 <!-- ticket-index:entry id=95a12f97-dc32-4835-a87a-5e24574be951 slug=new/repo-guidance digest=f962f16ef670 -->
 #### [95a12f97] [readmes][manual-repos] Migrate root and context-stack README trees to rule generation
 - priority: `high`
@@ -3544,7 +5122,22 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/ca30f696-e8a0-4904-9a1d-a507e9ef6147/ticket.toml`
 
 
+### Component: rule
+
+<!-- ticket-index:entry id=21893f5f-e57f-4cdf-b5de-39f42ae5d89d slug=new/rule digest=5f404377772e -->
+#### [21893f5f] [workflow-tools][per-tool] Extract rule tool as a single `rule` domain crate (api + transport bins)
+- priority: `high`
+- summary: Phase B. Extract the rule tool into its own `rule` repository (owner mankinskin), built as a single `rule` domain crate per contract `0da6894c`: the crate lib re-exports the internal `rule-api` crate...
+- ref: `.ticket/tickets/21893f5f-e57f-4cdf-b5de-39f42ae5d89d/ticket.toml`
+
+
 ### Component: rule-api
+
+<!-- ticket-index:entry id=f15d9e8b-72d2-44d9-965d-9fecbbc02d7f slug=new/rule-api digest=9cfb55325aeb -->
+#### [f15d9e8b] Build rule-api for generated agent instruction docs
+- priority: `high`
+- summary: Agent-facing markdown guidance is duplicated across context-engine, memory-viewers, memory-api, and viewer-api. The duplicated files are currently copy-pasted and several are byte-identical. This cre...
+- ref: `memory-api/.ticket/tickets/f15d9e8b-72d2-44d9-965d-9fecbbc02d7f/ticket.toml`
 
 <!-- ticket-index:entry id=0ec7d37a-2357-44c4-bc7c-4839ec01afec slug=new/rule-api digest=c61fc5bc5870 -->
 #### [0ec7d37a] [memory-index] Rule catalog: single-line entries, three-segment group keys, collapsible groups, clickable rule links
@@ -3552,11 +5145,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Improve the `.rule/README.md` generated index so each entry is a single compact line ordered by section/slug tree rather than UUID, with collapsible slug-prefix groups.
 - ref: `.ticket/tickets/0ec7d37a-2357-44c4-bc7c-4839ec01afec/ticket.toml`
 
-<!-- ticket-index:entry id=1fd0c182-f4b4-486b-b757-fe47e3238e43 slug=new/rule-api digest=6751bf0c0111 -->
+<!-- ticket-index:entry id=1fd0c182-f4b4-486b-b757-fe47e3238e43 slug=new/rule-api digest=e712956f5640 -->
 #### [1fd0c182] [rule-mcp][rule-http] Workspace-resolution parity — nested-root awareness + pure transport
 - priority: `medium`
 - summary: Follow-up after the ticket-domain first run. Adopt the shared memory-api resolver + pure-transport pattern for the rule transports.
-- ref: `.ticket/tickets/1fd0c182-f4b4-486b-b757-fe47e3238e43/ticket.toml`
+- ref: `memory-api/.ticket/tickets/1fd0c182-f4b4-486b-b757-fe47e3238e43/ticket.toml`
 
 
 ### Component: search
@@ -3567,7 +5160,22 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `memory-api/.ticket/tickets/ee43f72e-53ef-4937-8216-92e17f185d85/ticket.toml`
 
 
+### Component: session
+
+<!-- ticket-index:entry id=94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25 slug=new/session digest=33ab7bdf39a9 -->
+#### [94de0e62] [workflow-tools][per-tool] Extract session tool as a single `session` domain crate (api + transport bins)
+- priority: `high`
+- summary: Phase B. Extract the session tool into its own `session` repository (owner mankinskin), built as a single `session` domain crate per contract `0da6894c`: the crate lib re-exports the internal `sessio...
+- ref: `.ticket/tickets/94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25/ticket.toml`
+
+
 ### Component: session-api
+
+<!-- ticket-index:entry id=b7c61f0e-ed42-4eef-8d3b-da934d7c0628 slug=new/session-api digest=0d46a093d12f -->
+#### [b7c61f0e] [delegation-cost][session-api] Promote the sub-agent cost analyzer into session-api with real token attribution
+- priority: `high`
+- summary: The entire analysis behind epic `79c4ac3e` was produced by an ad-hoc script written into `tmp/subagent_cost_probe.py` during a single session. It is not durable, not tested, and not reachable from an...
+- ref: `.ticket/tickets/b7c61f0e-ed42-4eef-8d3b-da934d7c0628/ticket.toml`
 
 <!-- ticket-index:entry id=857593ec-11d6-4c73-b5d8-7bf3b7eadd37 slug=new/session-api digest=b648a650e37f -->
 #### [857593ec] [session-api] Token-efficient transcript range peeking
@@ -3581,11 +5189,92 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Provide a token-efficient way to inspect the structure of a session transcript by returning only the metadata/signatures of turns (sequence, role, captured_at, tool_name, and content length/summary) ...
 - ref: `.ticket/tickets/8cfdce69-a8b5-49dd-8ad7-96518bf0b8cc/ticket.toml`
 
+<!-- ticket-index:entry id=a6f17580-f7ea-4c4e-92e7-0c77c68185fe slug=new/session-api digest=da40fd430dd2 -->
+#### [a6f17580] [session-api][handoff] Add narrative/blockers/new_entities fields to SessionHandoffRecord model
+- priority: `high`
+- summary: Extend the `SessionHandoffRecord` schema with the durable knowledge-transfer payload (subticket 1 of `6431985e`). Model + serde only — no population logic.
+- ref: `memory-api/.ticket/tickets/a6f17580-f7ea-4c4e-92e7-0c77c68185fe/ticket.toml`
+
+<!-- ticket-index:entry id=96f9ffaa-6514-480a-afbd-b345cc206863 slug=new/session-api digest=97e896d9e848 -->
+#### [96f9ffaa] [session-api][handoff] Delta handoff serialization and workflow snapshot schema cleanup
+- priority: `low`
+- summary: Reduce handoff record size and remove structural smells so inter-agent records are compact and clean. **This is now a tracker parent decomposed into 2 subtickets** because it bundles one low-risk cle...
+- ref: `memory-api/.ticket/tickets/96f9ffaa-6514-480a-afbd-b345cc206863/ticket.toml`
+
+<!-- ticket-index:entry id=89d1f983-5081-4bfa-b22d-9398c5aae58c slug=new/session-api digest=375af07c6d80 -->
+#### [89d1f983] [session-api][handoff] Delta/baseline handoff serialization with full reconstruct path
+- priority: `low`
+- summary: Make successive handoffs persist a compact delta instead of re-serializing ~97% identical bytes (subticket 2 of `96f9ffaa`). Depends on the schema cleanup (subticket 1) so the delta is defined over t...
+- ref: `memory-api/.ticket/tickets/89d1f983-5081-4bfa-b22d-9398c5aae58c/ticket.toml`
+
+<!-- ticket-index:entry id=68c8a5ef-fc7e-4700-956e-aea832c85011 slug=new/session-api digest=cc64dadf403d -->
+#### [68c8a5ef] [session-api][handoff] Flatten SessionWorkflowSnapshot and drop denormalized live_ticket_state
+- priority: `low`
+- summary: Remove the two structural smells in the handoff workflow snapshot (subticket 1 of `96f9ffaa`) — low-risk schema cleanup, independent of the delta work.
+- ref: `memory-api/.ticket/tickets/68c8a5ef-fc7e-4700-956e-aea832c85011/ticket.toml`
+
+<!-- ticket-index:entry id=0d3fdba6-45e6-4129-84f7-d98324c9519d slug=new/session-api digest=88851cad272d -->
+#### [0d3fdba6] [session-api][handoff] Handoff completeness gate for session-created and owned entities
+- priority: `medium`
+- summary: Prevent a handoff from being "stale at birth" by detecting durable entities the run created or owned that are absent from the workflow graph and pinned entities.
+- ref: `memory-api/.ticket/tickets/0d3fdba6-45e6-4129-84f7-d98324c9519d/ticket.toml`
+
+<!-- ticket-index:entry id=6431985e-e729-426b-9f91-66ad4b1c6fe6 slug=new/session-api digest=93e1ce8a957c -->
+#### [6431985e] [session-api][handoff] Persist blockers, resolved validation outcome, and structured narrative in handoff record
+- priority: `high`
+- summary: Make `SessionHandoffRecord` carry the durable knowledge-transfer payload that spec `8c880efc` AC5 and ticket `0647a212` scope already require, instead of stranding it in the chat transcript. **This i...
+- ref: `memory-api/.ticket/tickets/6431985e-e729-426b-9f91-66ad4b1c6fe6/ticket.toml`
+
+<!-- ticket-index:entry id=e8bdb7cf-6605-4879-ab48-2c67da57df65 slug=new/session-api digest=b65ab1211f90 -->
+#### [e8bdb7cf] [session-api][handoff] Populate resolved validation outcome and new_entities at handoff creation
+- priority: `high`
+- summary: Populate the resolved validation `outcome` and `new_entities` when a handoff record is created (subticket 2 of `6431985e`). Depends on the model fields from subticket 1.
+- ref: `memory-api/.ticket/tickets/e8bdb7cf-6605-4879-ab48-2c67da57df65/ticket.toml`
+
+<!-- ticket-index:entry id=41ed4585-5b1e-4681-96e8-4883ed140c18 slug=new/session-api digest=3db441ea55f3 -->
+#### [41ed4585] [session-api][handoff] Store handoffs as folders with handoff.json + rendered handoff.md
+- priority: `high`
+- summary: Store each handoff as a folder containing the canonical `handoff.json` plus a rendered `handoff.md`, so markdown handoffs sit next to the JSON for human review, feedback, and research loops (subticke...
+- ref: `memory-api/.ticket/tickets/41ed4585-5b1e-4681-96e8-4883ed140c18/ticket.toml`
+
+<!-- ticket-index:entry id=f77e35d8-8d74-4160-9ed0-85bf32c62a97 slug=new/session-api digest=d566e9e4e50e -->
+#### [f77e35d8] [session-api][handoff] Thread handoff narrative fields through CLI, MCP, and /handoff prompt
+- priority: `medium`
+- summary: Let agents supply structured handoff narrative through the surfaces instead of pasting prose into chat (subticket 3 of `6431985e`). Depends on model (subticket 1) and population (subticket 2).
+- ref: `memory-api/.ticket/tickets/f77e35d8-8d74-4160-9ed0-85bf32c62a97/ticket.toml`
+
+<!-- ticket-index:entry id=e731d333-7c11-4f9d-aec5-277c84be3796 slug=new/session-api digest=dcf1dabec50a -->
+#### [e731d333] [session-api][runtime] Resume-time pin resolution and dead-pin garbage collection
+- priority: `medium`
+- summary: Validate pinned entity URNs at init/resume and surface or prune unresolved pins instead of silently failing instruction rendering and carrying dead pins forward.
+- ref: `memory-api/.ticket/tickets/e731d333-7c11-4f9d-aec5-277c84be3796/ticket.toml`
+
+<!-- ticket-index:entry id=0a45bedb-6dfe-466e-893f-fddfd225f1f6 slug=new/session-api digest=71a60d732236 -->
+#### [0a45bedb] [session-api][store] Flatten session store layout, unify identity, and git-track durable artifacts
+- priority: `high`
+- summary: Collapse the `.session/runtime/workspaces/<workspace_session_id>/` layer so a session **owns** its runtime context and handoffs directly, all sessions share the single `.session/` store, and durable ...
+- ref: `memory-api/.ticket/tickets/0a45bedb-6dfe-466e-893f-fddfd225f1f6/ticket.toml`
+
 <!-- ticket-index:entry id=3d535b2c-7361-4f08-bfb4-63b0b3174afc slug=new/session-api digest=f05ec5bb1491 -->
 #### [3d535b2c] [session-api][workflow] Add prompt-time worktree bootstrap hook
 - priority: `high`
 - summary: Add a pre-session bootstrap hook that establishes the session and its authoritative
 - ref: `.ticket/tickets/3d535b2c-7361-4f08-bfb4-63b0b3174afc/ticket.toml`
+
+
+### Component: spec
+
+<!-- ticket-index:entry id=3d19a0a1-a845-54c0-acc5-e206b1cab457 slug=new/spec digest=fcad58397f0c -->
+#### [3d19a0a1] [feedback-followup][spec] Address mixed feedback on ce://default/spec/96bc688a-62ac-4083-923f-e507f2bb19fe
+- priority: `medium`
+- summary: Explicit feedback was recorded against `ce://default/spec/96bc688a-62ac-4083-923f-e507f2bb19fe` during session `6f9208a4-c40e-4010-abf8-023505b4bf97` (tool call `call_Dw8Ts8bDIwMgdLvrpN1JqRDp`).
+- ref: `.ticket/tickets/3d19a0a1-a845-54c0-acc5-e206b1cab457/ticket.toml`
+
+<!-- ticket-index:entry id=58576ac3-3180-485d-876f-60fb5c84180c slug=new/spec digest=3f9bf3644798 -->
+#### [58576ac3] [workflow-tools][per-tool] Extract spec tool as a single `spec` domain crate (api + transport bins) + viewer frontend
+- priority: `high`
+- summary: Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per contract `0da6894c`: the crate lib re-exports the internal `spec-api` crate...
+- ref: `.ticket/tickets/58576ac3-3180-485d-876f-60fb5c84180c/ticket.toml`
 
 
 ### Component: spec-api
@@ -3602,11 +5291,17 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Agents can now attach ratings and notes to canonical rule entries, but they still cannot attach feedback directly to native `spec-api` entities. Today the only supported workaround is to resolve a ge...
 - ref: `memory-api/.ticket/tickets/29bf9628-1dc5-4bb4-ae00-b7410dd52db5/ticket.toml`
 
-<!-- ticket-index:entry id=5318aedd-5188-4bfa-ad7d-a6d76e3243f1 slug=new/spec-api digest=7ec21dd45ef2 -->
+<!-- ticket-index:entry id=f4b1bf95-55bc-457f-93e9-1aaa05aa8814 slug=new/spec-api digest=dacdc2c4419d -->
+#### [f4b1bf95] [spec-api][refs] spec_refs_validate silently passes dangling .test guard-spec references
+- priority: `medium`
+- summary: Make `spec refs validate` catch references to non-existent test/validation guard specs instead of reporting a clean pass.
+- ref: `memory-api/.ticket/tickets/f4b1bf95-55bc-457f-93e9-1aaa05aa8814/ticket.toml`
+
+<!-- ticket-index:entry id=5318aedd-5188-4bfa-ad7d-a6d76e3243f1 slug=new/spec-api digest=2f7a90d26291 -->
 #### [5318aedd] [spec-mcp][spec-http] Workspace-resolution parity — nested-root awareness + pure transport
 - priority: `medium`
 - summary: Follow-up after the ticket-domain first run. Adopt the same shared memory-api resolver + pure-transport pattern for the spec transports.
-- ref: `.ticket/tickets/5318aedd-5188-4bfa-ad7d-a6d76e3243f1/ticket.toml`
+- ref: `memory-api/.ticket/tickets/5318aedd-5188-4bfa-ad7d-a6d76e3243f1/ticket.toml`
 
 <!-- ticket-index:entry id=f22d5297-3f60-4161-bf90-1eb56f3ced5d slug=new/spec-api digest=bfa52529ae73 -->
 #### [f22d5297] [spec] spec-api: list canonical component entities
@@ -3647,7 +5342,34 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `memory-api/.ticket/tickets/79b0ad85-c57d-4237-bc59-281fa1ad57f8/ticket.toml`
 
 
+### Component: test
+
+<!-- ticket-index:entry id=eab4cd40-e8b3-4d5e-8985-91e3ffce519b slug=new/test digest=cad9a7a5b1cc -->
+#### [eab4cd40] [workflow-tools][per-tool] Extract test tool as a single `test` domain crate (api + transport bins)
+- priority: `high`
+- summary: Phase B. Extract the test tool into its own `test` repository (owner mankinskin), built as a single `test` domain crate per contract `0da6894c`: the crate lib re-exports the internal `test-api` crate...
+- ref: `.ticket/tickets/eab4cd40-e8b3-4d5e-8985-91e3ffce519b/ticket.toml`
+
+
 ### Component: test-api
+
+<!-- ticket-index:entry id=01964def-4496-4155-9abe-eb4e9f0520d3 slug=new/test-api digest=99ec25b79f91 -->
+#### [01964def] [bench] Scale-sensitive latency fixtures + meaningful budgets
+- priority: `high`
+- summary: The parent exists because `ticket get` once took 96–107s. The current benchmark measures ~347ms on a 1-ticket fixture under a 2s budget — it cannot reproduce or flag that regression class. Add a scal...
+- ref: `memory-api/.ticket/tickets/01964def-4496-4155-9abe-eb4e9f0520d3/ticket.toml`
+
+<!-- ticket-index:entry id=1bc3982c-e0c2-4b6a-b809-aff4eb78d161 slug=new/test-api digest=50e233dd4ea1 -->
+#### [1bc3982c] [memory-api][test] Real end-to-end validation surface — transports, provenance, representative fixtures (sub-tracker)
+- priority: `high`
+- summary: Sub-tracker under `a0bc8bd8` (Unified validation & benchmark surface in test-api).
+- ref: `memory-api/.ticket/tickets/1bc3982c-e0c2-4b6a-b809-aff4eb78d161/ticket.toml`
+
+<!-- ticket-index:entry id=a0bc8bd8-3fe0-4768-a895-b1bacee42759 slug=new/test-api digest=196d32fb9919 -->
+#### [a0bc8bd8] [memory-api][test] Unified validation & benchmark surface in test-api (tracker)
+- priority: `high`
+- summary: Build one extensible, executable testing surface anchored in `test-api` that, at minimum, delivers:
+- ref: `memory-api/.ticket/tickets/a0bc8bd8-3fe0-4768-a895-b1bacee42759/ticket.toml`
 
 <!-- ticket-index:entry id=a72e3aca-1e95-4fc5-a5b9-701112dcc37e slug=new/test-api digest=dfa7c3964be3 -->
 #### [a72e3aca] [memory-index] Test store catalog generator
@@ -3660,6 +5382,45 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Add a first-class `test-api` for validation specifications and validation results in the memory system.
 - ref: `.ticket/tickets/5a4c2e4d-e7d9-4138-8f25-c699942f739a/ticket.toml`
+
+<!-- ticket-index:entry id=274c5119-02cb-4306-b017-b998659ea514 slug=new/test-api digest=6f5e632c0f17 -->
+#### [274c5119] [test-api] Backfill existing repo test/bench suites into the store
+- priority: `medium`
+- summary: Ingest the repo's actual `cargo test`/`cargo bench` corpus (and, eventually, TS/browser suites) so the test-api index reflects what actually runs — not just the ~14 hand-authored `vt-*` specs.
+- ref: `memory-api/.ticket/tickets/274c5119-02cb-4306-b017-b998659ea514/ticket.toml`
+
+<!-- ticket-index:entry id=8f364a0c-35ab-4faa-b49a-20d98b6f2905 slug=new/test-api digest=e4fda8859b59 -->
+#### [8f364a0c] [test-api][browser] Structured subprocess result adapter and artifact provenance
+- priority: `high`
+- summary: Implement the versioned structured reporter envelope and repository-native subprocess adapter specified by `test-api/browser-result-ingestion`.
+- ref: `memory-api/.ticket/tickets/8f364a0c-35ab-4faa-b49a-20d98b6f2905/ticket.toml`
+
+<!-- ticket-index:entry id=2dada4b7-e5c0-4fe5-be01-df9936659133 slug=new/test-api digest=eb350e13feb6 -->
+#### [2dada4b7] [test-api][ci] Test profiles + CI lanes — fast-on-push vs. large-on-demand
+- priority: `medium`
+- summary: Provide a **test-profile** mechanism that selects which validation/benchmark cells run, and wire two CI lanes (D6, D10):
+- ref: `memory-api/.ticket/tickets/2dada4b7-e5c0-4fe5-be01-df9936659133/ticket.toml`
+
+
+### Component: ticket
+
+<!-- ticket-index:entry id=d905b50a-c103-50c1-8552-509a014cc149 slug=new/ticket digest=e21ce0819392 -->
+#### [d905b50a] [feedback-followup][ticket] Address mixed feedback on ce://default/ticket/3c6da958-f494-408f-b7dd-cc43997b8ead
+- priority: `medium`
+- summary: Explicit feedback was recorded against `ce://default/ticket/3c6da958-f494-408f-b7dd-cc43997b8ead` during session `6f9208a4-c40e-4010-abf8-023505b4bf97` (tool call `call_xH9yX3C0tL8uxSpFxIhcG5wA`).
+- ref: `.ticket/tickets/d905b50a-c103-50c1-8552-509a014cc149/ticket.toml`
+
+<!-- ticket-index:entry id=eec6049b-5844-595c-8060-84c6a6103252 slug=new/ticket digest=a266735f14e6 -->
+#### [eec6049b] [feedback-followup][ticket] Address not-helpful feedback on ce://default/ticket/6a47ab0f-7e42-463e-afe0-bf51b85249c9
+- priority: `medium`
+- summary: Explicit feedback was recorded against `ce://default/ticket/6a47ab0f-7e42-463e-afe0-bf51b85249c9` during session `e31bd0e5-ab29-4e76-9284-5f3d2067f40c` (tool call `toolu_01Mx5YQM8t3Fb2CyqEFkGpNW`).
+- ref: `.ticket/tickets/eec6049b-5844-595c-8060-84c6a6103252/ticket.toml`
+
+<!-- ticket-index:entry id=ba4aaa9c-d270-4cfc-a1e2-395634608371 slug=new/ticket digest=32fa47caf4ab -->
+#### [ba4aaa9c] [workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends
+- priority: `high`
+- summary: Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-ap...
+- ref: `.ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml`
 
 
 ### Component: ticket-api
@@ -3675,6 +5436,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Tickets still exist with stale component values such as `log-viewer-leptos`, even though that component has been removed. `ticket-api` currently treats `fields.component` as a free-form string, so ou...
 - ref: `.ticket/tickets/f2285a55-91d1-48ad-9af7-e8c55ce9bd4d/ticket.toml`
 
+<!-- ticket-index:entry id=eb687360-5765-4efb-b3d6-380a7691fc66 slug=new/ticket-api digest=612285031aea -->
+#### [eb687360] [ticket-api] Review the added 'feature' delivered ticket type schema
+- summary: The graded cost-gate work added a new `feature` ticket type schema to shared ticketing infra without its own tracking ticket:
+- ref: `.ticket/tickets/eb687360-5765-4efb-b3d6-380a7691fc66/ticket.toml`
+
 <!-- ticket-index:entry id=de36ac72-7f86-44af-875b-fd92bd628be9 slug=new/ticket-api digest=3e28265e37f5 -->
 #### [de36ac72] [ticket-api][ticket-cli][ticket-mcp][ticket-http][ticket-viewer] Implement blocker trees and recently-unblocked ordering
 - priority: `high`
@@ -3686,18 +5452,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Harden workspace linking and search beyond the immediate bug fixes by closing the remaining design holes identified in review.
 - ref: `.ticket/tickets/ec9498ee-e7a0-4b93-9543-393ac48c08fa/ticket.toml`
-
-<!-- ticket-index:entry id=27558fde-37b0-43eb-86c6-cfbe2d99a0b8 slug=new/ticket-api digest=2c02a56b2eda -->
-#### [27558fde] [ticket-mcp][ticket-http] Workspace-resolution parity — nested-root awareness + pure transport (first run)
-- priority: `high`
-- summary: The **first** parity run. Establishes the shared-resolver adoption + pure-transport audit pattern that the spec/rule/audit domains will reuse.
-- ref: `.ticket/tickets/27558fde-37b0-43eb-86c6-cfbe2d99a0b8/ticket.toml`
-
-<!-- ticket-index:entry id=7599ed31-598e-458e-8651-9bfe6c57ffd9 slug=new/ticket-api digest=2913ab9ebabc -->
-#### [7599ed31] [ticket-store][cleanup] Migrate misplaced context-engine-workspace tickets into the memory-api store
-- priority: `high`
-- summary: Every entity must live in the **lowest-level store that contains all of the code the entity is concerned with**:
-- ref: `memory-api/.ticket/tickets/7599ed31-598e-458e-8651-9bfe6c57ffd9/ticket.toml`
 
 
 ### Component: ticket-api,audit-api
@@ -3797,11 +5551,23 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - ref: `memory-viewers/.ticket/tickets/d8694ff6-b6dc-4707-8f00-51bbdaf11c20/ticket.toml`
 
+<!-- ticket-index:entry id=c892904f-6aff-4892-baf1-1f832837cde5 slug=new/ticket-viewer digest=02889df5830a -->
+#### [c892904f] Tracker: ticket-viewer store observability roadmap
+- priority: `high`
+- summary: High-priority roadmap to improve observability of the internal stores through the ticket-viewer and shared viewer-api. Consolidates and refines fragmented existing planning into one tracked program.
+- ref: `memory-viewers/.ticket/tickets/c892904f-6aff-4892-baf1-1f832837cde5/ticket.toml`
+
 <!-- ticket-index:entry id=53a6d689-7d31-40ce-b807-4314285b4bfd slug=new/ticket-viewer digest=9cbe456a0ec4 -->
 #### [53a6d689] [ticket-viewer] Add mixed-workspace endpoint ownership matrix regression tests
 - priority: `high`
 - summary: Create endpoint-matrix regression tests that validate workspace ownership semantics for mixed-workspace ticket references.
 - ref: `.ticket/tickets/53a6d689-7d31-40ce-b807-4314285b4bfd/ticket.toml`
+
+<!-- ticket-index:entry id=1b0dbe8a-1828-41e7-b33f-4a066c3622bf slug=new/ticket-viewer digest=207423d08ee1 -->
+#### [1b0dbe8a] [ticket-viewer] Clickable parent/child neighbours in content panel with cache-driven graph retarget
+- priority: `high`
+- summary: W4. List immediate parents and children in the content panel; make them clickable to jump the selection to the linked node; the rendered graph must update from cache instead of fetching at click time.
+- ref: `memory-viewers/.ticket/tickets/1b0dbe8a-1828-41e7-b33f-4a066c3622bf/ticket.toml`
 
 <!-- ticket-index:entry id=a2f5460c-1e7e-481b-a250-e9def213ba55 slug=new/ticket-viewer digest=3714293cf92f -->
 #### [a2f5460c] [ticket-viewer] Explorer filtering + local keyboard follow-up
@@ -3826,11 +5592,23 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Clicking an expanded asset row in the ticket tree does not reliably propagate selected_file state and does not trigger the owning-workspace /asset follow-up request.
 - ref: `.ticket/tickets/0866e27f-ae67-4eb0-9199-00650317e7c3/ticket.toml`
 
+<!-- ticket-index:entry id=4629b9d9-3bd0-4ef6-82b6-d6e609c16cac slug=new/ticket-viewer digest=62d6862862c5 -->
+#### [4629b9d9] [ticket-viewer] Migrate list/detail/search flows to workspace-aware ticket references
+- priority: `high`
+- summary: >Frontend migration is in progress; root-route mixed-workspace history/files flow is validated and asset follow-up investigation continues.
+- ref: `memory-api/.ticket/tickets/4629b9d9-3bd0-4ef6-82b6-d6e609c16cac/ticket.toml`
+
 <!-- ticket-index:entry id=178b4091-53c9-45ae-b975-890a23b5f25d slug=new/ticket-viewer digest=a9205eba95a4 -->
 #### [178b4091] [ticket-viewer] Normalize release E2E suite to workspace-aware assumptions
 - priority: `medium`
 - summary: Reduce false confidence from legacy default-workspace assumptions by updating release E2E tests to workspace-aware ticket-reference behavior.
 - ref: `.ticket/tickets/178b4091-53c9-45ae-b975-890a23b5f25d/ticket.toml`
+
+<!-- ticket-index:entry id=e978d833-bbaa-4cb8-8c1a-52a282a079d9 slug=new/ticket-viewer digest=04939cb08c16 -->
+#### [e978d833] [ticket-viewer] Render bounded neighbourhood subgraph from cached full graph
+- priority: `high`
+- summary: W2. The immediate neighbourhood is hard to track when the full graph is rendered. Render only a focused set of nodes/edges within a limited distance of the selected node(s); load the full graph into ...
+- ref: `memory-viewers/.ticket/tickets/e978d833-bbaa-4cb8-8c1a-52a282a079d9/ticket.toml`
 
 <!-- ticket-index:entry id=c33419c2-3fff-4ce2-9b53-8882d6918e53 slug=new/ticket-viewer digest=90db49954c19 -->
 #### [c33419c2] [ticket-viewer] Tracker: complete mixed-workspace regression coverage
@@ -3843,15 +5621,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Upgrade the ticket-viewer main layout so ticket details render as a compact integrated document and the graph view becomes a focused full-workspace navigation surface with better layout, settings, an...
 - ref: `memory-viewers/.ticket/tickets/05dae5fd-1a1d-4a64-be62-f29ca0771a4d/ticket.toml`
-
-
-### Component: ticket-vscode
-
-<!-- ticket-index:entry id=44abe1d4-5727-45f8-be3b-d1ca5bf4c1ae slug=new/ticket-vscode digest=7b1e44ea475d -->
-#### [44abe1d4] [ticket-vscode] Move ticket 694d74b4 into the memory-api workspace store
-- priority: `medium`
-- summary: Relocate ticket `694d74b4-028b-4602-8090-d6200d577d4a` ("[ticket-vscode] Integrate Rust/WASM core into TS hosts and remove replaced legacy logic") from the root store into the memory-api store so it ...
-- ref: `memory-api/.ticket/tickets/44abe1d4-5727-45f8-be3b-d1ca5bf4c1ae/ticket.toml`
 
 
 ### Component: ticket-workflow
@@ -3879,6 +5648,22 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 
 ### Component: unspecified
+
+<!-- ticket-index:entry id=1157638e-edfe-4d29-a6ac-fc73010d5dd8 slug=new/unspecified digest=5ea918981558 -->
+#### [1157638e] Auto-populate active-model marker for price-awareness enforcement (VS Code updater)
+- summary: Automatically populate the active-model marker that drives price-awareness enforcement, so no manual entry or prompt is ever needed.
+- ref: `.ticket/tickets/1157638e-edfe-4d29-a6ac-fc73010d5dd8/ticket.toml`
+
+<!-- ticket-index:entry id=1211b2d8-93f9-4b1a-8973-10ee9937ba3d slug=new/unspecified digest=0c224fed9f40 -->
+#### [1211b2d8] Combat System: SDF Hit Detection, Damage Model & Voxel Destruction VFX
+- priority: `high`
+- summary: Combat in this RPG uses real-time SDF collision between weapon swings and player/NPC capsules. There are no hitboxes or animation frames — a weapon's SDF sweep volume is tested against target SDFs on...
+- ref: `.ticket/tickets/1211b2d8-93f9-4b1a-8973-10ee9937ba3d/ticket.toml`
+
+<!-- ticket-index:entry id=14c0995c-1113-46dc-b924-82f0175628fc slug=new/unspecified digest=ccce929a0a6e -->
+#### [14c0995c] Decouple agent-customization file creation from the rule system
+- summary: Guidance across the repo still implied that creating or editing agent-customization files (`.agents/instructions/*.instructions.md`, `.agents/prompts/*.prompt.md`, `.agents/agents/*.agent.md`, `.agen...
+- ref: `.ticket/tickets/14c0995c-1113-46dc-b924-82f0175628fc/ticket.toml`
 
 <!-- ticket-index:entry id=03b7ce45-f2cb-4a5f-9b57-ef4c442b3515 slug=new/unspecified digest=9b00cde2f2f7 -->
 #### [03b7ce45] Dioxus theme settings: Background Smoke section
@@ -3910,10 +5695,26 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The shared canonical theme settings spec (`viewer-api/theme-settings`) requires per-effect
 - ref: `.ticket/tickets/fe9b450e-94c2-4d01-9ac9-ff993f45a591/ticket.toml`
 
-<!-- ticket-index:entry id=def88d4e-8a3c-45bc-82c8-bdacae01a479 slug=new/unspecified digest=7e5166367259 -->
+<!-- ticket-index:entry id=b13c5d89-db09-46e7-9061-dbed85c4ab41 slug=new/unspecified digest=28c3224ce3c5 -->
+#### [b13c5d89] Epic: Agent Skill Foundation — contract, adopt proven skills, author Dioxus, migrate off rule generator
+- summary: Foundation slice of the agent skill infrastructure, unblocking the critical path (ingestion debug tooling -> context/log UI -> UI dev/test/review loop).
+- ref: `.ticket/tickets/b13c5d89-db09-46e7-9061-dbed85c4ab41/ticket.toml`
+
+<!-- ticket-index:entry id=def88d4e-8a3c-45bc-82c8-bdacae01a479 slug=new/unspecified digest=dce87e7a03cf -->
 #### [def88d4e] Epic: Unified Logging Infrastructure — file sinks, search, Mermaid, table, Dioxus frontend
 - summary: Provide every viewer-api tool and context-* crate with consistent, queryable, structured logging.
 - ref: `.ticket/tickets/def88d4e-8a3c-45bc-82c8-bdacae01a479/ticket.toml`
+
+<!-- ticket-index:entry id=612f9dd7-e2d7-48fe-9825-d2283d4bb3fa slug=new/unspecified digest=5ee6f8589ac4 -->
+#### [612f9dd7] Fix viewer-api sync-targets false drift on 798c9a3c body
+- summary: Investigate false-drift failure in aggregated `rule sync-targets --config rule-targets.yaml --check` for viewer-api recurring-principles body target.
+- ref: `.ticket/tickets/612f9dd7-e2d7-48fe-9825-d2283d4bb3fa/ticket.toml`
+
+<!-- ticket-index:entry id=3fec54f1-9c8f-4059-a366-7da6e9a1a645 slug=new/unspecified digest=0378cc84034d -->
+#### [3fec54f1] Force Compute Shader & SVO Collision
+- priority: `high`
+- summary: Particles must respond to complex physical forces (explosions, attraction, vortices) efficiently on the GPU. Furthermore, they need to physically collide with the Sparse Voxel Octree (SVO), bouncing ...
+- ref: `.ticket/tickets/3fec54f1-9c8f-4059-a366-7da6e9a1a645/ticket.toml`
 
 <!-- ticket-index:entry id=80afa16d-2ea9-4eff-96be-8c4f044ff159 slug=new/unspecified digest=4fc3f60926fd -->
 #### [80afa16d] Probe Ticket
@@ -3960,10 +5761,10 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Group ticket-api, ticket-http, and ticket-mcp mutation and storage-surface work under a single parent so related graph, mutation, and round-trip issues share a coherent backlog home.
 - ref: `memory-api/.ticket/tickets/0af903c0-4f97-4773-b277-51dcf278b1f0/ticket.toml`
 
-<!-- ticket-index:entry id=40ba5a15-df3c-42f2-8825-bd43bd66fce7 slug=new/unspecified digest=c0b0fb4c2e34 -->
+<!-- ticket-index:entry id=40ba5a15-df3c-42f2-8825-bd43bd66fce7 slug=new/unspecified digest=2dd3ed5401be -->
 #### [40ba5a15] Project tracker: ticket CLI and next-work backlog
 - summary: Group the ticket CLI, board, MCP, and next-work backlog items under one parent so the discovery and workflow contract is represented in the dependency graph.
-- ref: `.ticket/tickets/40ba5a15-df3c-42f2-8825-bd43bd66fce7/ticket.toml`
+- ref: `memory-api/.ticket/tickets/40ba5a15-df3c-42f2-8825-bd43bd66fce7/ticket.toml`
 
 <!-- ticket-index:entry id=171eb277-3270-4d52-8283-10cf3dd939b9 slug=new/unspecified digest=c4d770110e4e -->
 #### [171eb277] Project tracker: ticket UX surfaces backlog
@@ -4001,25 +5802,26 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Improved ticket-vscode error-state surfacing so provider failures now include caller context and the associated request details. The API client throws structured request errors with operation, method...
 - ref: `.ticket/tickets/ff2872ad-74be-4e5d-a7ba-416c73506252/ticket.toml`
 
+<!-- ticket-index:entry id=042109c0-8e0e-4585-9b58-37fdd345ce12 slug=new/unspecified digest=f104c8a7c58d -->
+#### [042109c0] Rust MCP middleware: require active model per request (supersedes file sync)
+- summary: Replace the fragile file-based model-identity mechanism with a **Rust MCP middleware** that requires the active model to be supplied **with every `tools/call`**. This removes shared mutable state (th...
+- ref: `.ticket/tickets/042109c0-8e0e-4585-9b58-37fdd345ce12/ticket.toml`
+
+<!-- ticket-index:entry id=89c3189b-381d-4020-8757-39a675791c20 slug=new/unspecified digest=45c5f7642052 -->
+#### [89c3189b] Skill System: Spell SDFs, Procedural Shader Effects & Volumetric Magic
+- priority: `high`
+- summary: Magic spells in this RPG are not pre-canned animations — they are transient SDF volumes injected into the ray-marching loop, generating real-time volumetric lighting, refraction, and physical effects...
+- ref: `.ticket/tickets/89c3189b-381d-4020-8757-39a675791c20/ticket.toml`
+
 <!-- ticket-index:entry id=1d8d82b5-8e40-463f-adaf-30d2f5625844 slug=new/unspecified digest=c742de2de502 -->
 #### [1d8d82b5] [LOG-1a] ticket-viewer: wire init_tracing_full with file logging to target/logs/"
 - summary: `tools/viewer/ticket-viewer/src/main.rs` calls `init_tracing("info,ticket_http::serve::handlers=debug")`. All structured log output goes to stderr only. When started in detached mode (default `viewer...
 - ref: `memory-viewers/.ticket/tickets/1d8d82b5-8e40-463f-adaf-30d2f5625844/ticket.toml`
 
-<!-- ticket-index:entry id=60a2a388-c8b6-4e25-a80a-0ba686f11bf9 slug=new/unspecified digest=5169234ff296 -->
-#### [60a2a388] [LOG-1b] doc-viewer + spec-viewer: wire init_tracing_full with file logging
-- summary: `doc-viewer` and `spec-viewer` (if they have `main.rs` entry points) currently use `init_tracing()` (console-only) or have no explicit tracing setup. Logs are lost in detached mode.
-- ref: `memory-viewers/.ticket/tickets/60a2a388-c8b6-4e25-a80a-0ba686f11bf9/ticket.toml`
-
 <!-- ticket-index:entry id=3b1345eb-9983-4567-a3ab-c2e00c7cec1e slug=new/unspecified digest=c50d7c9be473 -->
 #### [3b1345eb] [LOG-1c] viewer-ctl: add --log-dir and --log-level flags to start/restart
 - summary: There is no way to control the log directory or level for a viewer server launched via `viewer-ctl start` without modifying the binary's default env vars by hand. Operators cannot redirect logs to a ...
 - ref: `viewer-api/.ticket/tickets/3b1345eb-9983-4567-a3ab-c2e00c7cec1e/ticket.toml`
-
-<!-- ticket-index:entry id=12197242-b7b4-4212-83a8-4b0b65a4bd7b slug=new/unspecified digest=79cef2809504 -->
-#### [12197242] [LOG-2a] Audit and normalise context-* tracing field names for log-viewer compatibility
-- summary: The `crates/context-{insert,read,search,trace}` crates emit `tracing` spans and events but field names, targets, and event shapes are not uniform. The log-viewer parser (`crates/context-api/src/log_p...
-- ref: `memory-api/.ticket/tickets/12197242-b7b4-4212-83a8-4b0b65a4bd7b/ticket.toml`
 
 <!-- ticket-index:entry id=5b4330f6-f1d0-4e80-8a3e-296f557c5a99 slug=new/unspecified digest=160b76a4906e -->
 #### [5b4330f6] [LOG-2b] Add context-trace JSON format compatibility test against log-viewer parser
@@ -4140,30 +5942,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Migrate ticket-api internal usage to neutral shared APIs and define alias retirement gate.
 - ref: `.ticket/tickets/999d9316-fc79-4bb1-b629-7cba52eced31/ticket.toml`
 
-<!-- ticket-index:entry id=6bd67a7a-2a76-4dd7-a897-b4d325476621 slug=new/unspecified digest=c458c3e8bbfd -->
-#### [6bd67a7a] [architecture][workspace] Dynamic multi-store discovery and cross-store references
-- priority: `high`
-- summary: Implement recursive multi-store workspace discovery and cross-store reference integration with URN-based identities across local and nested workspaces.
-- ref: `.ticket/tickets/6bd67a7a-2a76-4dd7-a897-b4d325476621/ticket.toml`
-
-<!-- ticket-index:entry id=7e318b2a-a381-49a1-aee9-18758a4b80fd slug=new/unspecified digest=39a876862f0e -->
-#### [7e318b2a] [architecture][workspace] Late store onboarding reconciliation
-- priority: `high`
-- summary: Support absent-then-present store integration and late onboarding reconciliation.
-- ref: `.ticket/tickets/7e318b2a-a381-49a1-aee9-18758a4b80fd/ticket.toml`
-
-<!-- ticket-index:entry id=fa3e0a51-0caa-4a33-bfe2-1b173feaa979 slug=new/unspecified digest=c1967dc4fe99 -->
-#### [fa3e0a51] [architecture][workspace] Recursive automatic store discovery
-- priority: `high`
-- summary: Implement fully automatic recursive store discovery across local and nested workspaces.
-- ref: `.ticket/tickets/fa3e0a51-0caa-4a33-bfe2-1b173feaa979/ticket.toml`
-
-<!-- ticket-index:entry id=82d6ada4-ac35-45a7-9df6-7b7501d58e70 slug=new/unspecified digest=82adbd88d326 -->
-#### [82d6ada4] [architecture][workspace] URN cross-store reference model and resolver
-- priority: `high`
-- summary: Implement URN-based cross-store reference model and resolver APIs.
-- ref: `.ticket/tickets/82d6ada4-ac35-45a7-9df6-7b7501d58e70/ticket.toml`
-
 <!-- ticket-index:entry id=11fb9bcf-fcd5-4eff-b380-64b80f4a5c9c slug=new/unspecified digest=2df32043fb86 -->
 #### [11fb9bcf] [audit-api] Cleanup loop UX and automated remediation suggestions
 - priority: `high`
@@ -4206,6 +5984,71 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Plan the audit and operator-enforcement layer for validation-aware ticket graphs.
 - ref: `.ticket/tickets/8dbff37f-699b-4c91-bf65-6516ea6fe609/ticket.toml`
 
+<!-- ticket-index:entry id=edde88d6-ac19-4b89-a136-73602596f546 slug=new/unspecified digest=a8838a4b08cc -->
+#### [edde88d6] [audit-roadmap][2026-07-05] Full repository audit remediation tracker
+- summary: Drive the full 2026-07-05 audit baseline from 551 findings toward near-zero through ordered category execution and bounded implementation batches.
+- ref: `.ticket/tickets/edde88d6-ac19-4b89-a136-73602596f546/ticket.toml`
+
+<!-- ticket-index:entry id=f23c9450-1999-4fa2-9751-c67faa63fe00 slug=new/unspecified digest=92483a2464db -->
+#### [f23c9450] [audit-roadmap][file_length] Split oversized files
+- summary: Reduce file_length findings from 182 to zero using safe module splits and behavior-preserving moves.
+- ref: `.ticket/tickets/f23c9450-1999-4fa2-9751-c67faa63fe00/ticket.toml`
+
+<!-- ticket-index:entry id=936cdd9f-5736-468e-a41d-fa3da20b7e3d slug=new/unspecified digest=36faa610fddd -->
+#### [936cdd9f] [audit-roadmap][file_length][batch-2] context-stack (39)
+- summary: Resolve the current file_length batch for context-stack and reduce 39 findings from the baseline.
+- ref: `.ticket/tickets/936cdd9f-5736-468e-a41d-fa3da20b7e3d/ticket.toml`
+
+<!-- ticket-index:entry id=1abda9df-bb74-4c84-8b92-2a38d8731949 slug=new/unspecified digest=94240313fd38 -->
+#### [1abda9df] [audit-roadmap][file_length][batch-3] tools (27)
+- summary: Resolve the current file_length batch for tools and reduce 27 findings from the baseline.
+- ref: `.ticket/tickets/1abda9df-bb74-4c84-8b92-2a38d8731949/ticket.toml`
+
+<!-- ticket-index:entry id=5f7b2051-e577-4655-a9f8-02d0ea8b588c slug=new/unspecified digest=7c5464902d4e -->
+#### [5f7b2051] [audit-roadmap][file_length][batch-4] memory-viewers (19)
+- summary: Resolve the current file_length batch for memory-viewers and reduce 19 findings from the baseline.
+- ref: `.ticket/tickets/5f7b2051-e577-4655-a9f8-02d0ea8b588c/ticket.toml`
+
+<!-- ticket-index:entry id=7fbe52b5-ab69-4b3c-adaa-21d42cf26de8 slug=new/unspecified digest=d1258d8ef203 -->
+#### [7fbe52b5] [audit-roadmap][file_length][batch-5] viewer-api (7)
+- summary: Resolve the current file_length batch for viewer-api and reduce 7 findings from the baseline.
+- ref: `.ticket/tickets/7fbe52b5-ab69-4b3c-adaa-21d42cf26de8/ticket.toml`
+
+<!-- ticket-index:entry id=99bdcf44-58de-480d-ab9d-a1951c053400 slug=new/unspecified digest=a02ccae3a041 -->
+#### [99bdcf44] [audit-roadmap][static_complexity][batch-4] memory-viewers (7)
+- summary: Resolve the current static_complexity batch for memory-viewers and reduce 7 findings from the baseline.
+- ref: `.ticket/tickets/99bdcf44-58de-480d-ab9d-a1951c053400/ticket.toml`
+
+<!-- ticket-index:entry id=819f2e97-4cd4-410b-af3b-f196ba80d720 slug=new/unspecified digest=d4f2b295619e -->
+#### [819f2e97] [audit-roadmap][static_complexity][batch-5] viewer-api (6)
+- summary: Resolve the current static_complexity batch for viewer-api and reduce 6 findings from the baseline.
+- ref: `.ticket/tickets/819f2e97-4cd4-410b-af3b-f196ba80d720/ticket.toml`
+
+<!-- ticket-index:entry id=cb92b0d2-1361-44c6-8c92-fae3036ac97a slug=new/unspecified digest=35d005c92f5a -->
+#### [cb92b0d2] [audit-roadmap][ticket_graph][retro] Context-engine core work stream
+- summary: Groups historical context-engine work (context-read/search/trace/insert, expansion loop, partition merge, ngrams, CLI read UX, Graph3D visualization) that was tracked as standalone plans/designs/bugs.
+- ref: `.ticket/tickets/cb92b0d2-1361-44c6-8c92-fae3036ac97a/ticket.toml`
+
+<!-- ticket-index:entry id=02622207-e102-4fae-b705-ca1cb12704ba slug=new/unspecified digest=fbfff6d9363a -->
+#### [02622207] [audit-roadmap][ticket_graph][retro] Infra, CI, install and viewer-tooling work stream
+- summary: Groups historical infra/CI/install and viewer-tooling work (repository QA/audit tool CLI + config, install-tools, CI viewer workflow split, viewer-api visual validation, README sync, log-viewer graph...
+- ref: `.ticket/tickets/02622207-e102-4fae-b705-ca1cb12704ba/ticket.toml`
+
+<!-- ticket-index:entry id=ad63d3da-1661-41e0-a0d3-3163bba324f9 slug=new/unspecified digest=a7137c0925a3 -->
+#### [ad63d3da] [audit-roadmap][ticket_graph][retro] Miscellaneous cross-cutting work stream
+- summary: Groups remaining historical orphan tickets that do not fit the ticket-system, rules/specs, context-engine-core, or infra/viewer clusters — cross-cutting work, integration-test harness plans, hooks, t...
+- ref: `.ticket/tickets/ad63d3da-1661-41e0-a0d3-3163bba324f9/ticket.toml`
+
+<!-- ticket-index:entry id=45ff05c9-7608-43c4-a98a-e1c44e4b7fbd slug=new/unspecified digest=3316eab75b97 -->
+#### [45ff05c9] [audit-roadmap][ticket_graph][retro] Rules, specs & agent-guidance work stream
+- summary: Groups historical work on the rule system, spec system, repo-guidance generation, agent targets, and session-api (rule-cli/rule-api, spec-cli, repo-guidance, agent-rules, session-api, instruction DSL...
+- ref: `.ticket/tickets/45ff05c9-7608-43c4-a98a-e1c44e4b7fbd/ticket.toml`
+
+<!-- ticket-index:entry id=3be95a71-f6d7-4c83-b877-1d236751a12c slug=new/unspecified digest=7d15f97bb49f -->
+#### [3be95a71] [content-materialization][epic] Fill specs, Rust/code policy, and the feedback ring on top of session construction
+- summary: Turn the wired-but-empty entity graph into durable, queryable content. The session-construction machinery (epic effba966) assembles per-session context from rules/specs/tickets; this epic fills those...
+- ref: `memory-api/.ticket/tickets/3be95a71-f6d7-4c83-b877-1d236751a12c/ticket.toml`
+
 <!-- ticket-index:entry id=700127a8-f9a5-415d-a433-2d5b888e6292 slug=new/unspecified digest=f583e706ee3c -->
 #### [700127a8] [context-editor] LLM Integration: Text-to-Voxel/Shader, Naga Validation & Hot-Reload
 - priority: `high`
@@ -4242,46 +6085,18 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The current renderer has no concept of time within the voxel structure. Physics and animation
 - ref: `.ticket/tickets/6f368e20-00a4-4da5-9388-492ba4209915/ticket.toml`
 
+<!-- ticket-index:entry id=aaaf1d50-e2ee-4352-b9b4-495c7eadb117 slug=new/unspecified digest=3aa17a8f9f0c -->
+#### [aaaf1d50] [context-editor][SVO-RM] Phase 1 tracker (de-retro cluster migration)
+- ref: `context-stack/tools/context-editor/.ticket/tickets/aaaf1d50-e2ee-4352-b9b4-495c7eadb117/ticket.toml`
+
+<!-- ticket-index:entry id=8afb299f-4a14-4eaf-8cbc-d9472f69c84b slug=new/unspecified digest=aac3156255d4 -->
+#### [8afb299f] [context-read] Expansion loop redesign tracker (de-retro cluster migration)
+- ref: `context-stack/.ticket/tickets/8afb299f-4a14-4eaf-8cbc-d9472f69c84b/ticket.toml`
+
 <!-- ticket-index:entry id=a6fd15f6-f9c3-407a-af99-3febee5b2557 slug=new/unspecified digest=02f3ce1881b9 -->
 #### [a6fd15f6] [doc-viewer][P6] (Deferred) Migrate doc-viewer onto shared viewer-api
 - summary: Optional / deferred.** Once the Dioxus shared crate is stable and proven in spec-viewer, expose its components to doc-viewer (Preact/TS) via thin TypeScript bindings or a wasm-bindgen surface, elimin...
 - ref: `viewer-api/.ticket/tickets/a6fd15f6-f9c3-407a-af99-3febee5b2557/ticket.toml`
-
-<!-- ticket-index:entry id=9c95c1e4-3cdb-428e-b9de-800684651226 slug=new/unspecified digest=13560f4fdd4f -->
-#### [9c95c1e4] [feedback-api] Event ingestion, metadata normalization, and retention policy
-- priority: `high`
-- summary: Define feedback event ingestion for human and privileged-agent authors, normalize metadata, and establish retention/privacy boundaries.
-- ref: `.ticket/tickets/9c95c1e4-3cdb-428e-b9de-800684651226/ticket.toml`
-
-<!-- ticket-index:entry id=b1e9e744-aeac-474a-91d9-07e3a362dc76 slug=new/unspecified digest=d0c4d9295044 -->
-#### [b1e9e744] [feedback-api] Feedback inbox, metadata indexing, and deep search
-- priority: `high`
-- summary: Plan a feedback store that ingests human and privileged-agent feedback events, normalizes metadata, and supports deep search and reconciliation at scale.
-- ref: `.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml`
-
-<!-- ticket-index:entry id=b7b84c10-8dc5-4087-87ad-6fe27ebbcd45 slug=new/unspecified digest=254bc01e9701 -->
-#### [b7b84c10] [feedback-api] High-scale search, clustering, and reconciliation workflows
-- priority: `high`
-- summary: Plan and implement deep query/search capabilities and operator reconciliation flows for large feedback corpora, including dedupe, sentiment facets, and routing.
-- ref: `.ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml`
-
-<!-- ticket-index:entry id=4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7 slug=new/unspecified digest=90e838bda99f -->
-#### [4f86d3d2] [feedback-api] Privileged feedback governance and abuse-boundary enforcement
-- priority: `high`
-- summary: Define policy and enforcement boundaries for privileged-agent feedback so trust, attribution, and abuse controls are explicit.
-- ref: `.ticket/tickets/4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7/ticket.toml`
-
-<!-- ticket-index:entry id=c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e slug=new/unspecified digest=b17a9ae3dc0a -->
-#### [c2d6a14a] [feedback-api] Retention, redaction, and privacy incident controls
-- priority: `high`
-- summary: Define enforceable retention and redaction behavior for feedback and interview-derived signals, including privacy incident handling paths.
-- ref: `.ticket/tickets/c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e/ticket.toml`
-
-<!-- ticket-index:entry id=3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17 slug=new/unspecified digest=9138cc212673 -->
-#### [3a1ec9f8] [feedback-api] Search latency and index growth SLOs
-- priority: `high`
-- summary: Define measurable performance SLOs for feedback deep-search operations and index growth behavior under high event volume.
-- ref: `.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml`
 
 <!-- ticket-index:entry id=0fc7b189-5c6c-4b79-a78d-5df8ad7dcf0c slug=new/unspecified digest=82d049ea603d -->
 #### [0fc7b189] [interview-api] Actionable answer-sheet synthesis and iteration loop
@@ -4306,6 +6121,35 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Define and implement the persistent interview session model (files + indexes), editable prompt/response revisions, and multi-user survey participation state with conflict-safe updates.
 - ref: `.ticket/tickets/7639449a-22a9-4bea-9fcf-517810bc9ddf/ticket.toml`
+
+<!-- ticket-index:entry id=73b2cd22-942b-4205-86e5-333df2373211 slug=new/unspecified digest=e607b8638021 -->
+#### [73b2cd22] [memory-api] Shared tracing and log-api runtime diagnostics
+- priority: `high`
+- summary: The existing unified logging epic covers viewer/context logging, but `memory-api` domain crates and their CLI/MCP/HTTP transports still have uneven tracing setup and sparse instrumentation. Long-runn...
+- ref: `.ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/ticket.toml`
+
+<!-- ticket-index:entry id=2bb8b3e1-cf28-431d-9f00-5f4fe90ba5b0 slug=new/unspecified digest=b025d01541f0 -->
+#### [2bb8b3e1] [memory-matrix] Close failure-bundle gaps for review readiness
+- ref: `.ticket/tickets/2bb8b3e1-cf28-431d-9f00-5f4fe90ba5b0/ticket.toml`
+
+<!-- ticket-index:entry id=9be61624-f8ab-42ca-980b-b1510e4136b1 slug=new/unspecified digest=32ce56fae497 -->
+#### [9be61624] [memory-matrix] Close failure-bundle gaps for review readiness
+- ref: `.ticket/tickets/9be61624-f8ab-42ca-980b-b1510e4136b1/ticket.toml`
+
+<!-- ticket-index:entry id=16cfd19f-f1bd-4008-a15d-84037511f8fc slug=new/unspecified digest=d4df1527d524 -->
+#### [16cfd19f] [migration] Convert 11 agent files off rule generator + delete agents rule-target
+- summary: Migrate all `.agents/agents/*.agent.md` files off the rule-store generator to hand-owned by-description files, and retire the agents rule-target. Follow-up to CH-D (f43cb5cb) which established the mi...
+- ref: `.ticket/tickets/16cfd19f-f1bd-4008-a15d-84037511f8fc/ticket.toml`
+
+<!-- ticket-index:entry id=f43cb5cb-07dd-44c2-876b-8aceb2d841cb slug=new/unspecified digest=9b16bb8e04d1 -->
+#### [f43cb5cb] [migration] Convert 12 instruction files off rule generator + delete agent-guidance rule-targets
+- summary: Migrate all 12 `.agents/instructions/*.md` files off the rule-store generator to hand-owned by-description files, and retire the agent-guidance targets.
+- ref: `.ticket/tickets/f43cb5cb-07dd-44c2-876b-8aceb2d841cb/ticket.toml`
+
+<!-- ticket-index:entry id=76d0ace3-6e65-493d-9bef-fdc531081992 slug=new/unspecified digest=b33bfe193894 -->
+#### [76d0ace3] [migration] Convert 21 prompt files off rule generator + delete prompts rule-target
+- summary: Migrate all `.agents/prompts/*.prompt.md` files off the rule-store generator to hand-owned by-description files, and retire the prompts rule-target. Follow-up to CH-D (f43cb5cb) which established the...
+- ref: `.ticket/tickets/76d0ace3-6e65-493d-9bef-fdc531081992/ticket.toml`
 
 <!-- ticket-index:entry id=0dde154a-ee4d-4f0a-af83-e0a4864d3bfb slug=new/unspecified digest=279338b147a4 -->
 #### [0dde154a] [peek-cli] --grep does not support regex alternation (\\|)
@@ -4334,12 +6178,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `medium`
 - summary: Child of tracker `ef3f4a91`. Add native Criterion benchmarks covering the
 - ref: `.ticket/tickets/6a19ae5f-8695-47e1-8b21-1062e0546fda/ticket.toml`
-
-<!-- ticket-index:entry id=ef3f4a91-734f-47aa-a9cf-fdfdb60ac2db slug=new/unspecified digest=a072066cea21 -->
-#### [ef3f4a91] [profiling] Performance profiling & benchmark matrix (tracker)
-- priority: `high`
-- summary: Parent tracker for adding performance profiling and benchmarking across the
-- ref: `.ticket/tickets/ef3f4a91-734f-47aa-a9cf-fdfdb60ac2db/ticket.toml`
 
 <!-- ticket-index:entry id=d8d18128-656e-4a13-9983-946d6af33c27 slug=new/unspecified digest=1ae3d1c0ae58 -->
 #### [d8d18128] [profiling] Testing + benchmark matrix index doc and run commands
@@ -4371,11 +6209,36 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Plan rule-generated instruction and prompt assets plus slash command skill for bootstrapping a minimally functional new domain store from one prompt, aligned with architecture-decisions and cross-sto...
 - ref: `.ticket/tickets/66fae806-203d-4235-9151-4272eb0bb603/ticket.toml`
 
+<!-- ticket-index:entry id=effba966-f0a8-4d7d-b289-b7feba826cf8 slug=new/unspecified digest=ee39eb72dbae -->
+#### [effba966] [session-bootstrap][epic] Dynamic session bootstrapping & context routing redesign
+- summary: Redesign agent startup and continuation around a durable logical session workspace rather than always-on static context or transcript replay.
+- ref: `memory-api/.ticket/tickets/effba966-f0a8-4d7d-b289-b7feba826cf8/ticket.toml`
+
+<!-- ticket-index:entry id=fd77db9b-b9e7-4e04-aac2-7c4b68061c6b slug=new/unspecified digest=d165b3e5e8d5 -->
+#### [fd77db9b] [skill] Author Dioxus skill (signals, server fns, WASM toolchain, viewer-api integration, styling)
+- summary: Hand-author the Dioxus skill — the one true ecosystem gap (best skills.sh result ~71 installs).
+- ref: `.ticket/tickets/fd77db9b-b9e7-4e04-aac2-7c4b68061c6b/ticket.toml`
+
 <!-- ticket-index:entry id=07d4b1b0-bc20-4ba7-98d4-ed09365f0437 slug=new/unspecified digest=7766e3b9b45a -->
 #### [07d4b1b0] [skill] One-prompt domain-store scaffold slash command flow
 - priority: `high`
 - summary: Implement slash command flow that accepts one prompt and scaffolds a minimal domain store (crate layout, manifests, base APIs, tests, and registration hooks) using generated instructions.
 - ref: `.ticket/tickets/07d4b1b0-bc20-4ba7-98d4-ed09365f0437/ticket.toml`
+
+<!-- ticket-index:entry id=5f217947-0fde-431c-b1ab-9d5d8153ed17 slug=new/unspecified digest=c5fe5faa826d -->
+#### [5f217947] [skill] Skill directory contract + re-home orphan + master index
+- summary: Establish the skill directory contract and clean up the current mess.
+- ref: `.ticket/tickets/5f217947-0fde-431c-b1ab-9d5d8153ed17/ticket.toml`
+
+<!-- ticket-index:entry id=f7112b9f-55d7-4c15-993b-83568ffb09fe slug=new/unspecified digest=20cfb5284913 -->
+#### [f7112b9f] [skill] Vendor 8 adopted skills.sh skills (Rust, Playwright, WebGPU, interviewing, authoring)
+- summary: Vendor the confirmed proven skills.sh skills into the repo, normalized to the contract.
+- ref: `.ticket/tickets/f7112b9f-55d7-4c15-993b-83568ffb09fe/ticket.toml`
+
+<!-- ticket-index:entry id=15bad110-f762-4a2b-b20a-f91fa66cf2ec slug=new/unspecified digest=9a22c75d61a2 -->
+#### [15bad110] [spec-cleanup] Prune fixture/empty specs + consolidate ultra-granular specs (reviewable)
+- summary: Prune worthless specs and consolidate ultra-granular ones. Reviewable, destructive — never run during a planning pass.
+- ref: `.ticket/tickets/15bad110-f762-4a2b-b20a-f91fa66cf2ec/ticket.toml`
 
 <!-- ticket-index:entry id=0feb20f3-205a-4e71-9902-31c8c5bb13eb slug=new/unspecified digest=9dd019cf5844 -->
 #### [0feb20f3] [spec-viewer][P5] Adopt new viewer-api primitives in spec-viewer
@@ -4444,15 +6307,10 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The sibling ticket/spec CLIs make automation harder than necessary because their command grammar and JSON envelopes drift in incompatible ways.
 - ref: `.ticket/tickets/d241a482-6fc7-468e-b0a3-748cb72d07eb/ticket.toml`
 
-<!-- ticket-index:entry id=61cb6557-e559-4eae-8e59-ea0d520a3bee slug=new/unspecified digest=29d8b3416f32 -->
+<!-- ticket-index:entry id=61cb6557-e559-4eae-8e59-ea0d520a3bee slug=new/unspecified digest=bf9ccc97c417 -->
 #### [61cb6557] [ticket-cli][ticket-mcp] Add consolidated ticket detail/context read surface
 - summary: Reviewing a ticket currently requires chaining multiple read surfaces.
 - ref: `memory-api/.ticket/tickets/61cb6557-e559-4eae-8e59-ea0d520a3bee/ticket.toml`
-
-<!-- ticket-index:entry id=8bb97b73-9dbc-43ee-9939-46b3ddf2612f slug=new/unspecified digest=2d369822aa7b -->
-#### [8bb97b73] [ticket-cli][ticket-mcp] Explain invalid state transitions with allowed next states
-- summary: Invalid ticket state transitions are enforced, but they are not explained well enough at the moment they fail.
-- ref: `.ticket/tickets/8bb97b73-9dbc-43ee-9939-46b3ddf2612f/ticket.toml`
 
 <!-- ticket-index:entry id=def7fa82-6f4a-4354-b52d-ae7ea9623648 slug=new/unspecified digest=a58b4f9a2a70 -->
 #### [def7fa82] [ticket-cli][ticket-mcp] Make stale board entries directly check-outable
@@ -4465,21 +6323,16 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Coordinate planning and delivery for ticket graph rendering, validation-aware dependency requirements, and audit/board enforcement built on the existing ticket graph and test-api evidence store.
 - ref: `.ticket/tickets/43fc22b3-9b36-4a54-b520-f51000330a46/ticket.toml`
 
-<!-- ticket-index:entry id=5ad77aba-c7f7-4058-854e-dd0412746c7c slug=new/unspecified digest=bebff821ba10 -->
-#### [5ad77aba] [ticket-mcp][spec-mcp][rule-api] Add self-describing capability catalog and help surfaces
-- summary: The ticket/spec/rule tool surfaces are not self-describing enough for operators or agents.
-- ref: `.ticket/tickets/5ad77aba-c7f7-4058-854e-dd0412746c7c/ticket.toml`
-
-<!-- ticket-index:entry id=14df656e-cef2-470e-9530-ef760b6c462c slug=new/unspecified digest=7252700c3e99 -->
+<!-- ticket-index:entry id=14df656e-cef2-470e-9530-ef760b6c462c slug=new/unspecified digest=e768c50536e4 -->
 #### [14df656e] [ticket-viewer][ticket-vscode] Surface the next-work workflow in frontends
 - summary: There is no end-user frontend surface for the "best next ticket to implement" workflow.
-- ref: `.ticket/tickets/14df656e-cef2-470e-9530-ef760b6c462c/ticket.toml`
+- ref: `memory-api/.ticket/tickets/14df656e-cef2-470e-9530-ef760b6c462c/ticket.toml`
 
 <!-- ticket-index:entry id=814f22dc-0f75-4c11-b7da-20b3c5928cea slug=new/unspecified digest=f876721b89a6 -->
 #### [814f22dc] [ticket-vscode] Fix VS Code CLI discovery in VSIX installer
 - ref: `.ticket/tickets/814f22dc-0f75-4c11-b7da-20b3c5928cea/ticket.toml`
 
-<!-- ticket-index:entry id=51671748-8933-4955-9bf4-7bdea961df40 slug=new/unspecified digest=a749e08a2489 -->
+<!-- ticket-index:entry id=51671748-8933-4955-9bf4-7bdea961df40 slug=new/unspecified digest=3ded5343015d -->
 #### [51671748] [ticket-workflow] Harden best-next-ticket discovery across spec, CLI, MCP, and frontends
 - summary: We now have several issue slices for board / next discovery, but no ticket owns the full contract for finding the best next ticket to implement.
 - ref: `memory-api/.ticket/tickets/51671748-8933-4955-9bf4-7bdea961df40/ticket.toml`
@@ -4496,6 +6349,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Build representative prompt matrix (simple, medium, complex, edge-case) and replay harness to validate scaffold skill behavior, compile health, and architecture conformance across domain types.
 - ref: `.ticket/tickets/2ff2c8e8-eaec-4bd9-9312-ae13cd4b243a/ticket.toml`
 
+<!-- ticket-index:entry id=0c72ecac-abaf-4fba-84e6-40c5ad24a941 slug=new/unspecified digest=4cbeaea78eab -->
+#### [0c72ecac] [validation] Prompt-replay matrix — skill discovery by description across all domains
+- summary: Build an automated prompt-replay matrix that proves an agent can locate and load the correct skill by its description for each target domain.
+- ref: `.ticket/tickets/0c72ecac-abaf-4fba-84e6-40c5ad24a941/ticket.toml`
+
 <!-- ticket-index:entry id=dedac9f5-0d4d-4ad0-8a7e-4acd361c273e slug=new/unspecified digest=b362b19531e9 -->
 #### [dedac9f5] [validation] Rule-target generation drift checks for scaffold guidance assets
 - priority: `high`
@@ -4507,20 +6365,14 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Track the remaining Dioxus adoption work needed after the shared doc-viewer-inspired primitives landed in `viewer-api-dioxus`, so current viewers reuse the shared shells and stores instead of carryin...
 - ref: `viewer-api/.ticket/tickets/936d38d6-a238-4cb9-b00a-1b2a4b65dc04/ticket.toml`
 
-<!-- ticket-index:entry id=8f349d96-a307-400b-a90e-3aceb2250166 slug=new/unspecified digest=99c582bfe33f -->
-#### [8f349d96] viewer-api-dioxus: ship WASM tracing logs to a server file sink
-- priority: `low`
-- summary: Build on the structured-tracing parent ticket: add a tracing `Layer` that batches log records and POSTs them to a server endpoint (e.g. `POST /api/client-log`) which appends them to a per-session JSO...
-- ref: `viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml`
-
-<!-- ticket-index:entry id=b480632a-8605-4b5b-a4e8-f2988b2565a0 slug=new/unspecified digest=892ac9cbee60 -->
-#### [b480632a] viewer-api-dioxus: structured tracing for WASM frontend
-- priority: `medium`
-- summary: Replace ad-hoc `web_sys::console::log_1!()` calls in the Dioxus WASM frontend (viewer-api, spec-viewer, ticket-viewer) with structured tracing.
-- ref: `viewer-api/.ticket/tickets/b480632a-8605-4b5b-a4e8-f2988b2565a0/ticket.toml`
-
 
 ### Component: viewer-api
+
+<!-- ticket-index:entry id=35a6d14b-25b0-4b24-b59f-d0d733cacd20 slug=new/viewer-api digest=08194136043d -->
+#### [35a6d14b] Epic: Dioxus Viewer Platform — viewer-api-dioxus + ticket-viewer Dioxus frontend
+- priority: `critical`
+- summary: Port the viewer-api frontend library and ticket-viewer SPA from TypeScript/Preact to Rust/Dioxus 0.7, compiled to WASM via `trunk` (Trunk WASM bundler). Adds full ticket mutation capabilities powered...
+- ref: `viewer-api/.ticket/tickets/35a6d14b-25b0-4b24-b59f-d0d733cacd20/ticket.toml`
 
 <!-- ticket-index:entry id=92161adb-d06a-47b6-a065-4fb652e764ea slug=new/viewer-api digest=fdac883368c9 -->
 #### [92161adb] Epic: Dioxus Viewer Platform — viewer-api-dioxus + ticket-viewer Dioxus frontend
@@ -4562,23 +6414,35 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: tags: `#plan` `#refactoring` `#tools` `#viewer-api`
 - ref: `viewer-api/.ticket/tickets/97c757b1-3c58-4b54-ab4b-35b7d0ea9ece/ticket.toml`
 
+<!-- ticket-index:entry id=966a7714-0bf4-443b-b778-8e0f383f99d8 slug=new/viewer-api digest=9dddbb7bd585 -->
+#### [966a7714] [viewer-api] Build demo-viewer exercising all viewer components with root-level domain selection
+- priority: `medium`
+- summary: W5b. A complete demo-viewer that exercises all components from all viewers in a single application with arbitrary data, and a root-level domain selection to switch between domains.
+- ref: `memory-viewers/.ticket/tickets/966a7714-0bf4-443b-b778-8e0f383f99d8/ticket.toml`
+
 <!-- ticket-index:entry id=d1e4ab96-52e1-4b80-ad7c-bfff459d3fac slug=new/viewer-api digest=bfc977d73aff -->
 #### [d1e4ab96] [viewer-api] Converge shared Dioxus viewer shells across frontends
 - priority: `high`
 - summary: Converge the duplicated Dioxus viewer shell patterns across the current frontend implementations so each viewer stays thin and generic behavior lives in viewer-api.
 - ref: `viewer-api/.ticket/tickets/d1e4ab96-52e1-4b80-ad7c-bfff459d3fac/ticket.toml`
 
-<!-- ticket-index:entry id=08c86dbd-72b8-446b-a930-30ef3352d604 slug=new/viewer-api digest=61799d8e7845 -->
-#### [08c86dbd] [viewer-api] Create comprehensive E2E test suite for graph improvements
-- priority: `high`
-- summary: Create comprehensive Playwright E2E test coverage for the four graph improvements across all memory-viewers:
-- ref: `.ticket/tickets/08c86dbd-72b8-446b-a930-30ef3352d604/ticket.toml`
+<!-- ticket-index:entry id=0d995e82-26b8-4f71-afc0-f5de75d5a468 slug=new/viewer-api digest=2d8a4d9160d2 -->
+#### [0d995e82] [viewer-api] Create minimal viewer-template bootstrap (tree explorer, tabbed main, right/bottom panels, floating panels)
+- priority: `medium`
+- summary: W5a. We need a minimal viewer-template that serves as the bootstrap for new viewers (rule-viewer, audit-viewer).
+- ref: `memory-viewers/.ticket/tickets/0d995e82-26b8-4f71-afc0-f5de75d5a468/ticket.toml`
 
 <!-- ticket-index:entry id=254ac30d-26c0-4bfe-8a66-b10ab9e4843a slug=new/viewer-api digest=61421a2a8635 -->
 #### [254ac30d] [viewer-api] Generalize graph improvements to spec-viewer and log-viewer
 - priority: `high`
 - summary: Generalize the four graph improvements implemented in ticket-viewer to spec-viewer and log-viewer:
 - ref: `.ticket/tickets/254ac30d-26c0-4bfe-8a66-b10ab9e4843a/ticket.toml`
+
+<!-- ticket-index:entry id=e0d8ccef-49d8-4446-bd63-78626a4163dc slug=new/viewer-api digest=f22f18416fc4 -->
+#### [e0d8ccef] [viewer-api] Optimize Graph3D renderer for performance and extensibility
+- priority: `high`
+- summary: W6. The viewer-api 3D graph view needs optimization to efficiently provide the implemented features and to allow future extensibility in different contexts.
+- ref: `memory-viewers/.ticket/tickets/e0d8ccef-49d8-4446-bd63-78626a4163dc/ticket.toml`
 
 <!-- ticket-index:entry id=e8d9bfcd-d729-43a6-8efa-4554af609d0c slug=new/viewer-api digest=fdf4c5e3c68d -->
 #### [e8d9bfcd] [viewer-api] Update Graph3D component documentation and examples
@@ -4663,6 +6527,177 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `viewer-api/.ticket/tickets/92964ada-4ab5-4fe1-ab29-5bfd55583ad2/ticket.toml`
 
 
+### Component: viewer-api-e2e
+
+<!-- ticket-index:entry id=08c86dbd-72b8-446b-a930-30ef3352d604 slug=new/viewer-api-e2e digest=cd8270c839f9 -->
+#### [08c86dbd] [viewer-api] Create comprehensive E2E test suite for graph improvements
+- priority: `medium`
+- summary: Create comprehensive Playwright E2E test coverage for the four graph improvements across all memory-viewers:
+- ref: `.ticket/tickets/08c86dbd-72b8-446b-a930-30ef3352d604/ticket.toml`
+
+<!-- ticket-index:entry id=6002e996-dcb8-4dad-a830-20346ce9d8cc slug=new/viewer-api-e2e digest=b642587417eb -->
+#### [6002e996] [viewer-platform][e2e] Canonical shared Playwright harness and all-viewer runner
+- priority: `high`
+- summary: Playwright ownership and configuration are fragmented. Ticket-viewer forks shared suites and viewer definitions, GPU launch profiles differ, and `cargo make test-e2e` omits ticket-viewer while retain...
+- ref: `memory-viewers/.ticket/tickets/6002e996-dcb8-4dad-a830-20346ce9d8cc/ticket.toml`
+
+
+### Component: viewer-api-gpu-validation
+
+<!-- ticket-index:entry id=26a73130-c631-4168-8030-fade31c5cf55 slug=new/viewer-api-gpu-validation digest=835c3c91f88c -->
+#### [26a73130] [viewer-platform][gpu-test] Reproducible software and hardware browser lanes
+- priority: `medium`
+- summary: Spec-viewer and ticket-viewer currently launch materially different browser/GPU configurations. SwiftShader, headless bundled Chromium, headed system Chrome, and native hardware results are not compa...
+- ref: `memory-viewers/.ticket/tickets/26a73130-c631-4168-8030-fade31c5cf55/ticket.toml`
+
+
+### Component: viewer-api-observability
+
+<!-- ticket-index:entry id=9202bc21-b11f-4464-b66b-af19dd6e7078 slug=new/viewer-api-observability digest=1a3ef8ad2cc7 -->
+#### [9202bc21] [viewer-platform][observability] Correlate and attach WASM, browser, and backend logs per test
+- priority: `high`
+- summary: The server persists `x-session-id`, but the WASM `NetworkLayer` currently constructs its own request headers and does not visibly use the shared session helper. Ticket-viewer also carries an older tr...
+- ref: `memory-viewers/.ticket/tickets/9202bc21-b11f-4464-b66b-af19dd6e7078/ticket.toml`
+
+<!-- ticket-index:entry id=8f349d96-a307-400b-a90e-3aceb2250166 slug=new/viewer-api-observability digest=77588acac53e -->
+#### [8f349d96] viewer-api-dioxus: ship WASM tracing logs to a server file sink
+- priority: `high`
+- summary: Ship structured tracing records from the Dioxus WASM frontend to a bounded server-side JSONL sink so browser records are queryable alongside backend logs.
+- ref: `viewer-api/.ticket/tickets/8f349d96-a307-400b-a90e-3aceb2250166/ticket.toml`
+
+<!-- ticket-index:entry id=b480632a-8605-4b5b-a4e8-f2988b2565a0 slug=new/viewer-api-observability digest=03f58122bc2e -->
+#### [b480632a] viewer-api-dioxus: structured tracing for WASM frontend
+- priority: `high`
+- summary: Replace ad-hoc browser console calls in viewer-api Dioxus/WASM code with structured tracing that supports levels, fields, spans, runtime filtering, console diagnostics, and the separate persisted sin...
+- ref: `viewer-api/.ticket/tickets/b480632a-8605-4b5b-a4e8-f2988b2565a0/ticket.toml`
+
+
+### Component: viewer-api-performance
+
+<!-- ticket-index:entry id=459022a5-3900-4f7b-8fbd-2de1fbb79bdd slug=new/viewer-api-performance digest=da702bfd9be1 -->
+#### [459022a5] [viewer-platform][perf] Add browser/WASM soak and resource-leak detection
+- priority: `medium`
+- summary: Short FPS samples cannot detect retained event listeners, leaked wasm-bindgen closures, unbounded tracing buffers, DOM growth, texture/resource accumulation, or gradual frame-time degradation.
+- ref: `memory-viewers/.ticket/tickets/459022a5-3900-4f7b-8fbd-2de1fbb79bdd/ticket.toml`
+
+<!-- ticket-index:entry id=09bef250-b7a4-4ffa-91a0-52292ba907fa slug=new/viewer-api-performance digest=354d77ae4d31 -->
+#### [09bef250] [viewer-platform][perf] Enforce browser and WASM regression budgets
+- priority: `high`
+- summary: The current Chromium profile suite only proves that a trace file was written, while the WASM micro-benchmarks assert only that elapsed time is finite. Neither fails when performance regresses.
+- ref: `memory-viewers/.ticket/tickets/09bef250-b7a4-4ffa-91a0-52292ba907fa/ticket.toml`
+
+
+### Component: viewer-platform-ci
+
+<!-- ticket-index:entry id=0556ed59-57a6-4ca1-a8a4-93fdb1549c22 slug=new/viewer-platform-ci digest=3a64437d1fa4 -->
+#### [0556ed59] [viewer-platform][ci] Enforce browser lanes and retain diagnostic artifacts
+- priority: `high`
+- summary: Repository policy requires Playwright for browser-facing changes, but no checked-in workflow currently runs the viewer Playwright or WASM browser suites. Reports, traces, screenshots, logs, and bench...
+- ref: `memory-viewers/.ticket/tickets/0556ed59-57a6-4ca1-a8a4-93fdb1549c22/ticket.toml`
+
+
+### Component: viewer-platform-tauri
+
+<!-- ticket-index:entry id=431707b1-e512-4e47-9926-01407230e6db slug=new/viewer-platform-tauri digest=a913669771aa -->
+#### [431707b1] [viewer-platform][tauri-test] Native desktop E2E validation lane
+- priority: `low`
+- summary: Add a deferred native desktop validation lane after the browser/WASM contract is stable. This lane proves only behavior that Chromium Playwright cannot establish: Tauri IPC, native window lifecycle, ...
+- ref: `memory-viewers/.ticket/tickets/431707b1-e512-4e47-9926-01407230e6db/ticket.toml`
+
+
+### Component: viewer-platform-testing
+
+<!-- ticket-index:entry id=956485ad-2e80-4a4c-b5ec-42bac2c7c295 slug=new/viewer-platform-testing digest=3cd5ef7ded4f -->
+#### [956485ad] [viewer-platform][testing] Robust browser, observability, and performance validation strategy
+- priority: `high`
+- summary: Establish one implementation-ready validation program for the shared viewer-api platform and the ticket-viewer, spec-viewer, log-viewer, and doc-viewer operational frontends. The program must prove b...
+- ref: `memory-viewers/.ticket/tickets/956485ad-2e80-4a4c-b5ec-42bac2c7c295/ticket.toml`
+
+
+### Component: viewer-platform-ux-validation
+
+<!-- ticket-index:entry id=40110a1a-40e8-4345-8407-577bd5f4d602 slug=new/viewer-platform-ux-validation digest=d91b0dd90f56 -->
+#### [40110a1a] [viewer-platform][ux-test] Accessibility, responsive, focus, and visual regression gates
+- priority: `high`
+- summary: Current suites include useful screenshots, keyboard checks, and isolated responsive assertions, but there is no shared accessibility scanner or maintained visual baseline. Screenshot attachments alon...
+- ref: `memory-viewers/.ticket/tickets/40110a1a-40e8-4345-8407-577bd5f4d602/ticket.toml`
+
+
+### Component: workflow-policy
+
+<!-- ticket-index:entry id=d883f454-8787-4e61-85a2-16c48802c440 slug=new/workflow-policy digest=37e1425c0338 -->
+#### [d883f454] [workflow-policy][tracing][log-api] Research and define tracing instrumentation and log execution policy
+- priority: `high`
+- summary: Research and codify the repository policy for tracing instrumentation, runtime log capture, and managing generated logs plus executions through `log-api`.
+- ref: `.ticket/tickets/d883f454-8787-4e61-85a2-16c48802c440/ticket.toml`
+
+
+### Component: workflow-skill
+
+<!-- ticket-index:entry id=b9a52b79-2beb-4710-958d-25582ed79dcf slug=new/workflow-skill digest=2e9cb3994825 -->
+#### [b9a52b79] [workflow-tools][skill] Author workflow-skill skills.sh package as the installable entry point
+- priority: `high`
+- summary: Phase D. Author the `workflow-skill` — a skills.sh-native SKILL.md package that is the installable entry point for the whole workflow-tooling system. A single install should be able to discover, retr...
+- ref: `.ticket/tickets/b9a52b79-2beb-4710-958d-25582ed79dcf/ticket.toml`
+
+<!-- ticket-index:entry id=24d47244-fcb4-46cf-9bc8-c78c29fe7ff2 slug=new/workflow-skill digest=ac2b86709fc9 -->
+#### [24d47244] [workflow-tools][skill] Define skill scope/precedence for root and nested installs (single active install, self-uninstall)
+- priority: `high`
+- summary: Phase D. Define and implement the scope/precedence model for the workflow-skill so it works both at the repository root and at deeply nested tool repos without conflicting or being read twice.
+- ref: `.ticket/tickets/24d47244-fcb4-46cf-9bc8-c78c29fe7ff2/ticket.toml`
+
+
+### Component: workflow-tools
+
+<!-- ticket-index:entry id=47a0bcc3-f42d-475e-b05a-777293c4698e slug=new/workflow-tools digest=f008edbe4807 -->
+#### [47a0bcc3] [workflow-tools][artifacts] Establish repo-level and per-tool self-referential artifact stores
+- priority: `high`
+- summary: Phase C. Establish repo-level self-referential artifact stores in `workflow-tools` (and confirm per-tool artifact stores in each tool repo) so work on the tools themselves is tracked with the tools t...
+- ref: `.ticket/tickets/47a0bcc3-f42d-475e-b05a-777293c4698e/ticket.toml`
+
+<!-- ticket-index:entry id=47f2a664-7803-4074-b40c-f41d3caf0c54 slug=new/workflow-tools digest=c26dfc4cca61 -->
+#### [47f2a664] [workflow-tools][artifacts] Migrate tool-scoped artifacts into their owning tool repositories
+- priority: `high`
+- summary: Phase C. Migrate tool-scoped artifacts (tickets, specs, docs, rules, tests) that currently live in the context-engine default store or the memory-api store into the correct per-tool repo stores, pres...
+- ref: `.ticket/tickets/47f2a664-7803-4074-b40c-f41d3caf0c54/ticket.toml`
+
+<!-- ticket-index:entry id=0b527d28-9487-4a6c-8c7a-835b4a5d9582 slug=new/workflow-tools digest=3beceb912b0d -->
+#### [0b527d28] [workflow-tools][docs] Migration guide and dependency-install documentation for the general framework
+- priority: `medium`
+- summary: Phase F. Produce the migration guide and dependency-install documentation so the new structure is reproducible and the general framework is documented: how a target project installs workflow-tools, h...
+- ref: `.ticket/tickets/0b527d28-9487-4a6c-8c7a-835b4a5d9582/ticket.toml`
+
+<!-- ticket-index:entry id=67e254b5-8eac-4251-b640-ec3649f250dd slug=new/workflow-tools digest=f13f7a1c85d2 -->
+#### [67e254b5] [workflow-tools][entry-points] Wire AGENTS.md/instructions to the workflow-skill across all three install sites
+- priority: `high`
+- summary: Phase E. Update the agent entry points and guidance across all three install sites so an agent starting at any level is pointed at the workflow-skill guidance: (1) context-engine (uses the tools), (2...
+- ref: `.ticket/tickets/67e254b5-8eac-4251-b640-ec3649f250dd/ticket.toml`
+
+<!-- ticket-index:entry id=69eb4118-19ec-4b5b-bb12-30e314029cc5 slug=new/workflow-tools digest=636fe5004612 -->
+#### [69eb4118] [workflow-tools][migration] Extract workflow tooling into standalone per-tool repositories and reframe context-engine as a consuming example
+- priority: `high`
+- summary: Tracking epic for the repository restructuring that turns this monorepo into an instantiated example of a general, self-improving agent framework, and extracts the workflow tooling into standalone, i...
+- ref: `.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml`
+
+<!-- ticket-index:entry id=858c5286-6c2b-4a05-a0f3-4e8f6b90b75e slug=new/workflow-tools digest=ae1ede7684c1 -->
+#### [858c5286] [workflow-tools][per-tool] Split each domain tool into its own repository (parent tracker)
+- priority: `high`
+- summary: Phase B parent tracker. Split each of the 11 domain tools into its own bare-named repository under github.com/mankinskin. Each tool repo is built around a single domain crate (see contract `0da6894c`...
+- ref: `.ticket/tickets/858c5286-6c2b-4a05-a0f3-4e8f6b90b75e/ticket.toml`
+
+<!-- ticket-index:entry id=b525a7fa-f59d-4a14-b234-2ec7b8a42e95 slug=new/workflow-tools digest=cb439c9ca761 -->
+#### [b525a7fa] [workflow-tools][umbrella] Create workflow-tools umbrella aggregating tool and shared repositories
+- priority: `high`
+- summary: Phase C. Create the `workflow-tools` umbrella repository that aggregates the extracted shared libs (`memory-kernel`, `viewer-api`, `memory-fixtures`) and the 11 per-tool repos as dependencies (submod...
+- ref: `.ticket/tickets/b525a7fa-f59d-4a14-b234-2ec7b8a42e95/ticket.toml`
+
+<!-- ticket-index:entry id=2345ba7f-6d83-449b-bf07-d541c5f8e01e slug=new/workflow-tools digest=caf5ee95521a -->
+#### [2345ba7f] [workflow-tools][validation] End-to-end validation and cutover across split repositories
+- priority: `high`
+- summary: Phase F. End-to-end validation and cutover across the split repositories: prove that the extracted tools build, test, and operate correctly both standalone and aggregated, and that context-engine wor...
+- ref: `.ticket/tickets/2345ba7f-6d83-449b-bf07-d541c5f8e01e/ticket.toml`
+
+
 ## State: on-hold
 
 ### Component: unspecified
@@ -4673,8 +6708,102 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: The context-editor is currently a single-player application. To enable multiplayer open-world gameplay, we need an authoritative server that stores world state, validates player actions, manages auth...
 - ref: `context-stack/tools/context-editor/.ticket/tickets/47914c71-bb3c-4b95-9120-6121dd42ae2b/ticket.toml`
 
+<!-- ticket-index:entry id=c3e01552-88d2-446c-955d-f3902a224a56 slug=on-hold/unspecified digest=68429d0fbd30 -->
+#### [c3e01552] [ticket-api][ticket-cli][ticket-mcp] Generate capability catalog programmatically from live CLI/MCP shapes (drift-checked)
+- summary: Deferred until the workflow-tools architectural migration lands. Direction change: rather than binding a hand-maintained catalog to live CLI/MCP shapes via a drift check within the current per-transp...
+- ref: `.ticket/tickets/c3e01552-88d2-446c-955d-f3902a224a56/ticket.toml`
+
 
 ## State: ready
+
+### Component: agent-harness
+
+<!-- ticket-index:entry id=0f4b3c5b-c5e9-45c4-968c-a8878f359de8 slug=ready/agent-harness digest=0453750482d0 -->
+#### [0f4b3c5b] [agent-harness] Unified minimal interface for on-demand chat + long-running agent loops (Rust core, TUI + WASM)
+- priority: `high`
+- summary: One cohesive delivery plan that turns existing research and design direction into
+- ref: `.ticket/tickets/0f4b3c5b-c5e9-45c4-968c-a8878f359de8/ticket.toml`
+
+<!-- ticket-index:entry id=fd93671d-2a86-4996-9d26-efcfce156095 slug=ready/agent-harness digest=5f4200197ba2 -->
+#### [fd93671d] [agent-harness][CH10] Reliability/recovery: checkpointing + reconnect semantics
+- priority: `high`
+- summary: WS6. Implements D2 persistence and reconnect continuity.
+- ref: `.ticket/tickets/fd93671d-2a86-4996-9d26-efcfce156095/ticket.toml`
+
+<!-- ticket-index:entry id=b01a2fbf-6682-4dee-abce-95cdcf4fd325 slug=ready/agent-harness digest=53b0113819bc -->
+#### [b01a2fbf] [agent-harness][CH11] E2E + Playwright + manual browser verification evidence
+- priority: `high`
+- summary: WS7 release gate.
+- ref: `.ticket/tickets/b01a2fbf-6682-4dee-abce-95cdcf4fd325/ticket.toml`
+
+<!-- ticket-index:entry id=a4273210-ef12-4372-bd30-6e112c9d708e slug=ready/agent-harness digest=0a71b700c644 -->
+#### [a4273210] [agent-harness][CH12] Docs/runbooks + rollout checklist
+- priority: `medium`
+- summary: WS7 release readiness.
+- ref: `.ticket/tickets/a4273210-ef12-4372-bd30-6e112c9d708e/ticket.toml`
+
+<!-- ticket-index:entry id=a5f08931-24af-4b96-a156-9107c776f946 slug=ready/agent-harness digest=c893040dfe91 -->
+#### [a5f08931] [agent-harness][CH1] Workspace + crate scaffolding + shared protocol contracts
+- priority: `high`
+- summary: Foundation slice (WS1). Establishes crate boundaries (D1) and the shared
+- ref: `.ticket/tickets/a5f08931-24af-4b96-a156-9107c776f946/ticket.toml`
+
+<!-- ticket-index:entry id=c684b092-7f5a-4ebe-aa6d-494f666f5dc8 slug=ready/agent-harness digest=2c6dd9465ef1 -->
+#### [c684b092] [agent-harness][CH2] Core loop state machine + unified session/mode model
+- priority: `high`
+- summary: WS2 core. The single session model that makes chat and loop two modes of one thing.
+- ref: `.ticket/tickets/c684b092-7f5a-4ebe-aa6d-494f666f5dc8/ticket.toml`
+
+<!-- ticket-index:entry id=036c270f-6ca7-4372-96e2-570a26e3fdd0 slug=ready/agent-harness digest=747c13e2777d -->
+#### [036c270f] [agent-harness][CH3] Provider abstraction + guidance injector + budget/policy hooks
+- priority: `high`
+- summary: WS2. Implements D4 (budgets) and D5 (guidance precedence).
+- ref: `.ticket/tickets/036c270f-6ca7-4372-96e2-570a26e3fdd0/ticket.toml`
+
+<!-- ticket-index:entry id=1c63db9d-afb3-4678-b0f6-14e6a4d5daca slug=ready/agent-harness digest=9b29cd6091a3 -->
+#### [1c63db9d] [agent-harness][CH4] MCP integration + per-session tool routing envelope
+- priority: `high`
+- summary: WS3. Answers research Q6 (routing MCP instances to the right session).
+- ref: `.ticket/tickets/1c63db9d-afb3-4678-b0f6-14e6a4d5daca/ticket.toml`
+
+<!-- ticket-index:entry id=136af497-869b-4cc5-b059-9041a98e5ad3 slug=ready/agent-harness digest=1be02e21b6fd -->
+#### [136af497] [agent-harness][CH5] Sandboxed command execution with policy gates
+- priority: `high`
+- summary: WS3. Implements D3 isolation boundary.
+- ref: `.ticket/tickets/136af497-869b-4cc5-b059-9041a98e5ad3/ticket.toml`
+
+<!-- ticket-index:entry id=8ed0edbf-a765-4f4a-b50e-695aa79e9180 slug=ready/agent-harness digest=e614ca235333 -->
+#### [8ed0edbf] [agent-harness][CH6] Axum session lifecycle + websocket broadcast fanout
+- priority: `high`
+- summary: WS4. The streaming control plane both UIs consume.
+- ref: `.ticket/tickets/8ed0edbf-a765-4f4a-b50e-695aa79e9180/ticket.toml`
+
+<!-- ticket-index:entry id=3c208991-1d98-4a9c-be29-890d15244b8d slug=ready/agent-harness digest=351eb0dd990a -->
+#### [3c208991] [agent-harness][CH7] Ratatui minimal operator interface
+- priority: `high`
+- summary: WS5 native client.
+- ref: `.ticket/tickets/3c208991-1d98-4a9c-be29-890d15244b8d/ticket.toml`
+
+<!-- ticket-index:entry id=86f95ad8-8d61-43b6-a463-8719b29007c0 slug=ready/agent-harness digest=365a140d9f8b -->
+#### [86f95ad8] [agent-harness][CH8] Dioxus/WASM minimal interface parity
+- priority: `high`
+- summary: WS5 browser client.
+- ref: `.ticket/tickets/86f95ad8-8d61-43b6-a463-8719b29007c0/ticket.toml`
+
+<!-- ticket-index:entry id=a496cad3-cdc5-4237-b432-47a6bb43b9c5 slug=ready/agent-harness digest=533825bf57fd -->
+#### [a496cad3] [agent-harness][CH9] Diff preview integration in both clients
+- priority: `medium`
+- summary: WS5. Consistent code-change preview before execution confirmation.
+- ref: `.ticket/tickets/a496cad3-cdc5-4237-b432-47a6bb43b9c5/ticket.toml`
+
+
+### Component: agent-tooling
+
+<!-- ticket-index:entry id=e342cc4c-a7a4-42de-81fc-572d0497d12b slug=ready/agent-tooling digest=71524c40d552 -->
+#### [e342cc4c] Token-optimized default agent tool suite: peek + compact-terminal + design call for edit/filesystem/search tools
+- summary: Implementation note (all three child tickets)**: These are **net-new implementations**, not extractions. The precedent ticket `bd5e9aee` extracted an already-existing `compact-terminal-mcp` into laye...
+- ref: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b/ticket.toml`
+
 
 ### Component: cli
 
@@ -4687,14 +6816,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [b1f3e2a4] [bootstrap][T2] enforce assignment start context branch and cwd checks
 - summary: When a worker is dispatched to implement a ticket, the assignment packet includes an explicit branch name and working directory. Before the worker can claim the ticket, the executor must verify the w...
 - ref: `.ticket/tickets/b1f3e2a4-6c7d-4e8f-9a0b-2c3d4e5f6a72/ticket.toml`
-
-
-### Component: context-api
-
-<!-- ticket-index:entry id=0727b7dd-b90b-4edb-8c16-2d6220506585 slug=ready/context-api digest=45172ea26745 -->
-#### [0727b7dd] Plan: Context API — master multi-phase architecture plan
-- summary: tags: `#context-api` `#architecture` `#multi-phase` `#api-design` `#plan`
-- ref: `.ticket/tickets/0727b7dd-b90b-4edb-8c16-2d6220506585/ticket.toml`
 
 
 ### Component: context-engine
@@ -4749,6 +6870,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: A local Docker harness is not sufficient on its own. The user-facing installation documentation needs continuous validation in CI so documentation drift or broken installation steps are caught before...
 - ref: `.ticket/tickets/e0c136dd-8bdf-40f6-a39c-29f9e88167d6/ticket.toml`
 
+<!-- ticket-index:entry id=0ffac34a-4e33-426c-8eef-ef6482ab3bde slug=ready/documentation-tooling digest=911ef89cf24f -->
+#### [0ffac34a] Implement Docker harness for documented install and deinstall flows
+- priority: `high`
+- summary: After the Docker validation strategy is defined, the repository still needs a runnable harness that executes the documented installation and deinstallation steps in clean containers and proves that t...
+- ref: `.ticket/tickets/0ffac34a-4e33-426c-8eef-ef6482ab3bde/ticket.toml`
+
 
 ### Component: history
 
@@ -4778,11 +6905,20 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: memory-api
 
-<!-- ticket-index:entry id=b03be2d5-5293-4dc7-ad11-cca2dbf32c8b slug=ready/memory-api digest=e44d8c7d2237 -->
+<!-- ticket-index:entry id=b03be2d5-5293-4dc7-ad11-cca2dbf32c8b slug=ready/memory-api digest=7aa64b71a344 -->
 #### [b03be2d5] [spec][P5] Cross-entity edges — spec depends_on ticket, ticket implements spec
 - priority: `medium`
 - summary: Extend memory-api's edge system to support edges between entities of different types (spec ↔ ticket). Currently edges are within a single entity store; this enables cross-store relationships.
 - ref: `memory-api/.ticket/tickets/b03be2d5-5293-4dc7-ad11-cca2dbf32c8b/ticket.toml`
+
+
+### Component: memory-fixtures
+
+<!-- ticket-index:entry id=f5875ff3-7c37-4ac2-8ae6-d68aff240bf4 slug=ready/memory-fixtures digest=0d96ddd96787 -->
+#### [f5875ff3] [memory-fixtures][ticket-api][perf] Expand fixture for slow move/health scenarios
+- priority: `high`
+- summary: Extend `memory-fixtures` so ticket move and health performance tests can materialize representative slow scenarios without bespoke setup in each test.
+- ref: `memory-api/.ticket/tickets/f5875ff3-7c37-4ac2-8ae6-d68aff240bf4/ticket.toml`
 
 
 ### Component: rule-api
@@ -4938,6 +7074,33 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `memory-api/.ticket/tickets/321f4ec7-03df-4e14-9734-a6af76ace55f/ticket.toml`
 
 
+### Component: ticket-api
+
+<!-- ticket-index:entry id=6ddfb633-6e04-49ef-a464-f38bb13f6051 slug=ready/ticket-api digest=dd08d291825b -->
+#### [6ddfb633] [ticket-api][perf] Add aggressive e2e timing coverage for move and health
+- priority: `high`
+- summary: Add aggressive end-to-end tests that time and stress `ticket move` and `ticket health` using representative fixtures.
+- ref: `memory-api/.ticket/tickets/6ddfb633-6e04-49ef-a464-f38bb13f6051/ticket.toml`
+
+<!-- ticket-index:entry id=cdae25a0-f7a1-4266-a341-a65a0a9e6325 slug=ready/ticket-api digest=21cc4106a1cc -->
+#### [cdae25a0] [ticket-api][perf] Benchmark move and health on representative fixtures
+- priority: `high`
+- summary: Benchmark representative `ticket move` and `ticket health` operations so slow slices are measurable with Criterion instead of anecdotal CLI timing.
+- ref: `memory-api/.ticket/tickets/cdae25a0-f7a1-4266-a341-a65a0a9e6325/ticket.toml`
+
+<!-- ticket-index:entry id=49bbe3ae-a80c-479f-98f2-500643706ce6 slug=ready/ticket-api digest=564455a0ab28 -->
+#### [49bbe3ae] [ticket-api][perf] Characterize slow ticket move and health end-to-end
+- priority: `high`
+- summary: Drive a focused performance-characterization track for `ticket move` and `ticket health` so we can reproduce slow operations from the workspace-cleanup work and measure them before optimization.
+- ref: `memory-api/.ticket/tickets/49bbe3ae-a80c-479f-98f2-500643706ce6/ticket.toml`
+
+<!-- ticket-index:entry id=f5dba169-b153-4d6a-ae1b-7620f317309e slug=ready/ticket-api digest=8b3d9e0d7b97 -->
+#### [f5dba169] [ticket-api][perf] Provoke slow-path and failure-path behavior in move/health tests
+- priority: `high`
+- summary: Make the move and health test surface deliberately hostile so slow or pathological behavior shows up early.
+- ref: `memory-api/.ticket/tickets/f5dba169-b153-4d6a-ae1b-7620f317309e/ticket.toml`
+
+
 ### Component: ticket-http
 
 <!-- ticket-index:entry id=181ed793-481d-4d46-b059-0eda891365d7 slug=ready/ticket-http digest=ba1524571448 -->
@@ -4951,15 +7114,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: The child-workspace ticket-reference rollout is now split into three well-scoped tickets, but there is no parent tracker that captures the full implementation sequence, the shared goal, or the cross-...
 - ref: `memory-api/.ticket/tickets/5012f293-e871-4e4a-af40-c27b3bd967fb/ticket.toml`
-
-
-### Component: ticket-viewer
-
-<!-- ticket-index:entry id=2b3a6e2e-4911-4b33-a3a9-9ace11f26637 slug=ready/ticket-viewer digest=9346967768ed -->
-#### [2b3a6e2e] Bug: TicketDetail right panel hardcoded colors — port to theme variables
-- priority: `high`
-- summary: `tools/viewer/ticket-viewer/frontend/dioxus/src/components/ticket_detail.rs` builds the right-side ticket detail panel from inline hardcoded hex colors. When the theme is set to PAPER (light) the pan...
-- ref: `memory-viewers/.ticket/tickets/2b3a6e2e-4911-4b33-a3a9-9ace11f26637/ticket.toml`
 
 
 ### Component: ticket-vscode
@@ -4977,25 +7131,40 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [9ac0a02b] Epic: Viewer Component Port -- framework migration and API surface (Preact to Dioxus/Leptos)
 - ref: `.ticket/tickets/9ac0a02b-965f-45f3-b8c9-97a063e3bc55/ticket.toml`
 
-<!-- ticket-index:entry id=6b2dc497-188c-44f5-9106-bf35deecb7a1 slug=ready/unspecified digest=e44dac38b754 -->
-#### [6b2dc497] [session-api] Add init/pin/unpin/view to session-cli and session-mcp
-- summary: Expose the runtime session-context operations through CLI and MCP, headers-only (D6).
-- ref: `.ticket/tickets/6b2dc497-188c-44f5-9106-bf35deecb7a1/ticket.toml`
+<!-- ticket-index:entry id=b1e9e744-aeac-474a-91d9-07e3a362dc76 slug=ready/unspecified digest=54332cc9aa04 -->
+#### [b1e9e744] [feedback-api] Feedback inbox, metadata indexing, and deep search
+- priority: `high`
+- summary: Plan a feedback store that ingests human and privileged-agent feedback events, normalizes metadata, and supports deep search and reconciliation at scale.
+- ref: `memory-api/.ticket/tickets/b1e9e744-aeac-474a-91d9-07e3a362dc76/ticket.toml`
 
-<!-- ticket-index:entry id=d8f76965-1ff3-4a0a-bb24-773b9637fae4 slug=ready/unspecified digest=ffc5bfa9610c -->
+<!-- ticket-index:entry id=b7b84c10-8dc5-4087-87ad-6fe27ebbcd45 slug=ready/unspecified digest=379b6ee8e927 -->
+#### [b7b84c10] [feedback-api] High-scale search, clustering, and reconciliation workflows
+- priority: `high`
+- summary: Plan and implement deep query/search capabilities and operator reconciliation flows for large feedback corpora, including dedupe, sentiment facets, and routing.
+- ref: `memory-api/.ticket/tickets/b7b84c10-8dc5-4087-87ad-6fe27ebbcd45/ticket.toml`
+
+<!-- ticket-index:entry id=4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7 slug=ready/unspecified digest=4650dd3d3df9 -->
+#### [4f86d3d2] [feedback-api] Privileged feedback governance and abuse-boundary enforcement
+- priority: `high`
+- summary: Define policy and enforcement boundaries for privileged-agent feedback so trust, attribution, and abuse controls are explicit.
+- ref: `memory-api/.ticket/tickets/4f86d3d2-2b2a-4c9d-9d46-5f2a437f91b7/ticket.toml`
+
+<!-- ticket-index:entry id=c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e slug=ready/unspecified digest=0fff5940a743 -->
+#### [c2d6a14a] [feedback-api] Retention, redaction, and privacy incident controls
+- priority: `high`
+- summary: Define enforceable retention and redaction behavior for feedback and interview-derived signals, including privacy incident handling paths.
+- ref: `memory-api/.ticket/tickets/c2d6a14a-98b7-4f98-9f62-90a5ccf06d9e/ticket.toml`
+
+<!-- ticket-index:entry id=3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17 slug=ready/unspecified digest=20e719719368 -->
+#### [3a1ec9f8] [feedback-api] Search latency and index growth SLOs
+- priority: `high`
+- summary: Define measurable performance SLOs for feedback deep-search operations and index growth behavior under high event volume.
+- ref: `memory-api/.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml`
+
+<!-- ticket-index:entry id=d8f76965-1ff3-4a0a-bb24-773b9637fae4 slug=ready/unspecified digest=2f7ccabcc4f8 -->
 #### [d8f76965] [session-api] Cascade context gathering from rules/specs/tickets
 - summary: Given a `ticket_id` at `session_init`, proactively gather selective context from rules, specs, and tickets across stores by following **hard ID links only** (D5), resolved as URNs.
-- ref: `.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml`
-
-<!-- ticket-index:entry id=412964a3-e1c3-47da-94ad-268ff20441c0 slug=ready/unspecified digest=687679e511f0 -->
-#### [412964a3] [session-api] Runtime session-context model (pinned_entities, init/pin/unpin)
-- summary: Extend `session-api` (`memory-api/crates/session-api`) from a write/archive store into a read/runtime store.
-- ref: `.ticket/tickets/412964a3-e1c3-47da-94ad-268ff20441c0/ticket.toml`
-
-<!-- ticket-index:entry id=b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6 slug=ready/unspecified digest=a6c3c6e788e4 -->
-#### [b4a8dc5e] [session-bootstrap][rules] Minimal bootstrapper + selective instruction loading
-- summary: Operationalizes decision **D7**: stop force-loading static guidance; make it discoverable and agent-rendered.
-- ref: `.ticket/tickets/b4a8dc5e-9d80-4fea-bb42-0c30aba0ecd6/ticket.toml`
+- ref: `memory-api/.ticket/tickets/d8f76965-1ff3-4a0a-bb24-773b9637fae4/ticket.toml`
 
 
 ### Component: viewer-api
@@ -5160,4 +7329,28 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [e4c6d8f1] [bootstrap][T5] handle early-stop recovery and reassignment
 - summary: Agent sessions can terminate unexpectedly at any point during an assignment: stdio disconnect, heartbeat/liveness timeout, repeated auth failures, or explicit worker abort. The executor must handle a...
 - ref: `.ticket/tickets/e4c6d8f1-9a2b-4c3d-8e4f-5a6b7c8d9ea5/ticket.toml`
+
+
+### Component: workflow-tools
+
+<!-- ticket-index:entry id=0da6894c-dcbb-4196-8ac7-b6fae7c40ec9 slug=ready/workflow-tools digest=3dc117563807 -->
+#### [0da6894c] [workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets
+- priority: `high`
+- summary: Phase A design/contract. Define the canonical per-domain crate layout that every tool extraction must follow: a single domain crate (named after the domain, e.g. `ticket`) that unifies the domain API...
+- ref: `.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml`
+
+
+## State: todo
+
+### Component: unspecified
+
+<!-- ticket-index:entry id=8418fa92-bf46-42d9-a93f-9240032893b7 slug=todo/unspecified digest=548e2b8972e5 -->
+#### [8418fa92] Dedicated orchestrator agent: single sub-agent tool, plan + aggregate only
+- summary: Add an explicit **orchestrator agent** whose only capability is to call sub-agents. It performs high-level planning, dispatches work to multiple sub-agents, and aggregates their results back into the...
+- ref: `.ticket/tickets/8418fa92-bf46-42d9-a93f-9240032893b7/ticket.toml`
+
+<!-- ticket-index:entry id=a5ad2721-2d07-47dd-85f5-f180d4a030fa slug=todo/unspecified digest=87819542d1f0 -->
+#### [a5ad2721] Model-aware MCP tool wrapper: block expensive-model calls and require delegation
+- summary: Route every MCP tool call through a **model-aware wrapper** that enforces price-awareness policy at the tool boundary. Prompt templates, agent templates, and other guidance files already declare whic...
+- ref: `.ticket/tickets/a5ad2721-2d07-47dd-85f5-f180d4a030fa/ticket.toml`
 

@@ -1,5 +1,11 @@
 # Epic: Token-Optimized Default Agent Tool Suite (peek + compact-terminal + design call)
 
+## Implementation Status & Sequencing (2026-07-27)
+
+**Implementation note (all three child tickets)**: These are **net-new implementations**, not extractions. The precedent ticket `bd5e9aee` extracted an already-existing `compact-terminal-mcp` into layered api/cli/mcp crates. There is no existing filesystem, editing, or repo-wide search abstraction in the workspace today. What transfers from that precedent is **only** the three-crate layout and workspace wiring pattern — not any logic. Sizing must reflect net-new implementation cost, so the phrase "the extraction pattern is proven and reusable" must not be used to justify optimistic estimates.
+
+**Next ticket to implement**: [244c3113 (filesystem operations)](../244c3113-e28f-44d7-b9a8-f5dd45d2895c/ticket.toml) is the smallest and unblocks [search](../bd71ecc7-4631-407c-a156-d1d77de2ca33/ticket.toml).
+
 ## Design-Call Outcome (2026-07-27)
 
 The design call is complete. All four remaining acceptance criteria are now

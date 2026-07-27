@@ -1,5 +1,9 @@
 # Implement a context-anchored differential editing tool suite
 
+**Crate name**: `edit-api` (api crate); `edit-cli` (CLI transport); `edit-mcp` (MCP transport).
+
+**Implementation note**: This is a **net-new implementation**, not an extraction. The precedent ticket `bd5e9aee` extracted an already-existing `compact-terminal-mcp` into layered api/cli/mcp crates. There is no existing editing abstraction in the workspace today. What transfers from that precedent is **only** the three-crate layout and workspace wiring pattern — not any logic. Sizing must reflect net-new implementation cost.
+
 Parent epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
 Spec: `agent-tooling/file-editing` (`4f5ad264-8e8d-4681-9551-4ec14b73c3b1`)
 

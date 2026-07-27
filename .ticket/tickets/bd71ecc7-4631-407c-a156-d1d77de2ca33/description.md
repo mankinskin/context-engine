@@ -1,5 +1,13 @@
 # Implement a repo-wide bounded search tool suite
 
+**Crate name**: `search-api` (api crate); `search-cli` (CLI transport); `search-mcp` (MCP transport).
+
+**Implementation note**: This is a **net-new implementation**, not an extraction. The precedent ticket `bd5e9aee` extracted an already-existing `compact-terminal-mcp` into layered api/cli/mcp crates. There is no existing repo-wide search abstraction in the workspace today. What transfers from that precedent is **only** the three-crate layout and workspace wiring pattern — not any logic. Sizing must reflect net-new implementation cost.
+
+**Boundary with `peek-api`**: `search-api` is repo-wide/counts-first; `peek-api` remains single-file. The overlap is accepted, and this boundary should be documented in both tools' guidance.
+
+**Dependency on filesystem operations**: This ticket depends on [244c3113 (filesystem operations)](../244c3113-e28f-44d7-b9a8-f5dd45d2895c/ticket.toml) for traversal and ignore-rule handling. Filesystem must be implemented first.
+
 Parent epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
 Spec: `agent-tooling/repo-wide-search` (`af9ebba9-6de4-4290-ab4a-319c432ded4c`)
 
