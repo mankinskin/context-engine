@@ -72,15 +72,21 @@ Required fields per delegated session record:
 
 Pre-gate and post-gate validation executions link via `session_id` to the delegated session.
 
-## R4: Token/Cost Capture Dependency
+## R4: Token-Load Coverage — Partial by Design with Measurement Limitations
 
-The backend infrastructure for per-turn token/cost/model attribution is **architecturally complete** as of ticket [6549b6a7](.ticket/tickets/6549b6a7-8957-4df0-ada5-8fefb49c015c/ticket.toml) (done).
+**Measurement limitations**: Token usage and model identity telemetry **do not exist** at two critical boundaries:
+1. The upstream Microsoft Copilot raw transcript format (`C:/Users/linus/AppData/Roaming/Code/User/workspaceStorage/<workspace-id>/GitHub.copilot-chat/transcripts/*.jsonl`) contains no `usage` object, no token fields (under any spelling), and no `model` field. The capture source is Microsoft's closed-source `GitHub.copilot` extension; this repository cannot modify or extend it.
+2. MCP `tools/call` results carry no `usage` field; no repo MCP server emits one; `mcp-cost-gate`'s `proxy.rs` passes non-`tools/list` responses through untouched. Token counts are therefore not observable at the proxy.
 
-However, all token/cost fields are **null on disk** in real sessions because the VS Code Copilot capture hook does not populate `data_json.usage`.
+**Coverage scope**: Token-load data will be **estimated** only from **MCP tool traffic** via the existing `mcp-cost-gate` proxy, which observes serialized request and response payloads. This coverage is **structurally partial** — it observes tool calls, not whole conversation turns.
 
-**This spec requires** that once ticket [9d527ad1](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) lands, token/cost/model data flows through the normal `session-api` extraction path (`hook.rs` L251-290 reads from `data_json.usage` and populates `event_meta` fields).
+**Measurement method**: The proxy records per-call: `timestamp`, `caller_model` (when supplied), tool name, `grant_id`, gate decision, request/response byte and character counts, `duration_ms`, and an **estimated token load** derived via a fixed char-per-token divisor (chars/4) over the serialized payloads. This is a rough empirical signal proportional to real token consumption; exact tokenization is explicitly out of scope. The estimate is named and typed distinctly (e.g., `tokens_estimated`) so it can never be read as an observed count.
 
-No parallel data path, no workaround for the null fields: the quality-gate consumer (ticket [8ad2581e](.ticket/tickets/8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb/ticket.toml)) reads from `session-api` queryable surfaces (`subagent_rollups`, per-turn `event_meta`) once the capture source supplies the data.
+**No dollar-cost computation**: Tools do not have a dollar cost. A tool call's only cost effect is the tokens it adds to the consuming agent's context, and the dollar cost arises there, in that agent's model billing. Therefore ticket [9d527ad1](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) measures **token load**, never a dollar figure. No price-table lookup occurs at this boundary. The `cost_usd` field remains `null` in `session-api` records at this boundary.
+
+**Honest-absence constraint** (normative): Absent **dollar cost** remains `null` in `session-api` records rather than being estimated, fabricated, or defaulting to zero. This constraint is enforced throughout quality-gate consumers (e.g., ticket [8ad2581e](.ticket/tickets/8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb/ticket.toml)) and remains in force independently of ticket [9d527ad1](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml). Token-load estimation is explicitly exempt from this constraint; the estimate is clearly named and the partial-coverage boundary is recorded in the data so "no MCP traffic" is distinguishable from "telemetry unavailable".
+
+**Known limitation**: Full-fidelity per-turn token/cost/model telemetry remains unavailable pending either (a) Microsoft emitting usage in the raw transcript format, or (b) a future repo-local VS Code extension built on the `vscode.lm` API. Both paths are outside this spec's scope and the implementation scope of ticket [41ff230b](.ticket/tickets/41ff230b-cedf-4ec3-86cf-9b48a89b8325/ticket.toml).
 
 # Acceptance Criteria
 
