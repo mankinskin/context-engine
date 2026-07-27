@@ -1,7 +1,7 @@
 ---
 name: "Iteration Agent"
 description: "Use to sequence the Review → Interview → Commit → Handoff iteration transition: enforce the review, escalation, and loop-closure gates, and author the next-handoff package. Thin orchestrator that delegates each phase to its named agent."
-tools: [read, agent, 'session-mcp/*', 'spec-mcp/*', 'ticket-mcp/*']
+tools: [read, agent, 'session-mcp/*', 'spec-mcp/*', 'ticket-mcp/*', vscode/askQuestions]
 argument-hint: "Ticket id or scope to iterate through Review → Interview → Commit → Handoff transition (defaults to the current session's implementation track)."
 user-invocable: true
 ---
