@@ -15,10 +15,10 @@ Treat any text typed after `/sync-model-prices` as a focus hint — a model id, 
 
 ## Workflow
 
-1. **Check staleness first.** From `tools/model-prices/`, run `python sync_model_prices.py --check`. Exit 0 means the table is current; exit 1 means stale. Report which.
-2. **Sync when stale.** Run `python sync_model_prices.py`. It rewrites `model_prices.json` only when the upstream `source_sha256` changed, so a current table produces no diff. Use `--force` only when the user explicitly wants `synced_at` refreshed.
-3. **Handle sync failure gracefully.** If the fetch fails (offline, upstream down, timeout), do not block: report the failure, state that the committed table is being used and may be stale, and continue with the offline steps. Optionally retry once with `--timeout 60`.
-4. **Report the delta.** If `model_prices.json` changed, summarize what moved — new models, removed or newly `deprecated` models, and price changes on any model named in the tier tables. Use `git diff --stat` plus a targeted `git diff` on the table rather than pasting the whole file.
+1. **Check staleness first.** From `tools/model-prices/`, run `python sync_model_prices.py --check`. Exit 0 means the table is current against both upstreams; exit 1 means stale. Report which.
+2. **Sync when stale.** Run `python sync_model_prices.py`. It fetches from both upstreams (genai-prices and GitHub Copilot) and rewrites `model_prices.json` only when the composite `source_sha256` changed, so a current table produces no diff. Use `--force` only when the user explicitly wants `synced_at` refreshed.
+3. **Handle sync failure gracefully.** If the genai-prices fetch fails (offline, upstream down, timeout), do not block: report the failure, state that the committed table is being used and may be stale, and continue with the offline steps. Optionally retry once with `--timeout 60`. **If the GitHub Copilot upstream fails, the sync will fail loudly (exit 2)** — this prevents writing a genai-prices-only table that would falsely appear up to date.
+4. **Report the delta.** If `model_prices.json` changed, summarize what moved from either source — new models, removed or newly `deprecated` models, and price changes on any model named in the tier tables. Use `git diff --stat` plus a targeted `git diff` on the table rather than pasting the whole file.
 5. **Resolve the focus models.** For the argument (or, with no argument, every model in the tier tables), run `python sync_model_prices.py --query <text> --format csv` and report `in$/M`, `out$/M`, `cache read`, and context window.
 6. **Reconcile the ladder.** For each tier (T0 orchestrator, T1 complex, T2 default, T3 cheap worker/floor), confirm the named models still belong in their band. Flag specifically:
    - any model that is now strictly dominated by a newer one on every axis (input, output, cache read, context window) — that is a promotion candidate

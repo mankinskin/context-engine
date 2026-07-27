@@ -13,7 +13,18 @@ description: "Use when resolving model prices, syncing the model cost table, or 
 | `tools/model-prices/cost_gate.py` | Resolves a model to an allow/delegate decision and a budget scale. |
 | `tools/model-prices/test_cost_gate.py` | Tests for the gate. Run after changing gate logic. |
 
-Upstream source is [pydantic/genai-prices](https://github.com/pydantic/genai-prices) (`prices/data_slim.json`, MIT). The script is stdlib-only — no dependencies, no virtualenv needed.
+Upstream sources are [pydantic/genai-prices](https://github.com/pydantic/genai-prices) (`prices/data_slim.json`, MIT) and GitHub Copilot's published pricing table (`https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/models-and-pricing.yml` from the github/docs repo). The script is stdlib-only — no PyYAML dependency, no virtualenv needed.
+
+### Source Precedence
+
+The two upstreams occupy **disjoint provider namespaces**, so neither can overwrite the other:
+
+- All genai-prices rows retain their original `provider_id` (e.g. `anthropic`, `openai`, `google`).
+- All GitHub Copilot rows use `provider_id: "github-copilot"` and `provider_name: "GitHub Copilot"`, with `model_id` set to the model's display name **verbatim** as it appears in the `runSubagent` model surface (e.g. `MAI-Code-1-Flash`, `Claude Opus 5`).
+
+Consequence: the same underlying model can legitimately appear **twice** in the table — once under its vendor's genai-prices slug and once under `github-copilot`. For routing and cost-gate decisions about a Copilot dispatch, use the `github-copilot` row.
+
+Within the GitHub Copilot source, models may appear multiple times with different pricing tiers/thresholds. The sync keeps only the `Default` tier row (or the row with no threshold specified), ensuring exactly one row per model_id.
 
 ### Table shape
 
@@ -22,10 +33,14 @@ Upstream source is [pydantic/genai-prices](https://github.com/pydantic/genai-pri
   "_meta": {
     "source": "pydantic/genai-prices",
     "source_url": "...data_slim.json",
-    "source_sha256": "...",       // upstream content hash; drives change detection
+    "source_sha256": "...",       // composite digest over both upstreams; drives change detection
     "synced_at": "...",           // UTC ISO timestamp of last successful sync
     "model_count": 1285,
-    "price_unit": "USD per 1,000,000 tokens"
+    "price_unit": "USD per 1,000,000 tokens",
+    "sources": [                  // per-source detail; source/source_url retained for compatibility
+      {"name": "pydantic/genai-prices", "url": "...", "sha256": "...", "model_count": 1200},
+      {"name": "github-copilot", "url": "...", "sha256": "...", "model_count": 85}
+    ]
   },
   "models": [
     {

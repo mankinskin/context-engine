@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Extract and synchronize an LLM model price table from pydantic/genai-prices.
+"""Extract and synchronize an LLM model price table from multiple sources.
 
-Source of truth: https://github.com/pydantic/genai-prices (MIT).
-The upstream ``prices/data_slim.json`` file is an array of providers; each
-provider carries a list of models, and each model carries per-million-token
-prices that may be a plain number, a tiered ``{base, tiers}`` object, or a list
-of conditional prices.
+Sources:
+1. pydantic/genai-prices (MIT) — https://github.com/pydantic/genai-prices
+2. GitHub Copilot pricing — https://github.com/github/docs (models-and-pricing.yml)
 
-This script downloads that file, flattens it into a compact price table, and
-writes it to a local JSON file. On re-run it only rewrites the output when the
-upstream content hash changes, so it can be used as a sync step.
+The two sources occupy disjoint provider namespaces (genai-prices provider ids
+vs. ``github-copilot``), so rows never collide. Final table is sorted by
+(provider_id, model_id).
+
+Change detection uses a composite sha256 over both sources' content hashes,
+so the output is rewritten when either source changes.
 
 Stdlib only. No third-party dependencies.
 """
@@ -29,6 +30,7 @@ from typing import Any
 RAW_BASE = "https://raw.githubusercontent.com/pydantic/genai-prices/main/prices"
 SLIM_URL = f"{RAW_BASE}/data_slim.json"
 FULL_URL = f"{RAW_BASE}/data.json"
+GITHUB_COPILOT_URL = "https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/models-and-pricing.yml"
 
 # Per-million-token price fields we surface in the flattened table.
 PRICE_FIELDS = (
@@ -46,6 +48,61 @@ def fetch(url: str, timeout: float) -> bytes:
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return response.read()
+
+
+def parse_mini_yaml(raw: bytes) -> list[dict[str, Any]]:
+    """Parse a minimal YAML subset: a sequence of mappings.
+    
+    Expected shape:
+    - key: value
+      key2: value2
+    - key: value
+    
+    Strips surrounding quotes, skips blank lines and # comments, strips inline
+    trailing comments from unquoted values. Raises ValueError on malformed input.
+    """
+    lines = raw.decode("utf-8").splitlines()
+    entries: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    
+    for line_num, line in enumerate(lines, start=1):
+        stripped = line.lstrip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        
+        # New entry starts with "- key: value"
+        if stripped.startswith("- "):
+            if current is not None:
+                entries.append(current)
+            current = {}
+            rest = stripped[2:]
+            if ":" not in rest:
+                raise ValueError(f"Line {line_num}: expected 'key: value', got '{line}'")
+            key, _, val = rest.partition(":")
+            current[key.strip()] = _parse_yaml_value(val.strip())
+        elif ":" in stripped and current is not None:
+            # Continuation: "  key: value"
+            key, _, val = stripped.partition(":")
+            current[key.strip()] = _parse_yaml_value(val.strip())
+        else:
+            raise ValueError(f"Line {line_num}: unexpected format '{line}'")
+    
+    if current is not None:
+        entries.append(current)
+    return entries
+
+
+def _parse_yaml_value(val: str) -> str:
+    """Strip quotes and inline comments from a YAML scalar value."""
+    if not val:
+        return ""
+    # Strip surrounding quotes
+    if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+        return val[1:-1]
+    # Strip inline trailing comment if no quotes
+    if "#" in val:
+        val = val.split("#", 1)[0].rstrip()
+    return val
 
 
 def scalar_price(value: Any) -> float | None:
@@ -105,16 +162,103 @@ def flatten(providers: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
-def build_document(source_url: str, source_sha256: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
+def parse_price_string(s: str) -> float | None:
+    """Parse a price string like '$1,234.50' to float. Returns None for non-numeric."""
+    if not s or s.strip().lower() in ("not applicable", "n/a", "-"):
+        return None
+    cleaned = s.strip().replace("$", "").replace(",", "")
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
+def flatten_github_copilot(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Flatten GitHub Copilot YAML entries into price rows.
+    
+    Deduplicates models by keeping the 'Default' tier or first occurrence.
+    Strips markdown footnote markers from model names.
+    """
+    # Group by model name to handle duplicates
+    model_groups: dict[str, list[dict[str, Any]]] = {}
+    for entry in entries:
+        model_name = entry.get("model", "")
+        # Strip markdown footnote markers like [^sonnet-5-promo]
+        import re
+        model_name = re.sub(r"\[\^[^\]]+\]$", "", model_name).strip()
+        if not model_name:
+            continue
+        if model_name not in model_groups:
+            model_groups[model_name] = []
+        model_groups[model_name].append(entry)
+    
+    rows: list[dict[str, Any]] = []
+    for model_name, group in model_groups.items():
+        # Pick one entry: prefer tier='Default', else threshold absent/not applicable, else first
+        chosen = group[0]
+        for entry in group:
+            tier = entry.get("tier", "")
+            threshold = entry.get("threshold", "")
+            if tier == "Default":
+                chosen = entry
+                break
+            if not threshold or threshold.lower() in ("not applicable", "n/a"):
+                chosen = entry
+        
+        row: dict[str, Any] = {
+            "provider_id": "github-copilot",
+            "provider_name": "GitHub Copilot",
+            "model_id": model_name,
+            "context_window": None,
+            "deprecated": False,
+            "input_mtok": parse_price_string(chosen.get("input", "")),
+            "output_mtok": parse_price_string(chosen.get("output", "")),
+            "cache_read_mtok": parse_price_string(chosen.get("cached_input", "")),
+            "cache_write_mtok": parse_price_string(chosen.get("cache_write", "")),
+        }
+        rows.append(row)
+    
+    rows.sort(key=lambda r: r["model_id"])
+    return rows
+
+
+def build_document(
+    genai_url: str,
+    genai_sha: str,
+    genai_count: int,
+    github_sha: str,
+    github_count: int,
+    rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Build the final document with composite metadata from both sources.
+    
+    The composite source_sha256 is sha256(genai_sha + github_sha) for change detection.
+    sources array carries per-source details.
+    """
+    composite_sha = hashlib.sha256((genai_sha + github_sha).encode("utf-8")).hexdigest()
     return {
         "_meta": {
             "source": "pydantic/genai-prices",
-            "source_url": source_url,
-            "source_sha256": source_sha256,
+            "source_url": genai_url,
+            "source_sha256": composite_sha,
             "synced_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
             "model_count": len(rows),
             "price_unit": "USD per 1,000,000 tokens",
-            "note": "Indicative estimates only; upstream is best-effort. Not authoritative billing data.",
+            "note": "Multi-source aggregate: genai-prices + GitHub Copilot. Disjoint provider namespaces.",
+            "sources": [
+                {
+                    "name": "pydantic/genai-prices",
+                    "url": genai_url,
+                    "sha256": genai_sha,
+                    "model_count": genai_count,
+                },
+                {
+                    "name": "github-copilot",
+                    "url": GITHUB_COPILOT_URL,
+                    "sha256": github_sha,
+                    "model_count": github_count,
+                },
+            ],
         },
         "models": rows,
     }
@@ -260,47 +404,75 @@ def main(argv: list[str] | None = None) -> int:
     if args.query is not None or args.list_all:
         return query_table(args.output, args.query, args.format)
 
-    source_url = args.source_url or (FULL_URL if args.full else SLIM_URL)
+    genai_url = args.source_url or (FULL_URL if args.full else SLIM_URL)
 
+    # Fetch genai-prices
     try:
-        raw = fetch(source_url, timeout=args.timeout)
+        genai_raw = fetch(genai_url, timeout=args.timeout)
     except (urllib.error.URLError, TimeoutError) as exc:
-        print(f"error: failed to fetch {source_url}: {exc}", file=sys.stderr)
+        print(f"error: failed to fetch {genai_url}: {exc}", file=sys.stderr)
         return 2
+    genai_sha = hashlib.sha256(genai_raw).hexdigest()
 
-    remote_sha = hashlib.sha256(raw).hexdigest()
+    # Fetch GitHub Copilot pricing
+    try:
+        github_raw = fetch(GITHUB_COPILOT_URL, timeout=args.timeout)
+    except (urllib.error.URLError, TimeoutError) as exc:
+        print(f"error: failed to fetch {GITHUB_COPILOT_URL}: {exc}", file=sys.stderr)
+        return 2
+    github_sha = hashlib.sha256(github_raw).hexdigest()
+
+    # Composite hash for change detection
+    composite_sha = hashlib.sha256((genai_sha + github_sha).encode("utf-8")).hexdigest()
     local_sha = load_existing_sha(args.output)
-    up_to_date = local_sha == remote_sha
+    up_to_date = local_sha == composite_sha
 
     if args.check:
         if up_to_date:
-            print(f"up to date ({args.output.name}, sha256={remote_sha[:12]})")
+            print(f"up to date ({args.output.name}, composite_sha256={composite_sha[:12]})")
             return 0
-        print(f"out of date: {args.output.name} (local={local_sha}, remote={remote_sha[:12]})")
+        print(f"out of date: {args.output.name} (local={local_sha}, remote={composite_sha[:12]})")
         return 1
 
     if up_to_date and not args.force:
-        print(f"up to date, no changes written ({args.output.name}, sha256={remote_sha[:12]})")
+        print(f"up to date, no changes written ({args.output.name}, composite_sha256={composite_sha[:12]})")
         return 0
 
+    # Parse genai-prices
     try:
-        providers = json.loads(raw)
+        providers = json.loads(genai_raw)
     except json.JSONDecodeError as exc:
-        print(f"error: upstream is not valid JSON: {exc}", file=sys.stderr)
+        print(f"error: genai-prices JSON is invalid: {exc}", file=sys.stderr)
         return 2
     if not isinstance(providers, list):
-        print("error: upstream JSON root is not an array of providers", file=sys.stderr)
+        print("error: genai-prices JSON root is not an array", file=sys.stderr)
         return 2
+    genai_rows = flatten(providers)
 
-    rows = flatten(providers)
-    document = build_document(source_url, remote_sha, rows)
+    # Parse GitHub Copilot pricing
+    try:
+        github_entries = parse_mini_yaml(github_raw)
+    except ValueError as exc:
+        print(f"error: GitHub Copilot YAML parse failed: {exc}", file=sys.stderr)
+        return 2
+    github_rows = flatten_github_copilot(github_entries)
+
+    # Combine rows (disjoint provider namespaces, so no collision)
+    all_rows = genai_rows + github_rows
+    all_rows.sort(key=lambda r: (r["provider_id"], r["model_id"]))
+
+    document = build_document(
+        genai_url, genai_sha, len(genai_rows), github_sha, len(github_rows), all_rows
+    )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(document, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     action = "updated" if local_sha else "created"
-    print(f"{action} {args.output} ({len(rows)} models, sha256={remote_sha[:12]})")
+    print(
+        f"{action} {args.output} ({len(genai_rows)} genai + {len(github_rows)} github-copilot = {len(all_rows)} total, composite_sha256={composite_sha[:12]})"
+    )
     return 0
 
 
