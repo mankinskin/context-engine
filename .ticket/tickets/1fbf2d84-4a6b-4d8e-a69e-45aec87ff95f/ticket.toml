@@ -1,7 +1,7 @@
 id = "1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f"
 created_at = "2026-07-26T18:18:03.804134400+00:00"
 title = "Close the loop: Iteration Agent orchestrates review→interview→commit→handoff into a self-contained next handoff"
-state = "new"
+state = "done"
 component = "agent-tooling"
 depends_on = ["5755b694-b8bc-42c6-869d-34761e8a822c", "76e831f2-a0fe-4078-be91-681b6fa371c7", "858f731c-3d85-4bab-8e0f-73afc098ead0", "d3af78d7-9486-43c0-aae7-ddd5681d9807", "dac1c75b-e738-4211-8869-30e9ee12f313", "ea12b7b0-11c2-42c0-b0a9-d2942093525b"]
 forward_handoff_package = "# Forward Handoff Package: Epic 1fbf2d84 Closure Review\n\n## Objective\n\nAll six dependency children of epic 1fbf2d84 (\"Close the loop\") are done. This handoff covers reviewing and closing the epic itself, and reconciling this now-superseded forward_handoff_package field.\n\n## Target Tickets\n\n- 1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f (epic, all deps satisfied, ready for closure)\n\n## Target Files\n\nNone — ticket-review/closure decision only.\n\n## Decisions\n\n- Specs b71658f1 and 5e52039d have been advanced draft -> reviewed (done this iteration).\n- Epic ready to close once confirmed.\n\n## Validation\n\nAll 6 children (5755b694, 76e831f2, 858f731c, d3af78d7, dac1c75b, ea12b7b0) confirmed `done`.\n\n## Non-Goals\n\nNo further code changes to Review/Iteration Agent tooling.\n\n## Context Anchors\n\ndac1c75b (closed), specs b71658f1 and 5e52039d (reviewed).\n\n## Open Escalations\n\nNone.\n\n## Predecessor\n\nSupersedes prior forward_handoff_package (session_handoff schema enforcement work), which completed under d3af78d7."
