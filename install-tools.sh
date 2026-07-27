@@ -130,34 +130,22 @@ toolchain dependencies are handled by ./install-deps.sh.
 Options:
   --tool <name>       Install one tool; repeatable.
   --tools <a,b,c>     Install a comma-separated list of tools.
-    --mcp               Install all MCP binaries configured for VS Code.
+  --mcp               Install all MCP binaries configured for VS Code.
   --all               Install all supported tools.
   --list              Print supported tools and exit.
   --dry-run           Print the cargo install commands without running them.
   --no-force          Do not pass --force to cargo install.
   -h, --help          Show this help text.
 
-Supported tools:
-  viewer-ctl
-  doc-viewer
-  log-viewer
-  spec-viewer
-  ticket-viewer
-    copilot-capture-hook
-  ticket-cli
-  spec-cli
-  audit-cli
-  rule-cli
-    context-mcp
-    ticket-mcp
-    spec-mcp
-    test-mcp
-    feedback-mcp
-    session-mcp
-    peek-mcp
-    rule-mcp
-    audit-mcp
-    compact-terminal-mcp
+EOF
+
+    printf 'Supported tools:\n'
+    print_supported_tools | sed 's/^/  /'
+
+    printf '\nMCP tools (--mcp):\n'
+    print_mcp_tools | sed 's/^/  /'
+
+    cat <<'EOF'
 
 Environment:
   INSTALL_TOOLS       Comma-separated tool list used when no tools are passed.
@@ -168,7 +156,8 @@ Examples:
   ./install-tools.sh --tool viewer-ctl --tool ticket-cli
   ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
   ./install-tools.sh --tool audit-cli --tool rule-cli
-    ./install-tools.sh --mcp
+  ./install-tools.sh --tool mcp-cost-gate
+  ./install-tools.sh --mcp
   INSTALL_TOOLS="rule-cli,spec-cli" ./install-tools.sh --dry-run
 EOF
 }
@@ -177,6 +166,14 @@ print_supported_tools() {
     local tool
 
     for tool in "${tool_names[@]}"; do
+        printf '%s\n' "$tool"
+    done
+}
+
+print_mcp_tools() {
+    local tool
+
+    for tool in "${mcp_tool_names[@]}"; do
         printf '%s\n' "$tool"
     done
 }
