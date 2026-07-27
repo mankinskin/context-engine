@@ -75,9 +75,10 @@ Sub-agents report verdicts and findings only. **You perform every ticket state t
 
 ## Model Selection
 
-- **Review:** one tier above the cheap threshold — prefer "Claude Sonnet 4.5 (copilot)".
-- **Interview, Commit, Handoff:** at the cheap threshold — prefer "Claude Haiku 4.5 (copilot)", "GPT-5 mini (copilot)", or "Gemini Flash 2.0 (copilot)".
-- Among equal-cost models, prefer the latest version or generation.
+- **Review:** one tier above the cheap threshold — prefer "Claude Sonnet 5 (copilot)". Escalate to "GPT-5.3-Codex (copilot)" or "GPT-5.6 Terra (copilot)" only for dense, cross-cutting reviews.
+- **Interview, Commit, Handoff:** at the cheap threshold — prefer "GPT-5 mini (copilot)", stepping to "GPT-5.4 mini (copilot)" when the unit needs real reasoning or "GPT-5.6 Luna (copilot)" when the input exceeds 400k.
+- Among equal-cost models, prefer the latest version or generation, then the larger context window.
+- Do not route new work to "Claude Sonnet 4.5 (copilot)"; Claude Sonnet 5 is cheaper at the same 1M context window.
 
 ## Output Format
 

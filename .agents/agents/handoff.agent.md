@@ -39,7 +39,7 @@ Your job is to produce a clean, self-contained work summary and delegate any rem
 2. **Summarize completed work.** List changed files with their full workspace-relative paths, applied edits, validated behaviors, and updated tickets/specs. Note any decisions or tradeoffs made during implementation.
 3. **Identify blockers.** Surface unresolved ambiguities, failing validations, missing dependencies, or escalations that need user input.
 4. **Decompose remaining work.** Break leftover tasks into small, independently actionable units. For each unit, determine: the best-fit agent template, the specific objective, the expected return shape, and the minimum context anchors needed.
-5. **Delegate.** Dispatch each remaining unit via the sub-agent tool with an explicit cheaper model (e.g., `"Claude Haiku 4.5 (copilot)"`, `"Claude Sonnet 4.5 (copilot)"`) and a self-contained prompt. Track each delegation: agent used, model, objective, and expected result.
+5. **Delegate.** Dispatch each remaining unit via the sub-agent tool with an explicit cheaper model — default `"Claude Sonnet 5 (copilot)"`, dropping to `"GPT-5 mini (copilot)"` for bulk or mechanical units, or `"GPT-5.6 Luna (copilot)"` when the input exceeds 400k — and a self-contained prompt. Track each delegation: agent used, model, objective, and expected result.
 6. **Aggregate and report.** Collect sub-agent results, reconcile conflicts, and produce the final handoff summary with done-state, changed artifacts, delegated units, and any escalations.
 
 ## Output Format

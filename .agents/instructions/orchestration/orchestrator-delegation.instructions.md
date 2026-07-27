@@ -61,13 +61,13 @@ Each sub-agent dispatch MUST include:
 1. **Explicit cheaper model** at or below threshold X, chosen by tier
    - Format: `"Model Name (Vendor)"`, e.g. `"Claude Sonnet 5 (copilot)"`. The string must match the surface's model list exactly, punctuation included.
    - **Default: `"Claude Sonnet 5 (copilot)"` (T2).** Use it unless the unit justifies another tier.
-   - Drop to T3 (`"GPT-5 mini (copilot)"` as the cheap-worker default and cost floor, `"GPT-5.6 Luna (copilot)"` when the input exceeds 400k or the unit must emit non-trivial code, `"GPT-5.4 mini (copilot)"` when it needs real reasoning over what it read) for bulk, mechanical, read-only triage, or judgement-free extraction units.
+   - Drop to T3 (`"GPT-5 mini (copilot)"` as the cheap-worker default and cost floor, `"GPT-5.6 Luna (copilot)"` when the input exceeds 400k or the unit must emit non-trivial code, `"Kimi K2.7 Code (copilot)"` as a T3 code-specialist option for bulk code-shaped work, `"GPT-5.4 mini (copilot)"` when it needs real reasoning over what it read) for bulk, mechanical, read-only triage, or judgement-free extraction units.
    - Confirm the input fits the target model's context window before dispatch; a truncation-driven re-dispatch costs more than the tier saves.
    - On a T3 failure, step up exactly one band (T3→T2) — never jump a cheap unit to T1/T0.
    - Climb to T1 (`"GPT-5.3-Codex (copilot)"` for heavy code generation, `"GPT-5.6 Terra (copilot)"` for very large context) only after a T2 attempt was wrong or too shallow, or for plainly cross-cutting high-risk work — and record why.
    - Under budget pressure, shift every unit down one tier.
    - Do not route new work to `"Claude Sonnet 4.5 (copilot)"`; Claude Sonnet 5 is cheaper on input, output, and cache read at the same 1M context window.
-   - Do not pin `"Auto (copilot)"` — it delegates model selection away from you and defeats cost-aware routing.
+   - `"Auto (copilot)"` delegates model selection away from the caller and prevents cost-aware routing from reasoning about the selected model. Permit `Auto (copilot)` only as an explicit escape hatch when no tier model fits or the surface rejects the intended model; any use must be stated explicitly in the dispatch rationale and it must not be used as a default.
    - Never delegate to another orchestrator-tier model
    - When multiple eligible models are equal in cost, prefer the latest model version or generation, then the larger context window
 2. **Single well-scoped objective** — one unit per sub-agent, never the whole task
