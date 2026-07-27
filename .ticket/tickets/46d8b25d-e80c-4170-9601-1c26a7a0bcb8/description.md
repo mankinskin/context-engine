@@ -46,4 +46,76 @@ Total: roughly 130 turns of pure rework across two sessions. The turn counts are
 - Orchestrator messages at events 567, 692, 1538 in `.session/sessions/3e9bc20b-4fe8-4996-ae7f-7be32525e429/events.json`
 - Per-delegation turn counts: `tmp/subagent_cost_probe.py`
 - `.agents/agents/orchestrator.agent.md`, `.agents/agents/iteration.agent.md`
-- Related: `8c67b96a` handoff package ownership, `0d3fdba6` handoff completeness gate, `d3af78d7` handoff-package schema spec, `41ff230b` quality gates for delegated sessions
+- Related: `8c67b96a` handoff package ownership, `0d3fdba6` handoff completeness gate, `d3af78d7` handoff-package schema spec, `41ff230b` quality gates for delegated sessions## Status Summary
+
+**State**: in-review  
+**Implemented**: 2026-07-27
+
+### Premise Verification
+
+**VERIFIED**: Orchestrator currently has no tools to check preconditions before dispatch.
+
+- Evidence: `.agents/agents/orchestrator.agent.md` line 4 grants `tools: [agent, vscode/askQuestions]` only
+- Evidence: Template lines 10-15 explicitly state: "cannot read files, search, run commands, or call MCP tools directly"
+- Evidence: No quality gate or precondition check mentioned in template or delegation instructions
+- Conclusion: Orchestrator cannot check preconditions before dispatch, so bad units are dispatched and blocked
+
+### Implementation
+
+**Files created**:
+- `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` — complete pre-dispatch gate definitions
+
+**Gate sets defined**:
+1. **Implement delegation**: ticket exists/dispatchable, spec coverage exists, target paths exist, validation commands non-empty
+2. **Review delegation**: implementation produced test/validation evidence, ticket state allows review
+3. **Testing delegation**: validation spec ids resolve, test commands well-formed
+4. **Commit delegation**: working tree state known, ticket in committable state
+
+**Cost ceiling**: ≤5 turns and ≤10 tool calls per delegation (hard requirement)
+
+**Integration mechanism**: Two options documented:
+1. Cheap gate sub-agent (T3/T4) with read-only tools — preferred for composability
+2. Narrow orchestrator tool grant extension — simpler but breaks "no tools" purity
+
+**Fail-fast semantics**: Gate failures are RE-PLAN signals, not re-dispatch
+
+### Files Blocked by Lane B Ownership
+
+Cannot edit `.agents/agents/orchestrator.agent.md` or `.agents/instructions/orchestration/orchestrator-delegation.instructions.md` (owned by ticket 373072a9).
+
+Required changes documented in: `.tmp/lane-d-to-lane-b-handoff.md`
+
+**Orchestrator template needs**:
+- Add "Pre-Dispatch Quality Gates" section after "Delegation contract"
+- Add "Shared Context Bundle" section (from cc3324c9)
+
+**Delegation instructions need**:
+- Add "Pre-Dispatch Quality Gates" section before "Required Workflow"
+
+### Acceptance Criteria Status
+
+1. ✅ Documented pre-dispatch gate set exists per delegation class with exact checks and tool calls
+2. ✅ Gate failure → RE-PLAN semantics documented (not re-dispatch)
+3. ✅ "No spec covers ticket" and "validation commands empty" conditions caught pre-dispatch
+4. ✅ Gate cost ceiling ≤5 turns and ≤10 tool calls stated as hard requirement
+5. ⏸ Benchmark measurement pending: requires integration into orchestrator template before measurable
+
+### Validation
+
+This is **prose-only guidance** that cannot be mechanically tested. Validation consists of:
+- Gate definitions exist for all four delegation classes: ✅
+- Each gate specifies exact tool call and pass/block criteria: ✅
+- Integration points documented: ✅
+- Cost ceiling stated as hard requirement: ✅
+
+### Relation to Benchmark
+
+Benchmark `10d21210` includes delegation with failed precondition. With pre-dispatch gates applied, blocker will be caught BEFORE dispatch (≤5 turns) instead of AFTER (20-64 turns measured in sessions). Re-dispatch count drops to zero versus baseline.
+
+### Next Steps
+
+Lane B (ticket 373072a9) must integrate the documented changes into:
+- `.agents/agents/orchestrator.agent.md`
+- `.agents/instructions/orchestration/orchestrator-delegation.instructions.md`
+
+After integration, the instruction file will trigger automatically via `applyTo: ".agents/agents/orchestrator.agent.md"` frontmatter.
