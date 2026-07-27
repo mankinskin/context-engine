@@ -66,10 +66,10 @@ For each selected ticket, work in rank order.
 - Run the narrowest relevant validation available.
 - Record missing evidence explicitly instead of assuming the ticket is complete.
 
-5. Decide the outcome.
-- If the ticket is incomplete, ambiguous, or missing required validation, move it back to implementation with sparse `update_ticket` input such as `{"workspace":"default","id":"<id>","to_state":"in-implementation"}` or `ticket update <id> --to-state in-implementation`, and explain why.
-- If the ticket satisfies its acceptance criteria and review evidence is sufficient, close it with sparse `close_ticket` input such as `{"workspace":"default","id":"<id>"}` or `ticket close <id>`.
-- Do not skip the decision; every reviewed ticket must end with either a return to implementation or closure.
+5. Decide and report the outcome. **Do not apply any state transition yourself.**
+- If the ticket is incomplete, ambiguous, or missing required validation, report a `fail` verdict and recommend the ticket return to `in-implementation`, with the findings that justify it. Record the recommendation as a ticket field patch (without `to_state`) or via `feedback-mcp`. The Iteration Agent owns the transition.
+- If the ticket satisfies its acceptance criteria and review evidence is sufficient, report a `pass` verdict and recommend the ticket advance to `done`. Record the recommendation durably. The Iteration Agent closes the ticket.
+- Do not skip the decision; every reviewed ticket must end with an explicit reported verdict.
 
 ## Stop Conditions
 
