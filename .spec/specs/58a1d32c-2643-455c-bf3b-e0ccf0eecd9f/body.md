@@ -66,21 +66,33 @@ There is no `*-filesystem*` tool in `memory-api/tools/mcp/` or
    named in the `tools:` wildcard lists of the relevant `.agents/agents/`
    templates.
 
+## Security Contract (Implemented)
+
+The implementation satisfies these security requirements, validated through three audit rounds:
+
+1. **Mandatory root validation**: All mutation operations require a non-optional `root: PathBuf` parameter. No silent bypass path exists.
+2. **Canonical path enforcement**: All `std::fs::*` calls operate on the canonical path returned by `validate_path_within_root()`, closing TOCTOU windows.
+3. **Fail-closed on CWD resolution**: Both transports error if `current_dir()` cannot resolve, rather than defaulting permissively.
+4. **Bounded recursive delete**: `delete_dir` pre-counts entries (cap: 10,000), short-circuits on limit, and counts `Err` iterations to prevent unreadable-tree bypass.
+
 ## Traceability
 
 - Parent design call: `agent-tooling/default-tool-suite`
 - Epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
+- Implementation ticket: `.ticket/tickets/244c3113-e28f-44d7-b9a8-f5dd45d2895c` (state: `in-review`)
 - Layering reference: `agent-tooling/peek-api`
   (`.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d`)
 - Guidance: `.agents/instructions/orchestration/file-inspection.instructions.md`
 
 ## Validation Evidence
 
-Expected before review:
+Implementation complete (ticket 244c3113 in review):
 
-- `cargo test -p <fs>-api`
-- `cargo test -p <fs>-mcp`
-- Focused cases: depth-capped and entry-capped listing with truncation flag,
+- `rtk cargo build --workspace` → clean (6 pre-existing unrelated warnings)
+- `rtk cargo test -p fs-api -p fs-cli -p fs-mcp` → **56 passed, 2 ignored**
+- Coverage: depth-capped and entry-capped listing with truncation flag,
   include/exclude filter behavior, ignore-rule honoring, stat on missing path,
   move onto an existing destination without and with overwrite, delete of a
-  missing path, and response size bound on a large directory.
+  missing path, and response size bound on a large directory
+- 7 junction-based path-escape tests (Windows, unprivileged)
+- 2 symlink tests ignored (require Developer Mode on Windows)

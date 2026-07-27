@@ -130,6 +130,19 @@
         "COST_GATE_GRANTS_DIR": "${workspaceFolder}/.session/grants"
       }
     },
+    "fs-mcp": {
+      "type": "stdio",
+      "command": "mcp-cost-gate",
+      "args": [
+        "--",
+        "fs-mcp"
+      ],
+      "env": {
+        "COST_GATE_TABLE": "${workspaceFolder}/tools/model-prices/model_prices.json",
+        "COST_GATE_TOOL_METRICS": "${workspaceFolder}/.session/tool-metrics-rollup.json",
+        "COST_GATE_GRANTS_DIR": "${workspaceFolder}/.session/grants"
+      }
+    },
     "log-viewer-mcp": {
       "type": "stdio",
       "command": "mcp-cost-gate",
