@@ -38,3 +38,13 @@ At the same time, we want to protect the context window of large/expensive model
 
 - AGENTS.md "Model cost awareness & routing" bullet extended with two new bullets: the enforceable threshold rule and the model→cost mapping source-of-truth.
 - Transcript Open Questions updated with a Resolved Decisions block.
+
+## Verification Note (2026-07-27)
+
+Verified 2026-07-27: all 4 ACs met in current tree; orchestrator-threshold rule migrated from AGENTS.md into .agents/instructions/orchestration/orchestrator-delegation.instructions.md (reachable via AGENTS.md delegation pointer). Closed on verification, no code/doc change required.
+
+Evidence:
+- AC1 (model→cost mapping referenced): tools/model-prices/model_prices.json has output_mtok; referenced at .agents/instructions/orchestration/orchestrator-delegation.instructions.md (Source of truth section).
+- AC2 (orchestrator rule keyed to output_mtok > X): orchestrator-delegation.instructions.md L8 "output_mtok strictly exceeds threshold X = 15"; L13 names output_mtok as driving field.
+- AC3 (keep-vs-delegate work split): orchestrator-delegation.instructions.md L39-L58 lists keep-on-expensive vs delegate work; L35 tier table.
+- AC4 (concrete X + field recorded): X = 15 and output_mtok stated; tools/model-prices/cost_gate.py DEFAULT_THRESHOLD_X = 15.0 enforces in code.
