@@ -1,5 +1,9 @@
 id = "b0d6bb1c-1a74-478a-aac1-1943b5454e96"
 created_at = "2026-07-27T19:47:29.796692900+00:00"
 title = "Extend sync_model_prices.py with GitHub Copilot pricing source"
-state = "new"
+state = "ready"
+component = "model-prices"
+effort = "1200"
+handoff_package = { handoff_id = "82cce6d8-cb1a-4e68-9283-1f4c437b0d54", objective = "Extend tools/model-prices/sync_model_prices.py to merge a second upstream source — GitHub's copilot models-and-pricing.yml — into model_prices.json, so every model the runSubagent surface offers (notably MAI-Code-1-Flash) has a priced row and can be cost-ranked.", target_tickets = ["b0d6bb1c-1a74-478a-aac1-1943b5454e96"], target_files = ["tools/model-prices/sync_model_prices.py", "tools/model-prices/model_prices.json", "tools/model-prices/cost_gate.py", "tools/model-prices/test_cost_gate.py", ".agents/instructions/orchestration/model-prices.instructions.md", ".agents/prompts/sync-model-prices.prompt.md"], validation = [], open_escalations = [] }
+priority = "medium"
 type = "task"
