@@ -28,12 +28,24 @@ Sessions are frequently opened with a large, expensive model. That model then sp
 5. session-optimization instructions describe the smart-model-as-router workflow and require the active model to be recorded per turn in the session-api transcript.
 6. session-api transcript records the active model per turn (SessionTurn.model), inheriting the session-level model when unspecified.
 
+## Agent Template Model Declaration
+
+Each agent template (`.agents/agents/*.agent.md`) declares a default `model:` field specifying the model tier for sessions spawned from that template. This field serves as the dispatch default when `runSubagent` is invoked without an explicit model override.
+
+**Contract:** The `model:` field on the agent template defines the tier (e.g., `claude-sonnet-4` for high-capability, `claude-haiku-3-5` for cheap routine work). When `runSubagent(agentName="...")` is called without a `model` parameter, the system uses the template's declared `model:` value. An explicit `model` parameter on `runSubagent` overrides the template default.
+
+**Related ticket:** [66acb737 Declare model: per agent template](.ticket/tickets/66acb737-71d6-4585-a921-b597f7c88e8e/ticket.toml)
+
 # Traceability / Evidence
 
+- Epic: [79c4ac3e Delegation cost](.ticket/tickets/79c4ac3e-fd53-48bf-babb-43d27555c4bd/ticket.toml)
 - Ticket: `321f6a3a-8bfb-4a8e-95bc-64ff845812ed` — [repo-guidance] Model cost-awareness and tiered model-routing guidance.
 - Ticket: `11d3b412-7d70-4144-932d-589256af488a` — [session-api] Record active model per transcript turn.
+- Ticket: [66acb737 Declare model: per agent template](.ticket/tickets/66acb737-71d6-4585-a921-b597f7c88e8e/ticket.toml)
 - Validation: `cargo test -p session-api`; `rule sync-targets --config rule-targets.yaml --check`.
 
 # Related Specs
+
+- [39983ddf Model price awareness: orchestrator-mode enforcement](../.spec/specs/39983ddf-1f7e-4081-a060-6b8258eb4c41/spec.toml) — adjacent orchestrator cost-gate enforcement.
 
 - `8c880efc-7083-4e1d-bf06-96b8254be913` — Dynamic session bootstrapping and just-in-time context routing (adjacent session-api runtime routing behavior).

@@ -1,6 +1,8 @@
 Spec: Instruction files nested workflow migration
 
-Tracking ticket: [37b5026f Migrate .agents/instructions into nested workflow folders](../../.ticket/tickets/37b5026f-add9-4568-8953-fd5607fb91dc/ticket.toml)
+Tracking tickets:
+- [37b5026f Migrate .agents/instructions into nested workflow folders](../../.ticket/tickets/37b5026f-add9-4568-8953-fd5607fb91dc/ticket.toml)
+- [bac71cc5 Instruction corpus cost and contradictions epic](.ticket/tickets/bac71cc5-d636-4878-b0c1-a404d2257430/ticket.toml)
 
 This spec records the confirmed decisions for migrating `.agents/instructions/` from a flat monolith into approved nested workflow folders.
 

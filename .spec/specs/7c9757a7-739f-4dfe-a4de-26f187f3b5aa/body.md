@@ -123,9 +123,23 @@ while the spec records the layering debt.
    `.agents/instructions/orchestration/tool-output.instructions.md` name the
    suite as the default path for delegated agents.
 
+## Agent Template Tool Registration
+
+### Per-Template Scoped Tool Grants
+
+Each agent template (`.agents/agents/*.agent.md`) declares its accessible tool set via MCP wildcard patterns in its `tools:` list. Tool availability is scoped per template: delegated sub-agents inherit only the tools their own template names, not the orchestrator's tools.
+
+**tool_search availability:** The `tool_search` tool is itself a deferred tool that must be granted explicitly via wildcard or name if sub-agents are expected to discover and load additional deferred tools at runtime. If `tool_search` is absent from a template's grant list, that agent cannot load deferred tools, limiting it to pre-expanded tools only.
+
+**Contract:** Tool grants are enforced at dispatch time. A sub-agent spawned from template T sees only the union of tools matching T's wildcard list. Lazy tool discovery (via `tool_search`) is available only when `tool_search` itself is granted.
+
+**Related ticket:** [cd19fed4 Scope MCP tool grants per agent template](.ticket/tickets/cd19fed4-44d5-4ef0-848c-19753f1539b0/ticket.toml)
+
 ## Traceability
 
 - Epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`
+- Epic: [79c4ac3e Delegation cost](.ticket/tickets/79c4ac3e-fd53-48bf-babb-43d27555c4bd/ticket.toml)
+- Tickets: [cd19fed4 Scope MCP tool grants per agent template](.ticket/tickets/cd19fed4-44d5-4ef0-848c-19753f1539b0/ticket.toml)
 - Child specs: `agent-tooling/compact-terminal`, `agent-tooling/file-editing`,
   `agent-tooling/filesystem-operations`, `agent-tooling/repo-wide-search`
 - Reference spec: `agent-tooling/peek-api`

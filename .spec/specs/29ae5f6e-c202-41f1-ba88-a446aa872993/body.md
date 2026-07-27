@@ -48,6 +48,12 @@ Each session stores a **`tool-metrics.json`** file beside `session.json`, `trans
 - **Owner**: Copilot capture hook
 - **When**: After each session persist
 - **Action**: Invokes aggregation + export to `<store_root>/tool-metrics-rollup.json`
+
+## Related Tickets
+
+- [77eb143b Measure substitutable shell commands (classifier)](.ticket/tickets/77eb143b-0322-4c91-b3c4-deccc2b2927c/ticket.toml)
+- [b7c61f0e Promote the sub-agent cost analyzer into session-api](.ticket/tickets/b7c61f0e-ed42-4eef-8d3b-da934d7c0628/ticket.toml)
+- [9185d8f2 (existing related ticket)]
 - **Location**: Session store root, read by cost-gate via `COST_GATE_TOOL_METRICS` env var
 
 ## Graded Cost Model

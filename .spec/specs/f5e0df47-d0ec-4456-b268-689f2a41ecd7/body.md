@@ -24,6 +24,7 @@ Define the contract for reducing model-bound Copilot context through upstream to
 
 ## Related Implementation Tickets
 
+- [cc3324c9 Pass a shared context bundle to fan-out siblings](.ticket/tickets/cc3324c9-1da4-4a21-90d0-4128074108b2/ticket.toml)
 - [.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml](.ticket/tickets/1c1ebfd1-4478-401f-a9ad-efcc2ff53b16/ticket.toml)
 - [.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml](.ticket/tickets/47cc50db-8efa-4945-87fe-d30fe1f6bc61/ticket.toml)
 - [.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml](.ticket/tickets/1400919a-84b9-49ff-8e8a-92a7d9068594/ticket.toml)

@@ -9,7 +9,7 @@ Define the **handoff package**: the required fields that make the next implement
 - **target_files** — explicit workspace-relative paths expected to be touched.
 - **decisions** — resolved design choices, so implementation does not re-decide.
 - **non_goals** — explicit out-of-scope boundaries.
-- **context_anchors** — prior findings, links, and ids needed so no search is required.
+- **context_anchors** — prior findings, links, and ids needed so no search is required. Each anchor MUST carry store-qualified physical paths when referencing entities in nested stores (e.g., `memory-api/.ticket/tickets/<uuid>`, not just the root `.ticket/`). This ensures the next session can resolve cross-store references without discovery or guessing.
 - **open_escalations** — must be empty for a package to be implementation-ready.
 
 ## Required handoff-record parameters
@@ -39,3 +39,8 @@ The `session_handoff` record is the **source of truth** for a produced package a
 - Iteration loop workflow spec (phases, ordering, gates).
 - Phase-separation rule (implementation must not search or clarify).
 - Loop-closure and escalation-gate rules.
+
+## Related Tickets
+
+- [d3af78d7 (existing linked ticket)]
+- [fb14754e Carry verified physical repo paths in handoff packages](.ticket/tickets/fb14754e-2be8-40a5-a995-488842ba6367/ticket.toml)

@@ -102,10 +102,31 @@ Pre-gate and post-gate validation executions link via `session_id` to the delega
 
 6. **AC6 (No parallel data path)**: Token/cost/model data flows through the normal `session-api` path (`data_json.usage` → `hook.rs` extraction → `event_meta` fields); no workaround or shim for null fields before ticket [9d527ad1](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) lands.
 
+## Pre-Dispatch Gate Execution
+
+**Requirement:** Quality gates MUST run before delegation dispatch, not after the delegated session completes. Pre-dispatch gates validate that the handoff package is implementation-ready (objective clear, context_anchors present, open_escalations empty) before expensive sub-agent tokens are spent.
+
+**Contract:** The orchestration layer evaluates pre-gates and blocks dispatch when gates fail. Post-gates remain for outcome validation after the sub-agent returns, but pre-gates prevent wasted work when the package is malformed or incomplete.
+
+**Related ticket:** [46d8b25d Move quality gates before dispatch](.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml)
+
+## Synthetic Benchmark Session
+
+**Requirement:** A synthetic benchmark session with a checked-in baseline serves as the verification substrate for measuring delegation cost and quality improvements. The benchmark defines a reproducible task, expected delegation points, and acceptance criteria, enabling consistent before/after comparisons.
+
+**Contract:** The benchmark session artifact (transcript, handoff packages, validation outcomes) is version-controlled. Changes to delegation policy, tool grants, or model routing can be verified against this baseline to confirm cost reduction without quality regression.
+
+**Related ticket:** [10d21210 Define a synthetic benchmark session](.ticket/tickets/10d21210-7168-4ed4-8e99-f6fb0e6e08db/ticket.toml)
+
 # Traceability / Evidence
+
+**Epic:**
+- [79c4ac3e Delegation cost](.ticket/tickets/79c4ac3e-fd53-48bf-babb-43d27555c4bd/ticket.toml)
 
 **Tickets**:
 - [41ff230b Quality gates and session/tool-call data collection for delegated sessions](.ticket/tickets/41ff230b-cedf-4ec3-86cf-9b48a89b8325/ticket.toml) — this spec's implementing ticket.
+- [46d8b25d Move quality gates before dispatch](.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml) — pre-dispatch gate execution.
+- [10d21210 Define a synthetic benchmark session](.ticket/tickets/10d21210-7168-4ed4-8e99-f6fb0e6e08db/ticket.toml) — benchmark verification substrate.
 - [6549b6a7 Session store: record per-turn/per-sub-agent token and cost with model attribution](.ticket/tickets/6549b6a7-8957-4df0-ada5-8fefb49c015c/ticket.toml) — backend infrastructure (done, but token/cost fields null on disk).
 - [9d527ad1 Capture hook: populate data_json.usage so token/cost/model telemetry is non-zero](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) — blocker for non-null token/cost data.
 - [8ad2581e Delegation quality/cost metric and self-optimization loop](.ticket/tickets/8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb/ticket.toml) — downstream consumer of this spec's data model.
@@ -116,6 +137,7 @@ Pre-gate and post-gate validation executions link via `session_id` to the delega
 
 **Related specs**:
 - [a4d61b8c Model cost awareness and tiered model routing](../.spec/specs/a4d61b8c-df1c-454d-ab56-4bce5706eb15/spec.toml) — adjacent model routing/cost policy (out of scope for this spec).
+- [b71658f1 Iteration Loop Workflow](../.spec/specs/b71658f1-8de2-444a-9be1-64b1d8ecce70/spec.toml) — adjacent iteration loop and phase-separation rules.
 
 # Open Questions
 

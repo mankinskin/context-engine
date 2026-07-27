@@ -18,6 +18,8 @@ Each failed path is a wasted turn plus a recovery turn plus several exploration 
 
 **Recurrence during review.** While reviewing this very ticket on 2026-07-27, the Review Agent emitted ticket paths prefixed with `memory-api/crates/session-api/`, producing links to files that do not exist. A separate lookup in the same session guessed `45ff05c9-1c86-4a9d-9c0b-f1e6bd7bb1f1` for a ticket whose real id is `45ff05c9-7608-43c4-a98a-e1c44e4b7fbd`, and the read failed. The failure mode reproduces inside the review of the ticket describing it, which raises the priority of the resolver in scope below.
 
+**Nested stores are part of this problem.** Ticket and spec entities do not all live in the root store. `0d3fdba6` resolves to `memory-api/.ticket/tickets/0d3fdba6-45e6-4129-84f7-d98324c9519d/`, not `.ticket/tickets/...`. An agent that assumes a single root store constructs a path that does not exist, and the failure looks identical to a wrong-crate-path failure. Any resolver built under this ticket must return the owning store, not just the entity id — and handoff `context_anchors` must record the store-qualified path.
+
 `repo_map.toon` exists at the repo root and encodes exactly this information, but nothing in the delegation path injects it and no sub-agent read it in either session.
 
 ## Scope

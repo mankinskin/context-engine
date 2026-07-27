@@ -33,3 +33,55 @@
 - Argument-based dynamic cost estimation (tracked separately).
 - Re-tuning the graded-cost calibration constants (tracked separately).
 - Changes to tools/model-prices/cost_gate.py or its Python tests.
+
+---
+
+## Implementation Summary
+
+All changes completed in memory-api/tools/mcp/mcp-cost-gate/:
+
+### Removed (src/gate.rs)
+- `TOKEN_HEAVY_TOOL_SUBSTRINGS` constant
+- `ALWAYS_ALLOWED_TOOL_SUBSTRINGS` constant  
+- `ToolClass` enum
+- `classify_tool()` function
+- `heavy_fallback_cost()` function
+
+### Changed (src/gate.rs)
+- `Gate::tool_cost()`: Now returns max measured cost from empirical rollup when `call_count >= MIN_CALLS`, else 0 (fail-open)
+- `MIN_CALLS`: Lowered from 5 to 1
+- `evaluate_legacy()`: Now delegates to `evaluate()`
+
+### Changed (src/proxy.rs)
+- Updated to work with new fail-open behavior
+
+### Tests
+**Removed:**
+- `classify`
+- `tool_cost_static_fallback`
+- `heavy_fallback_boundary_tests`
+- `always_allowed_bypass`
+- `expensive_token_heavy_is_refused`
+
+**Added/Updated:**
+- `tool_cost_fail_open_no_rollup`
+- `tool_cost_from_rollup`
+- `evaluate_with_rollup`
+- `fail_open_unmeasured`
+- `evaluate_legacy_delegates_to_evaluate`
+- `graded_budget_boundary_with_rollup`
+- `expensive_measured_tool_is_refused`
+- `unmeasured_tool_fail_open`
+
+## Validation Evidence
+
+1. **Unit tests**: `cargo test -p mcp-cost-gate` → **26 passed, 0 failed**
+2. **Release build**: `cargo build --release -p mcp-cost-gate` → succeeded
+3. **Binary installation**: `./install-tools.sh --tool mcp-cost-gate` → reinstalled successfully
+4. **AC1 (grep check)**: Verified no references to removed constants/functions remain
+
+## Known Limitations
+
+**No standalone CLI verdict command:** mcp-cost-gate is an MCP stdio proxy only, so live expensive-model verification of a `get_ticket_description` call could not be executed in-session. AC7 manual smoke check is covered by unit tests and proxy integration tests only.
+
+**Pre-existing behavior:** Bidirectional substring matching between requested tool name and rollup tool names in `tool_cost()` was present before this change and is preserved.
