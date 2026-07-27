@@ -1,0 +1,7 @@
+{
+  "id": "val-session-api-lib-suite",
+  "title": "session-api library test suite",
+  "command": "cargo test -p session-api --lib",
+  "detail": "Per-module breakdown verified on 2026-07-27, all passing: subagent_rollup::tests (2), price_loader (3), tool_metrics::tests (10), hook::tests (9), model::tests (1), store::tests (58), escalation::tests (11), grants::tests (10); 148 total. Note: the crate is session-api under memory-api. Note: test modules quality_gate and a dedicated delegated-session module DO NOT EXIST yet; creating them is implementation work under ticket 41ff230b, not a validation failure.",
+  "links": {}
+}
