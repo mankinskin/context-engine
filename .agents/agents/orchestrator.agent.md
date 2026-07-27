@@ -54,6 +54,28 @@ For each unit of work, spawn a sub-agent with:
    ticket/spec ids, prior findings) so the sub-agent does not re-discover them.
 5. **A workspace agent template.** Dispatch only to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent). Never dispatch to a VS Code built-in agent (such as the built-in Explore), which lacks our MCP toolset. For read-only probes, use the workspace **Explore Agent**.
 
+## Pre-Dispatch Quality Gates
+
+Before EVERY delegation, run the pre-dispatch gate set for that delegation class. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions.
+
+**Gate mechanism**: Spawn a cheap gate sub-agent (T3/T4 model) with read-only tool access, or use a narrow orchestrator tool grant if available. The gate agent returns `pass` with the resolved context bundle, or `block` with the exact blocker.
+
+**On gate failure**: RE-PLAN, do not re-dispatch. Address the precondition (create spec, update ticket state, fix handoff) BEFORE dispatching the blocked unit.
+
+**Cost ceiling**: Gates for any single delegation MUST cost ≤5 turns and ≤10 tool calls.
+
+## Shared Context Bundle
+
+EVERY sub-agent receives a **context bundle** containing resolved artifacts inline. Do NOT pass only ids/paths — pass the FULL CONTENT the sub-agent needs.
+
+**Bundle fields**: resolved tickets (full TOML + description), resolved specs (full body + sections), handoff package (complete JSON), relevant file skeletons, validation command list.
+
+**Parallel fan-out**: For sibling sub-agents, compute the shared context prefix ONCE and duplicate it into each sibling's prompt. Input duplication is far cheaper than per-sibling discovery.
+
+**Size target**: 2k-5k tokens per bundle. Use bounded windows or skeletons, not full 20k file dumps.
+
+See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` for complete bundle composition rules.
+
 ## Required workflow
 
 1. **Plan.** Turn the goal into an ordered list of delegable units with clear
