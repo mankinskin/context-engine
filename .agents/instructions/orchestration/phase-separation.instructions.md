@@ -44,3 +44,8 @@ Phase separation:
 - Enforces clear handoff contracts between agents
 - Allows cheaper implementation agents to focus only on surgical edits
 - Makes incomplete delegation visible and actionable
+
+## Related
+
+- Handoff-package schema spec `5e52039d-aabc-434d-bdf3-eca63e312476` (required fields for a self-contained handoff)
+- Iteration loop workflow spec `b71658f1-8de2-444a-9be1-64b1d8ecce70` (defines the Review → Interview → Commit → Handoff transition cycle)
