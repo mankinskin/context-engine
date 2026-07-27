@@ -1,5 +1,5 @@
 ---
-description: "Use when handling tool result output, managing command spills, or working with compact-terminal MCP. Covers output reduction and spill-file inspection."
+description: "Use when handling tool result output, managing command spills, or working with the compact-terminal MCP or CLI transports. Covers output reduction and spill-file inspection."
 ---
 
 ## Default Agent Tool Suite
@@ -12,6 +12,10 @@ including delegated sub-agents:
 - MCP (preferred): `compact-terminal-mcp` — `run`, `read_spill`. Reachable
   through the `'compact-terminal-mcp/*'` wildcard in
   `.agents/agents/*.agent.md`.
+- CLI fallback: the `compact-terminal` binary
+  (`memory-api/tools/cli/compact-terminal-cli`) — `run`, `read-spill`. Use this
+  when the MCP surface is unavailable; it shares the same `compact-terminal-api`
+  core, so bounding and spill behavior are identical to the MCP path.
 - Shell fallback: the `rtk` proxy, which filters output at the shell level.
 - Follow-up inspection: the **read** category (`peek`), covered in
   [file-inspection.instructions.md](file-inspection.instructions.md).
@@ -53,6 +57,21 @@ peek target/test-logs/<file> --start N --end M
 2. `read_spill(spill_file, grep="FAILED")` → find failing test line numbers.
 3. `read_spill(spill_file, start=N, end=M)` → read specific failure details.
 4. Fix the issue; re-run only the targeted test.
+
+**compact-terminal-cli fallback** (same steps, when MCP is unreachable):
+
+```bash
+# 1. Run bounded; long output spills to a transient file
+compact-terminal run "cargo test -p context-read"
+
+# 2. Locate failures by line number
+compact-terminal read-spill <spill_file> --grep "FAILED"
+
+# 3. Read the specific failure
+compact-terminal read-spill <spill_file> --start N --end M
+```
+
+`--grep` matches a literal substring, not a regex — pass `FAILED`, not `^FAILED$`.
 
 Rules:
 - When a command produces truncated output, inspect the transient file via bounded read before replaying the full command.
