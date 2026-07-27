@@ -5,6 +5,7 @@ state = "new"
 component = "spec"
 depends_on = ["0da6894c-dcbb-4196-8ac7-b6fae7c40ec9", "1c452ff1-6edc-47c8-a73d-d07ce9b4d473", "dbe0e955-c1b4-414d-820c-10c3fbbb5d3d"]
 effort = "1500"
+note = "Decision 2026-07-27 (recorded for later, ticket NOT started): when spec is extracted, its transport reference-proof mirrors the ticket pilot using `spec get {id}` — success returns manifest + body; unknown id yields a not-found domain error mapped to HTTP 404. Sequencing decision: spec is NOT next; the `ticket` domain is being finished end-to-end first (consolidation 26da8f59, then repo split ba4aaa9c) so exactly one domain is in flight at a time."
 priority = "high"
 risk_level = "high"
 type = "task"

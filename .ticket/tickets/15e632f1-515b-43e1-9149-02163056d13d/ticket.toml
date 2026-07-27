@@ -1,11 +1,11 @@
 id = "15e632f1-515b-43e1-9149-02163056d13d"
 created_at = "2026-07-25T18:35:46.916981100+00:00"
 title = "[workflow-tools][foundations] Extract memory-matrix + rewire in-tree consumers to external memory-fixtures"
-state = "in-implementation"
+state = "done"
 component = "workflow-tools"
 effort = "500"
 linked = ["1c452ff1-6edc-47c8-a73d-d07ce9b4d473", "61ce77f9-b6be-4667-9727-ffbd6bf6b8f4"]
-note = "Review 2026-07-26: Rewiring complete (spec-api, ticket-api, memory-matrix all use git remote memory-fixtures). Extraction blocked pending domain-crate extraction (memory-matrix depends on ticket-api, spec-api, etc. which must be publishable first). Ticket scope covers both rewiring (done) and extraction (blocked), so leaving in-review until extraction becomes actionable."
+note = "Closed 2026-07-27 by iteration interview: ticket SPLIT. The accepted rewire criterion is done and closed here; the unmet 'memory-matrix builds standalone against externally resolved domain crates' criterion moved to bfc52d17-8a3f-40d6-a1bd-3c618ad67f69 (blocked, unblocks incrementally as domain repos land). Do not reopen for the standalone build."
 priority = "medium"
 review_finding = "Rewire criterion MET and independently verified (cargo test -p spec-api -p ticket-api => 198 passed; memory-fixtures resolved from git remote in spec-api/ticket-api dev-deps + memory-matrix normal dep). UNMET criterion: 'memory-matrix builds standalone against externally resolved domain crates' — not delivered, awaits domain-crate extraction. Reviewer sent ticket back to in-implementation to carry the remaining standalone-build extraction work. Do NOT re-review the rewire portion; it is accepted."
 risk_level = "medium"

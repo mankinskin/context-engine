@@ -1,0 +1,43 @@
+## Problem
+
+Handoff packages and delegation prompts name crates and components but not their physical location. Sub-agents then guess, fail, and fall back to expensive shell exploration.
+
+Observed failures in `3e9bc20b`:
+
+- 5 `read_file` failures. The agent's own recovery reasoning: *"Hmm, let me check the correct path. According to the validation command `rtk cargo test -p session-api --lib`, the crate is session-api. Let me find where it actually is."* It had guessed `memory-api/session-api/src`; the real path is `memory-api/crates/session-api/src`.
+- Subagent `[9]` then spent 32 terminal calls on `find memory-api/session-api/src -name "*.rs"`, `find . -name "Cargo.toml" -type f | xargs grep -l 'name = "session-api"'`, `ls -la memory-api/crates/session-api/src/`, and similar.
+- Subagent `[11]` hit 4 more `read_file` failures on the same class of wrong path and eventually gave up: *"The path issues are problematic. Let me try a different approach - just read the file directly with cat."*
+
+Observed failures in `41966513`:
+
+- 3 `list_dir` failures on `agent-tooling/peek-*` and `memory-api/crate*` — the tree is `memory-api/tools/mcp/peek-mcp` and `memory-api/crates/`.
+
+## Why it costs
+
+Each failed path is a wasted turn plus a recovery turn plus several exploration turns. In `3e9bc20b` this pattern accounts for the majority of the 83 `grep`/`find`/`ls` commands. At an estimated ~37k tokens of fixed prefix per turn, path-guessing is one of the most expensive avoidable behaviours in the log. The failure and command counts are measured; the token cost is an estimate pending `9d527ad1`.
+
+**Recurrence during review.** While reviewing this very ticket on 2026-07-27, the Review Agent emitted ticket paths prefixed with `memory-api/crates/session-api/`, producing links to files that do not exist. A separate lookup in the same session guessed `45ff05c9-1c86-4a9d-9c0b-f1e6bd7bb1f1` for a ticket whose real id is `45ff05c9-7608-43c4-a98a-e1c44e4b7fbd`, and the read failed. The failure mode reproduces inside the review of the ticket describing it, which raises the priority of the resolver in scope below.
+
+`repo_map.toon` exists at the repo root and encodes exactly this information, but nothing in the delegation path injects it and no sub-agent read it in either session.
+
+## Scope
+
+- Extend the handoff package `target_files` / `context_anchors` fields to carry repo-root-relative physical paths, not crate or component names. Coordinate with `8c67b96a` (handoff record should own the full package) and `0d3fdba6` (handoff completeness gate).
+- Require the orchestrator's delegation prompt to include resolved physical paths for every file or crate it names. The orchestrator already knows them; the sub-agent does not.
+- Make `repo_map.toon` part of the delegation context bundle, or expose a cheap MCP resolver (`crate name -> path`) so a single bounded call replaces a `find` sweep.
+- Add a completeness check: a handoff whose `target_files` contain non-existent paths should fail its gate rather than be handed to an implementer.
+
+## Acceptance Criteria
+
+1. Handoff packages store repo-root-relative, forward-slash, verified-to-exist paths for every named target.
+2. A handoff containing a path that does not exist fails validation at creation time, not at consumption time.
+3. Delegation prompts emitted by the Orchestrator/Iteration agents include physical paths for every crate, module, or file they reference.
+4. Measured against the benchmark in `10d21210` — whose scenario includes a handoff naming a crate without its physical path — `read_file` / `list_dir` path-resolution failures drop to zero versus the checked-in baseline.
+5. In that same benchmark run, exploratory `find` / `ls` commands issued solely to locate a named crate drop to zero, as classified by the `77eb143b` classifier.
+
+## Evidence
+
+- `.session/sessions/3e9bc20b-4fe8-4996-ae7f-7be32525e429/events.json` — failures at events 810, 1256, 1258, 1351, 1365 with recovery reasoning attached
+- `.session/sessions/41966513-a8fa-4b44-98fa-9c57f0437cc0/events.json` — `list_dir` failures
+- `tmp/subagent_cost_probe.py`
+- Unused asset: `repo_map.toon`
