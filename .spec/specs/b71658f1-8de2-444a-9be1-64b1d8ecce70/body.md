@@ -13,8 +13,8 @@ Define how a finished, validated implementation becomes the next self-contained 
 **Review → Interview → Commit → Handoff.** Only approved work is committed.
 
 1. **Review** (delegated to Review Agent) — verify acceptance criteria against the validated implementation. Findings become follow-up tickets; unmet criteria return the ticket to `in-implementation`.
-2. **Interview** (delegated to Interview Agent) — resolve remaining open questions / escalations with the user.
-3. **Commit** (delegated to Commit Agent) — commit only approved work (hooks, rule sync, generated files, submodule pointers, conventional messages).
+2. **Interview** (delegated to Interview Agent) — resolve remaining open questions / escalations with the user. **This phase runs unconditionally on both pass and fail paths.** A returned handoff package must carry an empty `open_escalations` list, so review findings that raise open questions must be interviewed before the package is written.
+3. **Commit** (delegated to Commit Agent) — commit only approved work (hooks, rule sync, generated files, submodule pointers, conventional messages). On failed review, this phase is **user-gated**: the Iteration Agent must ask the user whether to commit partial work as WIP before stopping.
 4. **Handoff** (delegated to Handoff Agent) — (re)define the next self-contained handoff package.
 
 ## Gates
