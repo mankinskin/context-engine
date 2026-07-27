@@ -1,4 +1,16 @@
-# Epic: Token-Optimized Default Agent Tool Suite (peek + compact-terminal + design call)
+## Review Outcome (2026-07-27)
+
+**Verdict: PASS.** Reviewer independently re-verified the inventory (peek-api/peek-cli/peek-mcp, compact-terminal-mcp) and all three gap claims (file editing/differential patching, filesystem operations, repo-wide bounded search) against the actual `memory-api/tools/mcp/` and `memory-api/tools/cli/` trees — all confirmed accurate. The embedded design-call deliverable was judged well-scoped and sufficient; the epic is accepted as-is rather than split into child specs/tickets in this pass.
+
+Resolutions recorded:
+- `peek-api` spec (`3ccdde3a-368c-4655-a6c8-20a58822c83d`) promoted `draft` → `reviewed` → `approved`, since it documents fully implemented, tested behavior. Its draft status referenced in Acceptance Criterion 2 is now resolved.
+- A dedicated `compact-terminal` spec and the per-gap-category specs/child tickets are deliberately **deferred** to the epic's own design-call phase (do not front-run child-ticket work from a review pass).
+- A formal ticket-graph edge from this epic to the `peek-api` spec was **not created**: ticket-mcp `add_edge` links tickets to tickets, not specs, and no ticket<->spec edge tool exists in the current MCP surface. The textual reference in this description (spec id + path) remains the traceability link until/unless a cross-store link mechanism exists; note this as a follow-up if spec<->ticket edges are added to the tool surface later.
+- Epic state transitioned `new` → `ready` (its only next-state options were `ready`/`cancelled`; `ready` reflects "accepted, actionable via its design-call path").
+
+---
+
+## Epic: Token-Optimized Default Agent Tool Suite (peek + compact-terminal + design call)
 
 ## Goal
 
@@ -24,7 +36,7 @@ MCP integration intact.
 The suite is partially built. This epic consolidates the scattered work and
 identifies the gaps.
 
-### Reading files — `peek` family (implemented; spec in draft)
+### Reading files — `peek` family (implemented; spec now approved)
 - Behavior crate: `memory-api/crates/peek-api` — owns bounded file inspection
   (count, grep, head, tail, explicit ranges) and skeleton/structural rendering.
 - CLI transport: `memory-api/tools/cli/peek-cli` (`peek`) — "coordinates first,
@@ -32,13 +44,15 @@ identifies the gaps.
 - MCP transport: `memory-api/tools/mcp/peek-mcp` — named tools `peek_read`,
   `peek_grep`, `peek_count`, `peek_skeleton`.
 - Spec: `agent-tooling/peek-api` (`.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d`)
-  — component `agent-tooling`, state `draft`. Establishes the transport-layering
-  contract (api owns behavior; cli/mcp stay thin).
+  — component `agent-tooling`, state `approved` (promoted from `draft` during
+  review). Establishes the transport-layering contract (api owns behavior;
+  cli/mcp stay thin).
 
 ### Executing terminal commands — `compact-terminal-mcp` (implemented; no spec)
 - `memory-api/tools/mcp/compact-terminal-mcp` — `run` truncates long output and
   spills full streams to a transient file, returning a bounded preview plus
-  `read_spill` (windowed / grep) inspection. No dedicated spec or epic yet.
+  `read_spill` (windowed / grep) inspection. No dedicated spec yet; deferred to
+  this epic's design-call phase.
 
 ### Gap — no token-optimized MCP tool exists for:
 1. **File editing / differential patching** — an MCP surface for context-anchored
@@ -77,8 +91,8 @@ identifies the gaps.
    (read, execute, edit, filesystem, search), their token-bounded contracts, and
    the transport layering for each, reusing the `peek-api` pattern.
 2. A spec per new capability category (edit, filesystem, search) under the
-   `agent-tooling` component, plus promotion of the `peek-api` spec out of draft
-   and a new spec covering `compact-terminal`.
+   `agent-tooling` component, plus a new spec covering `compact-terminal`.
+   (`peek-api` spec is now `approved`.)
 3. Child implementation tickets for the identified gaps.
 4. Registration + agent-template wiring so the full suite is available to
    delegated sub-agents behind the cost gate.
@@ -88,8 +102,8 @@ identifies the gaps.
 1. A design doc / design call exists covering all five default-tool categories
    (read, execute, edit, filesystem, search) with token-bounded contracts and
    transport layering, and is linked from this epic.
-2. `compact-terminal` has a spec under the `agent-tooling` component; the
-   `peek-api` spec is linked to this epic and its draft status is resolved.
+2. `compact-terminal` has a spec under the `agent-tooling` component. (`peek-api`
+   spec is linked by textual reference in this description and is `approved`.)
 3. Specs exist (state at least draft) for the three gap categories: file
    editing / differential patching, filesystem operations, and repo-wide search.
 4. Child implementation tickets exist for each gap category and are linked to
@@ -106,7 +120,7 @@ identifies the gaps.
 
 ## References
 
-- `.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d` — peek-api spec (agent-tooling).
+- `.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d` — peek-api spec (agent-tooling), state `approved`.
 - `memory-api/crates/peek-api`, `memory-api/tools/cli/peek-cli`, `memory-api/tools/mcp/peek-mcp`.
 - `memory-api/tools/mcp/compact-terminal-mcp`.
 - `.agents/instructions/orchestration/` — token-efficiency guidance (file-inspection, tool-output, orchestrator-delegation).
