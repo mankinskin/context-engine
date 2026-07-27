@@ -1,0 +1,491 @@
+{
+  "schema_version": 1,
+  "session_id": "5a4fe1a3-e909-4308-ab94-1e08e782af20",
+  "captured_at": "2026-07-27T21:04:03.933Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "/transform-transcript the main benefit of the rule system has been partially neglected, to the point where we recently Even removed the rule targets from all of our instruction files and agent templates and prompt templates but I have realized that there actually is a lot of benefit so the the the original issue was that the rule target just rule target system just really complicated working with rules and there was no added benefits because there was barely any exact duplication that we could replace with shared rules and to multiple targets and it just didn't work out very well but now I've realized that for one use case it's actually very useful but we need to maybe improve the rule rendering and the templating to make it really applicable But the basis is already correct so we have we will have rule entries which will carry the payload text that we will use in the templating system to render real files which will then be consumed by agents in their workflows So at the main benefit that I see right now is that the repository can be adapted to multiple different agent client so for example open code uses a different front matter in the instruction files and in the agents then GitHub copilot So there are these like format differences which or or protocol differences to carry the same information between or indifferent consumers of the files that we generate So and my proposed workflow would be that we define basically all of the shared fragments that we will render along with a few templates which will basically work similarly to umm our current target system So the template will be able to generate a specific output file and then we will use a one time execution call to basically install the files like the instruction files or the skill files or the agent files to a specific Platform or umm 4AP specific platform basically or for multiple platforms and this will be part of the installations flow of the repository or the set up stage and the user will basically just install the instruction files for the agent that they want or for the client that they want and then the system will generate the the specific files from the template and they selected client and this way we don't have to maintain multiple files of 90% the same content only with a few adaptations for the consumer protocol.",
+      "captured_at": "2026-07-27T18:44:03.559Z",
+      "event_meta": {
+        "event_id": "1b7cfdcb-2ea4-4d5e-b544-dc976bda939e",
+        "parent_event_id": "064aea7b-9650-44e9-823a-8aa081347eb2",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "Creating the transcript folder with raw and cleaned artifacts.",
+      "captured_at": "2026-07-27T18:44:28.413Z",
+      "event_meta": {
+        "event_id": "db0c23dc-863b-487d-a557-c6428d1ee158",
+        "parent_event_id": "096a4002-f17e-42e9-aae6-cadb7095d9c4",
+        "event_type": "assistant.message",
+        "message_id": "f7c40ab0-a8a2-4953-bdbe-b7a1578e1c74",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_019N8bGJmYMKD8mgsaKdnmxE",
+            "name": "create_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\transcripts\\27-07-2026_rule-system-multi-client\\input.md",
+              "content": "the main benefit of the rule system has been partially neglected, to the point where we recently Even removed the rule targets from all of our instruction files and agent templates and prompt templates but I have realized that there actually is a lot of benefit so the the the original issue was that the rule target just rule target system just really complicated working with rules and there was no added benefits because there was barely any exact duplication that we could replace with shared rules and to multiple targets and it just didn't work out very well but now I've realized that for one use case it's actually very useful but we need to maybe improve the rule rendering and the templating to make it really applicable But the basis is already correct so we have we will have rule entries which will carry the payload text that we will use in the templating system to render real files which will then be consumed by agents in their workflows So at the main benefit that I see right now is that the repository can be adapted to multiple different agent client so for example open code uses a different front matter in the instruction files and in the agents then GitHub copilot So there are these like format differences which or or protocol differences to carry the same information between or indifferent consumers of the files that we generate So and my proposed workflow would be that we define basically all of the shared fragments that we will render along with a few templates which will basically work similarly to umm our current target system So the template will be able to generate a specific output file and then we will use a one time execution call to basically install the files like the instruction files or the skill files or the agent files to a specific Platform or umm 4AP specific platform basically or for multiple platforms and this will be part of the installations flow of the repository or the set up stage and the user will basically just install the instruction files for the agent that they want or for the client that they want and then the system will generate the the specific files from the template and they selected client and this way we don't have to maintain multiple files of 90% the same content only with a few adaptations for the consumer protocol.\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Done.\n\n**Input:** transcript supplied inline as command arguments (no source file existed), preserved verbatim at [transcripts/27-07-2026_rule-system-multi-client/input.md](transcripts/27-07-2026_rule-system-multi-client/input.md)\n**Output:** [transcripts/27-07-2026_rule-system-multi-client/input.clean.md](transcripts/27-07-2026_rule-system-multi-client/input.clean.md)\n\n**Removed as noise:** filler and stutters (\"the the the\", \"umm\", \"so at\"), false starts (\"the rule target just rule target system\"), the mis-transcription \"4AP specific platform\" (resolved from context to \"for a specific platform\"), \"open code\" normalized to \"OpenCode\", redundant restatements of the duplication argument.\n\n**Preserved as intent:** rule targets were recently removed everywhere; the original complaint (complexity, no exact duplication to share); the reversal — one valuable use case; the need to improve rule rendering/templating while keeping the existing basis; rule entries carrying payload text into templating; multi-client adaptation with the OpenCode vs. GitHub Copilot front-matter example; the four-step proposed workflow (shared fragments, templates like the current target system, one-time install call for instruction/skill/agent files to one or more platforms, part of the install/setup flow); the 90%-identical-files motivation.\n\n**Language:** English only; no translation required.\n\n**Open questions:** none blocking. One judgment call: \"for a specific Platform or 4AP specific platform basically or for multiple platforms\" was read as a self-correction converging on \"a specific platform, or multiple platforms\".",
+      "captured_at": "2026-07-27T18:44:46.964Z",
+      "event_meta": {
+        "event_id": "4a322e65-1644-445a-beb4-6d76ee4adb62",
+        "parent_event_id": "279e218c-381b-46b7-835a-d51393152862",
+        "event_type": "assistant.message",
+        "message_id": "d5483919-fbbd-4874-a4d8-fca454f61f7d",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "user",
+      "content": "Now help me refine this into a full ticket track with all steps materialized as tickets and design design decisions resolved And any blockers reconciled ahead of time to implement this system cleanly In Sync with our remaining planning that already exists",
+      "captured_at": "2026-07-27T18:45:56.097Z",
+      "event_meta": {
+        "event_id": "10821137-c3a8-4339-97f8-82123d4f0deb",
+        "parent_event_id": "770b926d-29ec-4e87-90d3-5b5a374f05cf",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "user",
+      "content": "Read-only research in the context-engine repo (c:\\Users\\linus\\git\\graph_app\\context-engine). Do NOT write or edit anything. Thoroughness: thorough. Report findings compactly with file links (repo-root-relative, forward slashes) and exact identifiers.\n\nI need a precise picture of the CURRENT state of the rule/rule-target generation system, because we are about to reverse part of an in-flight decommissioning effort and re-scope it toward multi-client (multi agent-client) file generation.\n\nAnswer these questions:\n\n1. RULE-TARGET SYSTEM TODAY\n   - What is in `rule-targets.yaml` at repo root and in `rule-targets/` folders (root, memory-api/, memory-viewers/)? List the target names, their file kinds, and what output files each generates.\n   - Which generated output files still carry rule-generation provenance headers (grep for the provenance/generated marker used, e.g. \"generated\", \"rule-api\", \"DO NOT EDIT\")? Give counts per directory (.agents/instructions/, .agents/agents/, .agents/prompts/, .agents/skills/, .clinerules/, AGENTS.md files, README files).\n   - Confirm whether `.agents/instructions/**`, `.agents/agents/**`, `.agents/prompts/**` are currently hand-owned or generated.\n\n2. RULE-API GENERATION CAPABILITY\n   - Locate the rule-api crate(s) and the code implementing `rule_generate_file`, `rule_generate_target`, `rule_explain_target`, `sync-targets`, `rule scan`, `rule import-file`. Give the crate paths and the key module/file paths.\n   - Describe the current target config schema (structs/serde types): what fields does a target have (selectors, sections, ordering, output path, file kind, headers/front matter)?\n   - Is there ANY templating engine in use (handlebars/tera/minijinja/askama) or is rendering hand-rolled string assembly? Show the evidence.\n   - How is YAML/TOML front matter currently emitted for generated instruction/agent files? Is front matter hardcoded per file kind, or configurable? What `file_kind` values exist (enum)?\n   - How does the rule store persist rule payload text (body.md storage contract)? Where are `.rule` stores located?\n\n3. IN-FLIGHT DECOMMISSIONING WORK\n   - Fetch full descriptions for these tickets using the ticket CLI or ticket-mcp (workspace `default`): 14c0995c (\"Decouple agent-customization file creation from the rule system\"), 76d0ace3, 16cfd19f, f43cb5cb, f15d9e8b (\"Build rule-api for generated agent instruction docs\"), 1fd0c182, 21893f5f, e2768479, 23e81ad8, 3f62f10e, 0ec7d37a.\n   - Report each ticket's state, dependencies (blockers/dependees), and a 2-3 line summary of intent. Especially: what exactly does the 14c0995c epic mandate, and has any of it already been executed (i.e. were rule targets already deleted for instructions/agents/prompts)?\n   - Use `ticket subgraph`/`topgraph` or the CLI to show the dependency graph around 14c0995c.\n\n4. EXISTING SPECS\n   - Search the spec store (spec-mcp or `spec` CLI) for specs covering the rule system, instruction generation, agent-customization files, or repo setup/install. Report spec ids, slugs, states, and one-line summaries.\n\n5. MULTI-CLIENT / INSTALL FLOW\n   - What does `install-tools.sh`, `install-extensions.sh`, `install-deps.sh` do at a high level? Is there any existing notion of \"install guidance files for a client\"?\n   - What is `gen_opencode_config.py` and `opencode.json`? Does it already generate OpenCode-specific artifacts from repo sources? Describe the mechanism.\n   - What is `.clinerules/` and how is it produced (the `25-cline.yaml` rule target)? This looks like an existing precedent for multi-client rendering — describe exactly how it works.\n   - Enumerate the concrete per-client format differences already visible in the repo for: GitHub Copilot (.github/copilot-instructions.md, .agents/instructions/*.instructions.md frontmatter, .agents/agents/*.agent.md frontmatter, .agents/prompts/*.prompt.md frontmatter, .agents/skills/*/SKILL.md), OpenCode, Cline. Show the actual frontmatter key sets used by each.\n\n6. GOTCHAS / BLOCKERS\n   - Anything that would block a \"render shared rule fragments -> per-client output files at install time\" design: e.g. hand-edited generated files, drift, missing round-trip, pre-commit hooks that regenerate, the `.github/hooks/` setup, Makefile.toml tasks for rule sync.\n\nReturn a structured markdown report. Be concrete: exact file paths, exact enum variant names, exact ticket states. Do not speculate — mark unknowns as UNKNOWN.",
+      "captured_at": "2026-07-27T18:47:21.132Z",
+      "event_meta": {
+        "event_id": "31b481c6-8c33-4474-8694-e47358aff3bc",
+        "parent_event_id": "23117f78-8947-4f35-93f2-bdaf5e6f9fce",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I'll start by exploring the rule-target system structure and the rule-api crates in parallel.",
+      "captured_at": "2026-07-27T18:47:25.582Z",
+      "event_meta": {
+        "event_id": "bbe8e208-cf91-468b-8b97-a3b85b9a62f3",
+        "parent_event_id": "1207c50f-5f61-481f-a656-b64bf1dd81df",
+        "event_type": "assistant.message",
+        "message_id": "5f8c3d8e-e530-4b63-a9a4-90e9c4eefd6d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01RkDDvsLfW1aEQsV3xh1RnR",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/rule-targets.yaml"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01Fh2FL3vsViW9QgLHksNViF",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/rule-targets/**/*.yaml"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01C45uR7V1Q3LQb11he8Fp5N",
+            "name": "file_search",
+            "arguments": {
+              "query": "**/rule-api/**/Cargo.toml"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "I have a complete picture. Report below.\n\n---\n\n# Rule / Rule-Target Generation System — Current State\n\n## 1. RULE-TARGET SYSTEM TODAY\n\n### 1.1 Config inventory\n\nFour workspaces each have a `rule-targets.yaml` entry shim that `imports:` a `rule-targets/` fragment directory.\n\n| Workspace | Entry shim | Fragment dir |\n|---|---|---|\n| root | [rule-targets.yaml](rule-targets.yaml) (`imports: [rule-targets]`) | [rule-targets/](rule-targets) |\n| memory-api | [memory-api/rule-targets.yaml](memory-api/rule-targets.yaml) | [memory-api/rule-targets/](memory-api/rule-targets) |\n| memory-viewers | [memory-viewers/rule-targets.yaml](memory-viewers/rule-targets.yaml) | [memory-viewers/rule-targets/](memory-viewers/rule-targets) |\n| viewer-api | [viewer-api/rule-targets.yaml](viewer-api/rule-targets.yaml) | [viewer-api/rule-targets/](viewer-api/rule-targets) |\n\n**Root** — [rule-targets/00-imports.yaml](rule-targets/00-imports.yaml) pulls in `../memory-viewers/rule-targets`, `../memory-api/rule-targets`, `../viewer-api/rule-targets`. Remaining root fragments:\n\n| File | Targets | file_kind | Output |\n|---|---|---|---|\n| [rule-targets/25-cline.yaml](rule-targets/25-cline.yaml) | `context-engine-cline-source-of-truth`, `context-engine-cline-core-rules`, `context-engine-cline-workflows`, `context-engine-cline-path-scoped` | `AGENTS` (from `defaults:`) | `.clinerules/00-source-of-truth.md`, `10-core-rules.md`, `20-workflows.md`, `30-path-scoped.md` |\n| [rule-targets/70-workflow-spec-docs.yaml](rule-targets/70-workflow-spec-docs.yaml) | `workflow-validation-tool-body`, `workflow-documentation-validation-tooling-body`, `cross-store-workflow-traceability-links-body` | (implied `spec-doc`) | `.spec/specs/<uuid>/body.md` |\n| [rule-targets/80-recurring-principles.yaml](rule-targets/80-recurring-principles.yaml) | `context-engine-recurring-principles-body` + 4 `-browser-validation`/`-generated-file-markers`/`-traceability-link-format`/`-validation-evidence` | `spec-doc` | `.spec/specs/954d9807-.../body.md` and `sections/*.md` |\n\n**memory-api** — [10-workspace-docs.yaml](memory-api/rule-targets/10-workspace-docs.yaml) (`README.md`, `AGENTS.md`), [20-readme-schemas.yaml](memory-api/rule-targets/20-readme-schemas.yaml) (schemas `memory-api-root-readme-v1`, `tool-readme-v1`), [30-cli-readmes.yaml](memory-api/rule-targets/30-cli-readmes.yaml) (rule-cli/spec-cli/ticket-cli/audit-cli READMEs), [40-mcp-readmes.yaml](memory-api/rule-targets/40-mcp-readmes.yaml) (rule/spec/ticket/audit-mcp READMEs), [50-http-readmes.yaml](memory-api/rule-targets/50-http-readmes.yaml) (ticket-http, spec-http), [60-spec-docs.yaml](memory-api/rule-targets/60-spec-docs.yaml), [70-recurring-principles.yaml](memory-api/rule-targets/70-recurring-principles.yaml).\n\n**memory-viewers** — [00-imports.yaml](memory-viewers/rule-targets/00-imports.yaml) (`imports: []`), [10-workspace-docs.yaml](memory-viewers/rule-targets/10-workspace-docs.yaml) (`README.md`, `AGENTS.md`), [80-theme-settings-spec-docs.yaml](memory-viewers/rule-targets/80-theme-settings-spec-docs.yaml).\n\n**viewer-api** — [10-workspace-docs.yaml](viewer-api/rule-targets/10-workspace-docs.yaml), [20-readme-schemas.yaml](viewer-api/rule-targets/20-readme-schemas.yaml) (`viewer-api-root-readme-v1`, `child-readme-v1`), [30-viewer-ctl.yaml](viewer-api/rule-targets/30-viewer-ctl.yaml), [35-viewer-api-readmes.yaml](viewer-api/rule-targets/35-viewer-api-readmes.yaml), [40-recurring-principles.yaml](viewer-api/rule-targets/40-recurring-principles.yaml).\n\n### 1.2 Provenance-marker counts (marker: `<!-- rule-api:file generated=true -->`)\n\n| Directory / file | Files with marker | Total `.md` |\n|---|---|---|\n| `.agents/instructions/` | **0** | 41 |\n| `.agents/agents/` | **0** | 16 |\n| `.agents/prompts/` | **0** | 24 |\n| `.agents/skills/` | **1** (prose-only mention in [.agents/skills/README.md](.agents/skills/README.md#L21), not a real header) | 116 |\n| `.clinerules/` | **4** (all 4 `.md` files) | 4 |\n| `.github/` | **0** | 1 |\n| `AGENTS.md` (root) | **0** | — |\n| `README.md` (root) | **0** | — |\n| `.github/copilot-instructions.md` | **0** | — |\n| `memory-api/AGENTS.md`, `memory-api/README.md` | 1 each | — |\n| `memory-viewers/AGENTS.md`, `memory-viewers/README.md` | 1 each | — |\n| `viewer-api/AGENTS.md`, `viewer-api/README.md` | 1 each | — |\n| Tool READMEs (10 files under `memory-api/tools/**`, 3 under `viewer-api/**`) | 1 each | — |\n\nTotal: 56 files match repo-wide, but most matches are inside `.session/` transcripts, `.spec/` bodies, `.ticket/` descriptions, and Rust test source. **Real generated artifacts today: 4 `.clinerules/*.md` + 6 submodule `AGENTS.md`/`README.md` + 13 tool `README.md`.**\n\n### 1.3 Hand-owned vs generated — CONFIRMED\n\n`.agents/instructions/**`, `.agents/agents/**`, `.agents/prompts/**`, `.agents/skills/**`, root `AGENTS.md`, `.github/copilot-instructions.md` are **hand-owned**. No rule-target config produces them, and no file carries the marker.\n\n`.agents/instructions/` has been reorganized into nested folders (`audit/`, `commit/`, `engine/`, `frontend/`, `orchestration/`, `session/`, `spec/`, `testing/`, `ticket/`, `transcripts/`) plus [.agents/instructions/INDEX.md](.agents/instructions/INDEX.md) and [.agents/instructions/README.md](.agents/instructions/README.md).\n\n---\n\n## 2. RULE-API GENERATION CAPABILITY\n\n### 2.1 Crates and module paths\n\n- **Domain crate**: [memory-api/crates/rule-api/Cargo.toml](memory-api/crates/rule-api/Cargo.toml) (`rule-api` v0.1.0, edition 2024)\n- **CLI**: [memory-api/tools/cli/rule-cli/](memory-api/tools/cli/rule-cli) — binary `rule` ([src/bin/rule.rs](memory-api/tools/cli/rule-cli/src/bin/rule.rs))\n- **MCP**: [memory-api/tools/mcp/rule-mcp/](memory-api/tools/mcp/rule-mcp)\n\n| Capability | Location |\n|---|---|\n| `rule_generate_file` | MCP: [rule-mcp/src/server.rs](memory-api/tools/mcp/rule-mcp/src/server.rs#L223) → [server/generate.rs](memory-api/tools/mcp/rule-mcp/src/server/generate.rs#L41) `rule_generate_file_tool`; CLI `generate-file` in [args.rs](memory-api/tools/cli/rule-cli/src/cli/args.rs#L48), impl [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs) |\n| `rule_generate_target` | [server.rs](memory-api/tools/mcp/rule-mcp/src/server.rs#L234) → [generate.rs](memory-api/tools/mcp/rule-mcp/src/server/generate.rs#L90) `rule_generate_target_tool` |\n| `rule_explain_target` | [server.rs](memory-api/tools/mcp/rule-mcp/src/server.rs#L245) → [generate.rs](memory-api/tools/mcp/rule-mcp/src/server/generate.rs#L127); core `explain_target` in [rule-api/src/targets.rs](memory-api/crates/rule-api/src/targets.rs#L70) |\n| `sync-targets` | CLI only ([args.rs](memory-api/tools/cli/rule-cli/src/cli/args.rs#L54) `SyncTargets`), `sync_targets_payload` in [rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs). **No MCP tool exists for sync-targets** |\n| `rule scan` | CLI `Scan(ScanArgs)`; MCP `rule_scan` |\n| `rule import-file` | CLI `ImportFile`; MCP `rule_import_file` → [server/importing.rs](memory-api/tools/mcp/rule-mcp/src/server/importing.rs#L32); core [rule-api/src/import.rs](memory-api/crates/rule-api/src/import.rs) (`import_markdown_blocks`, `MarkdownImportOptions`, `ImportedRuleBlock`) |\n\nAdditional CLI-only commands: `sync-rules` (reverse-sync), `benchmark-targets`, `missing-rule`, `store-index`, `add-root`, `move`, `init`.\n\nCore target modules: [targets.rs](memory-api/crates/rule-api/src/targets.rs) (112 LOC), [targets_loader.rs](memory-api/crates/rule-api/src/targets_loader.rs) (337), [targets_model.rs](memory-api/crates/rule-api/src/targets_model.rs) (543), [targets_query.rs](memory-api/crates/rule-api/src/targets_query.rs) (284).\n\n### 2.2 Target config schema (exact serde types)\n\nAll in [targets_model.rs](memory-api/crates/rule-api/src/targets_model.rs).\n\n```\nRawRenderTargetConfig {          // top-level YAML/TOML document\n  imports: Vec<PathBuf>,\n  defaults: RawTargetDefaults,\n  schemas: Vec<RenderTargetSchema>,\n  targets: Vec<RawRenderTarget>,\n  folders: Vec<RenderTargetFolder>,\n  files:   Vec<RenderTargetFile>,\n}\nRawTargetDefaults { repo_scope, file_kind, path_scope, section, state }  // all Option<String>\nRawRenderTarget { name, scope, repo_scope, file_kind, path_scope, section, state,\n                  nodes: Vec<RenderTargetNode>, output_path, schema,\n                  target_kind: Option<RenderTargetKind>, node_mode: Option<RenderTargetNodeMode> }\nRenderTargetFolder { name, folders: Vec<RenderTargetFolder>, files: Vec<RenderTargetFile> }\nRenderTargetFile   { name, target: RenderTargetDefinition }\nRenderTargetSchema { name, nodes, required_blocks: RenderTargetRequiredBlocks { root: Vec<String>, child: Vec<String> } }\n```\n\nResolved target ([targets_model.rs](memory-api/crates/rule-api/src/targets_model.rs#L228)):\n\n```\nRenderTarget { name: String, repo_scope: String, file_kind: String,\n               path_scope: Option<String>, section: Option<String>, state: Option<String>,\n               nodes: Vec<RenderTargetNode>, output_path: String,\n               source_config_path: Option<PathBuf>, source_output_root: Option<PathBuf> }\nRenderTargetNode { name, title: Option<String>, repo_scope, file_kind, path_scope, section, state,\n                   nodes: Vec<RenderTargetNode> }   // recursive\n```\n\n- **Selectors** = the 5-field `RenderTargetFilter { repo_scope, file_kind, path_scope, section, state }`, merged parent→child by `RenderTargetFilter::merged_with` (child wins), converted to a store query by `to_rule_filter()`.\n- **Ordering** = document order of `nodes` (depth-first: node's own matches, then children) + `order_key` on each rule entry within a node's `store.list()` result.\n- **Output path** = derived from folder/file tree position, or explicit `output_path`, or the `scope: \"<repo>:<path>\"` shorthand; resolved by `resolve_render_target_output` in [targets_query.rs](memory-api/crates/rule-api/src/targets_query.rs).\n- **Enums** (only two exist, both `#[serde(rename_all = \"kebab-case\")]`):\n  - `RenderTargetKind::{Root, Child}` → `\"root\"` / `\"child\"`\n  - `RenderTargetNodeMode::{Replace, Append}` → `\"replace\"` / `\"append\"`\n- **No `headers` / `front_matter` field exists in the target schema.**\n\n### 2.3 Templating engine\n\n**None.** Rendering is hand-rolled string assembly.\n\nEvidence: `grep` for `handlebars|tera|minijinja|askama|liquid` across all `Cargo.toml` returns **zero matches**. [rule-api/Cargo.toml](memory-api/crates/rule-api/Cargo.toml) deps are `memory-api`, `feedback-api`, `serde`, `serde_json`, `serde_yaml`, `toml`, `chrono`, `uuid`, `thiserror`, `tracing`.\n\nRendering is [rule-api/src/render.rs](memory-api/crates/rule-api/src/render.rs) delegating to `memory_api::generated_markdown::render_markdown_file` in [memory-api/crates/memory-api/src/generated_markdown.rs](memory-api/crates/memory-api/src/generated_markdown.rs#L107) — direct `String::push_str` concatenation.\n\n### 2.4 Front matter emission\n\nFront matter is **not** configurable and **not** per-file-kind. It is stored inside the **first matched rule entry's body text** and hoisted by the renderer.\n\n[generated_markdown.rs](memory-api/crates/memory-api/src/generated_markdown.rs#L112) logic:\n```\nGeneratedMarkdownConfig { file_comment, entry_prefix, skip_provenance_for_yaml_frontmatter: bool /* default true */ }\n```\nIf `skip_provenance_for_yaml_frontmatter`, `split_yaml_frontmatter(&first_snippet.body)` splits a leading `---\\n...\\n---` block off the first entry and emits it **above** `<!-- rule-api:file generated=true -->`. Round-trip is handled by `parse_generated_artifact`, which re-attaches the frontmatter to the first entry body.\n\nVerified: **27** of 120 rule bodies under `.rule/rules/*/body.md` begin with `---`. Round-trip is covered by the test `render_markdown_file_keeps_frontmatter_first_and_emits_provenance` in [render.rs](memory-api/crates/rule-api/src/render.rs#L88).\n\nProvenance constants ([render.rs](memory-api/crates/rule-api/src/render.rs#L12)):\n- `GENERATED_FILE_COMMENT = \"<!-- rule-api:file generated=true -->\"`\n- `GENERATED_ENTRY_PREFIX = \"rule-api:entry\"` → `<!-- rule-api:entry id=<uuid> slug=<slug> -->`\n\n### 2.5 `file_kind` values\n\n**`file_kind` is `String`, not an enum.** Declared `field_type = \"string\", required = true` in [rule-api/schemas/rule-entry.toml](memory-api/crates/rule-api/schemas/rule-entry.toml). Values observed across all four `.rule` stores:\n\n| Value | Count |\n|---|---|\n| `\"spec-doc\"` | 156 |\n| `\".agent\"` | 73 |\n| `\"AGENTS\"` | 48 |\n| `\"README\"` | 29 |\n| `\".github/README\"` | 17 |\n| `\".prompt\"` | 17 |\n| `\"copilot-instructions\"` | 6 |\n| `\".skill\"` | 1 |\n| `\"session-guidance\"` | 1 |\n\nNote the `.agent` / `.prompt` / `.skill` / `copilot-instructions` entries are **orphaned rule bodies** — their targets were deleted but the rule entries remain in the store.\n\n### 2.6 Rule store persistence\n\n- Store roots: [.rule/](.rule), [memory-api/.rule/](memory-api/.rule), [memory-viewers/.rule/](memory-viewers/.rule), [viewer-api/.rule/](viewer-api/.rule) — rule counts 120 / 123 / 49 / 56.\n- Layout per store: `rules/<uuid>/{rule.toml, body.md, history.ndjson}`, plus `entities/<uuid>/rule.toml` (generated-target state records), `entities.db` (+`-shm`/`-wal`), `search_index/`, `index.toon`, `README.md`, `scan_fingerprints.json`.\n- `rule.toml` fields: `id`, `created_at`, `title`, `state`, `slug`, `type = \"rule-entry\"`, `file_kind`, `section`, `order_key`, `path_scopes[]`, `repo_scopes[]`, `sentence_anchors[]`, `source_repo`, `source_path`, `source_start_line`, `source_end_line`, `feedback_*_count`.\n- **Body contract**: rule payload text lives in a sibling `body.md`; it is *not* inlined in `rule.toml`. Frontmatter, if any, is the first block of that `body.md`.\n- Rule lifecycle states ([rule-entry.toml](memory-api/crates/rule-api/schemas/rule-entry.toml)): `draft` → `reviewed` → `adopted` → `deprecated` (with reverse edges).\n- Generated-target state records use schema [generated-target.toml](memory-api/crates/rule-api/schemas/generated-target.toml): single state `active`, fields `config_path`, `target_name`, `output_path`.\n\n---\n\n## 3. IN-FLIGHT DECOMMISSIONING WORK\n\n**All 11 requested tickets are in state `new`.**\n\n| Ticket | Store | State | Depends on | Intent |\n|---|---|---|---|---|\n| [14c0995c Decouple agent-customization file creation from the rule system](.ticket/tickets/14c0995c-1113-46dc-b924-82f0175628fc/ticket.toml) | root | `new` | **none** (isolated node, no edges) | Epic/tracker. Fix stale guidance claiming `.agents/**` + `AGENTS.md` + `copilot-instructions.md` must be routed through `rule create`/`rule sync-targets`; fix the pre-commit gate that failed on orphaned generated-target state. `effort: M`, `type: tracker-improvement` |\n| [76d0ace3 Convert 21 prompt files off rule generator](.ticket/tickets/76d0ace3-6e65-493d-9bef-fdc531081992/ticket.toml) | root | `new` | `f43cb5cb` | Strip markers from 21 `.agents/prompts/*.prompt.md`; delete `rule-targets/30-agents-prompts.yaml` |\n| [16cfd19f Convert 11 agent files off rule generator](.ticket/tickets/16cfd19f-f1bd-4008-a15d-84037511f8fc/ticket.toml) | root | `new` | `f43cb5cb` | Strip markers from 11 `.agents/agents/*.agent.md`; delete `rule-targets/45-agents-agents.yaml` |\n| [f43cb5cb Convert 12 instruction files off rule generator](.ticket/tickets/f43cb5cb-07dd-44c2-876b-8aceb2d841cb/ticket.toml) | root | `new` | `f7112b9f`, `fd77db9b` (both → `5f217947`) | Migrate 12 `.agents/instructions/*.md` to hand-owned; delete `50-agents-instructions.yaml`, `35-agents-skills.yaml`, and AGENTS.md/copilot-instructions agent-guidance targets |\n| [f15d9e8b Build rule-api for generated agent instruction docs](memory-api/.ticket/tickets/f15d9e8b-72d2-44d9-965d-9fecbbc02d7f/ticket.toml) | memory-api | `new` | 6 deps (`29bf9628`, `454405a2`, `48b1cefb`, `88800b2e`, `c809ae33`, `dee7de7a`) | **The ORIGINAL tracker that built the whole system.** Decision record: \"All agent-facing markdown files will eventually be generated\"; defines the provenance comment contract. `priority: high, effort: 1200` |\n| [1fd0c182 rule-mcp/rule-http workspace-resolution parity](memory-api/.ticket/tickets/1fd0c182-f4b4-486b-b757-fe47e3238e43/ticket.toml) | memory-api | `new` | `27558fde` | All rule transports use the shared memory-api resolver; recursive nested `.rule` discovery. `effort: 3000` |\n| [21893f5f Extract rule tool as a single `rule` domain crate](.ticket/tickets/21893f5f-e57f-4cdf-b5de-39f42ae5d89d/ticket.toml) | root | `new` | `0da6894c`, `1c452ff1`, `dbe0e955` | Phase B repo split: `rule` crate + feature-gated transport bins. Explicitly says \"Coordinate with the migrate-off-generator work (rule-targets coupling)\". `priority: high, risk_level: medium` |\n| [e2768479 Adopt neutral shared APIs in rule-api and spec-api](.ticket/tickets/e2768479-24d6-4f42-bdbe-ac509167dc62/ticket.toml) | root | `new` | — | Replace ticket-biased memory-api calls in rule-api/spec-api. `effort: 3000, priority: high` |\n| [23e81ad8 Rule-store sources for domain-store scaffolding instructions](.ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml) | root | `new` | — | Create canonical rule entries **and generation targets** for instruction files + slash-command prompt assets. **Directly contradicts the decommissioning direction.** `effort: 700, priority: high` |\n| [3f62f10e context-stack: add local .rule store and generate root README](.ticket/tickets/3f62f10e-6f7d-4fa1-b205-97fe62babaf2/ticket.toml) | root | `new` | `2750018f` | 5th `.rule` store for `context-stack`; generate `context-stack/README.md`. `spec_refs: b8ddb54c` |\n| [0ec7d37a Rule catalog: single-line entries, 3-segment group keys](.ticket/tickets/0ec7d37a-2357-44c4-bc7c-4839ec01afec/ticket.toml) | root | `new` | `9336a096` | Compact `.rule/README.md` index rendering in `rule-api/src/store_index.rs`. `effort: 2400` |\n\n### 3.1 What 14c0995c mandates, and what has already been executed\n\n**Mandate** (from [description.md](.ticket/tickets/14c0995c-1113-46dc-b924-82f0175628fc/description.md)) — four ACs, all recorded as already resolved in the description body:\n- AC1: confirm `AGENTS.md` / `copilot-instructions.md` are NOT rule-generated; correct the \"Rule-generated files\" table and pre-commit docs in the commit instructions.\n- AC2: purge \"route new agent files through the rule system\" language from `.agents/**` and `.rule/README.md`.\n- AC3: no rule-target config targets `.agents/**` (verified across all 4 workspaces).\n- AC4: narrow the pre-commit trigger + fix `sync_targets_payload` so decoupled (marker-free) outputs are pruned from tracking state instead of failing `--check`.\n\n**Execution status: the deletion has ALREADY HAPPENED.** Git history confirms:\n\n```\na7810499  clean agent files and add clinerules support\n          D rule-targets/40-agents-prompts.yaml\n4b74311d  Remove obsolete agent-related YAML files ...\n          D rule-targets/10-agents.yaml               (45 lines)\n          D rule-targets/20-github-copilot.yaml       (26)\n          D rule-targets/35-agents-skills.yaml        (16)\n          D rule-targets/50-agents-instructions.yaml  (540)\n          D rule-targets/55-session-optimization.yaml (21)\n4697eb3f  Refactor agent instructions and prompts ...\n          D rule-targets/30-agents-prompts.yaml       (127)\n          D rule-targets/45-agents-agents.yaml        (71)\n```\n\nTotal **846 lines** of agent-guidance target config deleted. All marker stripping is done (0 markers in `.agents/instructions|agents|prompts`). The tickets `f43cb5cb`, `76d0ace3`, `16cfd19f` are **state `new` but functionally complete** — only ticket bookkeeping is unresolved (this is corroborated by the recorded outcome section [.spec/specs/a9b7ef39-.../sections/Prompt & Agent Migration Outcome.md](.spec/specs/a9b7ef39-ace4-4a12-a171-80f54548fc65/sections/Prompt%20&%20Agent%20Migration%20Outcome.md)).\n\n### 3.2 Dependency graph\n\n`14c0995c` — **isolated**: `subgraph` and `topgraph` both return 1 node, 0 edges.\n\nGraph around `f43cb5cb`:\n\n```mermaid\nflowchart TD\n  b13c5d89[\"Epic: Agent Skill Foundation<br/>b13c5d89 [new]\"]\n  b13c5d89 -->|depends_on| f43cb5cb\n  b13c5d89 -->|depends_on| 76d0ace3\n  b13c5d89 -->|depends_on| 16cfd19f\n  b13c5d89 -->|depends_on| 0c72ecac\n  0c72ecac[\"[validation] Prompt-replay matrix<br/>0c72ecac [new]\"] -->|depends_on| f43cb5cb\n  76d0ace3[\"[migration] 21 prompts<br/>76d0ace3 [new]\"] -->|depends_on| f43cb5cb\n  16cfd19f[\"[migration] 11 agents<br/>16cfd19f [new]\"] -->|depends_on| f43cb5cb\n  f43cb5cb[\"[migration] 12 instructions<br/>f43cb5cb [new]\"] -->|depends_on| f7112b9f\n  f43cb5cb -->|depends_on| fd77db9b\n  f7112b9f[\"[skill] Vendor 8 skills<br/>f7112b9f [new]\"] -->|depends_on| 5f217947\n  fd77db9b[\"[skill] Dioxus skill<br/>fd77db9b [new]\"] -->|depends_on| 5f217947\n  5f217947[\"[skill] Skill dir contract<br/>5f217947 [new]\"]\n  b9a52b79[\"[workflow-tools][skill] workflow-skill package<br/>b9a52b79 [new]\"] -.->|linked| b13c5d89\n```\n\nDownstream (via `b9a52b79`): `24d47244`, `69eb4118`, `92741a14`, `67e254b5`, `2345ba7f` (all `new`), `26da8f59` (`ready`), `c3e01552` (`on-hold`).\n\n---\n\n## 4. EXISTING SPECS\n\n| Spec id | Slug | State | Component | One-liner |\n|---|---|---|---|---|\n| `7b0ad285-c7df-4b19-a9d7-a11e71bab2ba` | `context-engine/repo-guidance/cline-agent-integration` | draft | repo-guidance | **The multi-client precedent spec.** Cline client adapter via `.clinerules/`, canonical `.agents/` + `AGENTS.md`, neutral hook scripts in `tools/agent-hooks/` |\n| `a9b7ef39-ace4-4a12-a171-80f54548fc65` | `agents/skill-infrastructure` | draft | agents | Anchor spec for the decommissioning. AC5: migrate all 12 instruction files off `rule-api:file generated=true` |\n| `57d56ae8-792a-4f95-a531-4fe59e0c824f` | `instructions/migration` | **reviewed** | agent-tooling | Instruction files nested workflow migration (the `.agents/instructions/<folder>/` reorg) |\n| `a969562b-6920-4fa6-a757-d317e7d442df` | `rule-system/single-target-reverse-sync` | draft | rule-cli | `rule-cli sync-rules` reverse-sync from generated artifacts incl. frontmatter round-trip (AC7) |\n| `e815f261-ca7d-4957-8f68-666e1e1dfbfe` | `rule-api/workspaces` | draft | rule-api | Rule workspace topology and composition |\n| `5de125ad-eb0c-4bcb-8e6d-175df1ba33a6` | `rule-api/workspaces/nested-resolution` | draft | rule-api | Nested workspace discovery and target resolution |\n| `3b96ec1c-4e99-48f4-86e5-a36ba24b827a` | `rule-api/workspaces/memory-api-readme-generation` | draft | rule-api | memory-api rule workspace + README generation |\n| `0e9beee3-9974-48df-ad22-a79504c438af` | `rule-api/store` | draft | rule-api | Rule store contract |\n| `9c7c0655-436c-4cd8-a3d3-2d893f1d865c` | `rule-cli/sync-targets/incremental-and-normalized-paths` | draft | rule-cli | Incremental sync-targets + normalized path output |\n| `9109f12a-cc02-47ae-948f-98008b6c167d` | `generated-context/rendering-pipeline-integration` | draft | memory-api | Shared rendering pipeline for generated store indexes; documents `file_comment`/`entry_prefix` wiring |\n| `cde871d1-d390-454e-ae0b-94b152baca15` | `repo-guidance/readmes/shared-schema` | draft | rule-api | Shared README schema + mechanical validation |\n| `9ee9387f-5384-42a9-95c4-ecbad1713030` | `scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill` | draft | scaffold | Rule-generated domain-store bootstrap instructions + slash skill |\n| `a28a88db-2b41-49d2-897c-6dbcdb313255` | `memory-api/session-api/minimal-bootstrapper-selective-loading` | draft | rule-api | Minimal bootstrapper and selective rule loading |\n| `b9bf7713`, `c163eba4`, `3c4c0c4f`, `59216a24`, `6d73975e`, `b8ddb54c`, `4f7d84d0`, `5f9a1652`, `cfbb4500` | `repo-guidance/readmes/*` | draft | various | README schema rollout / adoption / completeness family |\n\n**No spec covers install-time per-client file generation.** UNKNOWN: no spec exists for `install-tools.sh`/`install-deps.sh`/`install-extensions.sh` behavior.\n\n---\n\n## 5. MULTI-CLIENT / INSTALL FLOW\n\n### 5.1 Install scripts\n\nAll three source [tools/install/common.sh](tools/install/common.sh) and follow the same shape (`<x>_names` array, `<x>_path()` case dispatch, `usage()`).\n\n- [install-tools.sh](install-tools.sh) (368 lines) — builds/installs 25 Rust binaries: `viewer-ctl`, 4 viewers, `copilot-capture-hook`, 6 CLIs (`ticket`, `spec`, `audit`, `rule`, `feedback`, `session`), 12 MCP servers + `mcp-cost-gate`. Also tracks `mcp_tool_names` separately (likely for MCP registration).\n- [install-extensions.sh](install-extensions.sh) (350 lines) — installs VS Code extensions; currently only `ticket-vscode` (`context-engine.ticket-viewer`, from `memory-api/tools/ticket-vscode`, expects `out/api.js`).\n- [install-deps.sh](install-deps.sh) (241 lines) — external deps: `ripgrep`, `rtk`, `trunk`, `cargo-llvm-cov`.\n\n**There is NO notion of \"install guidance files for a client.\"** `grep` for `.agents|clinerules|copilot|AGENTS.md|opencode|skills` across all three scripts + `tools/install/` returns only 3 hits, all for the *binary* named `copilot-capture-hook`.\n\n### 5.2 `gen_opencode_config.py` / `opencode.json`\n\n[gen_opencode_config.py](gen_opencode_config.py) — **unrelated to rule generation.** It fetches the Eden AI model catalog (`https://api.edenai.run/v3/models`), filters to models with `supports_function_calling`, converts per-token pricing to per-million, and writes an `edenai` provider block to `~/.config/opencode/opencode.json` (the **user's home dir**, not the repo).\n\n[opencode.json](opencode.json) (repo root) is **hand-maintained and separate**. It declares:\n- `\"instructions\": [\".agents/instructions/INDEX.md\"]` — OpenCode's single guidance entry point (a hand-owned index file, not a generated bundle)\n- an `mcp` map wrapping every MCP server in `mcp-cost-gate` with `COST_GATE_*` env vars\n\n**No repo source generates `opencode.json`.** OpenCode consumes `.agents/` directly via one index pointer.\n\n### 5.3 `.clinerules/` — the existing multi-client precedent\n\nProduced by [rule-targets/25-cline.yaml](rule-targets/25-cline.yaml). Mechanism:\n\n1. `defaults: { repo_scope: context-engine, file_kind: AGENTS }`\n2. A `folders:` tree rooted at `.clinerules`, with four `files:` entries. Each `file` carries a `target:` with `name`, `path_scope` (which doubles as the output path), and a `nodes:` tree.\n3. Each node names a **`section:` selector** into the rule store. E.g. `10-core-rules.md` declares node `agent-rules` with 8 child nodes selecting `agent-rules/operating-principles`, `agent-rules/discovery-protocol-before-editing`, `agent-rules/task-routing`, `agent-rules/quality-gates`, `agent-rules/feedback-workflow`, `agent-rules/escalation-rules`, `agent-rules/fallback-mode-when-mcp-is-unavailable`, `agent-rules/canonical-sources`.\n4. `rule sync-targets --config rule-targets.yaml` runs `collect_target_rules` → `render_markdown_file` → writes the file with provenance comments.\n\n**Key property**: the *same* rule bodies that feed root `AGENTS.md` sections are re-projected into a different file layout for Cline. That is exactly \"shared rule fragments → per-client output files\", already working. Output header sample ([.clinerules/00-source-of-truth.md](.clinerules/00-source-of-truth.md#L1)):\n```\n<!-- rule-api:file generated=true -->\n\n<!-- rule-api:entry id=89f4ff96-bc8a-4117-9833-5f93a04d5e6b slug=shared/cline-rules/cline-source-of-truth/l1 -->\n```\n\nCline hooks: [.clinerules/hooks/hooks.json](.clinerules/hooks/hooks.json) + 4 `.sh` copies, mirroring [.github/hooks/hooks.json](.github/hooks/hooks.json); both reference canonical scripts in [tools/agent-hooks/](tools/agent-hooks).\n\n### 5.4 Concrete per-client format differences\n\n**GitHub Copilot / VS Code** — wired via [.vscode/settings.json](.vscode/settings.json):\n```jsonc\n\"chat.instructionsFilesLocations\": { \".agents/instructions\": true }\n\"chat.promptFilesLocations\":       { \".agents/prompts\": true }\n/* line 16 */                      { \".agents/agents\": true }\n```\nGlobal entry: [.github/copilot-instructions.md](.github/copilot-instructions.md) (hand-owned, no marker), which points at [AGENTS.md](AGENTS.md).\n\nFrontmatter key sets (exact counts, measured):\n\n| Surface | Files | Keys |\n|---|---|---|\n| `.agents/instructions/**/*.instructions.md` | 39 with frontmatter (41 md total) | `description` ×39. `applyTo` present in **1 file only** |\n| `.agents/agents/*.agent.md` | 16 | `name` ×16, `description` ×16, `tools` ×16, `argument-hint` ×16, `user-invocable` ×15 |\n| `.agents/prompts/*.prompt.md` | 24 | `description` ×24, `agent` ×24, `name` ×20, `argument-hint` ×20 |\n| `.agents/skills/*/SKILL.md` | 11 | `name` ×11, `description` ×11, `allowed-tools` ×2, `license` ×2, `metadata` ×2, `compatibility` ×1, `applyTo` ×1 |\n\nExample `.agent.md` frontmatter ([.agents/agents/implement.agent.md](.agents/agents/implement.agent.md)):\n```yaml\nname: \"Implement Agent\"\ndescription: \"...\"\ntools: [agent, edit, read, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', ...]\nargument-hint: \"...\"\nuser-invocable: true\n```\nExample `.prompt.md` frontmatter ([.agents/prompts/spec.prompt.md](.agents/prompts/spec.prompt.md)):\n```yaml\ndescription: \"...\"\nname: \"spec\"\nargument-hint: \"<your content>\"\nagent: \"agent\"\n```\n\n**OpenCode** — one key: `\"instructions\": [\".agents/instructions/INDEX.md\"]` in [opencode.json](opencode.json). No frontmatter contract; no per-file discovery; no agent/prompt/skill concept wired. Skills are surfaced only through `.agents/` shape.\n\n**Cline** — no frontmatter at all. Four flat numbered markdown files in `.clinerules/`, each a projection. Hooks manifest at `.clinerules/hooks/hooks.json`.\n\n**Skills vendoring** — [skills-lock.json](skills-lock.json) is a separate install/lock mechanism: `{ version: 1, skills: { <name>: { source, sourceType: \"github\", skillPath, computedHash } } }`. This is the only existing \"fetch external artifacts at install time\" precedent.\n\n---\n\n## 6. GOTCHAS / BLOCKERS\n\n1. **Stale generated-target state records still reference a deleted config.** [.rule/entities/](.rule/entities) has **109** records; **17** of them have `config_path = \".../rule-targets/30-agents-prompts.yaml\"` — a file deleted in commit `4697eb3f`. Example: [.rule/entities/3849e928-45e2-426f-82a1-38682993fc1b/rule.toml](.rule/entities/3849e928-45e2-426f-82a1-38682993fc1b/rule.toml) (`target_name = \"context-engine-prompt-spec\"`, `output_path = \".../.agents/prompts/spec.prompt.md\"`, `state = \"active\"`). Also **50** records with `config_path = \".../rule-targets\"` (directory form) duplicating `rule-targets.yaml` records. Duplicate `output_path` counts of 2–3 per file indicate three overlapping generations of tracking state.\n\n2. **Absolute Windows UNC paths baked into store state.** All `config_path`/`output_path` values are of the form `//?/C:/Users/linus/git/graph_app/context-engine/...`, and `slug` embeds them (`generated-targets///-/c-/users/linus/git/...`). This is machine-specific and committed. Any install-time-generation design must not reuse this addressing.\n\n3. **Orphaned rule bodies without targets.** 73 rules with `file_kind = \".agent\"`, 17 with `\".prompt\"`, 6 with `\"copilot-instructions\"`, 1 with `\".skill\"` still live in the stores, but no target consumes them. They are now **drifted** relative to the hand-edited `.agents/**` files. Reversing the decommissioning means reconciling body drift, not just restoring YAML.\n\n4. **Pre-commit gate is deliberately narrowed away from `.agents/**`.** [.githooks/pre-commit](.githooks/pre-commit#L174) has an explicit comment: `.agents/** are hand-owned (not produced by rule-targets.yaml); do NOT trigger the sync-targets drift gate on them.` Trigger regex is `^(rule-targets\\.yaml|\\.rule/.*|\\.clinerules/.*|\\.github/README\\.md)$` (line 177), plus three per-submodule triggers (lines 181/185/189). Re-enabling generation requires reverting this narrowing.\n\n5. **`sync_targets_payload` now silently prunes decoupled outputs.** Per the 14c0995c description: a record is only treated as an orphaned generated artifact when its output file exists **AND** starts with `GENERATED_FILE_COMMENT`. Marker-free outputs are pruned from tracking without touching the file. Implementation in [memory-api/tools/cli/rule-cli/src/cli/rendering.rs](memory-api/tools/cli/rule-cli/src/cli/rendering.rs). This means re-adding a target for a hand-owned file will *silently overwrite it* on first sync without any conflict warning.\n\n6. **No `sync-targets` MCP tool.** Only CLI. Any install-time flow must shell out to the `rule` binary.\n\n7. **Local `rule.exe` build is stale/misconfigured.** `./target/debug/rule.exe sync-targets --config rule-targets.yaml --check` fails with `workspace not initialized at rule-targets/../memory-api\\.spec: run the 'init' command`. Rebuild before relying on it.\n\n8. **No templating engine.** Any per-client format divergence (different frontmatter key sets per client, different file naming, different index shapes) currently has to be expressed either as (a) frontmatter baked into a rule's `body.md` — which makes the body client-specific and defeats sharing — or (b) new Rust rendering code. There is no `headers` / `front_matter` field in `RenderTarget`. **This is the single biggest structural gap for a multi-client design.**\n\n9. **Frontmatter lives in rule bodies, so it cannot vary per client from a shared fragment.** `skip_provenance_for_yaml_frontmatter` hoists the *first entry's* frontmatter. Two clients needing different frontmatter for the same guidance require two different first-entry rules.\n\n10. **No round-trip guarantee yet.** [spec a969562b](.spec/specs/a969562b-6920-4fa6-a757-d317e7d442df/body.md) (`rule-system/single-target-reverse-sync`, state `draft`) is the spec for `rule sync-rules` reverse-sync incl. frontmatter re-attachment — still draft, so edit-generated-file → sync-back is not a settled contract.\n\n11. **No Makefile.toml rule tasks.** `grep -n \"rule\" Makefile.toml` returns nothing. Rule sync is pre-commit + manual CLI only.\n\n12. **Ticket 23e81ad8 pulls the opposite direction** — \"Create canonical rule entries **and generation targets** for instruction files and slash-command prompt assets\" (`priority: high`, state `new`). It conflicts head-on with `f43cb5cb`/`76d0ace3`/`16cfd19f`. It must be reconciled or cancelled as part of re-scoping.\n\n13. **Dirty worktree right now.** `git status` shows modified `.agents/agents/handoff.agent.md`, `.agents/agents/iteration.agent.md`, `.agents/instructions/orchestration/model-routing.instructions.md`, `.agents/instructions/orchestration/orchestrator-delegation.instructions.md`, `.agents/prompts/iteration.prompt.md`, plus untracked `.agents/instructions/orchestration/model-prices.instructions.md` and `.agents/prompts/sync-model-prices.prompt.md`, and a dirty `memory-api` submodule pointer. Hand-edits are actively accumulating in the surfaces you'd want to re-generate.\n\n14. **UNKNOWN**: whether `viewer-api` and `memory-viewers` are git submodules with their own `.rule` stores that would need coordinated multi-client targets — `memory-api` shows as ` M memory-api` (submodule pointer change), so at least one is.",
+      "captured_at": "2026-07-27T18:58:42.970Z",
+      "event_meta": {
+        "event_id": "49aadfb6-ff01-4b4f-9f43-4e27f032a7a6",
+        "parent_event_id": "8b6743fa-4635-47c7-8478-b54da58ac6e3",
+        "event_type": "assistant.message",
+        "message_id": "63686bff-2229-499c-9a03-7bae85f17341",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "I have the full picture. Session handle: `0101b7ef` (workspace `default`).\n\n## Working understanding\n\n**What you want:** revive the rule/target system for a genuinely valuable use case — one canonical set of shared guidance fragments, rendered into *client-specific* files (Copilot vs OpenCode vs Cline vs …) via templates, installed on demand as part of repo setup.\n\n**What the research says:**\n\n- The multi-client precedent **already works**: [rule-targets/25-cline.yaml](rule-targets/25-cline.yaml) re-projects the *same* rule bodies that feed root [AGENTS.md](AGENTS.md) into four `.clinerules/*.md` files. That's exactly \"shared fragments → per-client output\".\n- The decommissioning you mentioned **already executed**: 846 lines of agent-guidance target config were deleted (`4b74311d`, `4697eb3f`, `a7810499`). `.agents/instructions|agents|prompts/**` now have **zero** provenance markers and are hand-owned. Tickets [f43cb5cb](.ticket/tickets/f43cb5cb-07dd-44c2-876b-8aceb2d841cb/ticket.toml), [76d0ace3](.ticket/tickets/76d0ace3-6e65-493d-9bef-fdc531081992/ticket.toml), [16cfd19f](.ticket/tickets/16cfd19f-f1bd-4008-a15d-84037511f8fc/ticket.toml) are state `new` but functionally done — only bookkeeping is open.\n- **The blocking structural gap:** there is *no templating engine* (zero handlebars/tera/minijinja/askama in any Cargo.toml), and `RenderTarget` has **no `front_matter`/`headers` field**. Frontmatter is smuggled inside the *first rule's* `body.md` and hoisted by `skip_provenance_for_yaml_frontmatter`. So today two clients needing different frontmatter for the same guidance require two different rule bodies — which defeats the entire sharing premise.\n- Frontmatter key sets actually differ per client: Copilot agents use `name`/`description`/`tools`/`argument-hint`/`user-invocable`; prompts use `description`/`agent`/`name`/`argument-hint`; instructions use `description` (+`applyTo` in 1 file); Cline uses **none**; OpenCode uses a single `instructions: [\".agents/instructions/INDEX.md\"]` pointer in [opencode.json](opencode.json).\n- Reconcilable blockers found: 109 generated-target state records in `.rule/entities/` with **machine-specific UNC paths** (`//?/C:/Users/linus/...`) baked into slugs; 17 pointing at a deleted config; 96 orphaned rule bodies (73 `.agent`, 17 `.prompt`, 6 `copilot-instructions`) now **drifted** vs the hand-edited files; the pre-commit gate at [.githooks/pre-commit](.githooks/pre-commit#L177) deliberately excludes `.agents/**`; and `sync_targets_payload` will **silently overwrite** a hand-owned file the first time you re-add a target for it. Ticket [23e81ad8](.ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml) already pulls in your new direction and conflicts head-on with the migration tickets.\n\nEight decisions block a clean ticket track.",
+      "captured_at": "2026-07-27T19:00:12.748Z",
+      "event_meta": {
+        "event_id": "453f2047-1d94-46d7-a298-7c17e0a529b9",
+        "parent_event_id": "b7d7a4e0-81af-43db-a3d2-09efa5beb0b6",
+        "event_type": "assistant.message",
+        "message_id": "34b6b651-e908-43a0-a8bb-dd478fe8f0e8",
+        "reasoning_text": "I'm working through the key architectural decision here: where should the canonical rule definitions live, and what gets committed versus generated? The main tension is between storing rules in `.rule/` as the source of truth while deciding whether client-specific outputs like agents and linter rules should be committed to the repo or generated fresh during installation.\n\nThen I need to nail down where per-client metadata lives—whether it's structured fields in the rule definition itself, kept alongside the prose content, or handled through a templating system. I'm also considering whether to introduce a real templating engine or keep things declarative, plus figuring out which clients to support in the first version and how the installation flow should work for different client configurations.\n\nThere's also the question of what to do with the in-flight work that's already been partially deleted—whether to close those tickets and build forward from the current state, or revert and reconcile. And I've got a bunch of orphaned rule bodies across different formats that need either re-importing from the canonical source, merging, or rewriting fresh. The scope for v1 needs to cover instructions, agents, prompts, skills, documentation, and various config formats, though overwrite protection and pre-commit hooks are more implementation details I can fold into the broader decisions.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_013ydRQxmNugCPKnYNXRoMuV",
+            "name": "vscode_askQuestions",
+            "arguments": {
+              "questions": [
+                {
+                  "header": "Ownership model",
+                  "question": "After this change, what is canonical and what is committed?",
+                  "message": "This is the highest-leverage decision — everything else follows from it.\n\n- **A** — `.rule/` stores become canonical. All client outputs (`.agents/**`, `.clinerules/**`, OpenCode artifacts) are generated. The repo's own default client (Copilot) stays **committed** so the repo works on clone; other clients are generated at install.\n- **B** — `.rule/` canonical, and **all** client outputs are gitignored, generated only at install time. Cleanest, but the repo has no working guidance until you run install.\n- **C** — `.agents/**` stays the hand-owned canonical source. The rule store *imports* from it and renders only the **other** clients (Cline, OpenCode, …). Lowest risk, no drift reconciliation, but keeps Copilot privileged.",
+                  "options": [
+                    {
+                      "label": "A — rule store canonical; Copilot output committed, other clients generated at install",
+                      "recommended": true
+                    },
+                    {
+                      "label": "B — rule store canonical; ALL client outputs gitignored + install-time only"
+                    },
+                    {
+                      "label": "C — .agents/** stays canonical source; render only the other clients from it"
+                    }
+                  ]
+                },
+                {
+                  "header": "Frontmatter location",
+                  "question": "Where should per-client frontmatter/metadata live, given it currently sits inside the first rule's body.md?",
+                  "message": "Today `skip_provenance_for_yaml_frontmatter` hoists the first entry's YAML block. That makes the body client-specific and blocks sharing.\n\n- **A** — Promote frontmatter to **structured metadata fields on the rule entry** (`rule.toml` gains `description`, `apply_to`, `tools`, `argument_hint`, `user_invocable`, …). `body.md` becomes pure prose. Each client profile renders its own frontmatter shape from that metadata.\n- **B** — Keep frontmatter in `body.md`, add per-client override blocks in the target config.\n- **C** — Neutral metadata on the entry **plus** per-client templates that read it (A + a templating engine).",
+                  "options": [
+                    {
+                      "label": "A — structured metadata on rule entries; body.md is pure prose"
+                    },
+                    {
+                      "label": "B — keep in body.md, add per-client overrides in target config"
+                    },
+                    {
+                      "label": "C — structured metadata + per-client templates read it",
+                      "recommended": true
+                    }
+                  ]
+                },
+                {
+                  "header": "Rendering mechanism",
+                  "question": "How should per-client output be rendered?",
+                  "message": "There is currently no templating engine anywhere in the workspace; rendering is `String::push_str` concatenation in `memory-api/crates/memory-api/src/generated_markdown.rs`.\n\n- **A** — Add a real templating engine (minijinja / tera / handlebars) with a `client-profiles/` directory of templates. Most flexible, new dependency, templates become a maintained surface.\n- **B** — Extend the target schema declaratively: add `front_matter` key-mapping + `output_layout` fields to `RenderTarget`. No new dependency, but expressiveness is capped at whatever you model.\n- **C** — Rust-coded client adapters (a `ClientProfile` trait with one impl per client). Type-safe, but adding a client means writing Rust.",
+                  "options": [
+                    {
+                      "label": "A — add a templating engine + template files per client",
+                      "recommended": true
+                    },
+                    {
+                      "label": "B — extend RenderTarget schema declaratively (no new dep)"
+                    },
+                    {
+                      "label": "C — Rust ClientProfile trait, one impl per client"
+                    }
+                  ]
+                },
+                {
+                  "header": "Client set v1",
+                  "question": "Which agent clients must the first implementation support?",
+                  "multiSelect": true,
+                  "options": [
+                    {
+                      "label": "GitHub Copilot / VS Code",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Cline (already working precedent)",
+                      "recommended": true
+                    },
+                    {
+                      "label": "OpenCode",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Claude Code"
+                    },
+                    {
+                      "label": "Cursor"
+                    },
+                    {
+                      "label": "Codex CLI"
+                    },
+                    {
+                      "label": "Windsurf / other"
+                    }
+                  ]
+                },
+                {
+                  "header": "Install UX",
+                  "question": "How should a user install guidance files for their chosen client?",
+                  "message": "There is currently **no** notion of installing guidance files — `install-tools.sh` / `install-deps.sh` / `install-extensions.sh` only handle binaries and deps.",
+                  "options": [
+                    {
+                      "label": "New `rule install --client <name>` subcommand on the existing rule CLI",
+                      "recommended": true
+                    },
+                    {
+                      "label": "New top-level `install-guidance.sh` matching the existing script family shape"
+                    },
+                    {
+                      "label": "Extend `install-tools.sh` with a guidance stage"
+                    },
+                    {
+                      "label": "Interactive client picker during setup"
+                    }
+                  ]
+                },
+                {
+                  "header": "Reconcile in-flight tickets",
+                  "question": "How should the already-executed decommissioning tickets be reconciled?",
+                  "message": "[14c0995c](.ticket/tickets/14c0995c-1113-46dc-b924-82f0175628fc/ticket.toml) (epic, isolated node) and children f43cb5cb / 76d0ace3 / 16cfd19f are `new` but the deletions **already landed in git**. Meanwhile [23e81ad8](.ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml) (`priority: high`) mandates the opposite.\n\n- **A** — Close 14c0995c + children as `done` (record reality), then build the new multi-client track forward on top, re-importing from today's hand-owned files. No git revert.\n- **B** — Revert the deleted target configs and resume generation from the old bodies.\n- **C** — Cancel the migration tickets as superseded and fold their scope into the new epic.",
+                  "options": [
+                    {
+                      "label": "A — close migration tickets as done; build forward, re-import from current files",
+                      "recommended": true
+                    },
+                    {
+                      "label": "B — revert the deleted rule-target configs"
+                    },
+                    {
+                      "label": "C — cancel migration tickets as superseded, fold into new epic"
+                    }
+                  ]
+                },
+                {
+                  "header": "Drifted rule bodies",
+                  "question": "What happens to the 96 orphaned rule bodies (73 `.agent`, 17 `.prompt`, 6 `copilot-instructions`) that no target consumes and that have drifted from the hand-edited files?",
+                  "options": [
+                    {
+                      "label": "Re-import from current hand-owned files as source of truth; discard stale bodies",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Diff and manually merge each drifted body"
+                    },
+                    {
+                      "label": "Delete the orphans and author fresh neutral fragments"
+                    }
+                  ]
+                },
+                {
+                  "header": "Surfaces in scope",
+                  "question": "Which output surfaces should the multi-client system generate in v1?",
+                  "multiSelect": true,
+                  "options": [
+                    {
+                      "label": "Instruction files (.agents/instructions/**)",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Agent files (.agents/agents/*.agent.md)",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Prompt files (.agents/prompts/*.prompt.md)",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Skill files (.agents/skills/*/SKILL.md)"
+                    },
+                    {
+                      "label": "Root AGENTS.md + .github/copilot-instructions.md",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Client entry config (opencode.json, .vscode/settings.json wiring)"
+                    },
+                    {
+                      "label": "Hook manifests (.github/hooks, .clinerules/hooks)"
+                    }
+                  ]
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Decisions recorded. Option **B** (all outputs gitignored, install-time only) is the most aggressive choice and it unblocks — but also creates — a second tier of decisions I need before the ticket track is safe to write.\n\nFour consequences that need resolution:\n\n- **Bootstrap paradox.** A fresh clone would have *no* guidance until `install-guidance` runs. This repo's own agents (including this session) read [.agents/instructions/](.agents/instructions/), and `AGENTS.md` is a de-facto external convention that tools expect to find in a clone.\n- **Untracking cost.** `.agents/**` is ~197 tracked markdown files today. Going gitignored means a large `git rm --cached` and permanent loss of per-file git history on guidance.\n- **Editing loop.** Once outputs are generated, editing a generated file is meaningless. The reverse-sync contract ([spec a969562b](.spec/specs/a969562b-6920-4fa6-a757-d317e7d442df/body.md), `rule-system/single-target-reverse-sync`) is still `draft` — so \"edit file → sync back to rule\" is not a settled contract yet.\n- **Vendored skills.** You want install-guidance to also drive [skills-lock.json](skills-lock.json) vendoring, which is a fetch-from-GitHub mechanism, not a render mechanism.",
+      "captured_at": "2026-07-27T20:42:31.982Z",
+      "event_meta": {
+        "event_id": "d85e622d-7e70-4d1b-b674-cc29d70a7ec8",
+        "parent_event_id": "e0544c41-0d55-4916-b374-dcc3459869e9",
+        "event_type": "assistant.message",
+        "message_id": "f9c09f5f-a791-46a8-b81b-c0d13c79e7c9",
+        "reasoning_text": "I'm settling on Option B as the most aggressive approach, but it creates a bootstrap problem: if `.agents/**` is gitignored, a fresh clone won't have any agent instructions until the install runs, which breaks the workflow since agents need those files from the start. I need to figure out how to either run the install guidance during setup or provide a fallback bootstrap mechanism.\n\nBeyond that, there's the question of how agents actually edit their guidance when everything's generated — they'd need to either modify the rule store directly or edit the generated file and reverse-sync it back. I also need to decide whether to gitignore the entire `.agents/` directory plus `AGENTS.md` at the root, which is a massive deletion and breaks external tool references. The install command should handle vendored skills too, and I'm leaning toward minijinja for the templating engine since it's lightweight and uses familiar Jinja syntax. Finally, I need to spec out what configuration options the install subcommand should expose for controlling which surfaces get set up.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01BLXgC4RMg4AaRc1tDa8T73",
+            "name": "vscode_askQuestions",
+            "arguments": {
+              "questions": [
+                {
+                  "header": "Bootstrap exemption",
+                  "message": "Under strict option B these would be gitignored too, leaving a fresh clone with zero guidance.\n\n- **A** — Exempt them: `AGENTS.md` + `.github/copilot-instructions.md` stay committed (generated, but tracked) as the bootstrap layer. Everything else is install-time only.\n- **B** — Strict: everything gitignored. Setup docs in `README.md` tell you to run install first.\n- **C** — Commit a minimal hand-owned bootstrap stub that only says \"run `install-guidance.sh`\", and generate the real content on top.",
+                  "options": [
+                    {
+                      "label": "A — exempt AGENTS.md + copilot-instructions.md; keep them committed",
+                      "recommended": true
+                    },
+                    {
+                      "label": "B — strict: everything gitignored, README tells you to install first"
+                    },
+                    {
+                      "label": "C — commit a minimal bootstrap stub pointing at the installer"
+                    }
+                  ],
+                  "question": "Should root AGENTS.md and .github/copilot-instructions.md be exempt from gitignore so a fresh clone still has guidance?"
+                },
+                {
+                  "header": "Authoring loop",
+                  "message": "This determines whether reverse-sync becomes a hard prerequisite of the whole track.\n\n- **A** — Rule store is the only write surface. Guidance is edited via `rule create`/`rule update` (or the rule viewer), then re-rendered. Generated files are strictly read-only. Simplest contract, but every guidance tweak now needs a CLI/MCP call instead of editing markdown.\n- **B** — Edit the generated file, then `rule sync-rules` reverse-syncs it back into the rule store. Keeps the ergonomic markdown-editing workflow, but promotes [a969562b](.spec/specs/a969562b-6920-4fa6-a757-d317e7d442df/body.md) from draft to a **hard blocker** for this track, including frontmatter round-trip.\n- **C** — A dedicated `source/` tree of neutral markdown fragments is the human-editable surface; the rule store indexes it and templates render from it.",
+                  "options": [
+                    {
+                      "label": "A — rule store is the only write surface; generated files strictly read-only"
+                    },
+                    {
+                      "label": "B — edit generated file + `rule sync-rules` reverse-sync (makes a969562b a hard blocker)",
+                      "recommended": true
+                    },
+                    {
+                      "label": "C — a human-editable neutral `source/` fragment tree feeds the rule store"
+                    }
+                  ],
+                  "question": "Once outputs are generated, how does a human or agent actually change guidance content?"
+                },
+                {
+                  "header": "Templating engine",
+                  "message": "All are pure-Rust. Sandboxed = no filesystem/network escape from a template.",
+                  "options": [
+                    {
+                      "label": "minijinja — Jinja2 syntax, tiny, no transitive deps, sandboxed",
+                      "recommended": true
+                    },
+                    {
+                      "label": "tera — Jinja-like, richer built-ins, heavier dep tree"
+                    },
+                    {
+                      "label": "handlebars — logic-less, familiar, weaker at conditionals"
+                    },
+                    {
+                      "label": "askama — compile-time typed templates (templates become part of the build, not data)"
+                    }
+                  ],
+                  "question": "Which Rust templating engine?"
+                },
+                {
+                  "header": "Install config",
+                  "message": "You said the install configuration should be configurable from the CLI subcommand — this decides where the *persisted* selection lives so re-running install is reproducible.\n\n- **A** — A committed `guidance-install.toml` declaring available clients, surfaces, and vendored skills; CLI flags override per-run.\n- **B** — CLI flags only; no persisted state. Re-running requires retyping the same flags.\n- **C** — CLI flags write a gitignored local `.guidance-install.toml` lockfile so re-runs and CI are reproducible.\n- **D** — Committed manifest of what's *available* + gitignored lockfile of what *this machine selected* (A + C).",
+                  "options": [
+                    {
+                      "label": "D — committed availability manifest + gitignored per-machine selection lockfile",
+                      "recommended": true
+                    },
+                    {
+                      "label": "A — single committed `guidance-install.toml`, CLI flags override"
+                    },
+                    {
+                      "label": "C — CLI flags write a gitignored local lockfile"
+                    },
+                    {
+                      "label": "B — CLI flags only, no persisted state"
+                    }
+                  ]
+                },
+                {
+                  "header": "Untracking strategy",
+                  "options": [
+                    {
+                      "label": "Phased — one surface per ticket (instructions → agents → prompts → skills), each independently revertible",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Big bang — single commit untracks all `.agents/**` once the generator is proven"
+                    },
+                    {
+                      "label": "Dual-run — generate to a shadow path, diff against tracked files until byte-identical, then untrack"
+                    }
+                  ],
+                  "question": "How should the ~197 currently-tracked guidance files be moved to gitignored?"
+                },
+                {
+                  "header": "Validation gate",
+                  "options": [
+                    {
+                      "label": "Golden-file test: render each client profile, assert byte-identical to a checked-in fixture snapshot",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Round-trip test: render → sync-rules → re-render, assert idempotent",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Live client smoke test: install for each client, launch it, confirm guidance loads"
+                    },
+                    {
+                      "label": "Drift gate in pre-commit: fail if rule store and rendered fixtures disagree",
+                      "recommended": true
+                    }
+                  ],
+                  "multiSelect": true,
+                  "question": "What proves the multi-client rendering is correct before we untrack anything?"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Creating the spec and the full ticket track.",
+      "captured_at": "2026-07-27T20:58:52.017Z",
+      "event_meta": {
+        "event_id": "b88cc323-9e7e-4036-8b6a-6b4b841556d8",
+        "parent_event_id": "7534cac4-d8ab-4c0a-b75d-93a4f5b7e5b8",
+        "event_type": "assistant.message",
+        "message_id": "1681d2f9-257a-46cb-8f5e-ebd8aec19a81",
+        "reasoning_text": "I'll use a shell script with heredocs to define all the ticket descriptions and creation commands in one file—that way I can minimize API calls and make debugging easier. Let me write that out now.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01SJne9CfNWkWPgxju9D1o4Y",
+            "name": "create_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\tmp\\guidance-track\\spec-body.md",
+              "content": "# Multi-Client Guidance Rendering\n\n## Problem\n\nThe repository maintains agent-facing guidance (instructions, agent definitions, prompts, skills, root guidance) as hand-owned markdown under `.agents/**`, `AGENTS.md`, and `.github/copilot-instructions.md`. Every additional agent client (Cline, OpenCode, and future clients) needs the *same* guidance expressed in a *different* container format: different frontmatter key sets, different file layout, different discovery entry point.\n\nMaintaining N near-identical copies that differ only by consumer protocol is unsustainable. The rule system already solves the hard part — canonical fragments with deterministic composition — and `.clinerules/` proves the projection works. What is missing is the ability to vary the *rendering* per client.\n\n## Prior Decision Reversal\n\nAn earlier effort (ticket `14c0995c` and children) decoupled `.agents/**` from the rule generator because the rule-target system added complexity without eliminating meaningful duplication. That deletion has already landed: 846 lines of agent-guidance target config were removed and all provenance markers stripped.\n\nThat judgement was correct **for single-client rendering**. It does not hold for multi-client rendering, which is the use case this spec covers. This spec supersedes that direction rather than reverting it: the track builds forward from today's hand-owned files as the import source.\n\n## Structural Gap\n\nThree properties block a multi-client design today:\n\n1. **No templating engine.** Rendering is `String::push_str` concatenation in `memory-api/crates/memory-api/src/generated_markdown.rs`. No handlebars/tera/minijinja/askama dependency exists anywhere in the workspace.\n2. **No front-matter field on `RenderTarget`.** The resolved target model carries only `repo_scope`, `file_kind`, `path_scope`, `section`, `state`, `nodes`, `output_path`.\n3. **Front matter lives inside rule bodies.** `skip_provenance_for_yaml_frontmatter` hoists the *first matched entry's* YAML block above the provenance comment. This makes the shared fragment client-specific, which defeats the entire premise: two clients needing different frontmatter for the same guidance require two different rule bodies.\n\n## Confirmed Decisions\n\n| Decision | Resolution |\n| --- | --- |\n| Canonical source | The `.rule/` stores. All client outputs are generated. |\n| Committed vs generated | All client outputs are gitignored and produced at install time. Root `AGENTS.md` is the sole exemption. |\n| Bootstrap layer | `AGENTS.md` stays committed and directs the reader to committed install instructions. |\n| Front-matter location | Structured metadata fields on the rule entry; `body.md` becomes pure prose. |\n| Rendering mechanism | A Rust templating engine (`minijinja`) plus per-client template files that read the structured metadata. |\n| Client set (v1) | GitHub Copilot / VS Code, Cline, OpenCode. |\n| Install surface | Both a `rule install --client <name>` subcommand and a top-level `install-guidance.sh` convenience wrapper. |\n| Install configuration | A committed availability manifest plus a gitignored per-machine selection lockfile. Surfaces are CLI-configurable. |\n| Authoring loop | Edit the generated file, then `rule sync-rules` reverse-syncs it back into the store. |\n| Prior decommissioning tickets | Closed as done; the new track builds forward. |\n| Drifted rule bodies | Current hand-owned files are re-imported as the source of truth; the 96 stale orphans are retired. |\n| Untracking strategy | Big-bang: a single commit untracks `.agents/**` once the generator is proven. |\n\n## Scope\n\nGenerated surfaces in v1:\n\n- Instruction files (`.agents/instructions/**`)\n- Agent definitions (`.agents/agents/*.agent.md`)\n- Prompt files (`.agents/prompts/*.prompt.md`)\n- Skill files (`.agents/skills/*/SKILL.md`), including vendored-skill installation\n- Root `AGENTS.md` and `.github/copilot-instructions.md`\n- Client entry config (`opencode.json` instructions pointer, `.vscode/settings.json` discovery wiring)\n- Hook manifests (`.github/hooks/`, `.clinerules/hooks/`)\n\n## Non-Goals\n\n- Reverting the deleted rule-target configs. The track re-imports from current files instead.\n- Supporting clients beyond Copilot, Cline, and OpenCode in v1.\n- Replacing `skills-lock.json` as the vendoring mechanism; it is invoked by the installer, not superseded.\n- Machine-specific absolute path addressing anywhere in generated-target state.\n\n## Architecture\n\n```\n.rule/ stores  ──(structured metadata + prose body)──┐\n                                                      │\nguidance-install.toml (availability manifest)         │\n        │                                             ▼\n        ├──> rule install --client <name> ──> minijinja client profile\n        │                                             │\n        └──> .guidance-install.lock (per machine)      ▼\n                                          gitignored client outputs\n                                          (.agents/**, .clinerules/**,\n                                           opencode.json, hooks, skills)\n```\n\nReverse path: edit a generated file, then `rule sync-rules` parses provenance markers, re-attaches structured metadata, and writes back to the owning rule entry.\n\n## Acceptance Criteria\n\n1. A single canonical rule fragment renders correctly into Copilot, Cline, and OpenCode output without any client-specific text stored in the fragment body.\n2. Frontmatter is produced by the client profile from structured rule-entry metadata, not hoisted from a body.\n3. `rule install --client <name>` materializes every selected surface for that client, and re-running is idempotent.\n4. `install-guidance.sh` provides the same capability through the existing install-script family shape.\n5. Golden-file fixtures for each client profile render byte-identical.\n6. Render → `sync-rules` → re-render is idempotent, including structured metadata.\n7. A pre-commit drift gate fails when the rule store and rendered fixtures disagree.\n8. Each of the three clients loads its installed guidance in a live smoke test.\n9. No generated-target state record contains a machine-specific absolute path.\n10. `sync-targets` refuses to overwrite a marker-free file without an explicit force flag.\n11. A fresh clone contains `AGENTS.md`, which directs the reader to install instructions; all other guidance surfaces are absent until install runs.\n\n## Validation Plan\n\n- Golden-file snapshot tests per client profile per surface.\n- Round-trip idempotence test over the full store.\n- Pre-commit drift gate covering rule store versus rendered fixtures.\n- Live client smoke test for Copilot, Cline, and OpenCode.\n- Fresh-clone bootstrap test: clone, confirm only `AGENTS.md` is present, run the installer, confirm all surfaces materialize.\n\n## Risks\n\n| Risk | Mitigation |\n| --- | --- |\n| `sync-targets` silently overwrites hand-owned files on first re-adoption | Overwrite protection ticket lands before any target is re-added |\n| Reverse-sync is still a draft contract but is now load-bearing | Reverse-sync is an explicit hard blocker of the untracking cutover |\n| Big-bang untracking loses per-file guidance git history | Untracking is gated behind byte-identical golden fixtures and the drift gate |\n| 96 drifted orphan rule bodies conflict with current file content | Current files win; orphans are retired in a dedicated reconciliation ticket |\n| Template files become an unmaintained surface | Golden fixtures cover every profile/surface pair |\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "## Topic and anchor\n\n**Topic:** revive the rule system as a multi-client guidance rendering pipeline, with install-time materialization.\n\n**Anchor spec:** [43b9a6ac Multi-Client Guidance Rendering](.spec/specs/43b9a6ac-89d6-479a-876b-3d1a5e2d39e6/body.md) — slug `rule-system/multi-client-guidance-rendering`, component `rule-api`, state `draft`.\n\n**Anchor epic:** [9c1de000 [guidance] Multi-client guidance rendering and install-time materialization](.ticket/tickets/9c1de000-0000-4000-8000-000000000000/ticket.toml)\n\n**Session handle:** `0101b7ef-e717-4c94-bebd-c8d55f6aaa82` (run `5bb19c77`), both entities pinned.\n\n## Confirmed decisions\n\n| Question | Answer |\n| --- | --- |\n| Canonical source | `.rule/` stores; all client outputs generated |\n| Committed vs generated | All outputs gitignored, install-time only — `AGENTS.md` the sole exemption, pointing at committed install instructions |\n| Frontmatter location | Structured metadata on rule entries + per-client templates that read it |\n| Rendering | Rust templating engine as a dependency — **minijinja** — plus per-client template files |\n| Clients v1 | Copilot/VS Code, Cline, OpenCode |\n| Install UX | Both `rule install --client <name>` **and** `install-guidance.sh` |\n| Install config | Committed availability manifest + gitignored per-machine selection lockfile; surfaces CLI-configurable |\n| Authoring loop | Edit generated file → `rule sync-rules` reverse-sync (promotes [a969562b](.spec/specs/a969562b-6920-4fa6-a757-d317e7d442df/body.md) to a hard blocker) |\n| Prior decommissioning | Close as done, build forward |\n| Drifted bodies | Current files are source of truth; 96 orphans retired |\n| Untracking | Big bang, once the generator is proven |\n| Surfaces | Instructions, agents, prompts, skills, root guidance, client entry configs, hook manifests — plus vendored skills |\n| Validation | All four gates: golden fixtures, round-trip idempotence, pre-commit drift gate, live client smoke test |\n\n## Track materialized\n\n**26 tickets, 6 phases, health check clean (0 findings), acyclic.** Five actionable entry points today: [01](.ticket/tickets/9c1de000-0000-4000-8000-000000000001/ticket.toml), [03](.ticket/tickets/9c1de000-0000-4000-8000-000000000003/ticket.toml), [04](.ticket/tickets/9c1de000-0000-4000-8000-000000000004/ticket.toml), [07](.ticket/tickets/9c1de000-0000-4000-8000-000000000007/ticket.toml), [12](.ticket/tickets/9c1de000-0000-4000-8000-000000000012/ticket.toml). `ticket next` ranks [04 Re-import current guidance files as canonical rule bodies](.ticket/tickets/9c1de000-0000-4000-8000-000000000004/ticket.toml) first — it unblocks 20 transitive dependents.\n\n```mermaid\nflowchart LR\n  subgraph P0[\"Phase 0 — Reconciliation\"]\n    T01[01 Close decommissioning tickets]\n    T03[03 Purge machine-specific paths]\n    T04[04 Re-import current files]\n    T02[02 Re-scope 23e81ad8]\n  end\n  subgraph P1[\"Phase 1 — Neutral model\"]\n    T05[05 Structured metadata schema] --> T06[06 Frontmatter out of body.md]\n  end\n  subgraph P2[\"Phase 2 — Templating\"]\n    T07[07 minijinja + sandbox] --> T08[08 Client-profile model]\n    T08 --> T09[09 Copilot profile]\n    T08 --> T10[10 Cline profile]\n    T08 --> T11[11 OpenCode profile]\n  end\n  subgraph P3[\"Phase 3 — Install\"]\n    T12[12 Manifest + lockfile] --> T13[13 rule install --client]\n    T13 --> T14[14 install-guidance.sh]\n    T13 --> T15[15 Vendored skills]\n    T13 --> T16[16 Entry configs + hooks]\n  end\n  subgraph P4[\"Phase 4 — Reverse sync\"]\n    T17[17 sync-rules round-trip]\n    T18[18 Overwrite protection]\n  end\n  subgraph P5[\"Phase 5 — Validation\"]\n    T19[19 Golden fixtures] --> T20[20 Round-trip idempotence]\n    T20 --> T21[21 Drift gate]\n    T22[22 Live client smoke test]\n  end\n  subgraph P6[\"Phase 6 — Cutover\"]\n    T23[23 Bootstrap AGENTS.md] --> T24[24 Big-bang untrack]\n    T24 --> T25[25 Docs cutover]\n  end\n  T04 --> T05\n  T06 --> T08\n  T06 --> T17\n  T03 --> T18\n  T18 --> T13\n  T09 --> T13\n  T09 --> T19\n  T17 --> T20\n  T18 --> T21\n  T14 --> T22\n  T14 --> T23\n  T21 --> T24\n  T22 --> T24\n  T08 --> T02\n```\n\n## Blockers reconciled ahead of time\n\nEach is now owned by a specific ticket rather than waiting to ambush implementation:\n\n- **Silent data loss.** `sync_targets_payload` will overwrite a marker-free hand-owned file on first sync. Re-adding targets for ~197 hand-owned files makes this live, so [18 Overwrite protection](.ticket/tickets/9c1de000-0000-4000-8000-000000000018/ticket.toml) is now a **hard prerequisite of `rule install`**, not a later hardening pass.\n- **Machine-specific committed state.** 109 generated-target records carry `//?/C:/Users/linus/...` paths *inside their slugs*; 17 point at a config deleted in `4697eb3f`; 50 are directory-form duplicates. Owned by [03](.ticket/tickets/9c1de000-0000-4000-8000-000000000003/ticket.toml).\n- **Ticket-store lies.** Four tickets claim pending work that already landed. Owned by [01](.ticket/tickets/9c1de000-0000-4000-8000-000000000001/ticket.toml); the contradictory [23e81ad8](.ticket/tickets/23e81ad8-b67c-49af-97b5-f90f8bb0ae2c/ticket.toml) is absorbed by [02](.ticket/tickets/9c1de000-0000-4000-8000-000000000002/ticket.toml).\n- **Dirty worktree during import.** [04](.ticket/tickets/9c1de000-0000-4000-8000-000000000004/ticket.toml) explicitly requires a clean committed tree — otherwise the seven currently-uncommitted `.agents/**` edits get silently baked into canonical bodies.\n- **Stale `rule.exe`.** `sync-targets --check` currently fails with `workspace not initialized at rule-targets/../memory-api\\.spec`. Called out as a first step in [13](.ticket/tickets/9c1de000-0000-4000-8000-000000000013/ticket.toml).\n- **Pre-commit narrowing.** [.githooks/pre-commit](.githooks/pre-commit#L177) deliberately excludes `.agents/**`. [21](.ticket/tickets/9c1de000-0000-4000-8000-000000000021/ticket.toml) re-widens it — and, because outputs become gitignored, redirects the gate to compare *rule store against fixtures* rather than against working-tree files.\n- **Template sandboxing.** [07](.ticket/tickets/9c1de000-0000-4000-8000-000000000007/ticket.toml) requires minijinja's sandbox plus profile-root path validation, with tests proving filesystem/network access and path traversal both fail.\n- **Vendored-skill supply chain.** [15](.ticket/tickets/9c1de000-0000-4000-8000-000000000015/ticket.toml) mandates HTTPS-only fetch, `computedHash` verification, and no execution of fetched content.\n- **Config clobbering.** [16](.ticket/tickets/9c1de000-0000-4000-8000-000000000016/ticket.toml) requires JSON *merge* semantics so `opencode.json`'s hand-maintained `mcp` block and unrelated `.vscode/settings.json` keys survive regeneration.\n\n## Open decisions\n\nTwo remain unresolved, both scoped inside their tickets rather than blocking the track:\n\n1. **OpenCode's agent/prompt/skill frontmatter contract is not evidenced in this repo** — only the single `instructions` pointer in [opencode.json](opencode.json) is. [11](.ticket/tickets/9c1de000-0000-4000-8000-000000000011/ticket.toml) must confirm against OpenCode docs before finalizing templates.\n2. **`.github/copilot-instructions.md` is not exempt** under your bootstrap answer, so a fresh clone has no Copilot entry point until install runs. [23](.ticket/tickets/9c1de000-0000-4000-8000-000000000023/ticket.toml) requires this to be explicitly documented — flag now if you'd rather exempt it too.\n\nAlso worth noting: [24 Big-bang untrack](.ticket/tickets/9c1de000-0000-4000-8000-000000000024/ticket.toml) permanently ends per-file git history for ~197 guidance files. I marked it as requiring explicit confirmation at execution time.\n\n## Resume pointer\n\nSession `0101b7ef`, run `5bb19c77`. Next action: start [04 Re-import current guidance files as canonical rule bodies](.ticket/tickets/9c1de000-0000-4000-8000-000000000004/ticket.toml) — but commit the seven pending `.agents/**` edits first, or the import captures uncommitted work as canon.",
+      "captured_at": "2026-07-27T21:04:03.933Z",
+      "event_meta": {
+        "event_id": "a8215b43-d616-4320-8e52-ef5643ec99dc",
+        "parent_event_id": "ac3a0ada-b67b-4ef1-ab26-19aa8d57e412",
+        "event_type": "assistant.message",
+        "message_id": "9cbc94bc-5e87-4f76-893d-67b3fe6dad20",
+        "reasoning_text": "I'll leave the tmp script as-is since it's just scratch work, and the transcript folder I created earlier is a legitimate artifact. Now I need to compile the report following the Interview Agent format: topic, anchor, understanding, questions asked, confirmed answers, open decisions, resume pointer, and recommended follow-up.\n\nThe key open decisions still pending are OpenCode's agent/prompt/skill frontmatter contract, whether .github/copilot-instructions.md is properly gitignored, the clean-tree requirement before import, and the stale rule.exe build — all flagged in tickets. Ticket paths follow the pattern .ticket/tickets/<uuid>/ticket.toml, and specs are at .spec/specs/<uuid>/body.md. Let me write out the final report now.",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
