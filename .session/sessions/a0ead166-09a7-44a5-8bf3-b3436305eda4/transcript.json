@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "session_id": "a0ead166-09a7-44a5-8bf3-b3436305eda4",
+  "captured_at": "2026-07-27T02:43:49.837Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "- **Track:** Epic `e342cc4c` — \"Token-optimized default agent tool suite: peek + compact-terminal + design call for edit/filesystem/search tools\"\r\n- **Phase outcomes:**\r\n  - Review: pass\r\n  - Interview: escalations resolved (3 sequencing questions resolved; zero remaining)\r\n  - Commit: committed\r\n  - Handoff: forward (authored as text artifact — session_handoff MCP unavailable)\r\n- **Review findings:**\r\n  - Inventory accuracy → pass\r\n  - Gap 1 (file editing/differential patching) → pass (confirmed absent)\r\n  - Gap 2 (filesystem operations) → pass (confirmed absent)\r\n  - Gap 3 (repo-wide bounded search) → pass (confirmed absent)\r\n  - Design-call sufficiency → pass\r\n  - Spec linkage (SPEC-PEEK ↔ epic) → not found (textual reference only; no ticket↔spec edge tool exists)\r\n- **Ticket transitions:**\r\n  - Epic `e342cc4c`: `new` → `ready`\r\n  - Spec `3ccdde3a` (`agent-tooling/peek-api`): `draft` → `reviewed` → `approved`\r\n- **Commits:** `18891c2e` — \"chore(agent-tooling): promote peek-api spec to approved; mark tool-suite epic ready after review\"\r\n- **Handoff package:** /tmp/handoff-tool-suite-design-call.md (text artifact, session MCP unavailable) — objective: translate the epic from `ready` into a design doc, four new `agent-tooling` specs, and four linked child implementation tickets.\r\n- **Next actions:**\r\n  1. Author the design doc covering all five tool categories (read/execute/edit/filesystem/search).\r\n  2. Create specs for `compact-terminal`, file editing, filesystem operations, and repo-wide search (state ≥ draft).\r\n  3. Create and link four child implementation tickets to `e342cc4c`.\r\n  4. Verify MCP tool naming against mcp.json / mcp.json.\r\n  5. Update orchestration guidance files to reference the suite as the default delegated-agent path.\r\n  6. Follow-up tooling gap: no ticket↔spec edge type exists yet — flag for future MCP surface enhancement if traceability edges are needed.",
+      "captured_at": "2026-07-27T02:35:14.386Z",
+      "event_meta": {
+        "event_id": "344bb94e-5aeb-4a67-9571-12d2e5e14eef",
+        "parent_event_id": "ec55f8b3-80d4-462c-bfda-b09a37516ba7",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I'll load the spec and ticket tools, then gather the current state.",
+      "captured_at": "2026-07-27T02:35:20.083Z",
+      "event_meta": {
+        "event_id": "dbb441ee-f221-476b-83a4-a5b74556e733",
+        "parent_event_id": "3e2ebde8-def3-4239-be85-99112b9429c4",
+        "event_type": "assistant.message",
+        "message_id": "34c3027b-4dcc-421e-ad9d-8590339c0fef",
+        "reasoning_text": "I'm gathering the necessary tools and context by loading the spec-mcp and ticket-mcp resources, then reviewing the handoff artifact to understand what I'm working with.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01X8cKisDMSxnQE9Nhbcvd3z",
+            "name": "tool_search",
+            "arguments": {
+              "query": "spec create update get list, ticket create add_edge get list"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_014YxsPc1BjhmrzCrPjfTTQx",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls memory-api/tools/mcp/ && echo \"---CLI---\" && ls memory-api/tools/cli/ && echo \"---CRATES---\" && ls memory-api/crates/ 2>/dev/null | head -40",
+              "explanation": "Inventory the existing tool suite layout referenced by the handoff.",
+              "goal": "Verify tool suite paths",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Context gathered. Creating the parent design-call spec first.",
+      "captured_at": "2026-07-27T02:37:04.133Z",
+      "event_meta": {
+        "event_id": "1d855287-d71b-4d63-85ef-f1062b5014b6",
+        "parent_event_id": "d2bdf89f-f30f-4793-843e-db4c32452826",
+        "event_type": "assistant.message",
+        "message_id": "d09d6c39-6258-4355-a88b-93bb879c0a68",
+        "reasoning_text": "I'm working through the deliverables now. For the design document, I'll create a parent spec under `agent-tooling/default-tool-suite` that contains the design doc covering the five categories—this keeps it in a durable location and satisfies the requirement of having it linked from the epic.\n\nThe structure will be: one parent design spec plus four child specs for compact-terminal, file-editing, filesystem-operations, and repo-wide-search. I also need to verify the MCP naming (found that compact-terminal-mcp is missing from agent templates) and create four child tickets linked to the epic via depends_on edges.\n\nI'm hitting a cost gate issue with spec_get being blocked, so spec_create might also fail—I'll try the MCP call first, but have the CLI fallback ready if needed. Let me draft the design doc body and attempt the spec creation.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01DH8WsiB1pDU7Qq4PbkGRRY",
+            "name": "mcp_spec-mcp_spec_create",
+            "arguments": {
+              "caller_model": "claude-opus-5",
+              "component": "agent-tooling",
+              "scope": "internal",
+              "slug": "agent-tooling/default-tool-suite",
+              "title": "Default agent tool suite: five token-bounded tool categories",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "body": "# agent-tooling/default-tool-suite\n\nDesign call for epic `e342cc4c-a7a4-42de-81fc-572d0497d12b`.\n\n## Goal\n\nDefine one coherent suite of token-bounded default agent tools covering five\ncategories -- read, execute, edit, filesystem, search -- so that every agent,\nincluding delegated sub-agents that inherit no orchestrator context, has a\ncompact-by-default path for each category reachable through the workspace\nagent-template MCP wildcards.\n\n## Problem\n\nTwo of the five categories are implemented (`peek` for read, `compact-terminal`\nfor execute). The other three have no token-bounded MCP surface, so sub-agents\nfall back to unbounded built-in `edit`, filesystem, and `search` tools. Because\neach delegated spawn is a full agent loop with no inherited context, unbounded\nfallbacks cancel out the token savings that motivated the delegation.\n\n## Shared Contract (all five categories)\n\nEvery suite tool must satisfy the following, regardless of category:\n\n1. **Behavior lives in an `*-api` crate.** `*-cli` and `*-mcp` stay thin\n   transports over one request/response model and one error model. This is the\n   layering already established by `agent-tooling/peek-api`.\n2. **Bounded by default, unbounded by explicit opt-out.** The default response\n   is a bounded window or a summary. Any full/unbounded mode is named so the\n   cost is visible in command history (the `peek --all` precedent).\n3. **Coordinates before content.** Responses lead with addressing information\n   (line numbers, paths, counts, match offsets) so a follow-up call can request\n   exactly the needed slice instead of re-reading everything.\n4. **Spill-and-peek for oversized payloads.** When output exceeds the inline\n   budget, persist the full payload to a transient file and return a preview\n   plus a handle; provide a windowed/grep reader over that handle. This is the\n   `compact-terminal-mcp` `run` / `read_spill` precedent.\n5. **Compact encoding.** Prefer TOON over JSON for machine-readable output where\n   the transport supports it.\n6. **Registered and reachable.** Each MCP server is registered in both\n   `.vscode/mcp.json` and `.github/mcp.json` behind `mcp-cost-gate`, AND named\n   in the `tools:` wildcard list of the agent templates under `.agents/agents/`.\n   Registration without a template wildcard leaves the tool unreachable for\n   delegated agents.\n\n## The Five Categories\n\n### 1. Read -- `peek` (implemented)\n\n- `memory-api/crates/peek-api`, `memory-api/tools/cli/peek-cli`,\n  `memory-api/tools/mcp/peek-mcp`.\n- Tools: `peek_read`, `peek_grep`, `peek_count`, `peek_skeleton`.\n- Spec: `agent-tooling/peek-api` (`3ccdde3a-368c-4655-a6c8-20a58822c83d`, approved).\n- Status: contract satisfied. Serves as the reference implementation for the\n  `*-api` layering rule.\n\n### 2. Execute -- `compact-terminal` (implemented, spec gap)\n\n- `memory-api/tools/mcp/compact-terminal-mcp`.\n- Tools: `run`, `read_spill`.\n- Gap: MCP-only. No `compact-terminal-api` crate and no CLI transport, so the\n  spill/preview behavior is not reusable outside MCP and diverges from the\n  layering rule. No spec existed before this design call.\n- Follow-on spec: `agent-tooling/compact-terminal`.\n\n### 3. Edit -- differential patching (gap)\n\n- No MCP surface exists. Sub-agents either rewrite whole files or rely on the\n  built-in `edit` tool, whose contract is not owned by this repository.\n- Required contract: context-anchored replacement (match on surrounding context\n  rather than line numbers), multi-edit batching in a single call, and a\n  precondition failure mode that reports ambiguity rather than guessing.\n- Follow-on spec: `agent-tooling/file-editing`.\n\n### 4. Filesystem -- bounded operations (gap)\n\n- No MCP surface exists. Directory listing, stat, move, rename, and delete are\n  done through raw shell, which returns unbounded output and has no shared\n  conflict/error model.\n- Required contract: bounded listing with depth and entry caps, stat without\n  content, and mutating operations with explicit conflict detection.\n- Follow-on spec: `agent-tooling/filesystem-operations`.\n\n### 5. Search -- repo-wide bounded search (gap)\n\n- `peek_grep` is single-file only. Repo-wide search falls back to raw `grep`,\n  `rg`, or `semantic_search`, all of which can return unbounded hit sets.\n- Required contract: repo-root-scoped search with a match cap, per-match context\n  window, path include/exclude filters, and a \"counts only\" mode for triage\n  before any content is returned.\n- Follow-on spec: `agent-tooling/repo-wide-search`.\n\n## Transport Layering Decision\n\nAll three gap categories follow the `peek` pattern:\n\n```\n<name>-api   (crate: behavior, validation, error model)\n  |- <name>-cli   (thin CLI transport; fallback when MCP is unavailable)\n  `- <name>-mcp   (thin MCP transport; named tools, one per operation)\n```\n\n`compact-terminal` is retrofitted to the same shape as a follow-on, not as a\nprerequisite: its current MCP-only implementation stays behaviorally stable\nwhile the spec records the layering debt.\n\n## Non-goals\n\n- Reimplementing `peek` or `compact-terminal` behavior.\n- Changing user-facing semantics of existing `peek-cli` modes.\n- Replacing VS Code built-in editing and terminal tools for interactive human use.\n\n## Acceptance Criteria\n\n1. Each of the five categories has a spec under the `agent-tooling` component at\n   state `draft` or higher.\n2. Each gap category (edit, filesystem, search) has a child implementation\n   ticket linked to epic `e342cc4c` by a `depends_on` edge.\n3. Every suite MCP server name in `.vscode/mcp.json` and `.github/mcp.json`\n   matches the wildcard entries in `.agents/agents/*.agent.md`, with no\n   registered-but-unreferenced server and no wildcard that resolves to nothing.\n4. `.agents/instructions/orchestration/file-inspection.instructions.md` and\n   `.agents/instructions/orchestration/tool-output.instructions.md` name the\n   suite as the default path for delegated agents.\n\n## Traceability\n\n- Epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`\n- Child specs: `agent-tooling/compact-terminal`, `agent-tooling/file-editing`,\n  `agent-tooling/filesystem-operations`, `agent-tooling/repo-wide-search`\n- Reference spec: `agent-tooling/peek-api`\n  (`.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d`)\n\n## Known Tooling Gap\n\nThere is no ticket-to-spec edge type in the current MCP surface; `add_edge`\nlinks tickets to tickets only. Spec/ticket traceability in this design call is\ntherefore textual (ids and store paths recorded in both directions). If a\ncross-store link mechanism is added, these references should be promoted to\nreal edges.\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "Design spec created (`7c9757a7`). Now the four category specs.",
+      "captured_at": "2026-07-27T02:37:33.205Z",
+      "event_meta": {
+        "event_id": "70e11b7a-f155-47eb-bdd9-2547622c8892",
+        "parent_event_id": "da007991-d58e-443c-9f21-042e6a70146d",
+        "event_type": "assistant.message",
+        "message_id": "79c2890c-8720-4cbd-b985-5be201cbd043",
+        "reasoning_text": "Now I'll create the four child specs.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01AphdAAj64mAbsb4MEnsmnj",
+            "name": "mcp_spec-mcp_spec_create",
+            "arguments": {
+              "body": "# agent-tooling/compact-terminal\n\n## Goal\n\nSpecify the token-bounded command-execution surface of the default agent tool\nsuite: run a shell command and return a bounded result, spilling oversized\noutput to a transient file that can be inspected with windowed and pattern\nreads instead of replaying the command.\n\n## Problem\n\nRaw terminal capture is the single largest uncontrolled token sink in an agent\nloop: a failing `cargo test` can emit tens of thousands of lines of which a\nhandful matter. `compact-terminal-mcp` already solves this, but the behavior was\nnever specified, and it exists only as an MCP transport -- there is no\n`compact-terminal-api` crate and no CLI transport. That diverges from the\n`*-api` behavior + thin `*-cli`/`*-mcp` transport layering established by\n`agent-tooling/peek-api`, and it means the spill/preview contract cannot be\nreused or tested independently of MCP.\n\n## Current Behavior (as implemented)\n\n`memory-api/tools/mcp/compact-terminal-mcp` exposes two tools.\n\n`run` -- executes a command via `sh -c` with `command`, optional `cwd`,\n`inline_limit` (default 4096 bytes), and `timeout_secs`.\n\n- Output at or under `inline_limit` returns `kind: \"inline\"` with `exit_code`,\n  full `stdout`, `stderr`, and `elapsed_ms`.\n- Output over the limit returns `kind: \"spilled\"` with `exit_code`,\n  `stdout_preview`, `stderr_preview`, `total_bytes`, `total_lines`,\n  `spill_file`, `elapsed_ms`, and a `next_steps` hint list.\n\n`read_spill` -- reads a bounded window from a spill file produced by `run`,\naddressed either by `start`/`end` line range or by `grep` pattern.\n\n## Scope\n\n- The command-execution request/response contract, including the inline vs\n  spilled decision and the shape of each variant.\n- The spill file lifecycle: creation, addressing by handle, and the guarantee\n  that a handle stays readable for the duration of the agent session.\n- Bounded re-inspection of a spill by line range and by pattern.\n- Exit-code and timeout propagation, and the error model for a missing or\n  expired spill handle.\n- Extraction of this behavior into a `compact-terminal-api` crate with thin\n  `compact-terminal-cli` and `compact-terminal-mcp` transports.\n\n## Non-goals\n\n- Changing the observable inline/spilled response shapes for existing callers.\n- Replacing the `rtk` proxy, which performs a complementary filtering role at\n  the shell level.\n- Interactive or long-lived process management (servers, watchers, REPLs); this\n  contract covers one-shot command execution.\n\n## Acceptance Criteria\n\n1. A `compact-terminal-api` crate owns the execution, inline/spill decision, and\n   spill-reading behavior, with transport-independent request and response types.\n2. `compact-terminal-mcp` delegates to that crate and keeps its current `run`\n   and `read_spill` tool names and response shapes.\n3. A `compact-terminal-cli` transport exposes the same operations for use when\n   MCP is unavailable, per the repository's documented MCP fallback rule.\n4. Output at or below `inline_limit` is returned inline; output above it is\n   spilled, and the spilled response always carries a usable `spill_file`\n   handle plus `total_bytes` and `total_lines`.\n5. `read_spill` supports both explicit line ranges and pattern matching, and\n   returns bounded results in both modes.\n6. Non-zero exit codes, timeouts, and missing or expired spill handles produce\n   distinct, transport-appropriate responses from one shared error model.\n7. The tool remains reachable to delegated agents: the server is registered in\n   `.vscode/mcp.json` and `.github/mcp.json` and named in the `tools:` wildcard\n   lists of the `.agents/agents/` templates that need command execution.\n\n## Traceability\n\n- Parent design call: `agent-tooling/default-tool-suite`\n- Epic: `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`\n- Layering reference: `agent-tooling/peek-api`\n  (`.spec/specs/3ccdde3a-368c-4655-a6c8-20a58822c83d`)\n- Implementation: `memory-api/tools/mcp/compact-terminal-mcp`\n- Guidance: `.agents/instructions/orchestration/tool-output.instructions.md`\n\n## Validation Evidence\n\nExpected before review:\n\n- `cargo test -p compact-terminal-api`\n- `cargo test -p compact-terminal-mcp`\n- Focused cases: inline boundary (at, just below, just above `inline_limit`),\n  spill handle round-trip through `read_spill` by range and by pattern,\n  non-zero exit propagation, timeout behavior, and missing-handle error.\n",
+              "caller_model": "claude-opus-5",
+              "component": "agent-tooling",
+              "parent": "agent-tooling/default-tool-suite",
+              "scope": "internal",
+              "slug": "agent-tooling/compact-terminal",
+              "title": "compact-terminal: bounded command execution with spill-and-peek",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Verification finding: `compact-terminal-mcp` is registered in both mcp.json files but referenced by **zero** agent templates — the suite's execute tool is unreachable for delegated agents. Fixing that wiring now.",
+      "captured_at": "2026-07-27T02:40:55.838Z",
+      "event_meta": {
+        "event_id": "b9a7f51a-2d19-426c-bcf2-a1e0cdccadf7",
+        "parent_event_id": "3a9eb8f2-755c-425a-9425-4a03691f7927",
+        "event_type": "assistant.message",
+        "message_id": "88cf2838-fcce-4fcc-872e-c944a07b131a",
+        "reasoning_text": "I need to add the `'compact-terminal-mcp/*'` pattern to 14 templates that have execute functionality—audit, commit, default, explore, handoff, implement, interview, research, review, roast, spec, testing, ticket-refinement, and transcription—while skipping iteration and orchestrator since they don't use execute. I'll insert it after the existing audit-mcp reference where applicable, or place it appropriately in the templates that lack that pattern.\n\nThis aligns with the epic deliverable to wire agent templates so the full MCP suite is available to delegated sub-agents, and the verification criterion confirms the reachability gap is real. I'll use multi_replace_string_in_file to make these edits, targeting the tools line in each file since it's uniquely identifying within each template.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_012qZSbxEkQ3nhgf5gAeZuJr",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Add the compact-terminal-mcp wildcard to every agent template that grants execute capability, so the suite's execute tool is reachable for delegated agents.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\audit.agent.md",
+                  "oldString": "tools: [read, agent, search, execute, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [read, agent, search, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\commit.agent.md",
+                  "oldString": "tools: [read, search, agent, execute, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [read, search, agent, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\default.agent.md",
+                  "oldString": "tools: [execute, read, agent, edit, search, web, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [execute, read, agent, edit, search, web, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\explore.agent.md",
+                  "oldString": "tools: [read, search, execute, agent, todo, vscode/askQuestions, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [read, search, execute, agent, todo, vscode/askQuestions, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\handoff.agent.md",
+                  "oldString": "tools: [read, search, execute, agent, vscode/askQuestions, 'peek-mcp/*',",
+                  "newString": "tools: [read, search, execute, agent, vscode/askQuestions, 'compact-terminal-mcp/*', 'peek-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\implement.agent.md",
+                  "oldString": "tools: [agent, edit, read, execute, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [agent, edit, read, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\interview.agent.md",
+                  "oldString": "tools: [vscode/askQuestions, agent, edit, read, search, execute, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [vscode/askQuestions, agent, edit, read, search, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\research.agent.md",
+                  "oldString": "tools: [edit, read, search, agent, execute, vscode/askQuestions, todo, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [edit, read, search, agent, execute, vscode/askQuestions, todo, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\review.agent.md",
+                  "oldString": "tools: [vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\roast.agent.md",
+                  "oldString": "tools: [vscode/askQuestions, agent, read, search, execute, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [vscode/askQuestions, agent, read, search, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\spec.agent.md",
+                  "oldString": "tools: [edit, read, agent, search, execute, vscode/askQuestions, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [edit, read, agent, search, execute, vscode/askQuestions, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\testing.agent.md",
+                  "oldString": "tools: [read, search, execute, agent, 'audit-mcp/*', 'context-mcp/*',",
+                  "newString": "tools: [read, search, execute, agent, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\ticket-refinement.agent.md",
+                  "oldString": "execute, read, agent, edit, search, web, 'spec-mcp/*', 'ticket-mcp/*',",
+                  "newString": "execute, read, agent, edit, search, web, 'compact-terminal-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'ticket-mcp/*',"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\transcription.agent.md",
+                  "oldString": "tools: [agent, vscode/askQuestions, edit, read, search, execute, 'peek-mcp/*', 'session-mcp/*']",
+                  "newString": "tools: [agent, vscode/askQuestions, edit, read, search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', 'session-mcp/*']"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Now the two orchestration guidance files (criterion 6).",
+      "captured_at": "2026-07-27T02:41:18.147Z",
+      "event_meta": {
+        "event_id": "8364763a-1fbb-4b78-bddd-89e4e3b7e0e2",
+        "parent_event_id": "0bc0e43a-7b44-419a-9449-df5c4f023794",
+        "event_type": "assistant.message",
+        "message_id": "730dee79-6113-4631-95eb-d9cc16222387",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01C9WPrpWW2CVrc86x3R7hcZ",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Name the default agent tool suite as the default path for delegated agents in both orchestration guidance files.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\file-inspection.instructions.md",
+                  "newString": "---\ndescription: \"Use when reading workspace files or conducting structural exploration. Covers bounded reads, peek CLI usage, repo_map.toon orientation, and avoiding full-file pulls.\"\n---\n\n## Default Agent Tool Suite\n\nReading files is the **read** category of the default agent tool suite\n(read / execute / edit / filesystem / search). Its implementation is the `peek`\nfamily, and it is the default path for **every** agent, including delegated\nsub-agents that inherit none of the orchestrator's context:\n\n- MCP (preferred): `peek-mcp` — `peek_read`, `peek_grep`, `peek_count`,\n  `peek_skeleton`. Reachable through the `'peek-mcp/*'` wildcard in\n  `.agents/agents/*.agent.md`.\n- CLI fallback: `peek` (`memory-api/tools/cli/peek-cli`) when MCP is unavailable.\n- Behavior owner: `memory-api/crates/peek-api`.\n\nUse this suite instead of unbounded built-in file reads. The sibling **execute**\ncategory is covered in\n[tool-output.instructions.md](tool-output.instructions.md).\n\n## Structural Awareness Before Exploration",
+                  "oldString": "---\ndescription: \"Use when reading workspace files or conducting structural exploration. Covers bounded reads, peek CLI usage, repo_map.toon orientation, and avoiding full-file pulls.\"\n---\n\n## Structural Awareness Before Exploration"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\file-inspection.instructions.md",
+                  "newString": "When the required line coordinates are unknown, use `grep_search`, `semantic_search`, or `peek --grep` to locate the target region first, then read a bounded window around it.\n\nFull-file reads should become the exception. The `--all` flag is intentionally named to make the cost visible in command history.\n\n## Known Suite Gaps\n\nTwo categories of the suite have no owned tool yet, so bounded discipline must be\napplied manually until they land:\n\n- **Filesystem operations** (bounded list / stat / move) — raw shell is the\n  current fallback. Cap depth and entry counts explicitly.\n- **Repo-wide search** — `peek_grep` is single-file only. Repo-wide scans fall\n  back to `grep_search` / `rg`; always pass a narrowing path filter and prefer a\n  counts-first pass before requesting content.\n\nTracked by epic `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b`.",
+                  "oldString": "When the required line coordinates are unknown, use `grep_search`, `semantic_search`, or `peek --grep` to locate the target region first, then read a bounded window around it.\n\nFull-file reads should become the exception. The `--all` flag is intentionally named to make the cost visible in command history."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\tool-output.instructions.md",
+                  "newString": "---\ndescription: \"Use when handling tool result output, managing command spills, or working with compact-terminal MCP. Covers output reduction and spill-file inspection.\"\n---\n\n## Default Agent Tool Suite\n\nRunning commands is the **execute** category of the default agent tool suite\n(read / execute / edit / filesystem / search). Its implementation is\n`compact-terminal-mcp`, and it is the default path for **every** agent,\nincluding delegated sub-agents:\n\n- MCP (preferred): `compact-terminal-mcp` — `run`, `read_spill`. Reachable\n  through the `'compact-terminal-mcp/*'` wildcard in\n  `.agents/agents/*.agent.md`.\n- Shell fallback: the `rtk` proxy, which filters output at the shell level.\n- Follow-up inspection: the **read** category (`peek`), covered in\n  [file-inspection.instructions.md](file-inspection.instructions.md).\n\nUse this suite instead of raw unbounded terminal capture.\n\n## Tool Result Guarding",
+                  "oldString": "---\ndescription: \"Use when handling tool result output, managing command spills, or working with compact-terminal MCP. Covers output reduction and spill-file inspection.\"\n---\n\n## Tool Result Guarding"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\tool-output.instructions.md",
+                  "newString": "**compact-terminal-mcp pattern** (registered in `.vscode/mcp.json` and\n`.github/mcp.json`; use it as the default for long-running commands):",
+                  "oldString": "**compact-terminal-mcp pattern** (when available as MCP tool):"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Done. All six deliverables complete.\n\n**Implementation target:** epic [e342cc4c Token-optimized default agent tool suite](.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b/ticket.toml) design-call phase.\n\n**Specs created** (component `agent-tooling`, all `draft`):\n| Category | Slug | Id |\n|---|---|---|\n| design doc (parent) | `agent-tooling/default-tool-suite` | `7c9757a7` |\n| execute | `agent-tooling/compact-terminal` | `63c60c9d` |\n| edit | `agent-tooling/file-editing` | `4f5ad264` |\n| filesystem | `agent-tooling/filesystem-operations` | `58a1d32c` |\n| search | `agent-tooling/repo-wide-search` | `af9ebba9` |\n\nThe four category specs are real children of the design spec (`parent` field), so the design call is durable and traceable rather than a loose markdown file.\n\n**Child tickets** (all `new`, each with a `depends_on` edge from the epic — verified, 4 edges):\n`bd5e9aee` compact-terminal-api extraction · `b8ce7cd8` file editing · `244c3113` filesystem ops · `bd71ecc7` repo-wide search.\n\n**MCP naming verification — real gap found and fixed.** Names are consistent across [.vscode/mcp.json](.vscode/mcp.json) and [.github/mcp.json](.github/mcp.json), and no wildcard resolves to nothing. But the *inverse* failure existed: `compact-terminal-mcp` was registered in both configs yet referenced by **zero** agent templates, so the suite's execute tool was unreachable for every delegated sub-agent. Added `'compact-terminal-mcp/*'` to the 14 templates that grant `execute` (skipped `iteration` and `orchestrator`, which don't), plus `'peek-mcp/*'` to [ticket-refinement.agent.md](.agents/agents/ticket-refinement.agent.md), which had `read`/`execute` but no bounded-read tool.\n\n**Guidance updated:** [file-inspection.instructions.md](.agents/instructions/orchestration/file-inspection.instructions.md) (read category + known gaps) and [tool-output.instructions.md](.agents/instructions/orchestration/tool-output.instructions.md) (execute category, promoted from \"when available\" to default).\n\n**Validation:** `spec health --all` → 219 specs, 0 issues; `ticket links` → 4 edges confirmed; all 16 agent-template `tools:` lines re-parsed and bracket-balanced.\n\n**Remaining risk:** the compact-terminal wildcard change is only verified structurally — actual wildcard resolution happens at agent-template load time in VS Code, so it's worth confirming `run`/`read_spill` appear in a delegated sub-agent's tool list on next spawn. Also, the four specs are `draft` and describe intended contracts, not implemented behavior; crate names in them are placeholders (`<edit>-api`, `<fs>-api`, `<search>-api`) to be fixed during implementation.\n\n**Not committed** — changes are staged in the working tree for your review first.",
+      "captured_at": "2026-07-27T02:43:49.837Z",
+      "event_meta": {
+        "event_id": "08fa9cd4-1e0a-43e8-b52d-6e1b4916443d",
+        "parent_event_id": "e76f7cfd-ca68-4b16-8235-9850fe827a7e",
+        "event_type": "assistant.message",
+        "message_id": "58a0b104-1c71-4ec4-be87-3d4612f90f8f",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}
