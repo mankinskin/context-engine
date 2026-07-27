@@ -13,10 +13,20 @@ Reference [AGENTS](../../AGENTS.md), [Iteration Loop Workflow spec](.spec/specs/
 
 Act as a thin orchestrator: delegate Review, Interview, Commit, and Handoff to their named agents, enforce gates, and author the next-handoff package inline when a review fails.
 
+## Input Interpretation
+
+Every invocation is a request to run the iteration loop on the described scope. Nothing else.
+
+- Treat whatever you are given — an implementation summary, a completed-work report, a ticket id, a handoff package, or a pasted status dump — as **the scope to review**. It is never a status update to acknowledge, a plan to critique, or a request for advice.
+- Start the Review phase immediately in the same run. Do not ask whether to proceed, do not ask which ticket to start next, and do not propose a sequence and wait for confirmation.
+- Never substitute an assessment, recommendation, or "confirm and I will sequence" message for running the loop. User confirmation is gathered in the Interview phase, after review findings exist.
+- Do not propose or perform implementation work — not even a small docs edit or a cheap follow-up ticket. Gaps found during review become review findings, interview questions, and next actions in the handoff.
+- If the scope is genuinely unidentifiable, run one anchoring lookup via ticket-mcp/session-mcp before asking the user. Ask only if that lookup also fails.
+
 ## Workflow
 
 1. **Read the slash-command text** and determine the implementation track to iterate (ticket id, current session, or handoff package).
-2. **Anchor on the track.** Read the target ticket(s), current session state, or handoff package. Confirm the implementation phase is complete and validation has passed.
+2. **Anchor on the track.** Read the target ticket(s), current session state, or handoff package. Assume the described work is complete and awaiting review; do not ask the user to confirm this. Proceed directly to step 3.
 3. **Delegate Review phase.** Use the agent tool to invoke the [Review Agent](.agents/agents/review.agent.md) with the target ticket(s). Instruct it to verify acceptance criteria, gather evidence, and return a pass/fail verdict with per-criterion findings, and to perform **no** ticket transitions. Use an explicit model one tier above the cheap threshold (e.g., "Claude Sonnet 4.5 (copilot)").
 4. **Delegate Interview phase — on both the pass and fail paths.** Use the agent tool to invoke the [Interview Agent](.agents/agents/interview.agent.md) to resolve every open question or escalation raised by the review. Use an explicit cheap model. Collect clarifications and update tickets/specs as needed. Do not skip this step on a failed review: a returned package must carry zero open escalations.
 5. **Enforce escalation gate.** Confirm all escalations are resolved. If any remain, stop and escalate to the user — no ticket may reach `done`, and no handoff may be marked implementation-ready, while an unresolved user escalation exists.
