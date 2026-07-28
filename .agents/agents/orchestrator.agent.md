@@ -90,13 +90,13 @@ For each unit of work, spawn a sub-agent with:
 
 ## Pre-Dispatch Quality Gates
 
-Before EVERY delegation, run the pre-dispatch gate set for that delegation class. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions.
+Before EVERY delegation, dispatch the pre-dispatch gate for that delegation class. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions.
 
-**Gate mechanism**: Spawn a cheap gate sub-agent on `"GPT-5 mini (copilot)"` (T3 is the floor — there is no tier below it) with read-only tool access, or use a narrow orchestrator tool grant if available. The gate agent returns `pass` with the resolved context bundle, or `block` with the exact blocker.
+**Gate mechanism (mandated, no fallback)**: Spawn the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`) on `"GPT-5 mini (copilot)"` as the gate agent — this is the single required mechanism, not one of two options. It returns `{pass: true, bundle: {...}}` with the resolved context bundle, or `{pass: false, blocker: "<exact reason>"}`.
 
-**On gate failure**: RE-PLAN, do not re-dispatch. Address the precondition (create spec, update ticket state, fix handoff) BEFORE dispatching the blocked unit.
+**On gate failure**: the delegation is NOT dispatched. Resolve the precondition (create spec, update ticket state, fix handoff) yourself, or escalate to the user if resolution needs a decision outside your authority, then re-run the gate. Never re-dispatch a blocked unit without resolving the blocker first.
 
-**Cost ceiling**: Gates for any single delegation MUST cost ≤5 turns and ≤10 tool calls.
+**Cost ceiling**: the gate template's own contract caps it at ≤5 turns and ≤10 tool calls — a hard ceiling enforced by the dispatched template, not a target you must separately track.
 
 ## Shared Context Bundle
 

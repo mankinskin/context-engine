@@ -85,9 +85,9 @@ The pre-dispatch self-containment checklist lives in [model-routing.instructions
 
 ## Pre-Dispatch Quality Gates
 
-Run pre-dispatch gates for EVERY delegation. Each delegation class (Implement, Review, Testing, Commit) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.
+Run pre-dispatch gates for EVERY delegation by dispatching the **Explore Agent** template (`.agents/agents/explore.agent.md`, `"GPT-5 mini (copilot)"`) as the gate agent — this is the mandated mechanism, not one of several options. Each delegation class (Implement, Review, Testing, Commit) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.
 
-Gate failures are RE-PLAN signals: fix the precondition BEFORE dispatch, never re-dispatch a blocked unit and hope it works.
+A `{pass: false, blocker: ...}` verdict means the delegation is NOT dispatched: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works. The gate itself is capped at ≤5 turns/≤10 tool calls by its own template contract.
 
 ## Required Workflow
 
