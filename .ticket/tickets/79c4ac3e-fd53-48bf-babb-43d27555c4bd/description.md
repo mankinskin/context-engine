@@ -114,7 +114,8 @@ Make delegation cheap enough that fine-grained sub-agent decomposition is the ec
 
 ## Acceptance Criteria
 
-1. A freshly spawned Explore Agent reports a tool count and schema payload reduced by >=60% versus the 164-tool / estimated ~37k-token baseline recorded above.
+1. A freshly spawned Explore Agent reports a tool count and schema payload reduced by >=60% versus the measured 172-tool / ~24k-token baseline recorded in [cd19fed4](.ticket/tickets/cd19fed4-44d5-4ef0-848c-19753f1539b0/ticket.toml), using [the regression probe](.agents/prompts/tool-grant-regression-probe.prompt.md) as the evidence source.
+	Rationale: the earlier 164-tool / ~37k-token figures were superseded by cd19fed4's measured baseline.
 2. Either `tool_search` is available to sub-agents, or every agent template declares an explicitly scoped, non-wildcard tool set justified by its role.
 3. At least two agent classes are routed to a model tier cheaper than Sonnet 4.5, declared in the agent template rather than chosen ad hoc per call.
 4. Measured against the synthetic benchmark defined in `10d21210`, sub-agent turn count and substitutable-shell command count both drop versus the checked-in baseline, by the thresholds that ticket sets.
