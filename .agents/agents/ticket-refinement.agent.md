@@ -4,6 +4,7 @@ description: "Use when creating, reviewing, or updating ticket-system tickets th
 tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, execute, read, agent, ms-azuretools.vscode-containers, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Ticket scope/component, current problem statement, and whether you want creation, review, or updates."
 user-invocable: true
+model: "Claude Sonnet 5"
 ---
 
 You are a ticket refinement specialist for the context-engine ticket system.

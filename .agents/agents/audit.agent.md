@@ -4,6 +4,7 @@ description: "Use for honest repository audits, findings-first reviews, and auto
 tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Path, feature, ticket, or scope to audit."
 user-invocable: true
+model: "Claude Sonnet 5"
 ---
 
 You are an audit specialist for the context-engine repository.

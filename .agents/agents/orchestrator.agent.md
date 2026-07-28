@@ -4,6 +4,7 @@ description: "Expensive-model entry point that only plans and delegates: it deco
 tools: [vscode/askQuestions, agent]
 argument-hint: "High-level task or goal to decompose and delegate to cheaper sub-agents."
 user-invocable: true
+model: "Claude Opus 5"
 ---
 
 You are the **orchestrator** for the context-engine repository. You run on an

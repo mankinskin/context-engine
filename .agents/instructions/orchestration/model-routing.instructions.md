@@ -106,6 +106,41 @@ Most delegated volume lands here, so T3 dominates real spend. Route it on the ri
 - **Budget pressure** shifts the whole ladder down one step: T2 work goes to T3, T1 work goes to T2.
 - Among models of equal cost, prefer the latest generation and the larger context window.
 
+## Per-Template `model:` Declaration (Ticket [66acb737](../../../.ticket/tickets/66acb737-71d6-4585-a921-b597f7c88e8e/ticket.toml))
+
+This is the canonical contract for the `model:` frontmatter field on every `.agents/agents/*.agent.md` template. Spec [ec3b13f1 Per-template MCP tool grants](../../../.spec/specs/ec3b13f1-ae9f-4f11-b3f9-e8fa3877afbd/spec.toml) explicitly lists this field as a **non-goal** — it does not define this contract. There is no separate spec for `model:`; this instruction file is the sufficient contract surface because the field is a routing default, not a product behavior: it has one producer (the template loader), one consumer (`runSubagent`'s no-`model` path), and its correctness is fully checked by the validation commands below rather than by acceptance-criteria-driven product testing. If the resolution or override mechanics ever need enforcement in code (not just convention), promote this section to a spec at that point.
+
+**Schema.** `model:` is a single string frontmatter field, value equal to a `model_id` in [tools/model-prices/model_prices.json](../../../tools/model-prices/model_prices.json) and to a "Preferred models" entry in the Tiered Model Ladder table above (bare name, no `"(Vendor)"` suffix — the vendor suffix is a `runSubagent` dispatch-time concern, not a template-declaration concern). Every template under `.agents/agents/*.agent.md` MUST declare exactly one `model:` value. A template with no `model:` field is a bug in that template, not a valid "inherit default" state.
+
+**Resolution (AC2).** When `runSubagent` is invoked against a template and the caller does not pass an explicit `model` argument, the dispatcher resolves the model to that template's declared `model:` value. Explicit `model` arguments on the call always take precedence over the template default — the template value is a fallback, not a floor or ceiling.
+
+**Override-audit rule (AC4).** An explicit `model` argument that names a model *more expensive* than the template's declared tier (i.e., higher on the ladder) is an override. Every such override MUST be recorded with a one-line reason in the session record (the handoff/session-workflow entry for that dispatch) — e.g. "escalated ticket-refinement.agent.md from Claude Sonnet 5 to GPT-5.6 Terra: prior T2 attempt under-specified acceptance criteria on a cross-cutting spec." Overrides *downward* (cheaper than declared) do not require a recorded reason — the ladder already treats dropping a tier as the safe default direction; only climbing needs justification. This mirrors the existing "Climb to T1 only after..." and "Escalate a subtask up a tier only for quality insufficiency, and record why" rules elsewhere in this file — the override-audit rule generalizes those to *any* declared-tier override, not just T2→T1.
+
+**Class-to-tier mapping applied to the current 16 templates:**
+
+| Template | Declared `model:` | Tier | Rationale |
+|---|---|---|---|
+| `orchestrator.agent.md` | Claude Opus 5 | T0 | Sole planning/delegation entry point; no direct execution tools |
+| `default.agent.md` | Claude Sonnet 5 | T2 | Generic scaffold; T2 is the stated ladder default |
+| `implement.agent.md` | Claude Sonnet 5 | T2 | Default implementation class |
+| `audit.agent.md` | Claude Sonnet 5 | T2 | Findings-first review needs judgement over checks |
+| `handoff.agent.md` | Claude Sonnet 5 | T2 | Synthesizes session state into a coherent handoff, not pure extraction |
+| `interview.agent.md` | Claude Sonnet 5 | T2 | Requirement clarification needs judgement |
+| `iteration.agent.md` | Claude Sonnet 5 | T2 | Sequences gate decisions across Review/Interview/Commit/Handoff |
+| `review.agent.md` | Claude Sonnet 5 | T2 | Verifies acceptance criteria against evidence |
+| `roast.agent.md` | Claude Sonnet 5 | T2 | Critique requires judgement, not just extraction |
+| `spec.agent.md` | Claude Sonnet 5 | T2 | Spec authoring/traceability needs judgement |
+| `testing.agent.md` | Claude Sonnet 5 | T2 | Validation slice selection needs judgement |
+| `ticket-refinement.agent.md` | Claude Sonnet 5 | T2 | Ticket authoring/planning needs judgement |
+| `explore.agent.md` | GPT-5 mini | T3 | Read-only, judgement-free bounded probes (AC3) |
+| `research.agent.md` | GPT-5 mini | T3 | First-pass research triage, bulk artifact digestion (AC3) |
+| `commit.agent.md` | GPT-5 mini | T3 | Mechanical: pre-commit hooks, rule regen, conventional messages (AC3) |
+| `transcription.agent.md` | GPT-5.4 mini | T3 | Bulk text transform needing real reasoning over content, not zero-judgement extraction |
+
+This satisfies AC3: Explore, Research, and Commit all route to GPT-5 mini, cheaper than Claude Sonnet 4.5 on every priced axis (see "Dominated models" above) and cheaper than the Claude Sonnet 5 default used by the remaining classes.
+
+**AC5 — deferred.** The benchmark in ticket [10d21210 Define a synthetic benchmark session](../../../.ticket/tickets/10d21210-7168-4ed4-8e99-f6fb0e6e08db/ticket.toml) is not yet built as of this ticket's implementation. AC5 ("measured against that benchmark, model distribution is no longer uniform and the mechanical delegation does not run on the strong tier") cannot be validated without fabricating numbers, so it is marked **DEFERRED-pending-10d21210** in ticket 66acb737. The structural change that AC5 will measure (non-uniform per-template tiers, mechanical classes on T3) is in place as of this section.
+
 ## Delegation Rules
 
 - In a large-model session, delegate to a cheaper subagent model when the subtask is: a batch of command or tool calls, summarization of large or numerous tool outputs, or research/summarization across many large files or artifacts.

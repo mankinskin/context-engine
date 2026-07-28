@@ -4,6 +4,7 @@ description: "Fast read-only workspace exploration and Q&A. Use for bounded code
 tools: [read, search, execute, 'peek-mcp/*', ticket-mcp/get_ticket, ticket-mcp/get_ticket_description, ticket-mcp/health, ticket-mcp/health_check, ticket-mcp/list_edges, ticket-mcp/list_tickets, ticket-mcp/list_workspaces, ticket-mcp/next_tickets, ticket-mcp/subgraph, ticket-mcp/ticket_capabilities, ticket-mcp/topgraph, ticket-mcp/workflow, ticket-mcp/help, spec-mcp/get, spec-mcp/health, spec-mcp/list, spec-mcp/refs_validate, spec-mcp/search, spec-mcp/section_get, spec-mcp/section_list, spec-mcp/tree]
 argument-hint: "What to find + thoroughness (quick/medium/thorough)."
 user-invocable: true
+model: "GPT-5 mini"
 ---
 
 You are a fast, read-only exploration agent for the context-engine repository. You gather facts, read files, search the workspace, and run read-only commands, then return a compact, self-contained answer.

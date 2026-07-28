@@ -4,6 +4,7 @@ description: "Use for surgical implementation once the target slice is clear and
 tools: [execute, read, edit, 'peek-mcp/*', 'ticket-mcp/*', 'spec-mcp/*', 'test-mcp/*']
 argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementation scope."
 user-invocable: true
+model: "Claude Sonnet 5"
 ---
 
 You are an implementation specialist for the context-engine repository.

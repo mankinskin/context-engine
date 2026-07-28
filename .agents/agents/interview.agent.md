@@ -4,6 +4,7 @@ description: "Use for requirement interviews that refine specs, tickets, and acc
 tools: [vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', session-mcp/runtime_init, session-mcp/runtime_resume, session-mcp/runtime_pin, session-mcp/runtime_render_instructions, session-mcp/runtime_view, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Topic, feature, or ticket scope that needs clarification."
 user-invocable: true
+model: "Claude Sonnet 5"
 ---
 
 You are an interview specialist for requirements and workflow clarification in the context-engine repository.

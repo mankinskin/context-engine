@@ -4,6 +4,7 @@ description: "Use to transform a raw audio-transcript file into a clean, well-fo
 tools: [agent, vscode/askQuestions, edit, read, search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', session-mcp/peek_range, session-mcp/peek_skeleton, session-mcp/query]
 argument-hint: "Path to the audio-transcript file (and optional target format: prompt, notes, spec, bullets)."
 user-invocable: true
+model: "GPT-5.4 mini"
 ---
 
 You are a transcription refinement specialist for the context-engine repository.
