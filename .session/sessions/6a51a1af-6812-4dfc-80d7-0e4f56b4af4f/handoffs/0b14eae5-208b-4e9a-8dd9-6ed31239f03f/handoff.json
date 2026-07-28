@@ -1,0 +1,68 @@
+{
+  "handoff_id": "0b14eae5-208b-4e9a-8dd9-6ed31239f03f",
+  "workspace_session_id": "6a51a1af-6812-4dfc-80d7-0e4f56b4af4f",
+  "outgoing_run_id": "22633ff8-ab1e-43e6-9940-7ebdb09f50ee",
+  "created_at": "2026-07-28T20:01:37.498942Z",
+  "resume_command": "session-cli resume --workspace-session-id 6a51a1af-6812-4dfc-80d7-0e4f56b4af4f --predecessor-run-id 22633ff8-ab1e-43e6-9940-7ebdb09f50ee",
+  "workflow": {
+    "workflow": {}
+  },
+  "validation": [
+    {
+      "command": "rtk cargo test -p ticket-api",
+      "required": true
+    },
+    {
+      "command": "rtk cargo test -p spec-api",
+      "required": true
+    },
+    {
+      "command": "rtk cargo test -p ticket-cli",
+      "required": true
+    },
+    {
+      "command": "rtk cargo test -p spec-cli",
+      "required": true
+    }
+  ],
+  "objective": "Implement the paired store-semantics fixes for ticket description updates and spec body updates: add explicit replace/append mode with mandatory pre-overwrite history capture for bf62e2f9, and reject empty/no-op spec body updates with a force escape hatch for f986e666.",
+  "target_tickets": [
+    "bf62e2f9-7bdb-471d-a8c3-e160fe87e610",
+    "f986e666-d8db-4845-ba86-eb4bb89484ce"
+  ],
+  "target_files": [
+    "memory-api/crates/ticket-api/src/storage/store.rs",
+    "memory-api/crates/ticket-api/src/storage/ticket_fs.rs",
+    "memory-api/crates/ticket-api/src/storage/tests/update_regression_tests.rs",
+    "memory-api/tools/mcp/ticket-mcp/src/server/mutations.rs",
+    "memory-api/tools/cli/ticket-cli/src/cli/commands/crud.rs",
+    "memory-api/crates/spec-api/src/store.rs",
+    "memory-api/crates/spec-api/src/error.rs",
+    "memory-api/crates/spec-api/src/store/tests.rs",
+    "memory-api/tools/mcp/spec-mcp/src/server/sections.rs",
+    "memory-api/tools/cli/spec-cli/src/cli/commands/crud.rs"
+  ],
+  "decisions": [
+    "Treat the ticket description fix and the spec body fix as the same defect class: silent data loss through mutation APIs that do not make overwrite semantics explicit.",
+    "Default ticket description updates to replace mode, with append as an explicit opt-in that concatenates instead of overwriting.",
+    "Always write the pre-update ticket description into history before the overwrite/append mutation, so undo and history inspection can recover the previous text.",
+    "Reject empty spec body updates unless force is explicitly set, and reject byte-identical no-op updates so a successful spec write guarantees a real change.",
+    "Expose the new semantics through both the underlying crates and the CLI/MCP surfaces, not only in storage helpers."
+  ],
+  "non_goals": [
+    "Do not touch unrelated dirty files in the worktree.",
+    "Do not change the broader ticket/spec workflow rules or author new specs for this unit unless the implementation itself reveals a narrow contract gap.",
+    "Do not commit or transition tickets yet; the next implementation session should do the code changes and validation first."
+  ],
+  "context_anchors": [
+    "Epic [2558a279-8819-4682-8db5-c2a4aa30aa0e]([.ticket/tickets/2558a279-8819-4682-8db5-c2a4aa30aa0e/ticket.toml](.ticket/tickets/2558a279-8819-4682-8db5-c2a4aa30aa0e/ticket.toml)) is the parent workflow-and-tooling reliability track; both tickets are frontier leaves on that epic.",
+    "The current spec reference for caller-model tolerance, [9f0b9e30-e32c-4092-b2a2-68179141cfc4]([.spec/specs/9f0b9e30-e32c-4092-b2a2-68179141cfc4/spec.toml](.spec/specs/9f0b9e30-e32c-4092-b2a2-68179141cfc4/spec.toml)), is background only for the prior unit and should not be modified by this next slice.",
+    "Ticket-api update path: [memory-api/crates/ticket-api/src/storage/store.rs](memory-api/crates/ticket-api/src/storage/store.rs) applies manifest updates and currently writes descriptions unconditionally when present; [memory-api/crates/ticket-api/src/storage/ticket_fs.rs](memory-api/crates/ticket-api/src/storage/ticket_fs.rs) owns the on-disk description/history helpers.",
+    "Spec-api update path: [memory-api/crates/spec-api/src/store.rs](memory-api/crates/spec-api/src/store.rs) currently accepts empty and no-op body updates; [memory-api/crates/spec-api/src/error.rs](memory-api/crates/spec-api/src/error.rs) already defines the no-op/empty error shape.",
+    "CLI and MCP surfaces that expose the same semantics live in [memory-api/tools/cli/ticket-cli/src/cli/commands/crud.rs](memory-api/tools/cli/ticket-cli/src/cli/commands/crud.rs), [memory-api/tools/mcp/ticket-mcp/src/server/mutations.rs](memory-api/tools/mcp/ticket-mcp/src/server/mutations.rs), [memory-api/tools/cli/spec-cli/src/cli/commands/crud.rs](memory-api/tools/cli/spec-cli/src/cli/commands/crud.rs), and [memory-api/tools/mcp/spec-mcp/src/server/sections.rs](memory-api/tools/mcp/spec-mcp/src/server/sections.rs).",
+    "Review of the current workspace indicates no open escalations for this next unit and no need to revisit the prior mcp-cost-gate changes."
+  ],
+  "open_escalations": [],
+  "risk_notes": "The next session should treat the ticket description and spec body updates as a single mutation-safety slice. The main risk is missing one of the surfaces (crate, CLI, or MCP), which would leave the API inconsistent.",
+  "predecessor_handoff": "ea1e2d33-99a7-484a-9833-8de72595dbc3"
+}
