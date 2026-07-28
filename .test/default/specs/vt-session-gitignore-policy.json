@@ -1,0 +1,15 @@
+{
+  "id": "vt-session-gitignore-policy",
+  "title": "gitignore policy test enforces R12 tracked/ignored sets",
+  "command": "cargo test -p session-api --test gitignore_policy",
+  "detail": "Asserts via real `git check-ignore` that durable artifacts under .session/sessions/** are trackable and that .session/local/, .session/**/*.lock, and events.json are ignored. This is the gate that must pass BEFORE 580019e8 untracks anything, otherwise the untracked files are re-added on the next commit.",
+  "links": {
+    "spec_ids": [
+      "7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f"
+    ],
+    "ticket_ids": [
+      "580019e8-b253-42ee-80fc-990f6d26baf6",
+      "4817a5cc-5e91-4280-b7ed-aed296a480b3"
+    ]
+  }
+}

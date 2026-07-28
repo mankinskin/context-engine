@@ -1,0 +1,14 @@
+{
+  "id": "vt-session-no-legacy-runtime-path",
+  "title": "No legacy runtime-path symbols or .session/runtime reads remain",
+  "command": "rg -n \"legacy_runtime_paths_for_workspace|legacy_active_workspace_session_path|\\.session/runtime\" memory-api/crates/session-api/src memory-api/tools",
+  "detail": "Must return zero matches once ticket 7fabc77a lands. Covers AC1 (no legacy_* symbol remains in the session store config module) and AC2 (no code path reads .session/runtime/). A non-empty result means the fallback shims or a legacy read survived.",
+  "links": {
+    "spec_ids": [
+      "7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f"
+    ],
+    "ticket_ids": [
+      "7fabc77a-7704-448b-aef8-1f3e22dd18dd"
+    ]
+  }
+}

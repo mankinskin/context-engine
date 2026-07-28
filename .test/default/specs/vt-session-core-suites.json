@@ -1,0 +1,15 @@
+{
+  "id": "vt-session-core-suites",
+  "title": "session-api / session-mcp / session-cli / ticket-api suites pass (333 baseline)",
+  "command": "cargo test -p session-api -p session-mcp -p session-cli -p ticket-api",
+  "detail": "Baseline established 2026-07-28 at the close of the session-store flatten iteration: 333 passed, 0 failed, 21 suites. Any drop below 333 after the fallback removal indicates the shims were load-bearing.",
+  "links": {
+    "spec_ids": [
+      "7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f"
+    ],
+    "ticket_ids": [
+      "7fabc77a-7704-448b-aef8-1f3e22dd18dd",
+      "580019e8-b253-42ee-80fc-990f6d26baf6"
+    ]
+  }
+}

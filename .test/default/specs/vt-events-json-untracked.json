@@ -1,0 +1,14 @@
+{
+  "id": "vt-events-json-untracked",
+  "title": "No events.json files remain tracked in git",
+  "command": "git ls-files | grep -c \"events\\.json\"",
+  "detail": "Must return 0 after ticket 580019e8 lands. Currently ~76 tracked files totalling ~99MB. Run the .gitignore side first (vt-session-gitignore-policy already covers the pattern rules via cargo test -p session-api --test gitignore_policy) or the files will be re-added on the next commit. History rewrite is explicitly out of scope: git rm --cached only.",
+  "links": {
+    "spec_ids": [
+      "7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f"
+    ],
+    "ticket_ids": [
+      "580019e8-b253-42ee-80fc-990f6d26baf6"
+    ]
+  }
+}
