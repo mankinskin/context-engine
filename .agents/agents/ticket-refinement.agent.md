@@ -1,7 +1,7 @@
 ---
 name: "Ticket Refinement Agent"
 description: "Use when creating, reviewing, or updating ticket-system tickets through codebase research, user interviews, and implementation planning."
-tools: [agent, vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, vscode/toolSearch, execute, read, agent, edit, search, web, 'compact-terminal-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'ticket-mcp/*', vscode.mermaid-markdown-features/renderMermaidDiagram, ms-azuretools.vscode-containers/containerToolsConfig, todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, execute, read, agent, ms-azuretools.vscode-containers, edit, search, web, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Ticket scope/component, current problem statement, and whether you want creation, review, or updates."
 user-invocable: true
 ---

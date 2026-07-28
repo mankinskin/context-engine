@@ -1,7 +1,7 @@
 ---
 name: "Audit Agent"
 description: "Use for honest repository audits, findings-first reviews, and automated validation triage."
-tools: [read, agent, search, execute, vscode/askQuestions,'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Path, feature, ticket, or scope to audit."
 user-invocable: true
 ---

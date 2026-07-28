@@ -1,7 +1,7 @@
 ---
 name: "Review Agent"
 description: "Use to guide a human reviewer through an in-review ticket set or draft spec set, verify acceptance criteria, and record findings."
-tools: [vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', 'agent']
+tools: [vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket, spec, or review scope to walk through (defaults to the highest-ranked in-review work)."
 user-invocable: true
 ---
