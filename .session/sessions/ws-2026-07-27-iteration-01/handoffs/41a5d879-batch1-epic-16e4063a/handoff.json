@@ -1,0 +1,89 @@
+{
+  "handoff_id": "41a5d879-batch1-epic-16e4063a",
+  "workspace_session_id": "ws-2026-07-27-iteration-01",
+  "created_at": "2026-07-27T21:47:30.379144500Z",
+  "objective": "Land Batch 1 in ONE implementation session, committing at the end: flatten the session store layout (eliminating .session/runtime/ in favor of .session/sessions/<session_id>/), add track fields (track_id, anchor_ticket_id, parent_session_id) to the session schema, and expose track query and rollup over MCP and CLI with parity.",
+  "target_tickets": [
+    "7a4f9c3d",
+    "4817a5cc",
+    "41ed4585",
+    "0a45bedb",
+    "ab02e15a",
+    "fd7737ec",
+    "938a7ae9",
+    "185a00a2",
+    "9cd9440e"
+  ],
+  "target_files": [
+    "memory-api/crates/session-api/src/store.rs",
+    "memory-api/crates/session-api/src/model.rs",
+    "memory-api/crates/session-api/src/persistence.rs",
+    "memory-api/crates/session-api/src/store_persistence_types.rs",
+    "memory-api/crates/session-api/src/subagent_rollup.rs",
+    "memory-api/crates/session-api/src/tool_metrics.rs",
+    "memory-api/tools/mcp/session-mcp/src/server.rs",
+    "memory-api/tools/cli/session-cli/src/lib.rs",
+    ".gitignore",
+    "memory-api/.gitignore"
+  ],
+  "decisions": [
+    "No track entity, no new store, no track status field. Track = 3 nullable session schema fields.",
+    "Anchor ticket owns goal/DoD; spec owns requirements; NO goal text on session records.",
+    "Track completes when its anchor ticket closes.",
+    "Migration is fail-open; existing sessions load without error and report track_id = null.",
+    "Conformance gate belongs in the handoff WRITE path (session_handoff), fail closed — NOT in this batch (ticket 7bb007e9).",
+    "Lightweight sub-agent sessions = same schema + lazy artifacts — NOT in this batch (be1552ba).",
+    "Traceability injection — NOT in this batch (490f1cbc).",
+    "Sub-agent routing and board/WIP — NOT in this batch (c410ca60, 648a64a6).",
+    "Flatten layout: eliminate .session/runtime/workspaces/ in favor of .session/sessions/<session_id>/ owning context.json, handoffs/, and finish.json directly.",
+    "Keep .session/local/ for pointers and locks (git-ignored); track durable artifacts under sessions/<id>/.",
+    "Handoffs persist as folders with both handoff.json and rendered handoff.md."
+  ],
+  "non_goals": [
+    "Do not start 7bb007e9, be1552ba, c410ca60, 648a64a6, 490f1cbc, b43363e1.",
+    "Do not implement parallel sessions (25dd26cb, deferred).",
+    "Do not create a track entity or a new store.",
+    "Do not add response post-processing.",
+    "Do not touch effba966's subtree — it was downgraded from hard prerequisite to a related link.",
+    "Do not implement handoff conformance gate (7bb007e9) — gates belong in handoff write path but are out of scope for this batch."
+  ],
+  "context_anchors": [
+    "Anchor ticket: 16e4063a Track-scoped multi-session execution (epic)",
+    "Spec: 7b277ba4 (.spec/specs/7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f/spec.toml)",
+    "Source proposal: transcripts/27-07-2026_session-track-management/input.clean.md",
+    "Prior art (do not redo): 1fbf2d84, 0647a212, 76e831f2, 5755b694, d3af78d7",
+    "Draft docs: tmp/spec-iteration-loop.md, tmp/spec-handoff-package-schema.md",
+    "Commits from planning: 924d25c8, b2aee53a, 2c799b10, 647d68a6",
+    "Closed prerequisite: 3eaceaae (done)",
+    "Review findings tickets: 7a4f9c3d REOPENED (runtime_paths_for_workspace missing, .session/runtime/ still exists); 4817a5cc REOPENED (AC1 handoffs not under sessions/<id>/, AC4 no events.json decision doc)",
+    "Existing test files: memory-api/crates/session-api/src/store_tests.rs, memory-api/crates/session-api/src/hook/tests.rs"
+  ],
+  "open_escalations": [],
+  "risk_notes": "Tickets 7a4f9c3d and 4817a5cc are REOPENED after review failures. Prior implementation attempted layout flatten but placed artifacts at .session/runtime/workspaces/ instead of .session/sessions/<session_id>/. This handoff requires the implementer to complete the layout work correctly, ensuring runtime_paths_for_workspace exists and points to the new unified location, and .session/local/ is present for ignored pointers.",
+  "validation": [
+    {
+      "validation_spec_id": "cargo-test-session-api",
+      "required": true
+    },
+    {
+      "validation_spec_id": "cargo-test-session-mcp",
+      "required": true
+    },
+    {
+      "validation_spec_id": "memory-kernel-board-tests",
+      "required": true
+    },
+    {
+      "validation_spec_id": "session-lifecycle-layout-track",
+      "required": true
+    },
+    {
+      "validation_spec_id": "track-query-mcp-cli-parity",
+      "required": true
+    },
+    {
+      "validation_spec_id": "migration-test-nullable-track",
+      "required": true
+    }
+  ]
+}

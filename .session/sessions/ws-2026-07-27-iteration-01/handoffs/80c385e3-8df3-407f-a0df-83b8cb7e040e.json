@@ -1,0 +1,53 @@
+{
+  "handoff_id": "80c385e3-8df3-407f-a0df-83b8cb7e040e",
+  "workspace_session_id": "ws-2026-07-27-iteration-01",
+  "outgoing_run_id": "handoff-agent-80c385e3",
+  "created_at": "2026-07-28T11:37:57.239940Z",
+  "resume_command": "session resume --workspace-session-id ws-2026-07-27-iteration-01 --predecessor-run-id handoff-agent-80c385e3",
+  "workflow": {
+    "workflow": {}
+  },
+  "validation": [
+    {
+      "validation_spec_id": "vt-session-api",
+      "required": true
+    },
+    {
+      "validation_spec_id": "vt-session-mcp",
+      "required": true
+    }
+  ],
+  "objective": "Implement ticket 938a7ae9: Track query and rollup surface \u2014 add track query and rollup functions to session-api that report session count, status distribution, aggregate tool/cost metrics, duration, per-agent breakdown.",
+  "target_tickets": [
+    "938a7ae9-570e-40c4-91f5-d32d2fae0b4f"
+  ],
+  "target_files": [
+    "memory-api/crates/session-api/src/subagent_rollup.rs",
+    "memory-api/crates/session-api/src/tool_metrics.rs"
+  ],
+  "decisions": [
+    "Track storage is schema-only: no track entity, no track store, no track status field.",
+    "Migration is fail-open: track_id nullable, pre-existing sessions have no track, no backfill pass.",
+    "Session artifacts under .session/sessions/<workspace_session_id>/; machine-local state under .session/local/; legacy .session/runtime/workspaces/<id>/ removed.",
+    "Merge semantics: prefer incoming non-None, preserve existing non-None when incoming is None."
+  ],
+  "non_goals": [
+    "No track entity, no new store, no track status field.",
+    "No parallel sessions within a track (deferred to ticket 25dd26cb).",
+    "No weighted board budget yet.",
+    "No response post-processing to force session ids.",
+    "No reimplementation of the existing iteration loop or handoff package schema."
+  ],
+  "context_anchors": [
+    "ticket:938a7ae9-570e-40c4-91f5-d32d2fae0b4f",
+    "ticket:ab02e15a-df68-41bc-a2dc-638f1fd01694",
+    "ticket:fd7737ec-814b-4ba1-a9da-33db36cdea94",
+    "spec:7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f",
+    "commit:b2a9f3641471b396b8925434e14f5ef317fd5836",
+    "commit:84ab0c9e60f81bbc7e0f5bdbe3d55d8fc6f7221e",
+    "commit:dd0cb78eb5addde2fe625c4dda0dfb38e73bdbc4",
+    "file:memory-api/crates/session-api/src/model.rs",
+    "file:memory-api/crates/session-api/src/store/helpers/storage.rs",
+    "file:tmp/handoff-forward-track-query-rollup.md"
+  ]
+}

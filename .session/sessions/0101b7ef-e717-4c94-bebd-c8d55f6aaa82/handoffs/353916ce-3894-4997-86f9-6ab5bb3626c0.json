@@ -1,0 +1,39 @@
+{
+  "handoff_id": "353916ce-3894-4997-86f9-6ab5bb3626c0",
+  "workspace_session_id": "0101b7ef-e717-4c94-bebd-c8d55f6aaa82",
+  "outgoing_run_id": "9146c9e4-a38d-4087-827a-93c5ca3c4a38",
+  "created_at": "2026-07-27T17:39:01.819695100Z",
+  "resume_command": "session-cli resume --workspace-session-id 0101b7ef-e717-4c94-bebd-c8d55f6aaa82 --predecessor-run-id 9146c9e4-a38d-4087-827a-93c5ca3c4a38",
+  "workflow": {
+    "workflow": {}
+  },
+  "objective": "Fix substring over-match in tool_cost() (memory-api/tools/mcp/mcp-cost-gate/src/gate.rs) by adding exact-match-first precedence before the existing bidirectional substring fallback, so a short rollup entry like 'read' no longer over-matches 'read_file' or 'thread_safe_reader'.",
+  "target_tickets": [
+    "9c29d697-f782-4737-aea1-645abf75cfb9"
+  ],
+  "target_files": [
+    "memory-api/tools/mcp/mcp-cost-gate/src/gate.rs"
+  ],
+  "decisions": [
+    "Exact-match-first chosen over namespace-aware matching: simpler, deterministic, covers the common short-name collision case.",
+    "Substring fallback is preserved for legitimate partial matches; the fix adds exact-match priority, it does not remove substring matching.",
+    "AC7 of ticket 9185d8f2 (live expensive-model MCP verification) was waived by the user on 2026-07-27; the gap is closed by follow-up ticket 56be2eaa.",
+    "Sequencing: 9c29d697 precedes 56be2eaa because the integration test harness should verify the corrected tool_cost() logic."
+  ],
+  "non_goals": [
+    "Namespace-aware matching (deferred).",
+    "The MCP integration test harness (ticket 56be2eaa).",
+    "Retuning graded-cost calibration constants or the rollup aggregation window."
+  ],
+  "context_anchors": [
+    "Predecessor ticket 9185d8f2-1080-46b1-84da-485f9ad839f6 is done; spec 29ae5f6e-c202-41f1-ba88-a446aa872993 is reviewed with a validation-and-traceability section.",
+    "Target symbol: tool_cost() in memory-api/tools/mcp/mcp-cost-gate/src/gate.rs, approx lines 197-200.",
+    "Offending expression: name_low.contains(&tool_low) || tool_low.contains(&name_low).",
+    "MIN_CALLS = 1 at gate.rs:22; tool_cost() returns 0 when rollup is None (fail-open).",
+    "Baseline: cargo test -p mcp-cost-gate = 26 passed / 0 failed.",
+    "Commits from prior iteration: memory-api submodule 1c08daa; superproject 62744868 (pointer) and f1bfc6bd (ticket/spec trail).",
+    "Parent feature ticket: 445a2d76-5795-4d7a-aec8-d1536ec61416.",
+    "Sibling follow-up ticket: 56be2eaa-6b32-4291-857a-b2c1aa24f273."
+  ],
+  "risk_notes": "Low risk and localized. Change sits ahead of the substring fallback in tool_cost(). Verify by adding tests for exact-match precedence (rollup containing both 'read' and 'read_file') and confirming all existing mcp-cost-gate tests still pass. Note the reinstalled mcp-cost-gate binary only takes effect after an MCP server restart."
+}

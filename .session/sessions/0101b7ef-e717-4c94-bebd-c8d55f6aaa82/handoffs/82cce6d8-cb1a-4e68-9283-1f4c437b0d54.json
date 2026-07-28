@@ -1,0 +1,46 @@
+{
+  "handoff_id": "82cce6d8-cb1a-4e68-9283-1f4c437b0d54",
+  "workspace_session_id": "0101b7ef-e717-4c94-bebd-c8d55f6aaa82",
+  "outgoing_run_id": "9146c9e4-a38d-4087-827a-93c5ca3c4a38",
+  "created_at": "2026-07-27T19:51:03.797716Z",
+  "resume_command": "session-cli resume --workspace-session-id 0101b7ef-e717-4c94-bebd-c8d55f6aaa82 --predecessor-run-id 9146c9e4-a38d-4087-827a-93c5ca3c4a38",
+  "workflow": {
+    "workflow": {}
+  },
+  "objective": "Extend tools/model-prices/sync_model_prices.py to merge a second upstream source — GitHub's copilot models-and-pricing.yml — into model_prices.json, so every model the runSubagent surface offers (notably MAI-Code-1-Flash) has a priced row and can be cost-ranked.",
+  "target_tickets": [
+    "b0d6bb1c-1a74-478a-aac1-1943b5454e96"
+  ],
+  "target_files": [
+    "tools/model-prices/sync_model_prices.py",
+    "tools/model-prices/model_prices.json",
+    "tools/model-prices/cost_gate.py",
+    "tools/model-prices/test_cost_gate.py",
+    ".agents/instructions/orchestration/model-prices.instructions.md",
+    ".agents/prompts/sync-model-prices.prompt.md"
+  ],
+  "decisions": [
+    "The price table is a vendor catalogue, not the dispatch surface's roster. This distinction is now documented in model-routing.instructions.md ('Roster is not the catalogue'), model-prices.instructions.md, and sync-model-prices.prompt.md step 7.",
+    "T4 was collapsed into T3. No model offered by runSubagent undercuts GPT-5 mini on input or cache read, so there is no distinct floor band.",
+    "T3 is selected on input_mtok + cache_read_mtok + context window, not output_mtok. T3 units are input-heavy and output-tiny.",
+    "T3 roster: GPT-5 mini (default, 0.25/0.025/2/400k), GPT-5.6 Luna (wide context, 1/0.1/6/1.05M), GPT-5.4 mini (reasoning, 0.75/0.075/4.5/400k), Kimi K2.7 Code (code-specialist, 0.95/0.19/4/262k).",
+    "Auto (copilot) is permitted only as an explicit escape hatch when no tier model fits or the surface rejects the intended model, and must be justified in the dispatch rationale. It is not a default.",
+    "MAI-Code-1-Flash is offered but unpriced, so it currently cannot be routed under a cost rationale. Ticket b0d6bb1c exists to remove that limitation rather than hardcoding a price."
+  ],
+  "non_goals": [
+    "Do not change the tier ladder itself; it was rebuilt and committed this iteration.",
+    "Do not hand-edit model_prices.json — it is a generated artifact.",
+    "Do not re-verify the runSubagent roster; it was probed on 2026-07-27 and recorded in model-routing.instructions.md.",
+    "Do not touch memory-api, .session, or .tmp paths — other agents hold uncommitted work there."
+  ],
+  "context_anchors": [
+    "Upstream source to add: https://github.com/github/docs/blob/main/data/tables/copilot/models-and-pricing.yml — use the raw URL.",
+    "Existing upstream: pydantic/genai-prices prices/data_slim.json (MIT). sync_model_prices.py is stdlib-only today; keep it that way or justify a dependency (YAML parsing is the pressure point).",
+    "Current table state: sha256 cca400c914ec, synced 2026-07-25, `python sync_model_prices.py --check` exits 0.",
+    "CSV column order: provider,model,in$/M,out$/M,cread$/M,cwrite$/M,ctx. A '-' or null means unpublished, NOT free.",
+    "Cost gate: driving field is output_mtok, threshold X = 15, exit 0 = allow, exit 3 = delegate. An unrecognized model_id silently resolves to a zero-cost budget — this is exactly the trap MAI-Code-1-Flash falls into today. The gate also fails open when the table is unreadable.",
+    "Sync semantics to preserve: the table is rewritten only when source_sha256 changes; --force refreshes synced_at; --query and --list are offline.",
+    "Commits from this iteration: b9a3aba2 (docs), 27c1a5ef (ticket), 33ad5773 (spec model-tiering)."
+  ],
+  "risk_notes": "The two sources will disagree on models present in both (e.g. GPT and Claude families priced by both the vendor catalogue and GitHub's Copilot table). Precedence must be decided and documented, not left implicit — GitHub's table reflects what this surface actually bills, so it is the stronger candidate for precedence on overlapping rows, but that changes existing numbers and therefore existing tier assignments. Re-check the ladder after the first merged sync. Also: source_sha256 currently covers one input; extending it to two must remain deterministic or the no-op-when-unchanged guarantee breaks and every sync produces a spurious diff."
+}

@@ -1,0 +1,821 @@
+{
+  "handoff_id": "b7da3f2c-1be8-41c7-a9f2-45b2721e88f1",
+  "workspace_session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f",
+  "outgoing_run_id": "00501003-13a9-4760-be7b-898682fe44b4",
+  "created_at": "2026-07-25T22:21:08.397511400Z",
+  "resume_command": "session-cli resume --workspace-session-id 03baab6c-0fdb-4ffc-8159-b83066a6283f --predecessor-run-id 00501003-13a9-4760-be7b-898682fe44b4",
+  "pinned_entities": [
+    {
+      "urn": "ce://default/rule/397b0447-135e-4d35-ad05-bcc69047d2c0",
+      "kind": "rule",
+      "relation": "governs",
+      "reason": "Mandatory browser validation gates"
+    },
+    {
+      "urn": "ce://default/rule/84fa9769-cff9-4d89-9068-88474584b4b3",
+      "kind": "rule",
+      "relation": "governs",
+      "reason": "Ticket and spec routing"
+    },
+    {
+      "urn": "ce://default/rule/89330b3b-4d28-4c48-80dd-203311dbe855",
+      "kind": "rule",
+      "relation": "governs",
+      "reason": "Durable session bootstrap"
+    },
+    {
+      "urn": "ce://default/rule/dada11d6-d36e-464f-92cf-f0a50e3d7aec",
+      "kind": "rule",
+      "relation": "governs",
+      "reason": "Ownership and escalation"
+    },
+    {
+      "urn": "ce://default/spec/347b6f97-5ebf-46c6-a0e1-cc8afc600319",
+      "kind": "spec",
+      "relation": "related",
+      "reason": "Browser validation policy"
+    },
+    {
+      "urn": "ce://default/spec/479e226a-b4ef-4e30-ade0-ebdabbf956ed",
+      "kind": "spec",
+      "relation": "related",
+      "reason": "WASM tracing file sink"
+    },
+    {
+      "urn": "ce://default/spec/4f14356f-c4bd-4554-be1e-35361de241da",
+      "kind": "spec",
+      "relation": "related",
+      "reason": "Graph3D contract"
+    },
+    {
+      "urn": "ce://default/spec/96bc688a-62ac-4083-923f-e507f2bb19fe",
+      "kind": "spec",
+      "relation": "governs",
+      "reason": "Flexible session workflow authoring contract"
+    },
+    {
+      "urn": "ce://default/spec/a9b7ef39-ace4-4a12-a171-80f54548fc65",
+      "kind": "spec",
+      "reason": "Interview anchor spec: agent skill infrastructure"
+    },
+    {
+      "urn": "ce://default/spec/b06c9df8-2866-433a-af73-ae9b1f4a0f0a",
+      "kind": "spec",
+      "relation": "related",
+      "reason": "Structured WASM tracing"
+    },
+    {
+      "urn": "ce://default/spec/c677182e-90da-4ac3-8b94-9e2e97c825cf",
+      "kind": "spec",
+      "relation": "reviews",
+      "reason": "Anchor spec for T-KINDS/T-SCHEMA/T-ERRCONTRACT/T-CATALOG/T-HANDLE review interview"
+    },
+    {
+      "urn": "ce://default/spec/f153483c-f984-4564-94ac-36234b5cbe3f",
+      "kind": "spec",
+      "relation": "related",
+      "reason": "WebGPU overlay contract"
+    },
+    {
+      "urn": "ce://default/ticket/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9",
+      "kind": "ticket",
+      "reason": "Phase A domain-crate contract"
+    },
+    {
+      "urn": "ce://default/ticket/1a7ae853-7588-409d-b172-b2d2bfbed3fb",
+      "kind": "ticket",
+      "relation": "reviews",
+      "reason": "Session workflow flexibility epic implemented and handed off for review"
+    },
+    {
+      "urn": "ce://default/ticket/1c452ff1-6edc-47c8-a73d-d07ce9b4d473",
+      "kind": "ticket",
+      "reason": "Phase A shared libs stabilization"
+    },
+    {
+      "urn": "ce://default/ticket/203248cb-0694-481b-a634-ba7d70962750",
+      "kind": "ticket",
+      "reason": "Node-kind redesign: separate behavioral vs descriptive axes, add Spec kind"
+    },
+    {
+      "urn": "ce://default/ticket/26a73130-c631-4168-8030-fade31c5cf55",
+      "kind": "ticket",
+      "relation": "first-batch",
+      "reason": "GPU environment profiles"
+    },
+    {
+      "urn": "ce://default/ticket/3c6da958-f494-408f-b7dd-cc43997b8ead",
+      "kind": "ticket",
+      "relation": "reviews",
+      "reason": "Category and non-gating anchor URN child in review"
+    },
+    {
+      "urn": "ce://default/ticket/3eaceaae-254e-4a9f-ab19-c1eed2080931",
+      "kind": "ticket",
+      "reason": "Fix #4: surface and echo workspace_session_id inline"
+    },
+    {
+      "urn": "ce://default/ticket/40110a1a-40e8-4345-8407-577bd5f4d602",
+      "kind": "ticket",
+      "relation": "first-batch",
+      "reason": "UX quality gates"
+    },
+    {
+      "urn": "ce://default/ticket/4f284d45-e520-4d22-945e-f54bdd3c0175",
+      "kind": "ticket",
+      "reason": "Phase 0 provisioning gate"
+    },
+    {
+      "urn": "ce://default/ticket/524bee64-3ba0-480b-80c7-4ab56cd45784",
+      "kind": "ticket",
+      "relation": "reviews",
+      "reason": "Atomic batch workflow mutation child in review"
+    },
+    {
+      "urn": "ce://default/ticket/5ad77aba-c7f7-4058-854e-dd0412746c7c",
+      "kind": "ticket",
+      "reason": "Fix #3 (extended in-place): capability catalog now covers session-mcp lifecycle + enums"
+    },
+    {
+      "urn": "ce://default/ticket/6002e996-dcb8-4dad-a830-20346ce9d8cc",
+      "kind": "ticket",
+      "relation": "first-batch",
+      "reason": "Canonical Playwright harness"
+    },
+    {
+      "urn": "ce://default/ticket/60114a17-c0ad-43eb-8df6-4741a59d83ce",
+      "kind": "ticket",
+      "relation": "owns",
+      "reason": "Design precursor created during review; gates 2cc7680c implementation"
+    },
+    {
+      "urn": "ce://default/ticket/69eb4118-19ec-4b5b-bb12-30e314029cc5",
+      "kind": "ticket",
+      "reason": "Migration epic being handed off"
+    },
+    {
+      "urn": "ce://default/ticket/729b72ac-9688-48be-847d-c864ffa037be",
+      "kind": "ticket",
+      "relation": "reviews",
+      "reason": "Session workflow authoring guidance child in review"
+    },
+    {
+      "urn": "ce://default/ticket/781dd9ad-74a6-41a1-9dac-4fda185780d7",
+      "kind": "ticket",
+      "relation": "reviews",
+      "reason": "Actionable workflow rejection errors child in review"
+    },
+    {
+      "urn": "ce://default/ticket/7d857543-be6b-42ba-8b7e-608b5bd7c046",
+      "kind": "ticket",
+      "reason": "FUP-CAT under review: ticket/spec/rule capability catalog"
+    },
+    {
+      "urn": "ce://default/ticket/7d951620-76c5-4b24-90ce-e7d08d2dd188",
+      "kind": "ticket",
+      "relation": "first-batch",
+      "reason": "Measurable validation contract"
+    },
+    {
+      "urn": "ce://default/ticket/7f1ed44f-73f3-40c9-9647-d899c64ec507",
+      "kind": "ticket",
+      "reason": "Fix #1: enum-constrain session-mcp workflow mutation params (schema half of full contract)"
+    },
+    {
+      "urn": "ce://default/ticket/8bb97b73-9dbc-43ee-9939-46b3ddf2612f",
+      "kind": "ticket",
+      "reason": "Fix #2 (extended in-place): invalid-enum recovery contract now covers session-mcp workflow params"
+    },
+    {
+      "urn": "ce://default/ticket/8f349d96-a307-400b-a90e-3aceb2250166",
+      "kind": "ticket",
+      "relation": "first-batch",
+      "reason": "WASM log sink prerequisite"
+    },
+    {
+      "urn": "ce://default/ticket/93b8a331-da80-4fef-b13d-7f277cadb15f",
+      "kind": "ticket",
+      "relation": "first-batch",
+      "reason": "Browser result integration design"
+    },
+    {
+      "urn": "ce://default/ticket/956485ad-2e80-4a4c-b5ec-42bac2c7c295",
+      "kind": "ticket",
+      "relation": "owns",
+      "reason": "Viewer validation implementation umbrella"
+    },
+    {
+      "urn": "ce://default/ticket/b13c5d89-db09-46e7-9061-dbed85c4ab41",
+      "kind": "ticket",
+      "reason": "Epic materialized from skill-infrastructure interview"
+    },
+    {
+      "urn": "ce://default/ticket/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d",
+      "kind": "ticket",
+      "reason": "Phase A transport-harness"
+    },
+    {
+      "urn": "ce://default/ticket/e12d8343-24f2-4b5d-8023-5a071238904a",
+      "kind": "ticket",
+      "reason": "Phase A memory-kernel extraction"
+    },
+    {
+      "urn": "ce://default/ticket/fdf53556-2d84-4964-9575-f40032a02e85",
+      "kind": "ticket",
+      "reason": "FUP-ERR under review: ticket state-transition recovery contract"
+    }
+  ],
+  "workflow": {
+    "workflow": {
+      "nodes": [
+        {
+          "node_id": "batch-validation",
+          "kind": "validation",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Validate first-batch contract and focused executable checks",
+          "created_at": "2026-07-15T10:37:32.390026Z",
+          "updated_at": "2026-07-15T10:37:32.390026Z",
+          "validation_spec_id": "val-viewer-first-batch"
+        },
+        {
+          "node_id": "blocker-dbb8fc83",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Blocker dbb8fc83: register task and epic ticket workflow schemas",
+          "created_at": "2026-07-25T19:12:24.469772Z",
+          "updated_at": "2026-07-25T22:04:24.205628500Z",
+          "cached_ticket_title": "Register task and epic ticket workflow schemas"
+        },
+        {
+          "node_id": "followup-2cc7680c",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Follow-up: realistic CLI/MCP/HTTP reference wiring",
+          "created_at": "2026-07-25T16:31:55.222442100Z",
+          "updated_at": "2026-07-25T16:55:41.856094Z",
+          "ticket_urn": "ce://default/ticket/2cc7680c-7f19-4ad7-8658-29920e60ce1c",
+          "cached_ticket_title": "Replace trivial transport reference with realistic domain wiring"
+        },
+        {
+          "node_id": "followup-60114a17",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Design memory-kernel transport-harness reference-proof integration tests (precursor to 2cc7680c)",
+          "created_at": "2026-07-25T16:55:31.067540900Z",
+          "updated_at": "2026-07-25T16:55:31.067540900Z",
+          "ticket_urn": "ce://default/ticket/60114a17-c0ad-43eb-8df6-4741a59d83ce"
+        },
+        {
+          "node_id": "followup-6cc88405",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Follow-up 6cc88405: add literal task/category MCP schema example",
+          "created_at": "2026-07-25T19:12:24.380385300Z",
+          "updated_at": "2026-07-25T22:04:24.139003900Z",
+          "cached_ticket_title": "Add literal task/category example to MCP workflow schema"
+        },
+        {
+          "node_id": "followup-9451f439",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Follow-up: register memory-kernel as context-engine submodule",
+          "created_at": "2026-07-25T16:26:07.445882900Z",
+          "updated_at": "2026-07-25T16:26:07.445882900Z",
+          "ticket_urn": "ce://default/ticket/9451f439-9a08-45bb-810e-771721ac1189",
+          "cached_ticket_title": "Register memory-kernel as a context-engine submodule"
+        },
+        {
+          "node_id": "followup-f10f52e4",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Follow-up: canonical transport-harness spec in memory-kernel",
+          "created_at": "2026-07-25T16:34:30.831621700Z",
+          "updated_at": "2026-07-25T16:34:30.831621700Z",
+          "ticket_urn": "ce://default/ticket/f10f52e4-baec-4fd8-9ac8-2e683ad05ee8",
+          "cached_ticket_title": "Move the transport-harness contract into a memory-kernel spec"
+        },
+        {
+          "node_id": "gpu-profiles",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Define reproducible software and hardware browser lanes",
+          "created_at": "2026-07-15T10:37:32.256684400Z",
+          "updated_at": "2026-07-15T10:37:32.256684400Z",
+          "ticket_urn": "ce://default/ticket/26a73130-c631-4168-8030-fade31c5cf55",
+          "cached_ticket_title": "[viewer-platform][gpu-test] Reproducible software and hardware browser lanes"
+        },
+        {
+          "node_id": "log-sink",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Complete correlated bounded WASM tracing file sink",
+          "created_at": "2026-07-15T10:37:32.322588500Z",
+          "updated_at": "2026-07-15T10:37:32.322588500Z",
+          "ticket_urn": "ce://default/ticket/8f349d96-a307-400b-a90e-3aceb2250166",
+          "cached_ticket_title": "viewer-api-dioxus: ship WASM tracing logs to a server file sink"
+        },
+        {
+          "node_id": "restart-probe-batch-a",
+          "kind": "task",
+          "requirement": "optional",
+          "status": "pending",
+          "title": "Restart batch probe A",
+          "created_at": "2026-07-25T19:41:34.855196Z",
+          "updated_at": "2026-07-25T19:41:34.855196Z",
+          "anchor_urn": "ce://default/ticket/524bee64-3ba0-480b-80c7-4ab56cd45784",
+          "category": "restart-probe"
+        },
+        {
+          "node_id": "restart-probe-batch-b",
+          "kind": "task",
+          "requirement": "optional",
+          "status": "pending",
+          "title": "Restart batch probe B",
+          "created_at": "2026-07-25T19:41:34.855196Z",
+          "updated_at": "2026-07-25T19:41:34.855196Z",
+          "anchor_urn": "ce://default/spec/96bc688a-62ac-4083-923f-e507f2bb19fe",
+          "category": "restart-probe"
+        },
+        {
+          "node_id": "restart-probe-task-anchor",
+          "kind": "task",
+          "requirement": "optional",
+          "status": "pending",
+          "title": "Verify restarted MCP accepts task/category/anchor",
+          "created_at": "2026-07-25T19:40:57.615396Z",
+          "updated_at": "2026-07-25T19:40:57.615396Z",
+          "anchor_urn": "ce://default/ticket/3c6da958-f494-408f-b7dd-cc43997b8ead",
+          "category": "restart-probe"
+        },
+        {
+          "node_id": "result-integration-design",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "done",
+          "title": "Design browser and TypeScript result integration with test-api",
+          "created_at": "2026-07-15T10:37:32.131883500Z",
+          "updated_at": "2026-07-15T17:35:00.519961800Z",
+          "ticket_urn": "ce://default/ticket/93b8a331-da80-4fef-b13d-7f277cadb15f",
+          "cached_ticket_title": "[design][test] Browser & TypeScript automated test integration strategy (design session)"
+        },
+        {
+          "node_id": "review-2cc7680c-verdict",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Verdict 2cc7680c NEEDS-CHANGES: design first (60114a17), proof moves to memory-kernel, assert error envelope",
+          "created_at": "2026-07-25T16:55:31.019863100Z",
+          "updated_at": "2026-07-25T16:55:41.797264Z"
+        },
+        {
+          "node_id": "review-3c6da958-ac1",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC1: MCP category schema steers custom labels to task",
+          "created_at": "2026-07-25T18:51:54.407667200Z",
+          "updated_at": "2026-07-25T22:04:24.116488200Z"
+        },
+        {
+          "node_id": "review-3c6da958-ac2",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC2: anchor_urn is usable by all kinds and never gates finish",
+          "created_at": "2026-07-25T18:51:54.266890400Z",
+          "updated_at": "2026-07-25T18:54:32.162551700Z"
+        },
+        {
+          "node_id": "review-3c6da958-ac3",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC3: anchor accepts only ticket/spec URNs",
+          "created_at": "2026-07-25T18:51:54.306592400Z",
+          "updated_at": "2026-07-25T18:54:32.081947300Z"
+        },
+        {
+          "node_id": "review-3c6da958-ac4",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC4: anchor persistence is backward compatible",
+          "created_at": "2026-07-25T18:51:54.375239400Z",
+          "updated_at": "2026-07-25T18:54:32.118375400Z"
+        },
+        {
+          "node_id": "review-3c6da958-ac5",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC5: anchored task and unchanged finish gating are tested",
+          "created_at": "2026-07-25T18:51:54.351730600Z",
+          "updated_at": "2026-07-25T18:54:32.132537400Z"
+        },
+        {
+          "node_id": "review-524bee64-ac1",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC1: node batch validates fully then persists atomically",
+          "created_at": "2026-07-25T18:56:19.536468500Z",
+          "updated_at": "2026-07-25T18:58:48.839894100Z"
+        },
+        {
+          "node_id": "review-524bee64-ac2",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC2: edge batch validates fully then persists atomically",
+          "created_at": "2026-07-25T18:56:19.549547400Z",
+          "updated_at": "2026-07-25T18:58:48.783268600Z"
+        },
+        {
+          "node_id": "review-524bee64-ac3",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC3: failures identify index and actionable fix",
+          "created_at": "2026-07-25T18:56:19.483090900Z",
+          "updated_at": "2026-07-25T18:58:48.717932300Z"
+        },
+        {
+          "node_id": "review-524bee64-ac4",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC4: nested and flat CLI batch parity",
+          "created_at": "2026-07-25T18:56:19.439770400Z",
+          "updated_at": "2026-07-25T18:58:48.885971900Z"
+        },
+        {
+          "node_id": "review-524bee64-ac5",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC5: success failure atomicity and duplicate no-ops tested",
+          "created_at": "2026-07-25T18:56:19.586742100Z",
+          "updated_at": "2026-07-25T18:58:48.652837400Z"
+        },
+        {
+          "node_id": "review-729b72ac-ac1",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC1: hand-owned path-scoped instruction file covers authoring surfaces",
+          "created_at": "2026-07-25T18:59:00.456619700Z",
+          "updated_at": "2026-07-25T19:11:34.409432100Z"
+        },
+        {
+          "node_id": "review-729b72ac-ac2",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC2: closed kinds and category escape hatch documented",
+          "created_at": "2026-07-25T18:59:00.351342600Z",
+          "updated_at": "2026-07-25T19:11:34.519829900Z"
+        },
+        {
+          "node_id": "review-729b72ac-ac3",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC3: gating URNs and non-gating anchor documented",
+          "created_at": "2026-07-25T18:59:00.414022300Z",
+          "updated_at": "2026-07-25T19:11:34.577641100Z"
+        },
+        {
+          "node_id": "review-729b72ac-ac4",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC4: atomic batch usage and dense graphs documented",
+          "created_at": "2026-07-25T18:59:00.474586600Z",
+          "updated_at": "2026-07-25T19:11:34.699485400Z"
+        },
+        {
+          "node_id": "review-729b72ac-ac5",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC5: rejection table and anchored criteria example match implementation",
+          "created_at": "2026-07-25T18:59:00.320875Z",
+          "updated_at": "2026-07-25T19:11:34.627605600Z"
+        },
+        {
+          "node_id": "review-729b72ac-ac6",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC6: bootstrap cross-link makes guidance discoverable",
+          "created_at": "2026-07-25T18:59:00.520523100Z",
+          "updated_at": "2026-07-25T19:11:34.473599900Z"
+        },
+        {
+          "node_id": "review-781dd9ad-ac1",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC1: invalid node kind gives copy-ready task/category alternative",
+          "created_at": "2026-07-25T17:24:38.866922400Z",
+          "updated_at": "2026-07-25T18:51:43.973704100Z"
+        },
+        {
+          "node_id": "review-781dd9ad-ac2",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC2: gating URN rejection names anchor or pin alternative",
+          "created_at": "2026-07-25T17:24:38.795850100Z",
+          "updated_at": "2026-07-25T18:51:43.872794800Z"
+        },
+        {
+          "node_id": "review-781dd9ad-ac3",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC3: requirement edge and status rejections give legal examples",
+          "created_at": "2026-07-25T17:24:38.893271300Z",
+          "updated_at": "2026-07-25T18:51:43.821098600Z"
+        },
+        {
+          "node_id": "review-781dd9ad-ac4",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "AC4: regression tests assert actionable alternatives",
+          "created_at": "2026-07-25T17:24:38.834720400Z",
+          "updated_at": "2026-07-25T18:51:43.926970800Z"
+        },
+        {
+          "node_id": "review-9451f439-verdict",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Verdict 9451f439 PASS: submodule at memory-kernel/, git branch-pinned dep, dev-only",
+          "created_at": "2026-07-25T16:44:48.548798500Z",
+          "updated_at": "2026-07-25T16:44:55.184795200Z"
+        },
+        {
+          "node_id": "review-dbe0e955-docs",
+          "kind": "validation",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Review: domain-crate contract documents required harness dependency",
+          "created_at": "2026-07-25T16:16:04.178757Z",
+          "updated_at": "2026-07-25T16:34:25.293129900Z",
+          "validation_spec_id": "transport-harness-reference"
+        },
+        {
+          "node_id": "review-dbe0e955-features",
+          "kind": "validation",
+          "requirement": "required",
+          "status": "done",
+          "title": "Review: independently feature-gated transport selection",
+          "created_at": "2026-07-25T16:16:04.051751300Z",
+          "updated_at": "2026-07-25T16:32:44.707906600Z",
+          "validation_spec_id": "transport-harness-reference"
+        },
+        {
+          "node_id": "review-dbe0e955-independent",
+          "kind": "validation",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Review: harness builds/tests independently and is consumable",
+          "created_at": "2026-07-25T16:16:04.118408700Z",
+          "updated_at": "2026-07-25T16:26:00.984798100Z",
+          "validation_spec_id": "transport-harness-reference"
+        },
+        {
+          "node_id": "review-dbe0e955-reference",
+          "kind": "validation",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Review: reference domain routes CLI, MCP, and HTTP through harness",
+          "created_at": "2026-07-25T16:16:03.990112600Z",
+          "updated_at": "2026-07-25T16:31:50.466490400Z",
+          "validation_spec_id": "transport-harness-reference"
+        },
+        {
+          "node_id": "review-f10f52e4-verdict",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Verdict f10f52e4 PASS: new .spec store in memory-kernel, depends on 9451f439, kernel owns validation",
+          "created_at": "2026-07-25T16:48:43.523530700Z",
+          "updated_at": "2026-07-25T16:48:49.728088700Z"
+        },
+        {
+          "node_id": "review-fup-cat",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Review FUP-CAT: ticket/spec/rule capability catalog",
+          "created_at": "2026-07-25T12:31:22.872956800Z",
+          "updated_at": "2026-07-25T13:05:36.067987300Z",
+          "ticket_urn": "ce://default/ticket/7d857543-be6b-42ba-8b7e-608b5bd7c046"
+        },
+        {
+          "node_id": "review-fup-err",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Review FUP-ERR: ticket state-transition recovery contract",
+          "created_at": "2026-07-25T12:31:22.851236Z",
+          "updated_at": "2026-07-25T12:52:01.401998800Z",
+          "ticket_urn": "ce://default/ticket/fdf53556-2d84-4964-9575-f40032a02e85"
+        },
+        {
+          "node_id": "review-outcome-dbe0e955",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "blocked",
+          "title": "Review outcome: transport-harness changes requested",
+          "created_at": "2026-07-25T16:34:45.068231Z",
+          "updated_at": "2026-07-25T16:56:19.998654800Z",
+          "ticket_urn": "ce://default/ticket/dbe0e955-c1b4-414d-820c-10c3fbbb5d3d",
+          "cached_ticket_title": "Shared transport-harness crate for CLI/MCP/HTTP scaffolding"
+        },
+        {
+          "node_id": "shared-harness",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Build canonical shared Playwright harness and all-viewer runner",
+          "created_at": "2026-07-15T10:37:32.070784200Z",
+          "updated_at": "2026-07-15T10:37:32.070784200Z",
+          "ticket_urn": "ce://default/ticket/6002e996-dcb8-4dad-a830-20346ce9d8cc",
+          "cached_ticket_title": "[viewer-platform][e2e] Canonical shared Playwright harness and all-viewer runner"
+        },
+        {
+          "node_id": "spec-contract",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "done",
+          "title": "Define measurable browser and GPU validation contract",
+          "created_at": "2026-07-15T10:37:32.009018600Z",
+          "updated_at": "2026-07-15T17:33:09.342604100Z",
+          "ticket_urn": "ce://default/ticket/7d951620-76c5-4b24-90ce-e7d08d2dd188",
+          "cached_ticket_title": "[viewer-platform][spec] Define measurable browser and GPU validation contract"
+        },
+        {
+          "node_id": "ux-gates",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Add accessibility responsive focus and visual regression gates",
+          "created_at": "2026-07-15T10:37:32.193548800Z",
+          "updated_at": "2026-07-15T10:37:32.193548800Z",
+          "ticket_urn": "ce://default/ticket/40110a1a-40e8-4345-8407-577bd5f4d602",
+          "cached_ticket_title": "[viewer-platform][ux-test] Accessibility, responsive, focus, and visual regression gates"
+        }
+      ],
+      "edges": [
+        {
+          "from": "batch-validation",
+          "to": "gpu-profiles",
+          "kind": "depends-on"
+        },
+        {
+          "from": "batch-validation",
+          "to": "log-sink",
+          "kind": "depends-on"
+        },
+        {
+          "from": "batch-validation",
+          "to": "result-integration-design",
+          "kind": "depends-on"
+        },
+        {
+          "from": "batch-validation",
+          "to": "shared-harness",
+          "kind": "depends-on"
+        },
+        {
+          "from": "batch-validation",
+          "to": "spec-contract",
+          "kind": "depends-on"
+        },
+        {
+          "from": "batch-validation",
+          "to": "ux-gates",
+          "kind": "depends-on"
+        },
+        {
+          "from": "followup-2cc7680c",
+          "to": "followup-60114a17",
+          "kind": "depends-on"
+        },
+        {
+          "from": "followup-60114a17",
+          "to": "review-2cc7680c-verdict",
+          "kind": "depends-on"
+        },
+        {
+          "from": "followup-9451f439",
+          "to": "review-9451f439-verdict",
+          "kind": "depends-on"
+        },
+        {
+          "from": "followup-f10f52e4",
+          "to": "review-f10f52e4-verdict",
+          "kind": "depends-on"
+        },
+        {
+          "from": "restart-probe-batch-a",
+          "to": "restart-probe-task-anchor",
+          "kind": "order"
+        },
+        {
+          "from": "restart-probe-batch-b",
+          "to": "restart-probe-task-anchor",
+          "kind": "order"
+        }
+      ]
+    },
+    "resolutions": [
+      {
+        "node_id": "followup-2cc7680c",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "followup-60114a17",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "followup-9451f439",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "followup-f10f52e4",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "gpu-profiles",
+        "live_ticket_state": "new"
+      },
+      {
+        "node_id": "log-sink",
+        "live_ticket_state": "new"
+      },
+      {
+        "node_id": "result-integration-design",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "review-fup-cat",
+        "live_ticket_state": "in-implementation"
+      },
+      {
+        "node_id": "review-fup-err",
+        "live_ticket_state": "in-implementation"
+      },
+      {
+        "node_id": "review-outcome-dbe0e955",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "shared-harness",
+        "live_ticket_state": "new"
+      },
+      {
+        "node_id": "spec-contract",
+        "live_ticket_state": "done"
+      },
+      {
+        "node_id": "ux-gates",
+        "live_ticket_state": "new"
+      }
+    ]
+  },
+  "validation": [
+    {
+      "validation_spec_id": "ticket-api-crate-suite",
+      "required": true,
+      "outcome": "passed"
+    },
+    {
+      "validation_spec_id": "ticket-api-move-planner-invisible-reference",
+      "required": true,
+      "outcome": "passed"
+    },
+    {
+      "validation_spec_id": "transport-harness-reference",
+      "required": true,
+      "outcome": "passed"
+    },
+    {
+      "validation_spec_id": "val-viewer-first-batch",
+      "required": true
+    }
+  ]
+}
