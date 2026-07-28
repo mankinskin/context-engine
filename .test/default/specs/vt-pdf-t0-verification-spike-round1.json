@@ -1,0 +1,14 @@
+{
+  "id": "vt-pdf-t0-verification-spike-round1",
+  "title": "T0 PDF crate verification spike — round 1 (scratch crate, empirical probes)",
+  "command": "cargo run --manifest-path target/tmp/pdf-spike/Cargo.toml",
+  "detail": "Throwaway scratch crate at target/tmp/pdf-spike/ (untracked, not added to workspace) exercising lopdf 0.44.0 page ops, get_page_images, krilla 0.8.2 Font requirement, and pdf-extract 0.12.0 MediaBox-panic containment. Round 1 covered only the MediaBox panic case for pdf-extract failure modes; missing-ToUnicode, Type0/CID, scanned/no-text-layer, and malformed-xref remain unverified pending round 2.",
+  "links": {
+    "spec_ids": [
+      "83f05962"
+    ],
+    "ticket_ids": [
+      "fc94716e"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "exec-pdf-t0-pdfextract-mediabox-panic",
+  "validation_spec_id": "vt-pdf-t0-verification-spike-round1",
+  "outcome": "passed",
+  "executed_at": "2026-07-28T20:31:19.821965800Z",
+  "detail": "pdf-extract 0.12.0 confirmed to panic (not error) at src/lib.rs:2408 with payload \"MediaBox\" on a page lacking an inherited /MediaBox. catch_unwind(AssertUnwindSafe(...)) confirmed to contain the panic; execution continued afterward. Validates the panic-containment design required for T3's ExtractText operation. Missing-ToUnicode, Type0/CID, scanned/no-text-layer, and malformed-xref failure modes were NOT exercised in this pass.",
+  "links": {
+    "ticket_ids": [
+      "fc94716e",
+      "a4d7df73"
+    ]
+  },
+  "provenance": {
+    "source_path": "target/tmp/pdf-spike/run_full.log",
+    "domain": "pdf",
+    "operation": "extract_text",
+    "run_id": "pdf-t0-round1"
+  }
+}

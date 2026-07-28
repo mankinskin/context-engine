@@ -1,0 +1,19 @@
+{
+  "id": "exec-pdf-t0-image-filter-passthrough",
+  "validation_spec_id": "vt-pdf-t0-verification-spike-round1",
+  "outcome": "passed",
+  "executed_at": "2026-07-28T20:31:19.848657100Z",
+  "detail": "lopdf 0.44.0's get_page_images returns raw encoded stream bytes plus the filter list for every image XObject regardless of filter, confirmed at runtime. DCTDecode (JPEG) and JPXDecode (JPEG2000) streams are directly usable as passthrough without decoding. On a page with no /Resources entry, get_page_images returns Err(DictKey(\"Resources\")) rather than an empty Vec — T9's ExtractImages must map that specific error to a non-error empty result, not propagate it as a failure. CCITTFaxDecode remains unsupported (no usable container without a dedicated fax decoder lopdf does not have).",
+  "links": {
+    "ticket_ids": [
+      "fc94716e",
+      "a59f35fb"
+    ]
+  },
+  "provenance": {
+    "source_path": "target/tmp/pdf-spike/run_full.log",
+    "domain": "pdf",
+    "operation": "extract_images",
+    "run_id": "pdf-t0-round1"
+  }
+}

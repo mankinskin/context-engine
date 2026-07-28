@@ -1,0 +1,19 @@
+{
+  "id": "exec-pdf-t0-lopdf-reorder-rotate-gap",
+  "validation_spec_id": "vt-pdf-t0-verification-spike-round1",
+  "outcome": "passed",
+  "executed_at": "2026-07-28T20:31:19.724857700Z",
+  "detail": "lopdf 0.44.0 has no reorder_pages or rotate_page API, confirmed at compile time via E0599 (\"no method named `reorder_pages` found for mutable reference `&mut Document`\"). Hand-rolled reorder (reversing the page-tree Kids array) and rotate (writing an /Rotate integer) were then confirmed to round-trip correctly through save + a fresh Document::load. T4's EditPages implementation must hand-roll both operations rather than calling a library API.",
+  "links": {
+    "ticket_ids": [
+      "fc94716e",
+      "e135e28c"
+    ]
+  },
+  "provenance": {
+    "source_path": "target/tmp/pdf-spike/build_err2.log",
+    "domain": "pdf",
+    "operation": "edit_pages",
+    "run_id": "pdf-t0-round1"
+  }
+}

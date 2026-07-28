@@ -136,19 +136,44 @@ maintenance status, and pure-Rust status for the candidate set, and has resolved
 the merge object-ID renumbering approach and the typst CLI contract. `krilla` is
 the selected creation backend; `printpdf` is dropped.
 
-What remains open:
+T0 round 1 (empirical verification spike, scratch crate at
+`target/tmp/pdf-spike/`) has since resolved most of what remained open:
 
-- Whether `lopdf` decodes CCITTFaxDecode and JPXDecode image filters. Assumed
-  absent. If confirmed absent, affected images are skipped and reported per R10
-  and named in the documentation — no requirement changes.
-- Whether `krilla` requires a vendored font asset for text output, and if so
-  which licence-compatible font is used.
-- `pdf-extract`'s failure modes, which are undocumented upstream and must be
-  established empirically.
+- **CCITTFax/JPX image filter risk — RESOLVED.** Confirmed by reading `lopdf`
+  0.44.0 source (`src/object.rs`) that its stream decoder implements only
+  `FlateDecode`, `LZWDecode`, and `ASCII85Decode`: CCITTFaxDecode and JPXDecode
+  are confirmed absent from `lopdf`'s own decoding. However,
+  `Document::get_page_images` returns the raw encoded stream bytes plus the
+  filter list regardless of filter, so DCTDecode (JPEG) and JPXDecode
+  (JPEG2000) streams remain extractable as passthrough — the raw bytes are
+  themselves a complete, directly openable file. CCITTFax has no usable
+  container without a dedicated decoder `lopdf` does not have, and is treated
+  as unsupported/skip-with-reason per R10.
+- **krilla font asset risk — RESOLVED.** Confirmed by reading and exercising
+  krilla 0.8.2's public API that every text-drawing call requires an explicit
+  `Font`; `Font` has no `Default` impl and no no-embed text path exists. Font
+  bytes are a hard requirement, not a contingency. `NotoSans-Regular.ttf`
+  (OFL-licensed, vendored by krilla itself as a test/example asset) is the
+  named candidate; final selection and provenance recording remains T5's.
+- **pdf-extract failure modes — PARTIALLY resolved.** The missing-`MediaBox`
+  panic was empirically triggered (`pdf-extract` panics at `src/lib.rs:2408`
+  with payload `"MediaBox"`) and `catch_unwind(AssertUnwindSafe(...))` was
+  confirmed to contain it, validating the planned panic-containment design.
+  Missing-ToUnicode CMap, unusual Type0/CID encodings, scanned/no-text-layer
+  pages, and malformed-xref behavior were **not** exercised in round 1 and
+  remain open pending a second verification-spike round.
 
-The verification spike still gates all dependency selection, but its scope is now
-these three items rather than a full survey. The possibility that image
-extraction is cut under R3 remains.
+The verification spike still gates all dependency selection. The remaining
+open item — full `pdf-extract` failure-mode coverage beyond the MediaBox
+case — is scoped to a second T0 round rather than assumed complete; the
+possibility that image extraction is cut under R3 no longer applies now that
+DCT/JPX passthrough is confirmed viable.
+
+**Decision (2026-07-28): this spec's `draft` state does not gate ticket
+`fc94716e` (T0) moving to `in-review`.** The spec remains in `draft` while T0's
+verification-spike findings above are incorporated; ticket state transitions
+for T0 are the orchestrator's decision and are not blocked on this spec's
+lifecycle state.
 
 ## Traceability
 
