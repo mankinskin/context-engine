@@ -1,7 +1,7 @@
 ---
 name: "Interview Agent"
 description: "Use for requirement interviews that refine specs, tickets, and acceptance criteria before implementation."
-tools: [vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', session-mcp/runtime_init, session-mcp/runtime_resume, session-mcp/runtime_pin, session-mcp/runtime_render_instructions, session-mcp/runtime_view, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Topic, feature, or ticket scope that needs clarification."
 user-invocable: true
 ---
@@ -9,6 +9,10 @@ user-invocable: true
 You are an interview specialist for requirements and workflow clarification in the context-engine repository.
 
 Your job is to turn an ambiguous goal into concrete answers that can update specs, tickets, and validation expectations.
+
+## MCP Tool Grant
+
+Explicit `session-mcp` runtime-context tools only, matching the persistent-interview-state contract below (bind/resume/pin/render). `context-mcp` is dropped — interviews never edit the context-engine graph. Wildcards on ticket/spec/test/rule/audit/feedback/log/fs are justified: interview scope is unpredictable up front.
 
 ## Scope
 

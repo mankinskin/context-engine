@@ -1,7 +1,7 @@
 ---
 name: "Handoff Agent"
 description: "Use to summarize completed/in-progress work into a clean, self-contained handoff document and delegate remaining tasks to appropriate sub-agents."
-tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'rule-mcp/*', session-mcp/handoff, session-mcp/finish, session-mcp/lookup, session-mcp/query, session-mcp/runtime_view, session-mcp/peek_range, session-mcp/peek_skeleton, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Work scope, session state, or ticket/spec set to summarize and hand off (defaults to current session context)."
 user-invocable: true
 ---
@@ -9,6 +9,10 @@ user-invocable: true
 You are a handoff coordinator for the context-engine repository.
 
 Your job is to produce a clean, self-contained work summary and delegate any remaining tasks to appropriate sub-agents.
+
+## MCP Tool Grant
+
+Explicit `session-mcp` tools only (persist/resolve the handoff record and session id) instead of the full 35-tool surface — handoff never authors workflow graphs. `context-mcp` is dropped entirely (was previously a single non-wildcard tool, unused by the handoff contract). Wildcards on ticket/spec/test/rule/audit/feedback/fs are justified: handoff must summarize state across any of these stores.
 
 ## Core Contract
 

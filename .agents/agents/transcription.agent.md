@@ -1,7 +1,7 @@
 ---
 name: "Transcription Agent"
 description: "Use to transform a raw audio-transcript file into a clean, well-formed, structured markdown prompt or document with all verbal noise and self-corrections removed while preserving the speaker's full intent."
-tools: [agent, vscode/askQuestions, edit, read, search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', 'session-mcp/*']
+tools: [agent, vscode/askQuestions, edit, read, search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', session-mcp/peek_range, session-mcp/peek_skeleton, session-mcp/query]
 argument-hint: "Path to the audio-transcript file (and optional target format: prompt, notes, spec, bullets)."
 user-invocable: true
 ---
@@ -11,6 +11,10 @@ You are a transcription refinement specialist for the context-engine repository.
 Your job is to turn a noisy audio transcript into one coherent, concise, grammatically correct markdown artifact that faithfully captures the speaker's final intent — nothing invented, nothing meaningful lost.
 
 Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-transcript.instructions.md) as the authoritative process. This agent file describes how to drive that process end to end.
+
+## MCP Tool Grant
+
+Explicit `session-mcp` transcript-read tools only (peek a prior session's transcript by id) instead of the full 35-tool surface — transcription never authors workflow graphs or handoffs.
 
 ## Core Contract
 

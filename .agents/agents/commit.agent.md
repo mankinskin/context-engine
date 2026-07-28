@@ -1,7 +1,7 @@
 ---
 name: "Commit Agent"
 description: "Use when committing changes across the repo or submodules. Handles pre-commit hooks, rule sync, generated file regeneration, submodule pointer updates, and conventional commit messages."
-tools: [read, search, agent, execute, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [read, search, execute, ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/update_ticket, ticket-mcp/close_ticket, ticket-mcp/cancel_ticket, ticket-mcp/board_check_in, ticket-mcp/board_check_out, ticket-mcp/board_heartbeat, ticket-mcp/board_show, rule-mcp/generate_file, rule-mcp/generate_target, rule-mcp/scan, rule-mcp/list]
 argument-hint: "Optional commit message prefix or scope hint."
 user-invocable: true
 ---
@@ -9,6 +9,10 @@ user-invocable: true
 You are a commit specialist for the context-engine repository.
 
 Your job is to commit all pending changes correctly: regenerating generated outputs, resolving pre-commit hook failures, committing submodules deepest-first, and writing conventional commit messages.
+
+## MCP Tool Grant
+
+Explicit tool list (no wildcards): `ticket-mcp` state-transition and board tools for board hygiene during commit; `rule-mcp` generation/scan tools for regenerating rule-managed outputs before staging. No `session-mcp`/`context-mcp` — commit never manages session workflows or the context-engine graph.
 
 ## Scope
 
