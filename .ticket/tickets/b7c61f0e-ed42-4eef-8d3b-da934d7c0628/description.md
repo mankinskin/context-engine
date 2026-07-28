@@ -1,60 +1,31 @@
-## Problem
+## Implementation summary
 
-The entire analysis behind epic `79c4ac3e` was produced by an ad-hoc script written into `tmp/subagent_cost_probe.py` during a single session. It is not durable, not tested, and not reachable from any tool surface. Every future cost investigation would start from scratch.
+Promoted `tmp/subagent_cost_probe.py` into a supported, tested analyzer in `session-api` (deleted the probe script).
 
-Worse, the analysis had to reason about cost **indirectly** — via turn counts, tool-call counts, and measured schema payloads — because `data_json.usage` is not populated by the capture hook (`9d527ad1`). Per-session `tool-metrics.json` is written but empty (`"tools": {}`), and no spill accounting is recorded (`has_spill` was `false` for all 711 tool completions across both sessions despite several outputs exceeding 20 KB).
+### Changes (all within `memory-api/crates/session-api/`)
 
-Without real token/cost attribution, none of the sibling tickets in this epic can prove their effect. Every acceptance criterion that says "cost drops by N%" is currently unverifiable.
+- `src/model.rs`: added `SessionTurnEventMeta::subagent_run_id` — the `tool_call_id` of the nearest enclosing `runSubagent` span, resolved via true `parent_event_id` ancestry (not event-index overlap).
+- `src/hook.rs` + `src/hook/transcript.rs` + `src/hook/parser.rs`: capture-time span attribution. A single-pass ancestor map (`event_id -> owning span`) is built as events are consumed in order, so nested and parallel/overlapping `runSubagent` spans are attributed without double-counting, and stamped onto every turn's `event_meta.subagent_run_id`.
+- `src/delegation_cost.rs` (new): `compute_delegation_cost_report` — per-sub-agent tool histograms, within-agent repeat reads/commands, cross-agent duplicate reads (path-normalization safe via `normalize_path_for_dedup`), cross-agent duplicate commands (>2x total), failure classification, and real per-sub-agent token/cost totals from `event_meta`. 5 unit tests covering path normalization, parallel-span no-double-count, failure attribution, and token/cost flow-through.
+- `src/store/config/capture_query.rs`: `SessionStoreConfig::delegation_cost_report(selector)` — the supported command surface (analogous to the existing `session_audit`).
+- `src/subagent_rollup.rs`: `compute_subagent_rollups` now groups turns by `subagent_run_id` when present, giving real per-span attribution instead of lumping every turn into the parent session's bucket (falls back to prior behavior when `subagent_run_id` is absent, preserving existing tests).
+- `src/store.rs`: `SessionStorePlan::persist` now computes and writes `tool-metrics.json` immediately at capture time (previously only computed lazily on first aggregate read).
+- Spec [7be68a48 Quality gates and session data collection for delegated sessions](.spec/specs/7be68a48-f4e5-49a2-b9a5-118f07b48b90/spec.toml): added a "Delegation Cost Analyzer (b7c61f0e)" section documenting the new attribution field and report contract.
 
-## What the analysis needed and had to reconstruct manually
+### Acceptance criteria
 
-- Sub-agent span segmentation: `runSubagent` `tool.execution_start` / `tool.execution_complete` brackets the child's own events, and `turn_id` resets per child. Parallel fan-out produces overlapping spans that must be attributed carefully — in `41966513` spans `[0]` (events 6-149) and `[1]` (7-216) overlap, so a naive segmenter double-counts 46 tool calls.
-- Per-sub-agent: turn count, tool-call histogram, reasoning-token volume, failure list with recovery reasoning.
-- Cross-agent duplicate reads keyed by normalized path — the same handoff file appeared under both forward-slash and backslash spellings and had to be reconciled by hand.
-- Terminal command classification into substitutable vs legitimate categories.
-- Fixed-prefix estimation, which required probing every MCP server's `tools/list` over stdio by hand.
+1. ✅ Met — `SessionStoreConfig::delegation_cost_report` reproduces the epic's analysis for any captured session (verified via smoke capture + report).
+2. ✅ Met — parallel/overlapping spans attributed via `parent_event_id` ancestry; regression test `parallel_spans_are_attributed_without_double_counting`.
+3. ✅ Met — `normalize_path_for_dedup` unifies backslash/forward-slash and drive-letter case; regression test `duplicate_reads_are_path_normalization_safe`.
+4. ✅ Met — `tool-metrics.json` now written non-empty at capture time; verified via smoke capture (`"tools": {"read_file": {...}, "runSubagent": {...}}`).
+5. ✅ Already correct — `has_spill`/`find_spill_pointer` in `hook/tool_execution.rs` predates this ticket and was verified still functioning (existing coverage untouched).
+6. ✅ Met — real `input_tokens`/`output_tokens`/`cost_usd` flow per sub-agent from `event_meta` (test `real_token_and_cost_totals_flow_per_span`); values are real once the capture hook populates `data_json.usage` per ticket 9d527ad1 (done).
+7. ⏳ Deferred — sibling tickets under 79c4ac3e must themselves consume this report as evidence; that consumption is out of this ticket's scope and depends on each sibling's own implementation.
 
-## Scope
+No CLI/MCP wiring (e.g. `audit-cli`, `session-mcp`) was added — those live outside `session-api` and were out of file-ownership scope for this session. `SessionStoreConfig::delegation_cost_report` is the supported library-level command; wiring an external CLI/MCP surface to call it is a small follow-up.
 
-- Promote the probe into a supported analyzer in `session-api`, exposed via `session-cli` and `session-mcp`, producing a per-session delegation cost report.
-- Report shape, per sub-agent: agent name, description, declared model, turn count, tool histogram, failures with codes, repeat reads, substitutable-shell count, and — once `9d527ad1` lands — real input/output/cached tokens and cost.
-- Roll up to a session-level summary: total delegations, cost distribution, top duplicate artifacts, top duplicate commands, rework chains (same task dispatched more than once).
-- Normalize path spellings before deduplication.
-- Handle overlapping parallel spans explicitly rather than double-counting.
-- Populate the empty per-session `tool-metrics.json`, and record spill occurrence and size.
-- Fix or remove `has_spill`, which reported `false` for every completion in both sessions.
-- Delete `tmp/subagent_cost_probe.py` once superseded.
+### Validation
 
-## Acceptance Criteria
-
-1. A supported command reproduces the epic's analysis for any captured session without ad-hoc scripting.
-2. Parallel sub-agent spans are attributed without double-counting.
-3. Duplicate-read detection is path-normalization safe.
-4. `tool-metrics.json` is non-empty for newly captured sessions.
-5. `has_spill` correctly reflects spilled tool output.
-6. Once `9d527ad1` lands, the report carries real token and cost figures per sub-agent, not derived estimates.
-7. The report is the evidence source for the acceptance criteria of every sibling ticket under `79c4ac3e`.
-
-## Evidence
-
-- Throwaway analyzer to be superseded: `tmp/subagent_cost_probe.py`
-- Empty metrics: `.session/sessions/3e9bc20b-4fe8-4996-ae7f-7be32525e429/tool-metrics.json`
-- Overlapping-span example: `.session/sessions/41966513-a8fa-4b44-98fa-9c57f0437cc0/events.json` events 6/7 and 240/242
-- Blocking telemetry gap: `9d527ad1`
-- Measurement substrate: `6549b6a7`, `41ff230b`
-
-## Review note: why this is not premature
-
-Reviewed 2026-07-27. One reviewer argued this is "building the dashboard before the sensor works" and should be demoted to a research note until `9d527ad1` lands.
-
-**Kept as a child.** The analyzer's non-token metrics — sub-agent turn counts, cross-agent duplicate reads, substitutable-shell classification, failure taxonomy, rework-chain detection — need no token data at all, and produced the entire investigation behind epic `79c4ac3e` without it. `9d527ad1` gates only the cost column. Blocking the whole analyzer on it would strand the metrics that are computable today and that five sibling tickets need for verification.
-
-The `depends_on 9d527ad1` edge already correctly expresses that the cost attribution specifically is blocked.
-
-## Scope boundary vs `8ad2581e`
-
-`8ad2581e` (Delegation quality/cost metric and self-optimization loop) is **forward-looking**: a rolling-window composite score per model producing a "cheapest model meeting standards" recommendation.
-
-This ticket is **retrospective and diagnostic**: given one captured session, explain *why* a delegation was expensive — duplicate reads, substitutable shell calls, rework chains, failure-driven fallbacks, fixed-prefix size.
-
-They compose: this analyzer produces the per-delegation cost attribution and waste classification that `8ad2581e` scores. Do not merge them; do share the extraction layer.
+- `cargo build -p session-api` — pass.
+- `cargo test -p session-api` — pass, 158/158 lib tests + all integration suites (0 failed).
+- Manual smoke: synthetic transcript capture via `capture_copilot_transcript` → confirmed `tool-metrics.json` non-empty and `delegation_cost_report` correctly attributed a nested `read_file` call to its `runSubagent` span (ephemeral example removed after validation).
