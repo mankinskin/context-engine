@@ -44,6 +44,15 @@ structural crate). T0's Findings are authoritative for the API.
 
 Ops: delete, reorder, rotate. Applied to `input`, written to `output`.
 
+**T0 confirmed (reading `lopdf` 0.44.0 `src/processor.rs` and the full `src/`
+tree): `Document::delete_pages(&mut self, &[u32])` exists, but there is no
+reorder method and no rotate method anywhere in the crate.** Delete uses the
+native API. Reorder and rotate are hand-rolled page-tree edits: reorder by
+rewriting the page-tree `Kids` array to the requested permutation of existing
+page object refs, and rotate by setting each affected page dictionary's
+`/Rotate` entry directly. Budget implementation effort for both as low-level
+structural edits, not thin wrappers over a library call.
+
 - Reorder must be a permutation check — a spec that drops or duplicates pages
   unintentionally should be rejected unless explicitly expressed as a delete.
 - Deleting every page is a user error (a zero-page PDF is not a valid document).

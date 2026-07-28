@@ -51,6 +51,28 @@ response that explicitly signals "no extractable text layer — this document ma
 be scanned; OCR is out of scope". This is the single most likely confusing
 failure mode for an agent caller.
 
+### Panic containment (required, not optional)
+
+**T0 confirmed by reading `pdf-extract` 0.12.0 source that its
+font/CMap/CID/colorspace handling uses `unwrap`/`expect`/`panic!` extensively
+and will PANIC — not return `Err` — on: missing `ToUnicode` CMap, unusual
+Type0/CID encodings, and a missing inherited `MediaBox`.** Encrypted input is
+the one confirmed clean `Err(OutputError)` case; the others are not. Every call
+into `pdf-extract` must be wrapped in `std::panic::catch_unwind` (or run in an
+isolated process) and converted into a clean `PdfError` — plain `Result`-based
+error handling alone will let these panics propagate and crash the whole
+`pdf-api` process.
+
+**Runtime-confirmed (T0 scratch-crate validation, target/tmp/pdf-spike/):** the
+MediaBox panic was actually triggered — `pdf-extract` panics at
+`src/lib.rs:2408` with payload `"MediaBox"` on a page lacking an inherited
+`/MediaBox` — and `catch_unwind(AssertUnwindSafe(...))` **did** contain the
+panic, with execution continuing afterward. The planned panic-containment
+design is validated as workable by actually compiling and running it, not just
+theorized from source reading. Missing-ToUnicode, unusual Type0/CID, and
+scanned/no-text-layer/malformed-xref cases were **not** exercised in that pass
+and remain to be verified by this ticket's own test suite.
+
 ## Acceptance Criteria
 
 - [ ] Extracts text from a normal text-layer PDF fixture.
@@ -62,6 +84,10 @@ failure mode for an agent caller.
       rather than a bare empty string.
 - [ ] A non-PDF file (e.g. a `.txt` renamed to `.pdf`) is a clean user error.
 - [ ] An encrypted/password-protected PDF is a clean user error, not a panic.
+- [ ] A `pdf-extract` panic (missing ToUnicode, unusual Type0/CID encoding, or
+      missing inherited MediaBox) is caught via `catch_unwind` (or process
+      isolation) and converted into a clean `PdfError`, not a process crash —
+      asserted by a test fixture that triggers one of these conditions.
 - [ ] A path outside the sandbox root is rejected (inherited from T2, asserted
       here too).
 - [ ] Malformed/truncated PDF input does not panic.

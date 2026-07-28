@@ -38,8 +38,12 @@ Scope it to: page size, pages, text blocks with a basic font/size, and simple
 line breaks. Explicitly out of scope: tables, images, columns, styling systems.
 If a caller needs real typesetting, they should use Mode B.
 
-Font handling is the main trap. Determine and document `krilla`'s actual
-requirement: if a font asset must be supplied, select a permissively licensed
+Font handling is the main trap. **T0 confirmed (reading krilla's public API)
+that every text-drawing call requires an explicit caller-supplied `Font`,
+constructed via `Font::new(font_bytes, ...)`. There is no default/base-14 font
+and no no-embed text path — a font asset MUST be vendored, not "if needed".**
+krilla itself vendors `NotoSans-Regular.ttf` (OFL-licensed) as its own
+test/example asset — a reasonable candidate. Select a permissively licensed
 open font (OFL or Apache-2.0), vendor it into the crate, and record the licence
 and its provenance in the crate README. Non-ASCII text must either work or fail
 with a clear error — never silently emit garbage or notdef glyphs.

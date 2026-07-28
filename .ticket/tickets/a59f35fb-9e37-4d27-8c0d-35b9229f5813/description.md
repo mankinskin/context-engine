@@ -41,11 +41,34 @@ why it is scoped last.
 Do not attempt full coverage. Handle the common cases and fail cleanly on the
 rest:
 
-- Support the filters T0 confirmed a pure-Rust decoder exists for.
-- For unsupported filters/colorspaces, skip the image and report it in the
-  response as a named skipped entry with the reason. Never emit a corrupt file,
-  and never fail the whole operation because one image is exotic.
-- JPEG2000 in particular is likely unsupported in pure Rust — expect to skip it.
+**T0 confirmed (reading `lopdf` 0.44.0 `src/object.rs` L940-946 and
+`src/document.rs` L804-812):**
+
+- lopdf's stream decoder only implements `FlateDecode`, `LZWDecode`, and
+  `ASCII85Decode`. `CCITTFaxDecode` and `JPXDecode` are **not** decoded.
+- However, `Document::get_page_images` returns the raw encoded stream bytes
+  plus the filter list for every image XObject regardless of filter. DCTDecode
+  (JPEG) and JPXDecode (JPEG2000) raw bytes are themselves complete, directly
+  openable `.jpg` / `.jp2` files — extract these via **raw passthrough**, no
+  decode step required. This is retainable, in-scope work, and simpler than a
+  decode/re-encode path.
+- CCITTFaxDecode streams are a bare fax bitstream with no container: the raw
+  bytes are **not** a usable standalone file, and lopdf has no fax decoder.
+  Treat CCITTFax as **unsupported by explicit decision** — skip and report the
+  reason, never attempt to emit a fax stream as an image file.
+- For any other unsupported filter/colorspace, skip the image and report it in
+  the response as a named skipped entry with the reason. Never emit a corrupt
+  file, and never fail the whole operation because one image is exotic.
+
+**Runtime-confirmed addendum (T0 scratch-crate validation, target/tmp/pdf-spike/):**
+`Document::get_page_images` returns `Result<Vec<PdfImage<'_>>, lopdf::Error>`,
+with `PdfImage.content: &[u8]` and `PdfImage.filters: Option<Vec<String>>`. On
+a page with no `/Resources` entry it returns `Err(DictKey("Resources"))`
+rather than an empty `Vec`. Callers must treat a missing-Resources page as a
+non-error empty case — map that specific error to "no images on this page",
+not propagate it as a failure. This matters for the "PDF containing no images
+returns an empty result, not an error" acceptance criterion below: a
+no-`/Resources` page is one of the concrete cases that criterion must cover.
 
 ### Output
 
