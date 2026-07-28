@@ -14,7 +14,7 @@ The orchestration system delegates work to cheaper models (see spec [a4d61b8c Mo
   - `test-api` for validation/quality-gate evidence.
   - existing session tool-metrics for tool-call data.
 - **Data model requirements** that support computing a per-model satisfactory-work rate downstream (see ticket [8ad2581e Delegation quality/cost metric](.ticket/tickets/8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb/ticket.toml)).
-- **Dependency on token/cost capture**: the spec requires that token, cost, and model attribution flow through the normal `session-api` data path once ticket [9d527ad1 Capture hook: populate data_json.usage](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) lands. No parallel data path or workaround for null fields.
+- **Dependency on token/cost capture**: the spec requires that token, cost, and model attribution flow through the normal `session-api` data path once ticket [9d527ad1 Per-tool-call token-load telemetry via mcp-cost-gate (proxy observes payloads, not usage)](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) lands. No parallel data path or workaround for null fields.
 
 # Non-Goals
 
@@ -128,7 +128,7 @@ Pre-gate and post-gate validation executions link via `session_id` to the delega
 - [46d8b25d Move quality gates before dispatch](.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml) — pre-dispatch gate execution.
 - [10d21210 Define a synthetic benchmark session](.ticket/tickets/10d21210-7168-4ed4-8e99-f6fb0e6e08db/ticket.toml) — benchmark verification substrate.
 - [6549b6a7 Session store: record per-turn/per-sub-agent token and cost with model attribution](.ticket/tickets/6549b6a7-8957-4df0-ada5-8fefb49c015c/ticket.toml) — backend infrastructure (done, but token/cost fields null on disk).
-- [9d527ad1 Capture hook: populate data_json.usage so token/cost/model telemetry is non-zero](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) — blocker for non-null token/cost data.
+- [9d527ad1 Per-tool-call token-load telemetry via mcp-cost-gate (proxy observes payloads, not usage)](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml) — blocker for non-null token/cost data.
 - [8ad2581e Delegation quality/cost metric and self-optimization loop](.ticket/tickets/8ad2581e-d9c0-4d24-b913-2b5ee77b2eeb/ticket.toml) — downstream consumer of this spec's data model.
 
 **Validation specs**:
