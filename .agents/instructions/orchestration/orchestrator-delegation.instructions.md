@@ -1,5 +1,5 @@
 ---
-description: "Use at the start of and throughout every session: Cost-aware delegation and orchestration guidance. Covers cost gating, sub-agent delegation contract, context isolation, and when to delegate vs execute directly."
+description: "Use at the start of and throughout every session: when to operate as orchestrator, the sub-agent delegation contract, and how to classify work into capability roles. Model selection itself lives in model-routing.instructions.md."
 ---
 
 ## When to Activate
@@ -20,22 +20,20 @@ Activate this rule when:
 - Never hardcode prices
 
 **Tooling**:
-- Decision helper: `tools/model-prices/cost_gate.py` resolves `output_mtok` and returns `allow` (exit 0) or `delegate` (exit 3)
-- Query/regenerate: `tools/model-prices/sync_model_prices.py` with `--query <model>`, `--list`, `--format {table,csv,json}`, `--check`, `--force`
+- Query/regenerate the table: `tools/model-prices/sync_model_prices.py` with `--query <model>`, `--list`, `--format {table,csv,json}`, `--check`, `--force`
+- Enforcement middleware: the Rust crate `memory-api/tools/mcp/mcp-cost-gate`. There is no `cost_gate.py` — earlier revisions referenced one that never shipped. See [model-prices.instructions.md](model-prices.instructions.md) for its flags and failure modes.
 
-**MCP boundary enforcement**: `mcp-cost-gate` middleware injects mandatory `caller_model` field into every MCP tool schema and refuses token-heavy calls from orchestrator-tier models. Fails open if price table unavailable.
+**MCP boundary enforcement**: `mcp-cost-gate` middleware injects a mandatory `caller_model` field into every MCP tool schema, then grades each call: `base_budget = round((1 − output_mtok / 60) × 100)` versus an empirical per-tool cost. A pricier model keeps full access to cheap tools and is asked to delegate only the token-heavy ones; an unmeasured tool costs 0 and is always allowed, and a grant offset can raise any model's budget. No model is denied outright. Fails open if the price table is unavailable, and intercepts MCP `tools/call` traffic only — it never sees `runSubagent`, so it does not police dispatch targets.
 
 **Setting `caller_model` correctly**: Pass the **actual id of the model issuing the call** — the running model's real price-table `model_id`, e.g. `claude-opus-5`, `claude-sonnet-5`, `claude-haiku-4-5`, `gpt-5.3-codex`, `gpt-5.6-terra`. Match a `model_id` key in `tools/model-prices/model_prices.json` (query with `sync_model_prices.py --list`).
 - Do **not** pass a generic vendor or product label such as `github-copilot`, `copilot`, `openai`, or `anthropic`. An unrecognized `caller_model` resolves to a **zero-cost budget**, which silently breaks price-awareness enforcement (the gate can no longer distinguish orchestrator-tier from cheap models).
 - When delegating, the sub-agent sets `caller_model` to **its own** model id, not the orchestrator's.
 
-**Tier reference at X=15**: the canonical tier ladder — models, `in$/M · cread$/M · out$/M · ctx`, and per-tier usage — lives in [model-routing.instructions.md](model-routing.instructions.md). It is **not** restated here; a second copy is how the two tables drifted apart. Read it there before pinning a model.
+**Model selection is not this file's job.** The canonical tier ladder, preference ordering, dominated-model notes, prices, and context windows live in [model-routing.instructions.md](model-routing.instructions.md). Read it before pinning any model. Nothing here restates it — a second copy is how the two tables drifted apart.
 
-Operating summary: T0 (Claude Opus 5) orchestrates and delegates. T1 (GPT-5.6 Terra, GPT-5.3-Codex) and below execute directly, since they sit at or under the threshold. **T2 (Claude Sonnet 5) is the default delegation target.** T3 (GPT-5 mini, GPT-5.6 Luna, GPT-5.4 mini) is the cheap worker band and the floor. Claude Sonnet 4.5 is deprecated for new routing — superseded by Claude Sonnet 5, which is cheaper on every axis at the same 1M window.
+The only thing threshold X decides is **who orchestrates**: a model whose `output_mtok` strictly exceeds 15 runs as orchestrator; everything at or below executes directly. Do **not** reuse "at or below X" as dispatch eligibility — it is not a selection rule, and reading it as one makes any same-priced model look defensible.
 
 Never hardcode prices into tooling; re-resolve with `sync_model_prices.py --query <model>` when a routing decision depends on the exact price. See [model-prices.instructions.md](model-prices.instructions.md) for working with the table.
-
-**Low-tier selection metric**: for T3 units, rank on `input_mtok` + `cache_read_mtok` and context window — **not** `output_mtok`. These units are input-heavy and output-tiny, so the output column barely touches the bill. Claude Haiku 4.5 (in $1/M, cache read $0.10/M, 200k) is the most expensive input option in the band with the smallest window; do not default to it.
 
 **Roster check**: the price table is a vendor catalogue and lists models `runSubagent` will refuse. Pin only models present in the surface's model list — a rejected dispatch errors outright and wastes the spawn. See "Roster is not the catalogue" in [model-routing.instructions.md](model-routing.instructions.md).
 
@@ -58,18 +56,11 @@ Never hardcode prices into tooling; re-resolve with `sync_model_prices.py --quer
 
 Each sub-agent dispatch MUST include:
 
-1. **Explicit cheaper model** at or below threshold X, chosen by tier
-   - Format: `"Model Name (Vendor)"`, e.g. `"Claude Sonnet 5 (copilot)"`. The string must match the surface's model list exactly, punctuation included.
-   - **Default: `"Claude Sonnet 5 (copilot)"` (T2).** Use it unless the unit justifies another tier.
-   - Drop to T3 (`"GPT-5 mini (copilot)"` as the cheap-worker default and cost floor, `"GPT-5.6 Luna (copilot)"` when the input exceeds 400k or the unit must emit non-trivial code, `"Kimi K2.7 Code (copilot)"` as a T3 code-specialist option for bulk code-shaped work, `"GPT-5.4 mini (copilot)"` when it needs real reasoning over what it read) for bulk, mechanical, read-only triage, or judgement-free extraction units.
+1. **An explicit model string chosen from the tier ladder** in [model-routing.instructions.md](model-routing.instructions.md), which owns model selection, preference ordering, dominated-model notes, the cheap-tier selection metric, and one-band step-up on failure. Do not re-derive a model from the price table or from a vendor family name.
+   - Default `"Claude Sonnet 5 (copilot)"` (T2); drop to T3 for bulk, mechanical, or read-only units, which is where most volume belongs.
    - Confirm the input fits the target model's context window before dispatch; a truncation-driven re-dispatch costs more than the tier saves.
-   - On a T3 failure, step up exactly one band (T3→T2) — never jump a cheap unit to T1/T0.
-   - Climb to T1 (`"GPT-5.3-Codex (copilot)"` for heavy code generation, `"GPT-5.6 Terra (copilot)"` for very large context) only after a T2 attempt was wrong or too shallow, or for plainly cross-cutting high-risk work — and record why.
    - Under budget pressure, shift every unit down one tier.
-   - Do not route new work to `"Claude Sonnet 4.5 (copilot)"`; Claude Sonnet 5 is cheaper on input, output, and cache read at the same 1M context window.
-   - `"Auto (copilot)"` delegates model selection away from the caller and prevents cost-aware routing from reasoning about the selected model. Permit `Auto (copilot)` only as an explicit escape hatch when no tier model fits or the surface rejects the intended model; any use must be stated explicitly in the dispatch rationale and it must not be used as a default.
-   - Never delegate to another orchestrator-tier model
-   - When multiple eligible models are equal in cost, prefer the latest model version or generation, then the larger context window
+   - Never delegate to another orchestrator-tier model.
 2. **Single well-scoped objective** — one unit per sub-agent, never the whole task
 3. **Compact return contract** — ask for exactly the facts/edits/results needed (file paths, line ranges, diff summary, decision, short findings list), not a transcript
    - Suggested shape: `scope | finding | outcome | blocker | pointer`
@@ -88,14 +79,9 @@ Each sub-agent dispatch MUST include:
 
 **The single most important delegation rule**: A sub-agent inherits NONE of the current session's context. No conversation history, no prior findings, no shared "we". Context-dependent prompts do not fail loudly — they burn a full agent spawn to reply "I have no prior context."
 
-**Pre-dispatch checklist** (every sub-agent prompt MUST be self-contained):
-- Pass FULL CONTENT of artifacts via context bundle, not just ids/paths
-- Include the target agent's contract excerpt inline (do not make sub-agent read its own template)
-- Name every file with full workspace-relative path (never "the file we discussed")
-- Paste exact snippet, error, or scope sub-agent must act on
-- State repository root and any command/cwd assumptions
-- Define every referent — no "this", "that fix", or "the earlier change"
-- State exact return shape you want back
+The pre-dispatch self-containment checklist lives in [model-routing.instructions.md](model-routing.instructions.md). Two additions specific to orchestration:
+- Pass the FULL CONTENT of artifacts via the context bundle, not just ids/paths.
+- Include the target agent's contract excerpt inline; do not make the sub-agent read its own template.
 
 ## Pre-Dispatch Quality Gates
 
@@ -115,9 +101,7 @@ Gate failures are RE-PLAN signals: fix the precondition BEFORE dispatch, never r
 
 ## When NOT to Delegate
 
-**The floor**: Each sub-agent is a full agent loop with real spawn overhead. Delegating a single bounded read (one small file window, one grep) costs MORE than doing it inline.
-
-**Rule**: Delegate only when the subtask is bulky, numerous, or context-heavy. **Bulk, not trivial.** Over-delegation is its own token bonfire.
+See "When NOT to Delegate (The Floor)" in [model-routing.instructions.md](model-routing.instructions.md). Short version: spawn overhead is real, so delegate only bulky, numerous, or context-heavy units. **Bulk, not trivial.**
 
 ## Case → Capability-Role → Cost-Class Mapping
 
@@ -132,36 +116,30 @@ Define work allocation using **capability roles** rather than raw prices, where 
 | **Executor** | Step execution, mechanical edits, read-only triage, interaction with external systems, unforeseen error recovery, large-data handling | T3 | Use liberally for bulk/routine work |
 
 **Allocation principle**: Use **Executors** (small models) as much as possible; reserve **Reasoners** for one-time strategic work; use **Sequencers** (mid-tier) as the default implementation workhorse.
-
 ### Work Case Classification
 
-Each case maps to a capability role based on **driving signals**: scope breadth, data volume, error-recovery need, and reasoning depth.
+Each case maps to a capability role based on **driving signals**: scope breadth, data volume, error-recovery need, and reasoning depth. Resolve the resulting tier to an actual model string through the ladder in [model-routing.instructions.md](model-routing.instructions.md) — no model names appear below, by design.
 
-| Work Case | Role | Cost Class | Driving Signal | Example Models |
-|-----------|------|------------|----------------|----------------|
-| **Strategic planning / decomposition** | Reasoner | T0 | Cross-cutting scope, requires full context once | Claude Opus 5 |
-| **Initial task breakdown** | Reasoner | T0 | Must understand entire problem space | Claude Opus 4.8 |
-| **Quality synthesis / conflict resolution** | Reasoner | T0 | Reconciling contradictory findings | Claude Opus 5 |
-| **Multi-file feature implementation** | Sequencer | T2 (default) | Moderate scope, needs code reasoning | Claude Sonnet 5 |
-| **Bug fix with diagnosis** | Sequencer | T2 | Requires tracing causal chain | Claude Sonnet 5 |
-| **Cross-crate refactor** | Sequencer | T1 | Large scope, high risk | GPT-5.6 Terra, GPT-5.3-Codex |
-| **Test authoring** | Sequencer | T2 | Needs understanding of behavior | Claude Sonnet 5 |
-| **Targeted single-file edit** | Executor | T3 | Narrow scope, clear target | GPT-5 mini, GPT-5.4 mini |
-| **Read-only search / grep** | Executor | T3 | Mechanical extraction | GPT-5 mini |
-| **Docs generation from template** | Executor | T3 | Formula-driven, low judgement | GPT-5 mini |
-| **Run validation command** | Executor | T3 | Execute + summarize result | GPT-5.4 mini |
-| **Bulk file reads for triage** | Executor | T3 | High data volume, low reasoning | GPT-5.6 Luna (large context) |
-| **Error log summarization** | Executor | T3 | Extract failure pattern | GPT-5 mini, GPT-5.6 Luna if the log exceeds 400k |
-| **Retry after failed validation** | Executor | T3 | Unforeseen event recovery | GPT-5.4 mini |
+| Work Case | Role | Cost Class | Driving Signal |
+|-----------|------|------------|----------------|
+| **Strategic planning / decomposition** | Reasoner | T0 | Cross-cutting scope, requires full context once |
+| **Initial task breakdown** | Reasoner | T0 | Must understand entire problem space |
+| **Quality synthesis / conflict resolution** | Reasoner | T0 | Reconciling contradictory findings |
+| **Multi-file feature implementation** | Sequencer | T2 (default) | Moderate scope, needs code reasoning |
+| **Bug fix with diagnosis** | Sequencer | T2 | Requires tracing causal chain |
+| **Cross-crate refactor** | Sequencer | T1 | Large scope, high risk |
+| **Test authoring** | Sequencer | T2 | Needs understanding of behavior |
+| **Targeted single-file edit** | Executor | T3 | Narrow scope, clear target |
+| **Read-only search / grep** | Executor | T3 | Mechanical extraction |
+| **Docs generation from template** | Executor | T3 | Formula-driven, low judgement |
+| **Run validation command** | Executor | T3 | Execute + summarize result |
+| **Bulk file reads for triage** | Executor | T3 | High data volume, low reasoning |
+| **Error log summarization** | Executor | T3 | Extract failure pattern |
+| **Retry after failed validation** | Executor | T3 | Unforeseen event recovery |
 
-**Cost-class boundaries**: All tiers resolve through `tools/model-prices/model_prices.json` `output_mtok` field. Never hardcode prices. Query with:
-```bash
-./tools/model-prices/sync_model_prices.py --query <model-id> --format table
-```
+**Cost-class boundaries**: tier membership is defined by the ladder in [model-routing.instructions.md](model-routing.instructions.md), not by a price range computed here. This file maps **work cases to roles**; that file maps **roles to models**.
 
-**When a case is ambiguous**: Start one tier lower than your intuition suggests, then step up **exactly one band** if the result is insufficient. T3→T2→T1→T0. Never skip tiers.
-
-**Tier-step policy**: After a failed attempt, step up by exactly one tier and record the reason in your planning notes. If T3 produces a shallow answer, retry with T2 (not T0). If T2 fails, only then escalate to T1.
+**When a case is ambiguous**: start one tier lower than your intuition suggests. If the result is insufficient, step up **exactly one band** (T3→T2→T1→T0), never skipping, and record the reason in your planning notes.
 
 ### Driving Signals Detail
 
@@ -173,37 +151,18 @@ Each case maps to a capability role based on **driving signals**: scope breadth,
 | **Error-recovery need** | Reconcile conflicting evidence | Diagnose root cause | Retry with fixed input, summarize logs |
 | **Risk tolerance** | High-risk cross-cutting change | Moderate risk with focused tests | Low-risk mechanical change or read-only |
 
-**Cost class band reference** (from `tools/model-prices/model_prices.json`):
-- **T0 Reasoner**: `output_mtok` strictly > 15 (orchestrator threshold X)
-- **T1 Sequencer (high)**: `output_mtok` 14-15 (at threshold)
-- **T2 Sequencer (default)**: `output_mtok` 8-12
-- **T3 Executor (floor)**: `output_mtok` 2-6
-
-Note that the T3 band is selected on `input_mtok` + `cache_read_mtok`, not on the `output_mtok` range shown here; the output range is descriptive only.
-
-These bands are not normative tiers to maintain — they are **descriptive observations** of the current price table at the time this instruction was written. The authoritative mapping is: resolve the model's `output_mtok` from `tools/model-prices/model_prices.json`, then compare to threshold X (currently 15). The capability-role bands provide semantic guidance for **which class of work** should target **which output cost range**, but the exact model-to-tier membership will shift as prices change.
+These signals classify **work**, which is the unique contribution of this file. They deliberately name no prices and no models: resolve the role to a model through the ladder in [model-routing.instructions.md](model-routing.instructions.md), which is the only place tier membership is maintained.
 
 ## Verify Sub-Agent Output
 
-- Treat every sub-agent summary as an **UNVERIFIED claim** — sub-agents hallucinate
-- Spot-check load-bearing findings against ground truth (real grep, `--check` run, bounded read) BEFORE any finding drives an edit or decision
-- Reasoning over summary is fine; trusting it blindly is not
+See "Verify Subagent Output Before Acting" in [model-routing.instructions.md](model-routing.instructions.md). Short version: every sub-agent summary is an UNVERIFIED claim; spot-check load-bearing findings against ground truth before they drive an edit or decision.
 
 ## Parallel Fan-Out
 
-**Independent READ-ONLY probes** can be dispatched concurrently in a single block, then reasoned over as merged results — the highest-throughput pattern.
-
-**Good targets**:
-- Survey N files/crates at once
-- Run several independent searches
-- Gather evidence from multiple subsystems in parallel
+See "Parallel Fan-Out" in [model-routing.instructions.md](model-routing.instructions.md) for when and how to fan out. One orchestration-specific rule it does not cover:
 
 **Template**: route every fan-out probe through the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`), never the VS Code built-in Explore, so probes keep MCP access.
 
-**Constraint**: Keep fan-out read-only; do not parallelize writes to overlapping scope. Each parallel prompt must still be independently self-contained.
-
 ## Failure Path
 
-- If sub-agent errors, returns empty, refuses, or says it lacks context: **retry ONCE** with more self-contained prompt (usual cause: context isolation)
-- If still fails: do subtask inline and record failure as one-line finding
-- Escalate subtask UP a tier only for quality insufficiency (wrong or too-shallow answer), and record why
+See "Failure Path" in [model-routing.instructions.md](model-routing.instructions.md). Short version: retry once with a more self-contained prompt, then do the subtask inline; escalate up exactly one tier only for quality insufficiency, and record why.

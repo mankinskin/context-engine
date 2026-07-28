@@ -1,6 +1,5 @@
 ---
-description: "Pre-dispatch quality gates for orchestrator delegation. Use before spawning any sub-agent to catch precondition failures cheaply. Covers per-delegation-class gate sets, tool calls implementing each check, and fail-fast semantics."
-applyTo: ".agents/agents/orchestrator.agent.md"
+description: "Use at the start of and throughout every session, immediately before spawning any sub-agent: pre-dispatch quality gates for delegation. Covers per-delegation-class gate sets, tool calls implementing each check, and fail-fast semantics."
 ---
 
 ## Purpose

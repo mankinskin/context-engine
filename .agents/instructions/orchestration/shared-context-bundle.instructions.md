@@ -1,6 +1,5 @@
 ---
-description: "Shared context bundle protocol for sub-agent delegation. Use when spawning sub-agents to avoid redundant artifact discovery. Covers bundle composition, inline content passing, parallel fan-out optimization, and read deduplication."
-applyTo: ".agents/agents/orchestrator.agent.md"
+description: "Use at the start of and throughout every session, whenever spawning a sub-agent: shared context bundle protocol that stops sub-agents rediscovering the same artifacts. Covers bundle composition, inline content passing, parallel fan-out optimization, and read deduplication."
 ---
 
 ## Purpose

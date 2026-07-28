@@ -78,7 +78,7 @@ Sub-agents report verdicts and findings only. **You perform every ticket state t
 - **Review:** one tier above the cheap threshold — prefer "Claude Sonnet 5 (copilot)". Escalate to "GPT-5.3-Codex (copilot)" or "GPT-5.6 Terra (copilot)" only for dense, cross-cutting reviews.
 - **Interview, Commit, Handoff:** at the cheap threshold — prefer "GPT-5 mini (copilot)", stepping to "GPT-5.4 mini (copilot)" when the unit needs real reasoning or "GPT-5.6 Luna (copilot)" when the input exceeds 400k.
 - Among equal-cost models, prefer the latest version or generation, then the larger context window.
-- Do not route new work to "Claude Sonnet 4.5 (copilot)"; Claude Sonnet 5 is cheaper at the same 1M context window.
+- Choose models from the tier ladder in [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md), which also flags the dominated models to route away from.
 
 ## Output Format
 

@@ -10,8 +10,7 @@ description: "Use when resolving model prices, syncing the model cost table, or 
 |---|---|
 | `tools/model-prices/model_prices.json` | The generated price table. Committed artifact; do not hand-edit. |
 | `tools/model-prices/sync_model_prices.py` | Fetches upstream prices and regenerates the table. Also serves offline queries. |
-| `tools/model-prices/cost_gate.py` | Resolves a model to an allow/delegate decision and a budget scale. |
-| `tools/model-prices/test_cost_gate.py` | Tests for the gate. Run after changing gate logic. |
+| `memory-api/tools/mcp/mcp-cost-gate` | The cost gate: MCP middleware that resolves `caller_model` to an allow/delegate decision. Rust crate; there is no Python gate. |
 
 Upstream sources are [pydantic/genai-prices](https://github.com/pydantic/genai-prices) (`prices/data_slim.json`, MIT) and GitHub Copilot's published pricing table (`https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/models-and-pricing.yml` from the github/docs repo). The script is stdlib-only — no PyYAML dependency, no virtualenv needed.
 
@@ -124,18 +123,21 @@ Sync rules:
 
 ## The Cost Gate
 
-`cost_gate.py` turns a model id into a routing decision.
+The gate is a Rust MCP middleware, [memory-api/tools/mcp/mcp-cost-gate](../../../memory-api/tools/mcp/mcp-cost-gate). There is **no** `cost_gate.py`; earlier revisions of this file documented one that never shipped.
 
 ```bash
-python cost_gate.py --model claude-opus-5 --tool runSubagent
-python cost_gate.py --model claude-sonnet-5 --tool read_file --format json
+mcp-cost-gate -- <real-server-command> [server args...]
 ```
 
-- Driving field is `output_mtok`. Exit `0` = `allow` (execute directly), exit `3` = `delegate` (operate as orchestrator).
-- `--model` must be a real `model_id` key from the table (e.g. `claude-sonnet-5`, `gpt-5.3-codex`), not a vendor or product label like `copilot` or `anthropic`. An unrecognized id resolves to a **zero-cost budget**, which silently disables price awareness.
-- The same rule applies to the `caller_model` field that `mcp-cost-gate` injects into MCP tool schemas: pass the id of the model actually issuing the call. A delegated sub-agent passes **its own** id, not the orchestrator's.
-- The gate **fails open** when the price table is missing or unreadable. A silently permissive gate looks identical to a correctly permissive one — verify the table exists before concluding that routing is unrestricted.
-- After changing gate logic, run `python test_cost_gate.py` (or the repo test runner) before relying on it.
+- It fronts a real MCP stdio server: on `tools/list` it injects a required `caller_model` argument into every advertised tool schema; on `tools/call` it reads `arguments.caller_model`, decides allow/delegate, and strips the field before forwarding.
+- The decision is a **graded budget**, not a ban: `base_budget = round((1 − output_mtok / budget_zero_price) × scale_max)`, clamped to the scale, where `budget_zero_price` defaults to 60.0 and `scale_max` to 100. Tool cost comes from the empirical rollup; the call is allowed when `tool_cost <= base_budget + grant_offset`.
+- **No model is ever denied outright.** A pricier model keeps full access to cheap tools and is asked to delegate only the token-heavy ones. An unmeasured tool resolves to cost 0 and is always allowed, and a grant offset (`COST_GATE_GRANTS_DIR`, optionally model-scoped and expiring) raises the ceiling.
+- Illustrative budgets at the default calibration: Claude Opus 5 (`out 25`) → 58, GPT-5.6 Terra and Claude Sonnet 4.5 (`out 15`) → 75, Claude Sonnet 5 (`out 10`) → 83, GPT-5.6 Luna (`out 6`) → 90, GPT-5 mini (`out 2`) → 97. Note that the gate reads `output_mtok` **only**, so two models at the same output price receive identical budgets regardless of how they compare on input, cache read, or context window — that comparison is routing judgement, not gate arithmetic.
+- `caller_model` must be a real `model_id` key from the table (e.g. `claude-sonnet-5`, `gpt-5.3-codex`), not a vendor or product label like `copilot` or `anthropic`. An unrecognized id is **rejected**, so price awareness is never silently bypassed. A delegated sub-agent passes **its own** id, not the orchestrator's.
+- Configure via `COST_GATE_TABLE` (required for enforcement), `COST_GATE_TOOL_METRICS`, `COST_GATE_GRANTS_DIR`, `COST_GATE_SCALE_MAX`, `COST_GATE_BUDGET_ZERO_PRICE`.
+- The gate **fails open** when the price table is missing or unreadable — it becomes a transparent passthrough. A silently permissive gate looks identical to a correctly permissive one; verify `COST_GATE_TABLE` resolves before concluding that routing is unrestricted.
+- **The gate does not see `runSubagent`.** It only intercepts MCP `tools/call` traffic, so it governs *which tools a model may call*, not *which model receives a delegated unit*. Dispatch-target selection is routing judgement — see the tier ladder in [model-routing.instructions.md](model-routing.instructions.md).
+- After changing gate logic, run `cargo test -p mcp-cost-gate` before relying on it.
 
 ## When Prices Move
 
@@ -143,6 +145,6 @@ Model pricing changes often, and a stale table quietly degrades every routing de
 
 1. Re-resolve the models named in the tier tables; confirm each still sits in its assigned band.
 2. Confirm each still exists on the current surface — a price change is a good moment to re-verify the roster, since vendors retire models and the catalogue keeps pricing them.
-3. Check whether a newer generation now dominates the current default on **every** axis (input, output, cache read, context window). If so, promote it and mark the old default as superseded rather than deleting it — existing sessions may still reference it.
-4. Check whether the `X = 15` gate threshold still splits the catalogue sensibly.
+3. Check whether a newer generation now dominates the current default on **every** axis (input, output, cache read, context window). If so, promote it and mark the old default as dominated rather than deleting it — existing sessions may still reference it, and a dominated model left unmarked is exactly how a stale name gets dispatched from habit.
+4. Check whether the `X = 15` gate threshold still splits the catalogue sensibly. Remember it governs **whether to orchestrate**, not which model to dispatch to — dispatch targets come from the tier ladder.
 5. Update the tier tables and record the price basis, so a later reader can tell whether a routing rule was reasoned or inherited.
