@@ -19,7 +19,7 @@ Reference [spec-cli](../../memory-api/tools/cli/spec-cli/README.md), [spec-mcp](
 - the closest matching spec or gap in the spec book
 - related tickets or implementation surfaces
 - unresolved requirements that matter for the next update
-4. Ask concise, decision-driving interview questions.
+4. Ask concise, decision-driving interview questions. Each question must be self-contained (answerable without reading the transcript or any file), name and link every entity it refers to instead of using pronouns or bare ids, resolve exactly one decision, offer concrete options with their consequences, and have an answer you can turn directly into an acceptance criterion. See [question-quality.instructions.md](../instructions/orchestration/question-quality.instructions.md).
 5. Prefer questions that refine:
 - goals and non-goals
 - acceptance criteria
