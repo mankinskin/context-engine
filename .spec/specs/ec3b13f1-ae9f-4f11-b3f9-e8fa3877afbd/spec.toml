@@ -1,8 +1,10 @@
 id = "ec3b13f1-ae9f-4f11-b3f9-e8fa3877afbd"
 created_at = "2026-07-28T12:46:25.759003900+00:00"
 title = "Per-template MCP tool grants: scoped tool sets and lazy discovery for sub-agents"
-state = "draft"
+state = "reviewed"
+code_refs = [{ description = "Regression-probe method and measurement-log contract for tool-grant drift detection (AC4/AC5).", file = ".agents/prompts/tool-grant-regression-probe.prompt.md", kind = "module", line_end = 40, line_start = 1, symbol = "tool-grant-regression-probe" }, { description = "Canonical contract for the model: frontmatter field; confirms ec3b13f1's model: non-goal boundary is honored here, not in this spec.", file = ".agents/instructions/orchestration/model-routing.instructions.md", kind = "module", line_end = 111, line_start = 111, symbol = "model-routing model: contract" }]
 component = "agent-tooling"
+related_tickets = [".ticket/tickets/cd19fed4-44d5-4ef0-848c-19753f1539b0/ticket.toml", ".ticket/tickets/66acb737-71d6-4585-a921-b597f7c88e8e/ticket.toml"]
 scope = "internal"
 slug = "agent-tooling/mcp-tool-grants"
 type = "specification"

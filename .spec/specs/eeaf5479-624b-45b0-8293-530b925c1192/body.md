@@ -107,7 +107,14 @@ Design decisions:
   type-specific rather than generic, so a `TicketRef` can never be
   accidentally constructed from spec data or vice versa.
 
-## Structured Manifest Fields
+## Structured Manifest Fields (as shipped)
+
+**Correction (verified against the merged e82b4f88 implementation):** neither
+manifest gained a literal `Vec<TicketRef>`/`Vec<SpecRef>` struct field with
+its own `#[serde]` attributes. Both manifests already store all
+non-hard-coded metadata inside a flattened `extra: BTreeMap<String, Value>`
+(the same pattern `code_refs` predates), so the typed link is exposed as a
+**typed accessor pair over `extra`**, not a new physical field:
 
 ```rust
 // spec-api: memory-api/crates/spec-api/src/manifest.rs
@@ -116,10 +123,17 @@ pub struct SpecManifest {
     pub created_at: DateTime<Utc>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub code_refs: Vec<CodeRef>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub related_tickets: Vec<TicketRef>,   // NEW — typed, replaces prose entries in `extra`
     #[serde(flatten)]
     pub extra: BTreeMap<String, Value>,
+}
+
+impl SpecManifest {
+    /// Parses the `related_tickets` extra key (never errors; empty vec if absent/malformed).
+    pub fn related_tickets(&self) -> Vec<TicketRef> { self.parse_vec_field("related_tickets") }
+    /// Also reads the legacy untyped `related_tickets`/`ticket_ids` prose keys during migration.
+    pub fn related_tickets_and_legacy(&self) -> Vec<TicketRef> { /* ... */ }
+    /// Writes `related_tickets`, removing the key entirely when empty.
+    pub fn set_related_tickets(&mut self, related_tickets: Vec<TicketRef>) { /* ... */ }
 }
 ```
 
@@ -128,15 +142,25 @@ pub struct SpecManifest {
 pub struct EntityManifest {
     pub id: EntityId,
     pub created_at: DateTime<Utc>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub related_specs: Vec<SpecRef>,       // NEW — typed; TicketManifest inherits via type alias
     #[serde(flatten)]
     pub extra: BTreeMap<String, Value>,
 }
+
+impl EntityManifest {
+    /// Parses the `related_specs` extra key (never errors; empty vec if absent/malformed).
+    pub fn related_specs(&self) -> Vec<SpecRef> { /* ... */ }
+    /// Writes `related_specs`, removing the key entirely when empty.
+    pub fn set_related_specs(&mut self, related_specs: Vec<SpecRef>) -> Result<(), ...> { /* ... */ }
+}
 ```
 
-Both fields default to empty and are omitted from serialized TOML when
-empty, preserving backward compatibility with manifests that predate this
+`TicketManifest` (`memory-api/crates/ticket-api/src/model/ticket.rs`) is a
+type alias of `EntityManifest`, so it inherits `related_specs()` /
+`set_related_specs()` directly.
+
+Both accessors return an empty `Vec` (never an error) when the key is
+absent or malformed, and `set_*` removes the key entirely when the vec is
+empty — preserving backward compatibility with manifests that predate this
 change. Existing untyped `related_tickets`/`ticket_ids` keys remain readable
 inside `extra` until migrated (see Migration below); the validator treats
 their presence as a migration signal, not an error, during a transition
@@ -238,13 +262,14 @@ Integration test:
 
 ## Acceptance Criteria
 
-- AC1 — `SpecManifest.related_tickets: Vec<TicketRef>` exists, `TicketRef`
-  carries a workspace/store identifier. See "Structured Manifest Fields"
+- AC1 — `SpecManifest::related_tickets() -> Vec<TicketRef>` (extra-backed
+  typed accessor, not a literal serde field) exists, `TicketRef` carries a
+  workspace/store identifier. See "Structured Manifest Fields (as shipped)"
   and "TicketRef / SpecRef Schema".
 - AC2 — `TicketManifest` (`EntityManifest`) has
-  `related_specs: Vec<SpecRef>`, `SpecRef` carries a workspace/store
-  identifier. See "Structured Manifest Fields" and "TicketRef / SpecRef
-  Schema".
+  `related_specs() -> Vec<SpecRef>` (same extra-backed accessor pattern),
+  `SpecRef` carries a workspace/store identifier. See "Structured Manifest
+  Fields (as shipped)" and "TicketRef / SpecRef Schema".
 - AC3 — `ticket validate-links --workspace <ws>` and
   `spec validate-links --workspace <ws>` exist. See "`validate-links` CLI
   Contract".
