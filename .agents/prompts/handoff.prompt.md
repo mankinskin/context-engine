@@ -17,6 +17,7 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 
 1. Read the slash-command text and infer the implementation track, ticket, finding set, or current workstream to hand off.
 2. Always carry forward the high-value session context as relative file references:
+- every crate, module, or file named anywhere in the handoff (target files, context anchors, findings) as a repo-root-relative, forward-slash, verified-to-exist physical path — never a bare crate/component name (e.g. `memory-api/crates/session-api/src/model/handoff.rs`, not "the session-api crate"); each nested-store entity reference (ticket, spec) is store-qualified (e.g. `memory-api/.ticket/tickets/<uuid>`, not just `.ticket/`)
 - target working directory to start from
 - durable `workspace_session_id` and outgoing `run_id` from the persisted handoff record
 - persisted `handoff_id` and the exact resume command (`session-cli resume --workspace-session-id <id> --predecessor-run-id <run-id>`)

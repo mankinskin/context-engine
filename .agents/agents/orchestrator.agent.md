@@ -79,6 +79,12 @@ For each unit of work, spawn a sub-agent with:
    findings list — not a transcript.
 4. **The context it needs, and no more.** Pass the minimum anchors (paths,
    ticket/spec ids, prior findings) so the sub-agent does not re-discover them.
+   **Every crate, module, or file you name must carry its resolved physical
+   path** — repo-root-relative, forward-slash, verified to exist (e.g.
+   `memory-api/crates/session-api/src/model/handoff.rs`, not "the session-api
+   crate"). You already know the path from context or a bounded `peek-mcp`
+   lookup; the sub-agent does not, and guessing it is the single most
+   expensive avoidable failure mode in delegated work (see ticket `fb14754e`).
 5. **A workspace agent template.** Dispatch only to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent). Never dispatch to a VS Code built-in agent (such as the built-in Explore), which lacks our MCP toolset. For read-only probes, use the workspace **Explore Agent**.
 
 ## Pre-Dispatch Quality Gates

@@ -30,6 +30,7 @@ Explicit `session-mcp` tools only (persist/resolve the handoff record and sessio
 ## Constraints
 
 - Every file reference must use the full workspace-relative path (e.g., `memory-api/crates/ticket-api/src/lib.rs`).
+- Every crate, module, or file named in `target_files` or a `context_anchors` entry must be a repo-root-relative, forward-slash, verified-to-exist physical path — never a bare crate or component name. A handoff package with an unresolved or non-existent path fails at creation time (`session_handoff`), not at consumption time; do not persist one and rely on the next agent to discover the real path.
 - Every ticket, spec, rule, or log reference must use its authoritative id (e.g., ticket `37b5026f` or spec `ce9eb1cf`).
 - Follow the repository's Clickable Reference Policy from [AGENTS.md](../../AGENTS.md): render entity references as markdown links pointing to manifest files or viewer deep links.
 - Delegate only to workspace `.agents/agents/*.agent.md` templates (Implement Agent, Research Agent, Explore Agent, Testing Agent, Review Agent, etc.), never to VS Code built-in agents.

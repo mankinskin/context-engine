@@ -31,11 +31,27 @@ Each failed path is a wasted turn plus a recovery turn plus several exploration 
 
 ## Acceptance Criteria
 
-1. Handoff packages store repo-root-relative, forward-slash, verified-to-exist paths for every named target.
-2. A handoff containing a path that does not exist fails validation at creation time, not at consumption time.
-3. Delegation prompts emitted by the Orchestrator/Iteration agents include physical paths for every crate, module, or file they reference.
-4. Measured against the benchmark in `10d21210` — whose scenario includes a handoff naming a crate without its physical path — `read_file` / `list_dir` path-resolution failures drop to zero versus the checked-in baseline.
-5. In that same benchmark run, exploratory `find` / `ls` commands issued solely to locate a named crate drop to zero, as classified by the `77eb143b` classifier.
+1. Handoff packages store repo-root-relative, forward-slash, verified-to-exist paths for every named target. **MET.**
+2. A handoff containing a path that does not exist fails validation at creation time, not at consumption time. **MET.**
+3. Delegation prompts emitted by the Orchestrator/Iteration agents include physical paths for every crate, module, or file they reference. **MET.**
+4. Measured against the benchmark in `10d21210` — whose scenario includes a handoff naming a crate without its physical path — `read_file` / `list_dir` path-resolution failures drop to zero versus the checked-in baseline. **DEFERRED-pending-10d21210.** `10d21210` (the synthetic benchmark + checked-in baseline) is not yet built, so there is no benchmark run to measure against. The code path is measurable today: `create_handoff_record` now rejects any handoff naming a crate/file without a verified physical path, which is the mechanism `10d21210`'s scenario will exercise.
+5. In that same benchmark run, exploratory `find` / `ls` commands issued solely to locate a named crate drop to zero, as classified by the `77eb143b` classifier. **DEFERRED-pending-77eb143b-and-10d21210.** The `77eb143b` classifier and the `10d21210` benchmark run are both downstream and not yet built; no classified command counts exist to report.
+
+## Implementation Summary
+
+- [memory-api/crates/session-api/src/model/handoff.rs](memory-api/crates/session-api/src/model/handoff.rs) — `SessionHandoffPackage`/`SessionHandoffRecord` schema unchanged in shape; `target_files`/`context_anchors` now carry normalized, verified paths after `create_handoff_record` runs (see below).
+- [memory-api/crates/session-api/src/store/config/handoff_finish.rs](memory-api/crates/session-api/src/store/config/handoff_finish.rs) — `create_handoff_record` now validates every `target_files` entry, and every path-shaped `context_anchors` entry (anchors containing `/` that are not a `scheme://` or `prefix:id` form), against the discovered workspace root at creation time. A missing/non-existent path returns `SessionError::HandoffPathNotFound` before anything is persisted (AC2); valid entries are normalized to forward-slash form (AC1).
+- [memory-api/crates/session-api/src/store/helpers/storage.rs](memory-api/crates/session-api/src/store/helpers/storage.rs) — added `workspace_root()` (repo-root discovery via the `repo_map.toon` marker file, since this repo nests submodules at multiple levels and `.git` presence alone is ambiguous), `normalize_repo_relative_path()`, `looks_like_path()`, and `verify_repo_relative_path_exists()`.
+- [memory-api/crates/session-api/src/error.rs](memory-api/crates/session-api/src/error.rs) — added `SessionError::HandoffPathNotFound { path, workspace_root }`.
+- [memory-api/crates/session-api/src/store_tests/workflow/snapshot_and_handoff.rs](memory-api/crates/session-api/src/store_tests/workflow/snapshot_and_handoff.rs) — added `handoff_package_with_nonexistent_target_file_fails_at_creation_time` (AC2) and `handoff_package_normalizes_backslash_target_files_to_forward_slash` (AC1).
+- [memory-api/crates/session-api/tests/handoff_folder_storage.rs](memory-api/crates/session-api/tests/handoff_folder_storage.rs), [memory-api/crates/session-api/tests/handoff_roundtrip.rs](memory-api/crates/session-api/tests/handoff_roundtrip.rs) — pre-existing fixtures used synthetic non-existent paths (`src/main.rs`, `src/lib.rs`, `tests/integration.rs`); updated to real repo-relative paths so creation-time validation no longer rejects them.
+- [.agents/agents/orchestrator.agent.md](.agents/agents/orchestrator.agent.md), [.agents/agents/handoff.agent.md](.agents/agents/handoff.agent.md), [.agents/prompts/handoff.prompt.md](.agents/prompts/handoff.prompt.md), [.agents/prompts/iteration.prompt.md](.agents/prompts/iteration.prompt.md) — require physical, repo-root-relative, forward-slash, verified-to-exist paths for every crate/module/file named in delegation prompts and handoff packages (AC3).
+
+## Validation
+
+- `rtk cargo build -p session-api` — pass.
+- `rtk cargo test -p session-api` — 195 passed (10 suites), 0 failed.
+- Recorded as [vt-session-api-handoff-path-validation](memory-api/.test/default/specs/vt-session-api-handoff-path-validation.json) / [exec-vt-session-api-handoff-path-validation-20260728](memory-api/.test/default/executions/exec-vt-session-api-handoff-path-validation-20260728.json) in test-mcp.
 
 ## Evidence
 
