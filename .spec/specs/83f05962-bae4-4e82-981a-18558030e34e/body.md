@@ -105,8 +105,16 @@ documents `pdf-cli` as the fallback.
 - Scanned/image-only PDFs have no text layer. Extraction must signal this
   explicitly rather than returning a bare empty result. OCR is out of scope.
 - Image extraction may not support exotic filters or colorspaces; unsupported
-  images are skipped and reported, never emitted corrupt.
+  images are skipped and reported, never emitted corrupt. CCITTFaxDecode (G3/G4
+  fax) and JPXDecode (JPEG 2000) are the expected gaps and are named explicitly
+  in the agent-facing documentation.
 - typst-based creation is unavailable without `typst-cli`.
+- Password-protected PDFs are rejected with a distinct, actionable error rather
+  than a generic parse failure. PDFs encrypted with an empty user password
+  (permission-locked but not password-protected) are processed transparently,
+  because the underlying crate handles them without our involvement.
+- Structurally malformed or non-conformant PDFs are not repaired; they surface
+  as a normal error.
 
 ## Non-Goals
 
@@ -114,16 +122,33 @@ documents `pdf-cli` as the fallback.
 - Native/C++ bindings.
 - Viewer or frontend crate.
 - OCR.
-- Form filling, digital signatures, encryption.
+- Form filling, digital signatures, encryption. Accepting a password, decrypting,
+  or encrypting output are all out of scope; only error classification for
+  encrypted inputs is in scope.
+- Repair or recovery of malformed / non-conformant PDF structure.
+- PDF/A archival conformance.
 
 ## Open Risk
 
-No crate version, API, license, or maintenance fact was verifiable when this
-spec was authored — the authoring session had no web access. A verification
-spike gates all dependency selection. Until it completes, the concrete crate
-choices behind every requirement above are unconfirmed, and the possibility
-remains that a capability (most likely image extraction) has no viable
-pure-Rust implementation and is cut under R3.
+This spec was originally authored without web access, leaving every crate fact
+unverified. A dedicated research pass has since confirmed versions, licences,
+maintenance status, and pure-Rust status for the candidate set, and has resolved
+the merge object-ID renumbering approach and the typst CLI contract. `krilla` is
+the selected creation backend; `printpdf` is dropped.
+
+What remains open:
+
+- Whether `lopdf` decodes CCITTFaxDecode and JPXDecode image filters. Assumed
+  absent. If confirmed absent, affected images are skipped and reported per R10
+  and named in the documentation — no requirement changes.
+- Whether `krilla` requires a vendored font asset for text output, and if so
+  which licence-compatible font is used.
+- `pdf-extract`'s failure modes, which are undocumented upstream and must be
+  established empirically.
+
+The verification spike still gates all dependency selection, but its scope is now
+these three items rather than a full survey. The possibility that image
+extraction is cut under R3 remains.
 
 ## Traceability
 
@@ -132,12 +157,16 @@ pure-Rust implementation and is cut under R3.
 | Dependency verification (gates R1, R3) | T0 `fc94716e` |
 | R2 | T1 `c72f1fab` |
 | R4, R5, R7, R8 | T2 `e9c0e280` |
-| R1.1, R7, R10 | T3 `a4d7df73` |
+| R1.1, R7, R10 (no-text-layer) | T3 `a4d7df73` |
 | R1.2–R1.5 | T4 `e135e28c` |
 | R1.6, R6 | T5 `42780b6e` |
 | R8 (CLI) | T6 `856c69c2` |
 | R5 (server-owned root), R8 (MCP) | T7 `0a602458` |
-| R9, R10 | T8 `9590bdcf` |
+| R9, R10 (documentation aggregation point) | T8 `9590bdcf` |
+
+R10's limitations are implemented piecemeal across T2 (encrypted-input error),
+T3 (no text layer), T5 (typst unavailable) and T9 (image filter gaps); T8 is
+where they are collected and stated to agents.
 | R1.7 | T9 `a59f35fb` |
 | Non-goal: HTTP | Follow-up `7f39fae3` |
 

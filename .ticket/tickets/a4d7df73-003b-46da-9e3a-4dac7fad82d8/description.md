@@ -19,6 +19,9 @@ T0's Findings section is authoritative.
 
 - `input: PathBuf` — validated through the T2 safety layer.
 - `pages: Option<PageRange>` — optional page selection; absent means all pages.
+  Page numbers follow T2's fixed convention: **1-based inclusive externally,
+  0-based internally, converted only at request validation in `pdf-api`.** Do
+  not introduce a second conversion point here.
 - Read-only: this variant writes nothing and therefore has no `WriteTarget`.
 
 ### Response
@@ -51,7 +54,8 @@ failure mode for an agent caller.
 ## Acceptance Criteria
 
 - [ ] Extracts text from a normal text-layer PDF fixture.
-- [ ] Page-range selection returns only the requested pages.
+- [ ] Page-range selection returns only the requested pages; page `1` selects
+      the first page and page `0` is rejected as a user error.
 - [ ] An out-of-bounds or inverted page range is a user error, not a panic.
 - [ ] Output respects `max_chars` and sets the truncation indicator when cut.
 - [ ] A scanned/image-only fixture returns the explicit "no text layer" signal

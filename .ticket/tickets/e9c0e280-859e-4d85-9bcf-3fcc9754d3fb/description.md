@@ -89,6 +89,50 @@ in every variant passes through it.
   must be implemented write-to-temp-then-rename so a mid-operation failure
   cannot destroy the source.
 
+### Encrypted input detection
+
+**Verified upstream behavior (research report, T0 citations):** `lopdf` detects
+an `/Encrypt` dictionary in the trailer, exposes `Document::is_encrypted()` and
+an `encryption_state`, and **automatically decrypts PDFs encrypted with an empty
+user password** — a common real-world case (permission-locked but not
+password-protected documents). Its documented limitation is that only
+empty-password PDFs are supported.
+
+Without explicit handling, a genuinely locked PDF surfaces as a generic parse
+failure, which is actively misleading to an agent caller. So:
+
+- On load, check `is_encrypted()`. If the document is still locked after
+  `lopdf`'s own empty-password attempt, return a distinct
+  `PdfError::EncryptedUnsupported` naming the input path.
+- The message must state that password-protected PDFs are unsupported and that
+  the caller should decrypt the file externally first — not "failed to parse".
+
+This is **error taxonomy only**. It does not reopen the encryption non-goal: we
+do not accept passwords, do not decrypt, and do not encrypt output. Empty-password
+documents work only because `lopdf` handles them transparently for free.
+
+### Page indexing convention (decided — fixed here, inherited everywhere)
+
+This is settled in T2 so no downstream ticket has to choose, and none may
+deviate. The rule is context-dependent, with exactly one conversion point:
+
+- **All external surfaces are 1-based and inclusive.** Request types, CLI
+  arguments, MCP tool schemas, error messages, response payloads, and the skill
+  documentation all speak in 1-based page numbers, because that is how humans
+  and agents refer to pages ("extract page 3").
+- **All internal Rust code is 0-based.** Every `usize` index, slice offset, and
+  call into an underlying crate uses 0-based indexing.
+- **Conversion happens exactly once, at the request-validation boundary in
+  `pdf-api`.** Requests are converted from 1-based to 0-based during validation;
+  responses convert back on the way out. No conversion may appear anywhere else
+  — an off-by-one scattered across operations is precisely the bug this rule
+  exists to prevent.
+- Page `0` in an external request is a user error (`InvalidPageRange`), not a
+  silent alias for the first page.
+
+Document this on the request type's doc comment. T3, T4, T6, T7 and T8 all
+inherit it and must not restate a different convention.
+
 ### `PdfError`
 
 `thiserror` enum, with variants separable into user errors vs internal errors so
@@ -96,7 +140,7 @@ the MCP layer (T7) can map them to `invalid_params` vs `internal_error`. Expose
 a predicate (e.g. `PdfError::is_user_error()`) so T7 does not have to match on
 every variant. Include at least: `PathOutsideRoot`, `DestinationExists`,
 `InputNotFound`, `NotAPdf`, `EmptyInputSet`, `InvalidPageRange`,
-`ToolUnavailable`, `Parse`, `Io`, `NotImplemented`.
+`EncryptedUnsupported`, `ToolUnavailable`, `Parse`, `Io`, `NotImplemented`.
 
 ## Acceptance Criteria
 
@@ -114,7 +158,16 @@ every variant. Include at least: `PathOutsideRoot`, `DestinationExists`,
       intact.
 - [ ] `Merge` with an empty input set is a user error.
 - [ ] `Split` validates every output path before writing any of them.
+- [ ] A password-protected PDF returns `EncryptedUnsupported`, not a generic
+      parse error — asserted by a test against an encrypted fixture.
+- [ ] An empty-user-password (permission-locked) PDF is processed normally,
+      confirming `lopdf`'s transparent decrypt path is not accidentally blocked
+      by the `is_encrypted()` check.
 - [ ] `is_user_error()` classifies every variant.
+- [ ] External page numbers are 1-based inclusive and internal indices are
+      0-based, with conversion confined to request validation — asserted by a
+      test that page `1` selects the first page and page `0` is rejected as
+      `InvalidPageRange`.
 - [ ] No operation can reach the filesystem without passing the safety layer —
       assert this structurally (e.g. a single private helper is the only fs
       entry point).
@@ -135,4 +188,4 @@ T1.
 
 ## Blocks
 
-T3, T4, T5, T9.
+T3, T4, T5 (T9 transitively, via T8).

@@ -33,7 +33,9 @@ escalate rather than silently deviating.
    implements this exact shape and is the closest copy target.
 2. **Placement.** `memory-api/crates/pdf-api/` and `memory-api/crates/pdf/`,
    both registered in the ROOT `Cargo.toml` `members` list.
-3. **Pure Rust only.** `lopdf` / `pdf-extract` / `printpdf` family. No
+3. **Pure Rust only.** `lopdf` for structure and page operations, `pdf-extract`
+   for text, `krilla` for creation (selected after research; `printpdf` was
+   evaluated and **dropped** — see T5). No
    `pdfium-render`, no C/C++ bindings — not even behind an optional feature.
    Rationale: reproducible builds and cross-platform CI without a native
    toolchain.

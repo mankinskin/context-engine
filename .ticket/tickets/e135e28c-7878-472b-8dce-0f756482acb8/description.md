@@ -48,9 +48,10 @@ Ops: delete, reorder, rotate. Applied to `input`, written to `output`.
   unintentionally should be rejected unless explicitly expressed as a delete.
 - Deleting every page is a user error (a zero-page PDF is not a valid document).
 - Rotation restricted to multiples of 90.
-- Page indices: pick 1-based or 0-based, state it in the type's doc comment, and
-  be consistent with T3's page ranges. Inconsistency here is a guaranteed
-  agent-facing bug.
+- Page indices: **do not choose a convention here.** T2 fixes it for the whole
+  crate — external surfaces are 1-based inclusive, internal Rust indices are
+  0-based, and conversion happens only at request validation in `pdf-api`.
+  Follow that rule; do not add a second conversion point in this ticket.
 
 ### Metadata
 
@@ -74,7 +75,8 @@ Ops: delete, reorder, rotate. Applied to `input`, written to `output`.
 - [ ] Page delete / reorder / rotate each produce correct output.
 - [ ] Deleting all pages is a user error.
 - [ ] Non-multiple-of-90 rotation is a user error.
-- [ ] Page indexing base is documented and consistent with T3.
+- [ ] Page indexing follows T2's convention (1-based external, 0-based internal,
+      single conversion point) with no additional conversion introduced here.
 - [ ] Metadata round-trips: set then get returns what was set.
 - [ ] Clear-vs-untouched metadata semantics are documented and tested.
 - [ ] Every write path honors copy-on-write and the `overwrite` flag from T2.

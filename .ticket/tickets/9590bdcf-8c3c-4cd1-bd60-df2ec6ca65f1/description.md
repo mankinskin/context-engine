@@ -44,13 +44,39 @@ PDF, PDF pages, typst. Follow the style of the existing skill descriptions in
 - The typst caveat: `pdf_create` in typst mode needs `typst-cli` on PATH and
   errors cleanly without it.
 - The scanned-PDF caveat: no text layer means no text; OCR is out of scope.
+- The unsupported-image-filter note: if T0/T9 confirms that CCITTFaxDecode
+  (G3/G4 fax) and JPXDecode (JPEG 2000) image XObjects are not decodable by the
+  selected crate, name those two filter families explicitly as unsupported.
+  Such images are skipped and reported per R10, never emitted corrupt. Stating
+  this up front stops agents filing surprise bug reports against expected
+  behavior. If T9 is cut, keep the note and say image extraction is unavailable.
+- The encrypted-PDF caveat: password-protected inputs return a distinct
+  `EncryptedUnsupported` error and must be decrypted externally first;
+  empty-password (permission-locked) PDFs work transparently.
+- The malformed-PDF caveat: structurally broken PDFs are not repaired; they
+  surface as a normal error.
 - Worked examples for the common flows: extract text, merge, split, set
   metadata, create.
 
+### Licence constraint on the upstream Anthropic skill
+
+Anthropic publishes a PDF skill at `github.com/anthropics/skills` under
+`skills/pdf/`. Its `LICENSE.txt` is **proprietary** and forbids reproducing,
+copying, creating derivative works from, or redistributing the materials.
+
+Therefore: you may look at it only to observe the **public Agent-Skills format
+convention** (YAML frontmatter with `name`/`description`, markdown body), which
+is separately documented in that repo's `spec/` directory. Do not copy its prose,
+its examples, its section structure, or its forms workflow. All body content here
+must be original and written against our Rust/MCP tool surface. Its toolchain is
+Python anyway (`pypdf`, `pdfplumber`, `reportlab`, poppler-utils), so copying it
+would point agents at tools we do not ship.
+
 ### Do not
 
-- Do not vendor the upstream Anthropic/community PDF skill. It targets a Python
-  toolchain and would send agents to the wrong tools.
+- Do not vendor or copy the upstream Anthropic PDF skill. It is
+  proprietary-licensed (see above) and targets a Python toolchain that would
+  send agents to the wrong tools.
 - Do not touch `skills-lock.json` — that tracks vendored skills only, and this
   one is hand-owned.
 
@@ -67,6 +93,10 @@ naming the tools and pointing at the API crate for behavior.
 - [ ] The description names concrete trigger conditions, not a vague summary.
 - [ ] Every implemented tool appears in the capability → tool mapping.
 - [ ] Write-safety, sandbox, typst, and scanned-PDF caveats are all documented.
+- [ ] The unsupported-image-filter, encrypted-PDF, and malformed-PDF caveats are
+      documented.
+- [ ] No prose, example, or section structure is copied from the
+      proprietary-licensed Anthropic PDF skill.
 - [ ] Worked examples are accurate against the shipped tool schemas — verify by
       running them, not by assuming.
 - [ ] `.agents/skills/README.md` Master Index has the new row.
