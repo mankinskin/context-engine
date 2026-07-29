@@ -2,5 +2,52 @@
   "schema_version": 1,
   "session_id": "1c06295f-4889-4350-baad-674c59b903a9",
   "captured_at": "2026-07-09T22:42:39.410Z",
-  "tools": {}
+  "tools": {
+    "read_file": {
+      "call_count": 13,
+      "success_count": 13,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        152,
+        164,
+        163,
+        163,
+        163,
+        163,
+        163,
+        160,
+        160,
+        160,
+        160,
+        152,
+        160
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 11,
+      "success_count": 11,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        234,
+        280,
+        291,
+        269,
+        265,
+        284,
+        479,
+        344,
+        476,
+        493,
+        451
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

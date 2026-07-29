@@ -1,6 +1,173 @@
 {
   "schema_version": 1,
   "session_id": "61f9b2a9-b6dd-4ede-a43d-79b5f9d6e3be",
-  "captured_at": "2026-07-26T14:25:29.941Z",
-  "tools": {}
+  "captured_at": "2026-07-26T14:31:32.370Z",
+  "tools": {
+    "grep_search": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        184,
+        131
+      ],
+      "duration_ms_values": [
+        96,
+        108
+      ]
+    },
+    "list_dir": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        118,
+        118
+      ],
+      "duration_ms_values": [
+        29,
+        87
+      ]
+    },
+    "mcp_ticket-mcp_get_ticket": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        50,
+        50
+      ],
+      "duration_ms_values": [
+        915,
+        1846
+      ]
+    },
+    "mcp_ticket-mcp_get_ticket_description": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        50,
+        50
+      ],
+      "duration_ms_values": [
+        25,
+        78
+      ]
+    },
+    "mcp_ticket-mcp_list_tickets": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        76
+      ],
+      "duration_ms_values": [
+        1885
+      ]
+    },
+    "read_file": {
+      "call_count": 9,
+      "success_count": 9,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        165,
+        165,
+        130,
+        129,
+        155,
+        143,
+        164,
+        145,
+        172
+      ],
+      "duration_ms_values": [
+        32,
+        56,
+        33,
+        41,
+        40,
+        61,
+        42,
+        88,
+        80
+      ]
+    },
+    "runSubagent": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        1781
+      ],
+      "duration_ms_values": [
+        54486
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 9,
+      "success_count": 9,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        286,
+        466,
+        450,
+        268,
+        416,
+        515,
+        917,
+        528,
+        429
+      ],
+      "duration_ms_values": [
+        1989,
+        203,
+        1815,
+        256,
+        202,
+        252,
+        312,
+        365,
+        369
+      ]
+    },
+    "vscode_askQuestions": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        1402
+      ],
+      "duration_ms_values": [
+        117322
+      ]
+    }
+  }
 }

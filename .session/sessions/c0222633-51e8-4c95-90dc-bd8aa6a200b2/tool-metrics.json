@@ -1,6 +1,21 @@
 {
   "schema_version": 1,
   "session_id": "c0222633-51e8-4c95-90dc-bd8aa6a200b2",
-  "captured_at": "2026-07-26T19:47:04.226Z",
-  "tools": {}
+  "captured_at": "2026-07-26T19:47:36.774Z",
+  "tools": {
+    "create_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        1423
+      ],
+      "duration_ms_values": [
+        30
+      ]
+    }
+  }
 }

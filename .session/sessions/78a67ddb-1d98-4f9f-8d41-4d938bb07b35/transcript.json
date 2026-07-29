@@ -1,0 +1,312 @@
+{
+  "schema_version": 1,
+  "session_id": "78a67ddb-1d98-4f9f-8d41-4d938bb07b35",
+  "captured_at": "2026-07-29T10:15:03.332Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "There are a few problems with the toolmetrics still they are not being created or captured in the sessions so this is very bad or a very annoying because we have been working on this for a long time and there are a lot of tickets for it and still every session only creates an empty tool metrics file that it shouldn't even create when it doesn't capture anything so two things First of all we have to understand what needs to happen for the tool metrics to actually be populated with captured tool metrics and second we need to lazily create this file only when we actually actually capture something so we don't have this file all over the place when it doesn't contain anything",
+      "captured_at": "2026-07-29T10:01:44.065Z",
+      "event_meta": {
+        "event_id": "f808f888-c11d-4827-bbae-20552f0d0f67",
+        "parent_event_id": "dbc38c3b-16ee-4451-9916-c2519b77ce0d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I'll investigate the tool metrics capture pipeline.",
+      "captured_at": "2026-07-29T10:02:01.091Z",
+      "event_meta": {
+        "event_id": "570ae66a-943a-47ff-88ef-09d8abe039ee",
+        "parent_event_id": "81bcf84b-aa1d-48ad-8115-02913b6a5353",
+        "event_type": "assistant.message",
+        "message_id": "4533cf68-7cd4-4c80-a131-043a225d866a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01WLuyeYvEhS3CujM8hxqTFk",
+            "name": "grep_search",
+            "arguments": {
+              "query": "tool_metrics|tool-metrics|toolMetrics",
+              "isRegexp": true,
+              "maxResults": 100
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Now I have the full picture. Implementing the fix.",
+      "captured_at": "2026-07-29T10:06:22.281Z",
+      "event_meta": {
+        "event_id": "35432220-01ae-43cc-bcea-528d00411ce2",
+        "parent_event_id": "a8477fbf-5116-436c-a2e9-06b882954763",
+        "event_type": "assistant.message",
+        "message_id": "9c7bf642-fc3f-4f41-bb67-3254eaa4e4ad",
+        "reasoning_text": "I need to add an `is_empty` method to `SessionToolMetricsSummary` and implement a new function that computes session summaries using event data alongside the existing record information.\n\nFor the event-based path, I'm extracting tool metrics from events by checking for completion or result event types, pulling the tool name from either the event or its data JSON, and deduplicating based on tool_call_id. I'm capturing result codes, durations, input character counts from tool arguments, and output character counts when available from the response data. I'll refactor the entry accumulation logic into a helper method to keep things clean, then start implementing the actual computation logic. Writing the refactor...",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Xs6SLy5mC9QPEsXxZoVpYh",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 196,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+              "startLine": 128
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "Now the core edit to `tool_metrics.rs`:",
+      "captured_at": "2026-07-29T10:06:43.193Z",
+      "event_meta": {
+        "event_id": "f7de1118-8786-47e5-a601-1ea46c3bd635",
+        "parent_event_id": "07c9ab1a-77cc-4dcb-a370-5d1e790fee16",
+        "event_type": "assistant.message",
+        "message_id": "788aa24e-8e42-41e2-975e-bfc44392edaa",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01MutHHDsRhxVL9pGwHmtgMh",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Add event-based tool metrics computation and an is_empty helper.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+                  "oldString": "use chrono::{DateTime, Duration, Utc};\nuse serde::{Deserialize, Serialize};\nuse std::collections::BTreeMap;\nuse std::path::Path;\n\nuse crate::{SessionError, SessionRecord, SessionRole};",
+                  "newString": "use chrono::{DateTime, Duration, Utc};\nuse serde::{Deserialize, Serialize};\nuse std::collections::{BTreeMap, BTreeSet};\nuse std::path::Path;\n\nuse crate::{CopilotHookEvent, SessionError, SessionRecord, SessionRole};"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+                  "oldString": "pub struct SessionToolMetricsSummary {\n    pub schema_version: u32,\n    pub session_id: String,\n    pub captured_at: DateTime<Utc>,\n    pub tools: BTreeMap<String, ToolCallSummary>,\n}",
+                  "newString": "pub struct SessionToolMetricsSummary {\n    pub schema_version: u32,\n    pub session_id: String,\n    pub captured_at: DateTime<Utc>,\n    pub tools: BTreeMap<String, ToolCallSummary>,\n}\n\nimpl SessionToolMetricsSummary {\n    /// `true` when no tool call was observed for this session. Callers use\n    /// this to avoid persisting an empty `tool-metrics.json` sidecar.\n    pub fn is_empty(&self) -> bool {\n        self.tools.is_empty()\n    }\n}"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+                  "oldString": "/// Compute per-session tool metrics summary from a session record.\npub fn compute_session_summary(\n    record: &SessionRecord,\n    _estimator: &impl TokenEstimator,\n) -> SessionToolMetricsSummary {\n    let mut tools = BTreeMap::<String, ToolCallSummary>::new();\n\n    for turn in &record.turns {\n        if turn.role != SessionRole::Tool {\n            continue;\n        }\n        let Some(tool_name) = &turn.tool_name else {\n            continue;\n        };\n\n        let entry = tools.entry(tool_name.clone()).or_insert_with(|| {\n            ToolCallSummary {\n                call_count: 0,\n                success_count: 0,\n                fail_count: 0,\n                timeout_count: 0,\n                hang_count: 0,\n                output_char_sizes: Vec::new(),\n                input_char_sizes: Vec::new(),\n                duration_ms_values: Vec::new(),\n            }\n        });\n\n        entry.call_count += 1;\n",
+                  "newString": "/// Compute per-session tool metrics summary from a session record.\n///\n/// Prefer [`compute_session_summary_with_events`]: the Copilot capture path\n/// never emits `role: tool` turns, so a turn-only computation is empty for\n/// every real session.\npub fn compute_session_summary(\n    record: &SessionRecord,\n    estimator: &impl TokenEstimator,\n) -> SessionToolMetricsSummary {\n    compute_session_summary_with_events(record, &[], estimator)\n}\n\n/// Compute per-session tool metrics summary from a session record plus its\n/// captured event stream.\n///\n/// Tool call telemetry lives in the captured events (`tool.execution_complete`\n/// / `tool.execution_result`), not in transcript turns — the Copilot\n/// transcript format has no `role: tool` message. Turn-derived calls are still\n/// honoured (other producers may emit them) and are de-duplicated against the\n/// event stream by `tool_call_id`.\npub fn compute_session_summary_with_events(\n    record: &SessionRecord,\n    events: &[CopilotHookEvent],\n    _estimator: &impl TokenEstimator,\n) -> SessionToolMetricsSummary {\n    let mut tools = BTreeMap::<String, ToolCallSummary>::new();\n    let mut counted_tool_call_ids = BTreeSet::<String>::new();\n\n    for turn in &record.turns {\n        if turn.role != SessionRole::Tool {\n            continue;\n        }\n        let Some(tool_name) = &turn.tool_name else {\n            continue;\n        };\n\n        if let Some(tool_call_id) = turn\n            .event_meta\n            .as_ref()\n            .and_then(|meta| meta.tool_call_id.clone())\n        {\n            counted_tool_call_ids.insert(tool_call_id);\n        }\n\n        let entry = tools.entry(tool_name.clone()).or_insert_with(ToolCallSummary::new);\n\n        entry.call_count += 1;\n"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Now add `ToolCallSummary::new`, the event loop, and helpers:",
+      "captured_at": "2026-07-29T10:06:55.381Z",
+      "event_meta": {
+        "event_id": "449e482c-291d-404d-a5f9-fabf69ff5ccc",
+        "parent_event_id": "9ce3668a-cd25-4b53-a6ba-8e7959607f6c",
+        "event_type": "assistant.message",
+        "message_id": "563b8e92-f709-4f7c-b4c2-68f733fb33be",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01AY73tpgHydw3P6aQG57bpe",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+              "oldString": "    pub output_char_sizes: Vec<u64>,\n    pub input_char_sizes: Vec<u64>,\n    pub duration_ms_values: Vec<i64>,\n}\n\nconst TOOL_METRICS_SCHEMA_VERSION: u32 = 1;",
+              "newString": "    pub output_char_sizes: Vec<u64>,\n    pub input_char_sizes: Vec<u64>,\n    pub duration_ms_values: Vec<i64>,\n}\n\nimpl ToolCallSummary {\n    fn new() -> Self {\n        Self {\n            call_count: 0,\n            success_count: 0,\n            fail_count: 0,\n            timeout_count: 0,\n            hang_count: 0,\n            output_char_sizes: Vec::new(),\n            input_char_sizes: Vec::new(),\n            duration_ms_values: Vec::new(),\n        }\n    }\n\n    /// Increment the outcome bucket implied by `result_code`, falling back to\n    /// `tool_success` when the code is missing or unrecognized. Returns whether\n    /// the call was classified as successful.\n    fn classify(\n        &mut self,\n        result_code: Option<&str>,\n        tool_success: Option<bool>,\n    ) -> bool {\n        match result_code {\n            Some(\"ok\") => {\n                self.success_count += 1;\n                true\n            },\n            Some(\"error\") => {\n                self.fail_count += 1;\n                false\n            },\n            Some(\"timeout\") => {\n                self.timeout_count += 1;\n                false\n            },\n            Some(\"hang\") => {\n                self.hang_count += 1;\n                false\n            },\n            _ => {\n                let success = tool_success != Some(false);\n                if success {\n                    self.success_count += 1;\n                } else {\n                    self.fail_count += 1;\n                }\n                success\n            },\n        }\n    }\n}\n\nconst TOOL_METRICS_SCHEMA_VERSION: u32 = 1;"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Now replace the inline classification block in the turn loop and append the event loop:",
+      "captured_at": "2026-07-29T10:06:59.635Z",
+      "event_meta": {
+        "event_id": "ec542f77-20bb-45a4-8f36-bfd3170c1247",
+        "parent_event_id": "b8254550-629b-43ef-89bf-c5d0ac844445",
+        "event_type": "assistant.message",
+        "message_id": "fa9e5cb7-e581-4f41-a437-859f131c3d78",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XqWBfRmaSMhsCfHHTua6px",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 330,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+              "startLine": 253
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Now wire it into the store persist path with lazy creation:",
+      "captured_at": "2026-07-29T10:07:49.967Z",
+      "event_meta": {
+        "event_id": "0ec5e750-00f1-4716-b67a-75c9ee9b3aa3",
+        "parent_event_id": "4ce727df-c4a0-4f4c-8ccd-9c62faf53598",
+        "event_type": "assistant.message",
+        "message_id": "5bad6735-66e9-4010-a26f-05ceba6bfeb0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_011yc5xF1ZmkvPHcki6hC3ZY",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\store.rs",
+              "newString": "        write_json(&self.paths.manifest_path, &manifest)?;\n        write_json(&self.paths.transcript_path, &transcript)?;\n        if let Some(events) = &merged_events {\n            write_json(&self.paths.events_path, events)?;\n        }\n\n        // Populate tool-metrics.json at capture time (ticket b7c61f0e AC4) so\n        // newly captured sessions always have an up-to-date summary reflecting\n        // the full merged transcript AND event stream. Tool telemetry lives in\n        // the captured events, not in `role: tool` turns, which the Copilot\n        // transcript never produces.\n        let merged_record = SessionRecord {\n            schema_version: manifest.schema_version,\n            session_id: manifest.session_id.clone(),\n            source: manifest.source.clone(),\n            started_at: manifest.started_at,\n            captured_at: manifest.captured_at,\n            metadata: manifest.metadata.clone(),\n            turns: transcript.turns.clone(),\n            links: manifest.links.clone(),\n            track_id: manifest.track_id.clone(),\n            anchor_ticket_id: manifest.anchor_ticket_id.clone(),\n            parent_session_id: manifest.parent_session_id.clone(),\n            spawned_session_id: manifest.spawned_session_id.clone(),\n        };\n        let estimator = crate::tool_metrics::CharsPerTokenEstimator::default();\n        let summary = crate::tool_metrics::compute_session_summary_with_events(\n            &merged_record,\n            merged_events\n                .as_ref()\n                .map(|events| events.events.as_slice())\n                .unwrap_or_default(),\n            &estimator,\n        );\n        // Create the sidecar lazily: a session with no observed tool call must\n        // not leave an empty `tool-metrics.json` behind.\n        let tool_metrics_path = self.paths.session_dir.join(\"tool-metrics.json\");\n        if summary.is_empty() {\n            remove_file_if_exists(&tool_metrics_path)?;\n        } else {\n            write_json(&tool_metrics_path, &summary)?;\n        }\n\n        Ok(self.paths.clone())\n    }\n}\n",
+              "oldString": "        write_json(&self.paths.manifest_path, &manifest)?;\n        write_json(&self.paths.transcript_path, &transcript)?;\n        if let Some(events) = merged_events {\n            write_json(&self.paths.events_path, &events)?;\n        }\n\n        // Populate tool-metrics.json immediately at capture time (ticket\n        // b7c61f0e AC4) instead of only lazily on first aggregate read, so\n        // newly captured sessions always have a non-empty, up-to-date\n        // summary reflecting the full merged transcript.\n        let merged_record = SessionRecord {\n            schema_version: manifest.schema_version,\n            session_id: manifest.session_id.clone(),\n            source: manifest.source.clone(),\n            started_at: manifest.started_at,\n            captured_at: manifest.captured_at,\n            metadata: manifest.metadata.clone(),\n            turns: transcript.turns.clone(),\n            links: manifest.links.clone(),\n            track_id: manifest.track_id.clone(),\n            anchor_ticket_id: manifest.anchor_ticket_id.clone(),\n            parent_session_id: manifest.parent_session_id.clone(),\n            spawned_session_id: manifest.spawned_session_id.clone(),\n        };\n        let estimator = crate::tool_metrics::CharsPerTokenEstimator::default();\n        let summary =\n            crate::tool_metrics::compute_session_summary(&merged_record, &estimator);\n        write_json(&self.paths.session_dir.join(\"tool-metrics.json\"), &summary)?;\n\n        Ok(self.paths.clone())\n    }\n}\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Now update the aggregate read path to use events and stop persisting empty summaries:",
+      "captured_at": "2026-07-29T10:08:26.410Z",
+      "event_meta": {
+        "event_id": "2c9f2b00-637f-4ee8-85ec-7120d09a8e21",
+        "parent_event_id": "676f506d-5a5b-4786-9903-24c174769757",
+        "event_type": "assistant.message",
+        "message_id": "42005446-f5db-411f-8b25-0163e1881b4f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_017hfzfkPCJB7B82RKXc1Tjs",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\store\\config\\tool_metrics.rs",
+              "newString": "    fn load_or_compute_tool_metrics_summary(\n        &self,\n        session_id: &str,\n    ) -> Result<SessionToolMetricsSummary, SessionError> {\n        let tool_metrics_path = self.tool_metrics_path(session_id)?;\n\n        // Reuse a cached summary only when it actually holds tool data. An\n        // empty cached summary predates event-based capture, so recompute it.\n        if let Some(summary) =\n            read_json_if_exists::<SessionToolMetricsSummary>(&tool_metrics_path)?\n        {\n            if !summary.is_empty() {\n                return Ok(summary);\n            }\n        }\n\n        // Compute from the transcript plus the captured event stream, which is\n        // where tool call telemetry actually lives.\n        let record = self.read_session(session_id)?;\n        let paths = self.paths_for_session_id(session_id)?;\n        let events: Option<crate::PersistedSessionEvents> =\n            read_json_if_exists(&paths.events_path)?;\n        let estimator = CharsPerTokenEstimator::default();\n        let summary = compute_session_summary_with_events(\n            &record,\n            events\n                .as_ref()\n                .map(|events| events.events.as_slice())\n                .unwrap_or_default(),\n            &estimator,\n        );\n\n        // Persist lazily: never leave an empty sidecar behind.\n        if summary.is_empty() {\n            remove_file_if_exists(&tool_metrics_path)?;\n        } else {\n            write_json(&tool_metrics_path, &summary)?;\n        }\n\n        Ok(summary)\n    }\n",
+              "oldString": "    fn load_or_compute_tool_metrics_summary(\n        &self,\n        session_id: &str,\n    ) -> Result<SessionToolMetricsSummary, SessionError> {\n        let tool_metrics_path = self.tool_metrics_path(session_id)?;\n\n        // Try to load existing summary\n        if let Some(summary) = read_json_if_exists(&tool_metrics_path)? {\n            return Ok(summary);\n        }\n\n        // Compute from transcript\n        let record = self.read_session(session_id)?;\n        let estimator = CharsPerTokenEstimator::default();\n        let summary = compute_session_summary(&record, &estimator);\n\n        // Persist for future use\n        write_json(&tool_metrics_path, &summary)?;\n\n        Ok(summary)\n    }\n"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Now export the new symbols from `lib.rs`:",
+      "captured_at": "2026-07-29T10:08:38.261Z",
+      "event_meta": {
+        "event_id": "46b03181-df4b-42ce-bd86-60b6dc36d5b0",
+        "parent_event_id": "81fbefa8-bd85-4fa3-a4e3-1b0e1854cab4",
+        "event_type": "assistant.message",
+        "message_id": "20ffd089-f98f-45ac-9b02-22c4d31bf388",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XDJpxXL8EHAZPivoQAcUo4",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 185,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\lib.rs",
+              "startLine": 158
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Now add regression tests:",
+      "captured_at": "2026-07-29T10:09:54.678Z",
+      "event_meta": {
+        "event_id": "89d2ec33-6645-499f-ba33-b0c7ec5f347f",
+        "parent_event_id": "340f961f-74cd-4d7c-ac07-49b4796fd033",
+        "event_type": "assistant.message",
+        "message_id": "3497a871-917a-4b08-af29-febfea80811c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01SPyHY9BWjLj1AgL7RrzHgh",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 1190,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\session-api\\src\\tool_metrics.rs",
+              "startLine": 1140
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "Now a store-level test for lazy sidecar creation. Let me check existing store tests structure:",
+      "captured_at": "2026-07-29T10:11:11.360Z",
+      "event_meta": {
+        "event_id": "bf709f4d-7886-4ef1-b767-59a5aff696f4",
+        "parent_event_id": "1b1884e9-19f7-4db3-94a9-88e0485cd549",
+        "event_type": "assistant.message",
+        "message_id": "6e1cabc1-efbe-44e5-9fde-19b15fb88ab0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01EVFc4yiBpDVjbx3v1F3miQ",
+            "name": "grep_search",
+            "arguments": {
+              "includePattern": "memory-api/crates/session-api/src/store_tests/**",
+              "isRegexp": true,
+              "query": "tool-metrics|tool_metrics"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "Now run the full crate suite:",
+      "captured_at": "2026-07-29T10:12:34.362Z",
+      "event_meta": {
+        "event_id": "3c869e9e-bff3-4f31-b9bd-77cb1ffc3e78",
+        "parent_event_id": "817ba34a-d0f3-4c17-b616-93fe964131ad",
+        "event_type": "assistant.message",
+        "message_id": "e237068b-a698-4aef-bcd6-ace5184a8d62",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01DkDqfetVRSMo76dekVuWBh",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && cargo test -p session-api 2>&1 | grep -E \"^(test result|error|warning: unused|running|---- )\" | head -40",
+              "explanation": "Run full session-api test suite",
+              "goal": "Validate no regressions",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "All green. Here's what was wrong and what changed.\n\n## Root cause\n\nTool metrics were computed **only from transcript turns with `role: tool`** ([tool_metrics.rs](memory-api/crates/session-api/src/tool_metrics.rs)). The Copilot transcript format never emits such a turn — tool telemetry lives entirely in the **captured event stream** (`tool.execution_start` / `tool.execution_complete`, with the synthesized `tool.execution_result` data merged into the complete event at capture time). So `compute_session_summary` iterated turns, matched nothing, and produced `\"tools\": {}` for every session — which was then written out unconditionally.\n\nThe code even documented the symptom in a comment in [copilot-capture-hook.rs](memory-api/crates/session-api/src/bin/copilot-capture-hook.rs) (\"every committed session has zero `role: tool` turns\") without the metrics path ever being adapted.\n\n## Changes\n\n1. **`compute_session_summary_with_events`** ([tool_metrics.rs](memory-api/crates/session-api/src/tool_metrics.rs)) — derives calls from terminal tool events: call counts, ok/error/timeout/hang classification from `result_code`, `duration_ms`, and input argument sizes. De-duplicated by `tool_call_id` so a start/complete/result trio counts once, and turn-derived calls (other producers) are not double-counted. Outcome classification was factored into `ToolCallSummary::classify` and shared by both paths.\n\n2. **Lazy sidecar** — [store.rs](memory-api/crates/session-api/src/store.rs) and [store/config/tool_metrics.rs](memory-api/crates/session-api/src/store/config/tool_metrics.rs) now write `tool-metrics.json` only when at least one tool call was observed, and delete a stale empty one. An empty cached summary is treated as a cache miss so old sessions are recomputed rather than trusted.\n\n3. **Robustness** — aggregation now skips non-session directories instead of aborting (a stray runtime folder was failing the whole rollup).\n\n## Result\n\nRe-running aggregation over the real store: **186 sidecars, 0 empty**, rollup covering 203 sessions (e.g. `apply_patch`: 633 calls, 623 ok, 10 failed, p50 27 ms / p95 3081 ms). The updated hook is installed to `~/.cargo/bin`, so live sessions capture from now on.\n\n## Remaining gap (deliberate)\n\n`output_char_sizes` stays empty: the Copilot transcript's `tool.execution_complete` carries only `{success, toolCallId}` — no result payload or size. That data does not exist at the source, so nothing can be inferred without a producer-side change. Per the existing unmeasured-tool policy this stays fail-open (cost 0) rather than being faked. The graded cost calibration anchored on output tokens therefore still has no empirical input — that needs a separate decision about instrumenting tool output size at the harness level.\n\nTests: 3 unit tests for event-derived metrics/de-dup/empty detection, plus an e2e test asserting the sidecar is absent for a tool-free transcript and populated for one with tool events. Full `session-api` and `session-cli` suites pass.",
+      "captured_at": "2026-07-29T10:15:03.332Z",
+      "event_meta": {
+        "event_id": "638df355-f2aa-4ae0-92ea-fdf2baa8e2e9",
+        "parent_event_id": "77646925-3950-46a5-93a1-56f3a1efe6be",
+        "event_type": "assistant.message",
+        "message_id": "d0de6d40-c034-4d24-98c1-9260409fd3ac",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

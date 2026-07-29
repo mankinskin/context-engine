@@ -2,5 +2,116 @@
   "schema_version": 1,
   "session_id": "a0bce6a2-a04f-4e91-a0af-2252995f5724",
   "captured_at": "2026-07-09T17:44:06.641Z",
-  "tools": {}
+  "tools": {
+    "get_terminal_output": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        45
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        198,
+        109,
+        109
+      ],
+      "duration_ms_values": []
+    },
+    "list_dir": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        115,
+        115,
+        115,
+        115
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 6,
+      "success_count": 6,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        152,
+        290,
+        138,
+        136,
+        290,
+        290
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 28,
+      "success_count": 27,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        224,
+        245,
+        211,
+        244,
+        296,
+        288,
+        373,
+        230,
+        232,
+        236,
+        240,
+        281,
+        282,
+        289,
+        245,
+        210,
+        256,
+        285,
+        279,
+        221,
+        2298,
+        2865,
+        2835,
+        2777,
+        2799,
+        891,
+        264,
+        424
+      ],
+      "duration_ms_values": []
+    },
+    "send_to_terminal": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        80,
+        80
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

@@ -2,5 +2,90 @@
   "schema_version": 1,
   "session_id": "8f0cc56c-a010-4caf-a4f8-ec2b7034e172",
   "captured_at": "2026-07-11T18:18:58.615Z",
-  "tools": {}
+  "tools": {
+    "file_search": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        22,
+        37,
+        40
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        172,
+        34,
+        119
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 19,
+      "success_count": 19,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        148,
+        152,
+        123,
+        123,
+        126,
+        123,
+        128,
+        123,
+        150,
+        122,
+        126,
+        125,
+        127,
+        135,
+        123,
+        125,
+        123,
+        127,
+        124
+      ],
+      "duration_ms_values": []
+    },
+    "runSubagent": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        706,
+        242,
+        583
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        247
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

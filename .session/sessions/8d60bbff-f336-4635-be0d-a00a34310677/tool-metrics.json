@@ -2,5 +2,55 @@
   "schema_version": 1,
   "session_id": "8d60bbff-f336-4635-be0d-a00a34310677",
   "captured_at": "2026-07-11T16:25:13.756Z",
-  "tools": {}
+  "tools": {
+    "file_search": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        36,
+        31,
+        35,
+        41,
+        51
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        79,
+        128
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 9,
+      "success_count": 9,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        149,
+        144,
+        149,
+        151,
+        158,
+        137,
+        137,
+        151,
+        138
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

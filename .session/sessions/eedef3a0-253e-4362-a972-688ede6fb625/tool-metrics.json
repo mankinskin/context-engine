@@ -1,6 +1,73 @@
 {
   "schema_version": 1,
   "session_id": "eedef3a0-253e-4362-a972-688ede6fb625",
-  "captured_at": "2026-07-27T01:41:40.682Z",
-  "tools": {}
+  "captured_at": "2026-07-27T01:43:27.284Z",
+  "tools": {
+    "read_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        296,
+        128
+      ],
+      "duration_ms_values": [
+        18,
+        36
+      ]
+    },
+    "replace_string_in_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        1498
+      ],
+      "duration_ms_values": [
+        18
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 12,
+      "success_count": 12,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        224,
+        349,
+        226,
+        221,
+        358,
+        791,
+        569,
+        341,
+        471,
+        242,
+        209,
+        749
+      ],
+      "duration_ms_values": [
+        3915,
+        171,
+        116,
+        99,
+        112,
+        350,
+        212,
+        113,
+        183,
+        3222,
+        97,
+        439
+      ]
+    }
+  }
 }

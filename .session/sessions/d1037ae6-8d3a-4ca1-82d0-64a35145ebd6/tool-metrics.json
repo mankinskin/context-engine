@@ -2,5 +2,74 @@
   "schema_version": 1,
   "session_id": "d1037ae6-8d3a-4ca1-82d0-64a35145ebd6",
   "captured_at": "2026-07-14T13:01:52.036Z",
-  "tools": {}
+  "tools": {
+    "apply_patch": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        2033,
+        1542,
+        591,
+        1172,
+        1084
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        49,
+        207,
+        49,
+        52,
+        164
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 7,
+      "success_count": 7,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        119,
+        109,
+        111,
+        136,
+        123,
+        136,
+        136
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 7,
+      "success_count": 7,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        325,
+        288,
+        207,
+        208,
+        266,
+        214,
+        536
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

@@ -2,5 +2,105 @@
   "schema_version": 1,
   "session_id": "3cb42c97-6fb4-4891-8356-06d947ffcda4",
   "captured_at": "2026-07-11T18:21:51.746Z",
-  "tools": {}
+  "tools": {
+    "create_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        2876
+      ],
+      "duration_ms_values": []
+    },
+    "multi_replace_string_in_file": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        9433,
+        2505,
+        7327
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 10,
+      "success_count": 10,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        134,
+        148,
+        150,
+        152,
+        151,
+        153,
+        123,
+        123,
+        128,
+        154
+      ],
+      "duration_ms_values": []
+    },
+    "replace_string_in_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        601,
+        355
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 28,
+      "success_count": 28,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        211,
+        273,
+        211,
+        313,
+        225,
+        268,
+        268,
+        252,
+        467,
+        129,
+        1104,
+        382,
+        605,
+        447,
+        191,
+        536,
+        412,
+        488,
+        501,
+        206,
+        1063,
+        427,
+        574,
+        225,
+        641,
+        1082,
+        528,
+        950
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

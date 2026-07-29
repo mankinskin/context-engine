@@ -2,5 +2,83 @@
   "schema_version": 1,
   "session_id": "ceab90c1-9cd9-4d42-afaa-78ea0ddaf4e0",
   "captured_at": "2026-07-13T17:29:26.708Z",
-  "tools": {}
+  "tools": {
+    "file_search": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        70,
+        70
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        160
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 6,
+      "success_count": 6,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        152,
+        175,
+        171,
+        175,
+        171,
+        159
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 9,
+      "success_count": 9,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        207,
+        233,
+        229,
+        286,
+        276,
+        235,
+        220,
+        266,
+        255
+      ],
+      "duration_ms_values": []
+    },
+    "session_store_sql": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        134,
+        81,
+        333,
+        76
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

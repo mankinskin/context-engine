@@ -2,5 +2,277 @@
   "schema_version": 1,
   "session_id": "0be0204b-fb48-420f-af3a-72e767d53ce0",
   "captured_at": "2026-07-12T17:38:41.641Z",
-  "tools": {}
+  "tools": {
+    "apply_patch": {
+      "call_count": 25,
+      "success_count": 25,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        423,
+        523,
+        483,
+        445,
+        470,
+        438,
+        446,
+        719,
+        610,
+        223,
+        3640,
+        854,
+        446,
+        2379,
+        1100,
+        340,
+        333,
+        560,
+        1086,
+        2852,
+        2906,
+        2676,
+        572,
+        781,
+        1208
+      ],
+      "duration_ms_values": []
+    },
+    "create_file": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        2235,
+        3995,
+        5142,
+        2434,
+        1313
+      ],
+      "duration_ms_values": []
+    },
+    "file_search": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        97,
+        94,
+        97
+      ],
+      "duration_ms_values": []
+    },
+    "get_changed_files": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        2
+      ],
+      "duration_ms_values": []
+    },
+    "get_errors": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        488
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 13,
+      "success_count": 13,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        232,
+        193,
+        115,
+        204,
+        126,
+        126,
+        145,
+        109,
+        88,
+        145,
+        146,
+        181,
+        115
+      ],
+      "duration_ms_values": []
+    },
+    "mcp_rmcp4_test_record_execution": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        581,
+        595,
+        597,
+        583
+      ],
+      "duration_ms_values": []
+    },
+    "mcp_rmcp5_board_check_in": {
+      "call_count": 2,
+      "success_count": 0,
+      "fail_count": 2,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        362,
+        339
+      ],
+      "duration_ms_values": []
+    },
+    "mcp_rmcp5_board_release_lease": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        154,
+        154
+      ],
+      "duration_ms_values": []
+    },
+    "mcp_rmcp5_board_show": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        70,
+        102,
+        102
+      ],
+      "duration_ms_values": []
+    },
+    "mcp_rmcp5_get_ticket_description": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        114,
+        114
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 33,
+      "success_count": 32,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        124,
+        128,
+        125,
+        124,
+        129,
+        124,
+        124,
+        127,
+        124,
+        127,
+        126,
+        128,
+        130,
+        139,
+        126,
+        154,
+        156,
+        277,
+        277,
+        138,
+        138,
+        128,
+        127,
+        136,
+        132,
+        127,
+        142,
+        148,
+        151,
+        127,
+        133,
+        136,
+        134
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 34,
+      "success_count": 34,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        204,
+        228,
+        286,
+        373,
+        205,
+        273,
+        291,
+        254,
+        380,
+        407,
+        1229,
+        247,
+        337,
+        214,
+        210,
+        246,
+        278,
+        269,
+        280,
+        259,
+        255,
+        244,
+        199,
+        568,
+        213,
+        342,
+        526,
+        315,
+        316,
+        426,
+        314,
+        319,
+        545,
+        266
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

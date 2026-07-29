@@ -2,5 +2,81 @@
   "schema_version": 1,
   "session_id": "9422771a-ffec-477d-80d5-3c1fd1aa2a0e",
   "captured_at": "2026-07-13T23:46:07.684Z",
-  "tools": {}
+  "tools": {
+    "apply_patch": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        3327,
+        1949
+      ],
+      "duration_ms_values": []
+    },
+    "mcp_rmcp6_update_ticket": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        1078
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 7,
+      "success_count": 7,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        138,
+        143,
+        136,
+        137,
+        164,
+        172,
+        175
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 21,
+      "success_count": 21,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        241,
+        260,
+        544,
+        305,
+        239,
+        232,
+        232,
+        246,
+        286,
+        229,
+        520,
+        219,
+        345,
+        301,
+        394,
+        433,
+        421,
+        326,
+        369,
+        248,
+        261
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

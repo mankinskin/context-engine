@@ -1,6 +1,195 @@
 {
   "schema_version": 1,
   "session_id": "bc70bac5-0a04-432e-b9c2-3d4cdf96551b",
-  "captured_at": "2026-07-27T11:02:09.808Z",
-  "tools": {}
+  "captured_at": "2026-07-27T11:07:30.819Z",
+  "tools": {
+    "file_search": {
+      "call_count": 7,
+      "success_count": 7,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        38,
+        39,
+        40,
+        28,
+        32,
+        33,
+        39
+      ],
+      "duration_ms_values": [
+        118,
+        144,
+        184,
+        197,
+        154,
+        250,
+        114
+      ]
+    },
+    "grep_search": {
+      "call_count": 20,
+      "success_count": 20,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        42,
+        39,
+        37,
+        40,
+        42,
+        40,
+        80,
+        74,
+        83,
+        117,
+        127,
+        100,
+        108,
+        127,
+        73,
+        110,
+        99,
+        82,
+        105,
+        113
+      ],
+      "duration_ms_values": [
+        94,
+        132,
+        240,
+        188,
+        324,
+        294,
+        151,
+        108,
+        182,
+        99,
+        78,
+        84,
+        99,
+        85,
+        128,
+        78,
+        157,
+        333,
+        188,
+        110
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        93
+      ],
+      "duration_ms_values": [
+        27
+      ]
+    },
+    "read_file": {
+      "call_count": 25,
+      "success_count": 24,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        161,
+        201,
+        132,
+        131,
+        134,
+        141,
+        150,
+        140,
+        153,
+        136,
+        132,
+        202,
+        134,
+        136,
+        133,
+        135,
+        133,
+        135,
+        136,
+        138,
+        128,
+        130,
+        130,
+        130,
+        139
+      ],
+      "duration_ms_values": [
+        102,
+        35,
+        85,
+        164,
+        134,
+        103,
+        128,
+        103,
+        172,
+        28,
+        47,
+        60,
+        19,
+        24,
+        18,
+        20,
+        22,
+        45,
+        28,
+        102,
+        30,
+        46,
+        59,
+        29,
+        20
+      ]
+    },
+    "runSubagent": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        1895,
+        2660
+      ],
+      "duration_ms_values": [
+        122193,
+        136530
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        132,
+        151,
+        208
+      ],
+      "duration_ms_values": [
+        712,
+        4095,
+        4273
+      ]
+    }
+  }
 }

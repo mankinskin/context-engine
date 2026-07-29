@@ -1,6 +1,113 @@
 {
   "schema_version": 1,
   "session_id": "26ddc52f-d30d-4ed7-aa95-a8e93f700c9a",
-  "captured_at": "2026-07-26T22:10:57.787Z",
-  "tools": {}
+  "captured_at": "2026-07-26T22:14:16.482Z",
+  "tools": {
+    "mcp_spec-mcp_spec_update": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        169
+      ],
+      "duration_ms_values": [
+        1029
+      ]
+    },
+    "multi_replace_string_in_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        3503
+      ],
+      "duration_ms_values": [
+        9
+      ]
+    },
+    "read_file": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        148,
+        162,
+        177,
+        179,
+        179
+      ],
+      "duration_ms_values": [
+        40,
+        46,
+        14,
+        16,
+        18
+      ]
+    },
+    "replace_string_in_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        822
+      ],
+      "duration_ms_values": [
+        11
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 15,
+      "success_count": 15,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        305,
+        400,
+        282,
+        254,
+        213,
+        256,
+        214,
+        370,
+        267,
+        206,
+        332,
+        265,
+        206,
+        213,
+        206
+      ],
+      "duration_ms_values": [
+        17597,
+        130,
+        121,
+        2421,
+        101,
+        114,
+        120,
+        185,
+        147,
+        116,
+        182,
+        7770,
+        9310,
+        8535,
+        4424
+      ]
+    }
+  }
 }

@@ -2,5 +2,202 @@
   "schema_version": 1,
   "session_id": "b7160ab9-b673-43d3-b06c-b0e7c4976787",
   "captured_at": "2026-07-28T12:16:42.976Z",
-  "tools": {}
+  "tools": {
+    "get_errors": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        561,
+        749
+      ],
+      "duration_ms_values": [
+        14,
+        13
+      ]
+    },
+    "grep_search": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        127,
+        137,
+        81,
+        119
+      ],
+      "duration_ms_values": [
+        101,
+        82,
+        141,
+        89
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        76
+      ],
+      "duration_ms_values": [
+        11
+      ]
+    },
+    "multi_replace_string_in_file": {
+      "call_count": 17,
+      "success_count": 17,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        5454,
+        1907,
+        4837,
+        4829,
+        4635,
+        3148,
+        2404,
+        7825,
+        5133,
+        3218,
+        5018,
+        2494,
+        9528,
+        8642,
+        7043,
+        12217,
+        1808
+      ],
+      "duration_ms_values": [
+        38,
+        13,
+        14,
+        16,
+        27,
+        14,
+        46,
+        48,
+        19,
+        17,
+        22,
+        18,
+        14,
+        13,
+        17,
+        16,
+        9
+      ]
+    },
+    "read_file": {
+      "call_count": 22,
+      "success_count": 21,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        160,
+        170,
+        131,
+        167,
+        126,
+        126,
+        128,
+        128,
+        128,
+        126,
+        126,
+        144,
+        161,
+        143,
+        138,
+        164,
+        172,
+        172,
+        130,
+        158,
+        146,
+        160
+      ],
+      "duration_ms_values": [
+        17,
+        17,
+        30,
+        17,
+        21,
+        2501,
+        18,
+        11,
+        17,
+        6,
+        16,
+        134,
+        22,
+        22,
+        29,
+        17,
+        20,
+        27,
+        31,
+        15,
+        16,
+        19
+      ]
+    },
+    "replace_string_in_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        794
+      ],
+      "duration_ms_values": [
+        13
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 9,
+      "success_count": 9,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        187,
+        136,
+        229,
+        209,
+        909,
+        738,
+        624,
+        575,
+        933
+      ],
+      "duration_ms_values": [
+        8369,
+        70,
+        4258,
+        120,
+        501,
+        314,
+        361,
+        410,
+        858
+      ]
+    }
+  }
 }

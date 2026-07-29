@@ -2,5 +2,125 @@
   "schema_version": 1,
   "session_id": "046e62f3-9c28-43bf-8213-32d415eb2595",
   "captured_at": "2026-07-14T14:22:19.765Z",
-  "tools": {}
+  "tools": {
+    "apply_patch": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        6146,
+        498
+      ],
+      "duration_ms_values": []
+    },
+    "get_errors": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        336
+      ],
+      "duration_ms_values": []
+    },
+    "grep_search": {
+      "call_count": 6,
+      "success_count": 6,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        149,
+        211,
+        189,
+        155,
+        224,
+        235
+      ],
+      "duration_ms_values": []
+    },
+    "read_file": {
+      "call_count": 21,
+      "success_count": 21,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        137,
+        148,
+        290,
+        152,
+        152,
+        152,
+        152,
+        152,
+        152,
+        152,
+        152,
+        138,
+        152,
+        151,
+        139,
+        151,
+        290,
+        137,
+        151,
+        139,
+        289
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 22,
+      "success_count": 22,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        195,
+        216,
+        259,
+        287,
+        284,
+        295,
+        195,
+        224,
+        222,
+        1169,
+        155,
+        225,
+        657,
+        261,
+        285,
+        357,
+        202,
+        871,
+        294,
+        915,
+        271,
+        342
+      ],
+      "duration_ms_values": []
+    },
+    "send_to_terminal": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        80
+      ],
+      "duration_ms_values": []
+    }
+  }
 }

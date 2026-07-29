@@ -2,5 +2,42 @@
   "schema_version": 1,
   "session_id": "6f0f1137-d76f-4a0d-a63c-e6279b25dabf",
   "captured_at": "2026-07-16T17:56:33.190Z",
-  "tools": {}
+  "tools": {
+    "mcp_session-mcp_session_runtime_resume": {
+      "call_count": 1,
+      "success_count": 0,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        145
+      ],
+      "duration_ms_values": []
+    },
+    "run_in_terminal": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        181
+      ],
+      "duration_ms_values": []
+    },
+    "tool_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        94
+      ],
+      "duration_ms_values": []
+    }
+  }
 }
