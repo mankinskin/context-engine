@@ -75,6 +75,70 @@ Highest-risk items, in order: (1) The state rename 5b3da351 rewrites every ticke
 - **Edges**: 24
 - **Not Done**: 13
 
+```mermaid
+flowchart TD
+  nepic_root["Structured Ticket Entities (track root) |req| |pending| |ticket:-|"]
+  nr_deferred_amendment_order["Resolve amendment rendering order during 4c7b884e refinement |req| |done| |ticket:-|"]
+  nr_deferred_viewer_ux["Resolve viewer profile/amendment UX during 89fa0c25 refinement |req| |done| |ticket:-|"]
+  nspec_anchor["Spec: Structured Ticket Entities |req| |done| |ticket:draft|"]
+  nt0_state_rename["Rename lifecycle states new-&gt;open, ready-&gt;planned, migrate store |req| |pending| |ticket:-|"]
+  nt1_parts_storage["Parts storage, [[parts]] manifest, core kind vocabulary |req| |pending| |ticket:-|"]
+  nt2_part_writes["Part-addressed writes and mandatory description_mode |req| |pending| |ticket:-|"]
+  nt3_typed_refs["Typed [[refs]] manifest table |req| |pending| |ticket:-|"]
+  nt4_freezing["Plan freezing at planned, amendments, unfreeze by transition |req| |pending| |ticket:-|"]
+  nt5_projections["Projected reads: summary/plan/review/full and --parts |req| |pending| |ticket:-|"]
+  nt6_migration["Migrate existing descriptions into typed parts |req| |pending| |ticket:-|"]
+  nt7_viewer["ticket-viewer: parts, frozen state, amendments, typed refs |req| |pending| |ticket:-|"]
+  nt8_guidance["Agent guidance and rule entries |req| |pending| |ticket:-|"]
+  nv_migration_dryrun["Migration dry-run then lossless apply |req| |pending| |ticket:-|"]
+  nv_viewer_e2e["ticket-viewer release E2E with screenshots |req| |pending| |ticket:-|"]
+  nv_workspace_build["cargo test -p ticket-api -p memory-api |req| |pending| |ticket:-|"]
+  nepic_root -->|depends_on| nt0_state_rename
+  nepic_root -->|depends_on| nt8_guidance
+  nepic_root -->|depends_on| nv_migration_dryrun
+  nepic_root -->|depends_on| nv_viewer_e2e
+  nepic_root -->|depends_on| nv_workspace_build
+  nr_deferred_amendment_order -->|order| nt3_typed_refs
+  nr_deferred_viewer_ux -->|order| nt5_projections
+  nt0_state_rename -->|depends_on| nspec_anchor
+  nt1_parts_storage -->|depends_on| nspec_anchor
+  nt2_part_writes -->|depends_on| nt1_parts_storage
+  nt3_typed_refs -->|depends_on| nt2_part_writes
+  nt4_freezing -->|depends_on| nt0_state_rename
+  nt4_freezing -->|depends_on| nt2_part_writes
+  nt5_projections -->|depends_on| nr_deferred_amendment_order
+  nt5_projections -->|depends_on| nt3_typed_refs
+  nt6_migration -->|depends_on| nt4_freezing
+  nt6_migration -->|depends_on| nt5_projections
+  nt7_viewer -->|depends_on| nr_deferred_viewer_ux
+  nt7_viewer -->|depends_on| nt5_projections
+  nt8_guidance -->|depends_on| nt4_freezing
+  nt8_guidance -->|depends_on| nt5_projections
+  nv_migration_dryrun -->|depends_on| nt6_migration
+  nv_viewer_e2e -->|depends_on| nt7_viewer
+  nv_workspace_build -->|depends_on| nt5_projections
+  diag_nepic_root(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/bbb4bce9-d57c-4f85-8757-8d239f9f7cde)"))
+  diag_nepic_root -.-> nepic_root
+  diag_nt0_state_rename(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/5b3da351-1c87-4619-a0bc-6d7abe147d60)"))
+  diag_nt0_state_rename -.-> nt0_state_rename
+  diag_nt1_parts_storage(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/5a3d152c-faf7-4d33-8a4e-7ed19cf6b142)"))
+  diag_nt1_parts_storage -.-> nt1_parts_storage
+  diag_nt2_part_writes(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/3d952036-efd4-4f36-a77f-6b7f5058a0a0)"))
+  diag_nt2_part_writes -.-> nt2_part_writes
+  diag_nt3_typed_refs(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/9d69e93d-b7ab-4f88-a88c-40ec76d5206b)"))
+  diag_nt3_typed_refs -.-> nt3_typed_refs
+  diag_nt4_freezing(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/f9e70385-adb7-4942-a8fb-6a383863cc7e)"))
+  diag_nt4_freezing -.-> nt4_freezing
+  diag_nt5_projections(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/4c7b884e-fd9b-4967-9599-5b55495d6e52)"))
+  diag_nt5_projections -.-> nt5_projections
+  diag_nt6_migration(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/f65f2b32-9297-4360-9ad7-deb75e7ea401)"))
+  diag_nt6_migration -.-> nt6_migration
+  diag_nt7_viewer(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/89fa0c25-a9ee-4f2d-a341-09fd9707946a)"))
+  diag_nt7_viewer -.-> nt7_viewer
+  diag_nt8_guidance(("ticket-state-unavailable: unsupported cross-workspace ticket routing: URN workspace `memory-api` does not match session workspace `default` (ce://memory-api/ticket/71e13480-4f92-418a-a9e6-155f3274f180)"))
+  diag_nt8_guidance -.-> nt8_guidance
+```
+
 ## Validation
 - `vt-structured-ticket-entities-migration`: - (required)
 - `vt-structured-ticket-entities-rust`: - (required)
