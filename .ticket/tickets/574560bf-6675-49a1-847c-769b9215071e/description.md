@@ -31,3 +31,24 @@ The read side of tool-cost observability is unavailable. This compounds the coll
 ## Verification note
 
 Per 7de9f4f0, verify by executing the tool against the real store and reading the result — not by asserting the fix compiles.
+
+
+---
+
+## Fixed 2026-07-29 — memory-api commit `7df14ea`
+
+`SessionStoreConfig::tool_metrics` in [store/config/tool_metrics.rs](memory-api/crates/session-api/src/store/config/tool_metrics.rs) propagated the error from any single unreadable session directory, aborting aggregation for the entire store. Reproduced exactly as reported:
+
+```
+session error: session data was not found at .session\sessions\6a51a1af-6812-4dfc-80d7-0e4f56b4af4f\session.json
+```
+
+That directory is a runtime scratch folder containing only `context.json` and `handoffs/`, not a session.
+
+Fix: the per-session load now skips `SessionError::NotFound` and `SessionError::Deserialize` and continues, matching the pre-existing tolerance in `latest_session_id`. Any other error still propagates.
+
+## Evidence (artifact read-back, not code citation)
+
+`session tool-metrics --store-root .session --days 3650 --max-sessions 100000 --export .session/tool-metrics-rollup.json` now completes over the real store and reports **203 sessions**, where it previously aborted on the first bad directory. `.session/tool-metrics-rollup.json` written and read back non-empty.
+
+Full `session-api` suite green (178 lib + integration).

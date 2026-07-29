@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "session_id": "f33c0725-0259-4702-896a-77a06579a414",
+  "captured_at": "2026-07-29T11:05:10.936Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "Improve the transcription agent to include a path where the input to the agent is already the raw transcript text in which case the agent should create the folder for the transcript in the transcript folder and create raw input file and then the clean file In general soften the setup of the agent to allow for this kind of usage where the prompt is directly the raw text that was spoken and the agent takes care of creating the files itself The remaining workflow of the agent should be the same",
+      "captured_at": "2026-07-29T11:05:10.936Z",
+      "event_meta": {
+        "event_id": "fcbe48d6-711a-4f5b-8bb7-586616d9374d",
+        "parent_event_id": "08fa09fb-4b2f-47f7-bf2b-c2e7f7243df4",
+        "event_type": "user.message"
+      }
+    }
+  ]
+}

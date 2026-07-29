@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "session_id": "f33c0725-0259-4702-896a-77a06579a414",
+  "captured_at": "2026-07-29T11:05:10.936Z",
+  "tools": {
+    "read_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        161,
+        141
+      ],
+      "duration_ms_values": [
+        8,
+        22
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        247,
+        255,
+        292,
+        420
+      ],
+      "duration_ms_values": [
+        835,
+        10000,
+        6454,
+        233
+      ]
+    }
+  }
+}

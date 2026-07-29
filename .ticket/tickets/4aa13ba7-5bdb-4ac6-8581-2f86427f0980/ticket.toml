@@ -3,6 +3,7 @@ created_at = "2026-07-28T22:12:11.248206700+00:00"
 title = "[mcp-cost-gate] Tool-call telemetry is never collected: COST_GATE_TELEMETRY_LOG unset, rollup file absent, no aggregator"
 state = "new"
 component = "agent-tooling"
+depends_on = ["76941e78-f812-440c-9fbc-04d3bb88f11a"]
 effort = "900"
 linked = ["9d527ad1-616b-45fb-b67c-64e0396841fe"]
 priority = "high"
