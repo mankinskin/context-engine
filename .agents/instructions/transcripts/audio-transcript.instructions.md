@@ -8,6 +8,8 @@ Applies when converting text that was transcribed from spoken audio into a coher
 
 The input is noisy: it contains filler words, false starts, mid-sentence corrections, superseded terminology, repetition, thinking-aloud tangents, and outright mis-transcriptions. The output must be one concise, coherent signal that faithfully captures the speaker's final intent — nothing added, nothing meaningful lost.
 
+The raw transcript can arrive two ways: as a path to an existing file or folder, or as the raw transcribed text pasted directly into the request. When it arrives as raw text, create the dated `transcripts/DD-MM-YYYY_<slug>/` folder (matching the existing convention), save the verbatim text as `input.md`, and treat that file as the source — the pipeline below is identical either way.
+
 ## Core Principle: Faithful Compression, Not Interpretation
 
 The transform is **lossless in intent and lossy only in noise**. Two failure modes are equally bad:
