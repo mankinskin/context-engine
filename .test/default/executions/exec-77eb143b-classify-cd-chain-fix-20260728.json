@@ -1,0 +1,18 @@
+{
+  "id": "exec-77eb143b-classify-cd-chain-fix-20260728",
+  "validation_spec_id": "vt-77eb143b-classify-cd-chain-fix",
+  "outcome": "passed",
+  "executed_at": "2026-07-28T21:39:55.254279700Z",
+  "detail": "rtk cargo build -p session-api: pass. rtk cargo test -p session-api: 208 passed, 1 ignored (11 suites). cargo test -p session-api --lib: 175 passed exact. cargo test -p session-api --test delegation_cost_benchmark: 4 passed, 1 ignored (replay_reproduces_checked_in_baseline_report_exactly passes against regenerated baseline).",
+  "links": {
+    "ticket_ids": [
+      "77eb143b-0322-4c91-b3c4-deccc2b2927c"
+    ]
+  },
+  "provenance": {
+    "domain": "session-api",
+    "operation": "cargo-test",
+    "transport": "cli",
+    "run_id": "77eb143b-review-round-2"
+  }
+}

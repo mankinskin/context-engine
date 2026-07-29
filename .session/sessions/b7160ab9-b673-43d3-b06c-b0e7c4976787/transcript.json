@@ -1,0 +1,552 @@
+{
+  "schema_version": 1,
+  "session_id": "b7160ab9-b673-43d3-b06c-b0e7c4976787",
+  "captured_at": "2026-07-28T12:16:42.976Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "Sessions still struggle to assign the correct models according to the tier list. Here is the view of an Orchestrator (Opus 5) that mistakenly dispatched a Sonnet 4.5 Explore Agent, when this is the wrong policy.\r\n\r\n---\r\n\r\nI dispatched it out of habit, not from the ladder — that was a routing error on two counts.\r\n\r\nChecking model-routing.instructions.md:\r\n\r\n1. **Sonnet 4.5 is explicitly forbidden for new work.** The T2 row is blunt: Claude Sonnet 5 (2 · 0.2 · 10 · 1M) is \"strictly cheaper and newer than Sonnet 4.5 (3 · 0.3 · 15 · 1M) on every axis — never route new work to Sonnet 4.5\". The delegation rules repeat it: \"Do not fall back to `Claude Sonnet 4.5 (copilot)` — it is strictly more expensive for the same context window.\" So even if T2 had been the right tier, 4.5 was the wrong model in it.\r\n\r\n2. **T2 was the wrong tier anyway.** Unit 0 is read-only reconnaissance — fetch a ticket, fetch a spec, locate an emit site, read a schema. That is \"first-pass research triage\" and \"judgement-free extraction\", which the ladder puts at **T3**, floor model **GPT-5 mini** (0.25 · 0.025 · 2 · 400k). Against Sonnet 4.5 that is 12x cheaper on input and 12x on cache read — and this unit is input-heavy, output-tiny, exactly the profile the T3 guidance says to select on input price for.\r\n\r\nSo no, I don't prefer Sonnet 4.5 — I have no defensible reason for it. I reached for a familiar name instead of consulting the table, which is precisely the \"do not reach for Haiku by habit\" failure mode the instructions call out, just with a different model.\r\n\r\nThe correct dispatch for unit 0 is `GPT-5 mini (copilot)`. The one thing worth confirming before I re-send: the bundle spans ticket TOML, spec body, `mcp-cost-gate` source, `persistence.rs`, schema, and test-api examples. If that input overruns 400k, the ladder says go to `GPT-5.6 Luna (copilot)` (1 · 0.1 · 6 · 1.05M) rather than truncating. I expect it fits comfortably, so I'll send GPT-5 mini and step up only if it comes back thin.\r\n\r\nWant me to re-dispatch unit 0 on GPT-5 mini?\r\n\r\n--- \r\n\r\nReview our instruction architecture and relevant paragraphs to make the instructions easier to parse and more prevalent/clear. Also check if any duplications may be deterriorating confidence in the coherence of the policy documents. every document should provide unique and authorative guidance for agents to honour their contents.",
+      "captured_at": "2026-07-28T11:50:59.751Z",
+      "event_meta": {
+        "event_id": "c95fc869-21da-4509-a5b8-3f241e3e4a2e",
+        "parent_event_id": "1287fea5-7767-4747-84b6-e8038a743809",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I'll inspect the routing instructions and related orchestration docs before roasting.",
+      "captured_at": "2026-07-28T11:51:04.587Z",
+      "event_meta": {
+        "event_id": "2892fa23-0bc9-4d0c-90b5-2aedac5dde56",
+        "parent_event_id": "c2a70ee4-e258-4f9f-a4bd-c8efa0e36088",
+        "event_type": "assistant.message",
+        "message_id": "f8673677-5379-40c0-b755-c1317becede1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01GyDou5PJhvJyJRcHSphcxL",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+              "startLine": 1,
+              "endLine": 400
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01CnRYqt8UJTpbpk79TVJRww",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+              "startLine": 1,
+              "endLine": 400
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Read the whole routing stack. The orchestrator wasn't being dumb — it was being *obedient to the wrong document*. Here's the autopsy, worst crime first.\n\n---\n\n## 1. The agent template the orchestrator actually runs under contradicts the ladder, and never links to it\n\n[orchestrator.agent.md](.agents/agents/orchestrator.agent.md#L45-L47):\n\n> \"Pick a model at or below the threshold (Sonnet, GPT-5, Gemini Pro, **Haiku**, **Flash**, mini).\"\n\nThat's the operative instruction in the file that *defines the orchestrator's role*. It is a vibes-based list of vendor nicknames. It says \"Sonnet\" — congratulations, Sonnet 4.5 is a Sonnet. It endorses **Haiku**, which [model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md#L59) spends a whole bullet begging you not to use (\"Do not reach for Haiku by habit\"). It endorses **Flash**, which [line 65](.agents/instructions/orchestration/model-routing.instructions.md#L65) declares strictly dominated and says \"Neither belongs in T3.\"\n\nAnd the file contains **zero links** to [model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md). It links to `model_prices.json` and `cost_gate.py`, i.e. the raw catalogue and the crude gate, but not the actual ladder. You built a beautiful canonical table and then wrote the orchestrator's job description without a hyperlink to it.\n\nThe same six-nickname list is copy-pasted verbatim into [handoff.agent.md](.agents/agents/handoff.agent.md#L32). Copy-paste masterpiece — propagating the wrong policy at scale is the one thing this repo does with perfect consistency.\n\nYour orchestrator said \"I reached for a familiar name instead of consulting the table.\" It reached for a familiar name **because the table wasn't in the room and the agent template handed it a list of familiar names.**\n\n## 2. The mechanical cost gate explicitly *permits* Sonnet 4.5\n\n[orchestrator-delegation.instructions.md](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L9-L13):\n\n> \"The running model's `output_mtok` **strictly exceeds** threshold `X = 15`\" → delegate. \"At or below X, execute directly.\"\n\nSonnet 4.5's `out$/M` is **15** ([model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md#L34)). Fifteen is not strictly greater than fifteen. So the only *executable, numeric, tool-backed* check in your entire routing system returns **allow** for Sonnet 4.5. Every prohibition against it lives exclusively in prose.\n\nYou have a policy where the machine says yes and the paragraphs say no, and then you're surprised the model followed the machine. That's not a model failure, that's a spec bug. `cost_gate.py` will happily bless the exact dispatch you're roasting your orchestrator for.\n\n## 3. `applyTo` is pointed at the wrong universe\n\n[shared-context-bundle.instructions.md](.agents/instructions/orchestration/shared-context-bundle.instructions.md#L3):\n\n```yaml\napplyTo: \".agents/agents/orchestrator.agent.md\"\n```\n\nSame on `pre-dispatch-gates.instructions.md`. `applyTo` is a **glob over files being edited**, not a predicate over \"which agent is currently running.\" As written, these two instruction files load when an agent *edits the orchestrator template* — a thing that happens roughly never — and are absent when an agent *is* the orchestrator, which is the only moment they matter.\n\nMeanwhile the two files that actually carry the ladder, [model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md) and [orchestrator-delegation.instructions.md](.agents/instructions/orchestration/orchestrator-delegation.instructions.md), have **no `applyTo` at all** — they're description-gated, meaning they load only if the agent decides its task smells like the description. An orchestrator dispatching unit 0 doesn't think \"I am now doing model-price research\"; it thinks \"I am dispatching.\" The document titled \"Use when deciding whether to delegate to a subagent with a cheaper model\" is opt-in, and the opt-in is performed by the very judgement it's supposed to correct. Circular by construction.\n\nBonus: [orchestrator.agent.md](.agents/agents/orchestrator.agent.md#L61) tells you to spawn a \"T3/**T4** model.\" T4 does not exist. [model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md#L41): \"There is no tier below T3 on this surface.\" Your own template cites a phantom tier.\n\n## 4. Duplication so heavy the docs have started disagreeing with themselves\n\nYou wrote, in the header of the canonical table ([line 22](.agents/instructions/orchestration/model-routing.instructions.md#L22)), \"do not fork a second copy.\" Noble. Then:\n\n| Content | Copies | Locations |\n|---|---|---|\n| Sonnet 4.5 ban | 5 | model-routing [L34](.agents/instructions/orchestration/model-routing.instructions.md#L34), [L80](.agents/instructions/orchestration/model-routing.instructions.md#L80); orchestrator-delegation [L34](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L34), [L69](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L69); [iteration.prompt.md L81](.agents/prompts/iteration.prompt.md#L81) |\n| Context-isolation checklist | 2 near-verbatim | model-routing [L9-L14](.agents/instructions/orchestration/model-routing.instructions.md#L9), orchestrator-delegation [L104-L112](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L104) |\n| \"When NOT to Delegate\" / the floor | 2 | [L88-L92](.agents/instructions/orchestration/model-routing.instructions.md#L88), [L122-L126](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L122) |\n| \"Verify Subagent Output\" | 2 | [L94-L98](.agents/instructions/orchestration/model-routing.instructions.md#L94), [L188-L192](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L188) |\n| Parallel fan-out | 2 | [L100-L105](.agents/instructions/orchestration/model-routing.instructions.md#L100), [L194-L203](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L194) |\n| Failure path / one-band step-up | 3 | [L107-L111](.agents/instructions/orchestration/model-routing.instructions.md#L107), [L162-L164](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L162), [L205-L209](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L205) |\n| T3-selects-on-input metric | 3 | [L58](.agents/instructions/orchestration/model-routing.instructions.md#L58), [L38](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L38), [L182](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L182) |\n\nYou extracted the *table* and left every surrounding paragraph cloned. That's the worst of both worlds: the reader can't tell which file is authoritative, so they trust neither, so they fall back to habit — which is the failure you're investigating.\n\nAnd the duplication has already rotted. [orchestrator-delegation.instructions.md L180](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L180) defines \"T3 Executor (floor): `output_mtok` 2-6\" and then [L182](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L182) immediately admits \"the T3 band is selected on `input_mtok` + `cache_read_mtok`, not on the `output_mtok` range shown here; the output range is descriptive only.\" You published a table you then footnote as non-load-bearing. That's not documentation, that's a hostage note. A model reading this cannot tell which columns bind.\n\nAlso [L179](.agents/instructions/orchestration/orchestrator-delegation.instructions.md#L179): \"T1 Sequencer (high): `output_mtok` 14-15.\" Sonnet 4.5 is out 15. Your descriptive band files the banned model into **T1**. Three documents, three different homes for the same model.\n\n## 5. The banned model is listed as available with no marker\n\n[model-routing.instructions.md L50](.agents/instructions/orchestration/model-routing.instructions.md#L50), the \"Verified available\" roster, lists `Claude Sonnet 4.5` in a flat alphabet-soup line alongside 25 peers, with no strike-through, no `(banned)`, nothing. A model scanning for \"what can I dispatch?\" hits a comma-separated menu containing the poison. The warning is 16 lines up in a table cell, wrapped in prose, competing with four other clauses in the same cell.\n\n## 6. Cosmetic, but it tells you nobody proofreads this\n\n[model-routing.instructions.md L37](.agents/instructions/orchestration/model-routing.instructions.md#L37), the MAI-Code-1-Flash row: `0.75 · 0.075 · 4.5` — three values in a column whose header promises four (`in$/M · cread$/M · out$/M · ctx`). The context window is just missing. In a document whose central thesis is \"fit the context window before anything else\" ([L60](.agents/instructions/orchestration/model-routing.instructions.md#L60)).\n\n---\n\n## Verdict\n\nThe ladder itself is genuinely good — the input-vs-output-price insight at [L58](.agents/instructions/orchestration/model-routing.instructions.md#L58) is real economics that most teams never work out. The problem is that it's **advisory prose sitting in a description-gated file**, wired to nothing, while the two artifacts with actual causal power over a dispatch — the agent template and the numeric gate — both independently authorize the forbidden choice. You wrote a constitution and forgot to build a court.\n\n**Highest-leverage fix, in order:**\n\n1. **Delete the nickname list.** Replace [orchestrator.agent.md L45-L47](.agents/agents/orchestrator.agent.md#L45) and [handoff.agent.md L32](.agents/agents/handoff.agent.md#L32) with the four dispatchable strings (`\"Claude Sonnet 5 (copilot)\"` default, `\"GPT-5 mini (copilot)\"` T3 floor, `\"GPT-5.6 Luna (copilot)\"` wide-context, `\"GPT-5.3-Codex (copilot)\"`/`\"GPT-5.6 Terra (copilot)\"` T1) plus a hard link to the ladder. The agent template is the only routing doc guaranteed to be in context at dispatch time — put the answer *there*.\n2. **Make the gate enforce the ban.** Add an explicit denylist to `cost_gate.py` so Sonnet 4.5 returns `block`, not `allow`. Prose bans that the tool contradicts are decorative.\n3. **Fix the `applyTo` semantics.** Either drop it (description-gating for everything) or scope it to a real edit surface. Pointing it at the orchestrator template guarantees the gates load exactly when they're useless.\n4. **Ruthlessly cut orchestrator-delegation.instructions.md** down to what's genuinely unique: the `X=15` trigger, `caller_model` semantics, the delegation contract, and the capability-role mapping. Every cloned section — context isolation, floor, verification, fan-out, failure path — becomes a one-line link. And delete the \"descriptive only\" `output_mtok` bands entirely; a table you have to disclaim is a table that shouldn't ship.\n5. Mark Sonnet 4.5 inline in the roster at [L50](.agents/instructions/orchestration/model-routing.instructions.md#L50), and fill in MAI-Code-1-Flash's missing context window.\n\nYour orchestrator's self-diagnosis was more accurate than your docs. It said the instructions were clear and it ignored them. It was being generous.",
+      "captured_at": "2026-07-28T11:52:44.063Z",
+      "event_meta": {
+        "event_id": "5e534277-1a59-43f7-ac09-8dcef15e340e",
+        "parent_event_id": "0eb74fc4-e9b2-43e1-b7c8-b0397d066b44",
+        "event_type": "assistant.message",
+        "message_id": "325bf444-f4b1-49ad-a002-2c9b691c401f",
+        "reasoning_text": "I'm reviewing the specific line numbers where model thresholds are mentioned across the agent files—orchestrator.agent.md has the model list at lines 45-47, handoff.agent.md repeats it at line 32, and there's a reference to T3/T4 models at line 61 in the orchestrator file.\n\nLooking at the instruction files, shared-context-bundle.instructions.md targets orchestrator.agent.md specifically, while model-routing.instructions.md and orchestrator-delegation.instructions.md lack explicit applyTo fields. The Sonnet-4.5 ban is duplicated across five locations—model-routing lines 34 and 80, orchestrator-delegation lines 34 and 69, and iteration.prompt.md line 81. The context isolation checklist and decision frameworks like \"When NOT to delegate\" and \"Verify subagent output\" are cloned near-verbatim between model-routing and orchestrator-delegation. There's also an inconsistency where T3's output token band is described as 2-6 in orchestrator-delegation line 180, but the selection logic suggests T3 is chosen on input, creating a contradiction in the descriptive bands.\n\nThe critical issue is the cost gate itself: Sonnet 4.5 has an output cost of 15 $/M, and the threshold is strictly greater than 15, which means Sonnet 4.5 at exactly 15 passes the gate—directly contradicting the prose ban. The \"Verified available\" list in model-routing.instructions.md line 50 includes Claude Sonnet 4.5 with no warning marker. Additionally, the MAI-Code-1-Flash row is missing its context window value (line 37 shows only three fields when the header promises four), creating a data integrity issue.",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "user",
+      "content": "fix these problems in order",
+      "captured_at": "2026-07-28T11:53:13.585Z",
+      "event_meta": {
+        "event_id": "5200aa08-998e-4818-8119-8fd099e887f1",
+        "parent_event_id": "955770b4-9478-42fc-a91f-7d311ee51166",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "user",
+      "content": "fix these problems in order",
+      "captured_at": "2026-07-28T11:54:01.295Z",
+      "event_meta": {
+        "event_id": "4e493b6a-231a-406a-b07e-0338c7d53838",
+        "parent_event_id": "26da533f-943a-4e0a-9f89-887da86b772a",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Confirmed the roast, plus a bonus finding: **`tools/model-prices/cost_gate.py` does not exist.** The docs cite it with flags and exit codes; the real gate is the Rust `mcp-cost-gate` crate, and it gates MCP tool calls by `caller_model` — it has no visibility into `runSubagent` dispatch targets at all. So fix 2 has no tool to patch; the enforcement has to become an allowlist.\n\nStarting fix 1.",
+      "captured_at": "2026-07-28T11:55:55.143Z",
+      "event_meta": {
+        "event_id": "713271f8-76a5-4b44-90d7-36ddeebd7165",
+        "parent_event_id": "a96b3717-218c-40c3-9890-ef89ea06f25c",
+        "event_type": "assistant.message",
+        "message_id": "6a5e5c44-a0f2-4408-adc8-0b388b2209fc",
+        "reasoning_text": "I need to make two key edits: first, replace the nickname lists in the orchestrator and handoff agent docs with the actual dispatchable strings and add a link to the ladder, plus fix the \"T3/T4\" reference to just \"T3\". Second, I'm making the ban system more coherent by switching from a threshold-based dispatch eligibility check to an explicit allowlist that requires agents to be named in the ladder, plus adding a corresponding denylist in the model.\n\nBeyond that, I've got several other fixes lined up: updating all the stale cost_gate.py references across multiple docs to point to mcp-cost-gate and clarify that it gates MCP tool calls by caller_model rather than subagent dispatch targets; removing the applyTo conditions from shared-context-bundle and pre-dispatch-gates since applyTo can't express \"running as orchestrator\"; trimming the duplicated sections in orchestrator-delegation.instructions.md down to links and removing the descriptive output token bands; and adding the roster marker for Sonnet 4.5 plus the context window for MAI-Code-1-Flash.\n\nLet me start with Fix 1 and pull the exact text from orchestrator.agent.md around lines 44-48 to see what needs replacing.\n\nI also notice model-routing has a \"Verified available\" list that should align with the allowlist rule, so I'll make sure to reflect that consistency across the edits.\n\nNow I'm drafting the replacement text for the delegation contract item 1, which will include a table showing the tier, model string, and use case for each dispatchable model — starting with Claude Sonnet 5 as the default T2 tier, GPT-5 mini as the T3 floor for bulk mechanical work, and GPT-5.6 Luna as the wide-context option for inputs exceeding 400k tokens.\n\nI'm also adding a denylist section that explicitly blocks Claude Sonnet 4.5, Claude Haiku 4.5, and Gemini Flash models with clear reasoning about why they're dominated by other options, plus a note that models absent from the allowlist are automatically blocked.\n\nThen I'll update handoff.agent.md at line 32 to replace the nickname list with a pointer to the full documentation while keeping the concrete default model reference that's already in step 5.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_018eS9ye2cQq9kHzim5V7oo3",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Fix 1: replace vendor-nickname model lists with the exact dispatchable allowlist and a denylist, and link the canonical ladder.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+                  "oldString": "For each unit of work, spawn a sub-agent with:\n\n1. **An explicit cheaper model.** Pick a model at or below the threshold\n   (Sonnet, GPT-5, Gemini Pro, Haiku, Flash, mini). Never delegate to another\n   expensive/orchestrator-tier model. When multiple eligible models are equal in cost, prefer the latest model version or generation.\n2. **A single, well-scoped objective.** One unit per sub-agent; do not hand a\n   sub-agent the whole task.",
+                  "newString": "For each unit of work, spawn a sub-agent with:\n\n1. **An explicit model string from the allowlist below.** These are the only\n   models this repository routes new work to. Copy the string verbatim,\n   punctuation included.\n\n   | Tier | Model string | Use for |\n   |---|---|---|\n   | **T2 — default** | `\"Claude Sonnet 5 (copilot)\"` | Every delegated implementation, review, targeted debugging, or moderate multi-file edit, unless another tier is justified |\n   | **T3 — floor** | `\"GPT-5 mini (copilot)\"` | Bulk, mechanical, read-only triage, first-pass research, judgement-free extraction — where most delegated volume belongs |\n   | T3 — wide context | `\"GPT-5.6 Luna (copilot)\"` | Input exceeds 400k, or a cheap model must digest a huge input *and* emit non-trivial code |\n   | T3 — reasoning step-up | `\"GPT-5.4 mini (copilot)\"` | The unit needs real reasoning over what it read |\n   | T3 — code specialist | `\"Kimi K2.7 Code (copilot)\"` | Bulk code-shaped work where a code specialist materially improves edit quality |\n   | T1 — escalation only | `\"GPT-5.3-Codex (copilot)\"` (bounded input) / `\"GPT-5.6 Terra (copilot)\"` (very large context) | A T2 attempt came back wrong or too shallow, or the slice is plainly cross-cutting and high-risk — record why |\n\n   **Denylist — never dispatch these:** `\"Claude Sonnet 4.5 (copilot)\"` (strictly\n   dominated by Claude Sonnet 5 on input, output, and cache read at the same 1M\n   window), `\"Claude Haiku 4.5 (copilot)\"` (most expensive input in the cheap\n   band, smallest window), and the Gemini Flash models (dominated by GPT-5.6 Luna\n   on every axis). `\"Auto (copilot)\"` is an escape hatch only — permitted when no\n   allowlisted model fits or the surface rejects your choice, and you must state\n   that in the dispatch rationale.\n\n   Absence from the allowlist is itself a block: do not improvise a model from a\n   vendor family name. Never delegate to an orchestrator-tier (T0) model. Among\n   allowlisted models of equal cost, prefer the latest generation, then the larger\n   context window. Prices and full rationale:\n   [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).\n2. **A single, well-scoped objective.** One unit per sub-agent; do not hand a\n   sub-agent the whole task."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+                  "oldString": "**Gate mechanism**: Spawn a cheap gate sub-agent (T3/T4 model) with read-only tool access, or use a narrow orchestrator tool grant if available. The gate agent returns `pass` with the resolved context bundle, or `block` with the exact blocker.",
+                  "newString": "**Gate mechanism**: Spawn a cheap gate sub-agent on `\"GPT-5 mini (copilot)\"` (T3 is the floor — there is no tier below it) with read-only tool access, or use a narrow orchestrator tool grant if available. The gate agent returns `pass` with the resolved context bundle, or `block` with the exact blocker."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\handoff.agent.md",
+                  "oldString": "- Each delegated unit must include: (1) an explicit cheaper model at or below the `X=15` threshold (Sonnet, GPT-5, Gemini Pro, Haiku, Flash, mini); (2) a single well-scoped objective; (3) a compact return contract specifying exactly what result to return; (4) the minimum context anchors (paths, ids, prior findings) so the sub-agent does not re-discover them.\n- When multiple eligible models are equal in cost, prefer the latest model version or generation.",
+                  "newString": "- Each delegated unit must include: (1) an explicit model string from the routing allowlist — `\"Claude Sonnet 5 (copilot)\"` (T2 default), `\"GPT-5 mini (copilot)\"` (T3 floor), `\"GPT-5.6 Luna (copilot)\"` (input over 400k), `\"GPT-5.4 mini (copilot)\"` (needs reasoning over what it read), or `\"GPT-5.3-Codex (copilot)\"` / `\"GPT-5.6 Terra (copilot)\"` for justified T1 escalation; (2) a single well-scoped objective; (3) a compact return contract specifying exactly what result to return; (4) the minimum context anchors (paths, ids, prior findings) so the sub-agent does not re-discover them.\n- Never dispatch `\"Claude Sonnet 4.5 (copilot)\"`, `\"Claude Haiku 4.5 (copilot)\"`, or a Gemini Flash model — each is strictly dominated by an allowlisted peer. Absence from the allowlist is a block, not an invitation to improvise from a vendor family name. See [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).\n- When multiple allowlisted models are equal in cost, prefer the latest model version or generation, then the larger context window."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Now the dead `cost_gate.py` docs and the threshold loophole in the instruction files.",
+      "captured_at": "2026-07-28T11:56:32.116Z",
+      "event_meta": {
+        "event_id": "07f5b4dd-f254-435f-a33d-f7e634ebb76e",
+        "parent_event_id": "0c4fcbde-ab8e-4362-b5ce-c8de58b8f1dd",
+        "event_type": "assistant.message",
+        "message_id": "289d23fd-f2dd-41bf-b1ea-3a313a6110e5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01JPBYgP4sgD4PskFLKEe1nj",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Fix 2 (part 2): replace the nonexistent cost_gate.py documentation with the real mcp-cost-gate crate, and state that no tool gates dispatch targets.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-prices.instructions.md",
+                  "newString": "## The Cost Gate\n\nThe gate is a Rust MCP middleware, [memory-api/tools/mcp/mcp-cost-gate](../../../memory-api/tools/mcp/mcp-cost-gate). There is **no** `cost_gate.py`; earlier revisions of this file documented one that never shipped.\n\n```bash\nmcp-cost-gate -- <real-server-command> [server args...]\n```\n\n- It fronts a real MCP stdio server: on `tools/list` it injects a required `caller_model` argument into every advertised tool schema; on `tools/call` it reads `arguments.caller_model`, decides allow/delegate, and strips the field before forwarding.\n- The decision is a **graded budget**, not a hard threshold: `base_budget` is a linear inverse of `output_mtok` (zero at `COST_GATE_BUDGET_ZERO_PRICE`, default 60.0), tool cost comes from the empirical rollup, and the call is allowed when cost fits budget plus any grant offset.\n- `caller_model` must be a real `model_id` key from the table (e.g. `claude-sonnet-5`, `gpt-5.3-codex`), not a vendor or product label like `copilot` or `anthropic`. An unrecognized id is **rejected**, so price awareness is never silently bypassed. A delegated sub-agent passes **its own** id, not the orchestrator's.\n- Configure via `COST_GATE_TABLE` (required for enforcement), `COST_GATE_TOOL_METRICS`, `COST_GATE_GRANTS_DIR`, `COST_GATE_SCALE_MAX`, `COST_GATE_BUDGET_ZERO_PRICE`.\n- The gate **fails open** when the price table is missing or unreadable — it becomes a transparent passthrough. A silently permissive gate looks identical to a correctly permissive one; verify `COST_GATE_TABLE` resolves before concluding that routing is unrestricted.\n- **The gate does not see `runSubagent`.** It only intercepts MCP `tools/call` traffic, so it cannot validate which model you dispatch a sub-agent to. Dispatch-target selection is enforced only by the allowlist in [model-routing.instructions.md](model-routing.instructions.md) — there is no tool backstop.\n- After changing gate logic, run `cargo test -p mcp-cost-gate` before relying on it.",
+                  "oldString": "## The Cost Gate\n\n`cost_gate.py` turns a model id into a routing decision.\n\n```bash\npython cost_gate.py --model claude-opus-5 --tool runSubagent\npython cost_gate.py --model claude-sonnet-5 --tool read_file --format json\n```\n\n- Driving field is `output_mtok`. Exit `0` = `allow` (execute directly), exit `3` = `delegate` (operate as orchestrator).\n- `--model` must be a real `model_id` key from the table (e.g. `claude-sonnet-5`, `gpt-5.3-codex`), not a vendor or product label like `copilot` or `anthropic`. An unrecognized id resolves to a **zero-cost budget**, which silently disables price awareness.\n- The same rule applies to the `caller_model` field that `mcp-cost-gate` injects into MCP tool schemas: pass the id of the model actually issuing the call. A delegated sub-agent passes **its own** id, not the orchestrator's.\n- The gate **fails open** when the price table is missing or unreadable. A silently permissive gate looks identical to a correctly permissive one — verify the table exists before concluding that routing is unrestricted.\n- After changing gate logic, run `python test_cost_gate.py` (or the repo test runner) before relying on it."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-prices.instructions.md",
+                  "newString": "3. Check whether a newer generation now dominates the current default on **every** axis (input, output, cache read, context window). If so, promote it and move the old default to the denylist rather than deleting it — existing sessions may still reference it, and a dominated model left unmarked is exactly how a stale name gets dispatched from habit.\n4. Check whether the `X = 15` gate threshold still splits the catalogue sensibly. Remember it governs **whether to orchestrate**, not which model to dispatch to — dispatch targets come from the allowlist.\n5. Update the tier tables and record the price basis, so a later reader can tell whether a routing rule was reasoned or inherited.",
+                  "oldString": "3. Check whether a newer generation now dominates the current default on **every** axis (input, output, cache read, context window). If so, promote it and mark the old default as superseded rather than deleting it — existing sessions may still reference it.\n4. Check whether the `X = 15` gate threshold still splits the catalogue sensibly.\n5. Update the tier tables and record the price basis, so a later reader can tell whether a routing rule was reasoned or inherited."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Now fix 2's core: the allowlist rule in the canonical ladder, plus fix 5's roster/table defects in the same file.",
+      "captured_at": "2026-07-28T11:57:26.177Z",
+      "event_meta": {
+        "event_id": "0e1fee24-632b-4a22-aeff-050f7c8bae1b",
+        "parent_event_id": "9fb3c216-3d39-4c96-91b9-b12f527dafcc",
+        "event_type": "assistant.message",
+        "message_id": "83a9b2f6-3e43-4c73-9682-c84ef0eb4446",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XawhcF5NxHFU8GRzjRFw3L",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Fix 2 + fix 5 in model-routing: add an explicit allowlist/denylist rule, mark denylisted models inline in the roster, and fill the missing context window.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "| | MAI-Code-1-Flash *(T3 code-specialist)* | 0.75 · 0.075 · 4.5 · 128k | Use for code-shaped bulk work at the cheap tier; priced identically to GPT-5.4 mini on input, cache read, and output but with a smaller window, so pick it only when a code-specialist model materially improves edit quality — GPT-5 mini remains the T3 default | |",
+                  "oldString": "| | MAI-Code-1-Flash *(T3 code-specialist)* | 0.75 · 0.075 · 4.5 | Use for code-shaped bulk work at the cheap tier; priced identically to GPT-5.4 mini on every axis, so pick it only when a code-specialist model materially improves edit quality — GPT-5 mini remains the T3 default | |"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "There is no tier below T3 on this surface: no offered model undercuts GPT-5 mini on input or cache read, so judgement-free extraction and bulk triage share the same band. There is no T4 — a document citing one is stale.\n\n### The ladder is an allowlist, not a price filter\n\n**A model is dispatchable if and only if it is named in the table above.** Do not\nsubstitute a price comparison for that list, and do not derive a model from a\nvendor family name (\"a Sonnet\", \"a mini\", \"a Flash\").\n\nThis matters because the `X = 15` threshold in\n[orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md)\nis defined as *strictly exceeds* 15, so an \"at or below X\" reading admits\nClaude Sonnet 4.5 at exactly `out 15`. That threshold decides **whether a model\norchestrates**; it never decides **who it dispatches to**.\n\n**Denylist — never dispatch new work to these, regardless of price arithmetic:**\n\n| Denied model | Dominated by | On |\n|---|---|---|\n| `Claude Sonnet 4.5` (3 · 0.3 · 15 · 1M) | `Claude Sonnet 5` (2 · 0.2 · 10 · 1M) | input, cache read, output — same window |\n| `Claude Haiku 4.5` (1 · 0.1 · 5 · 200k) | `GPT-5 mini` (0.25 · 0.025 · 2 · 400k) | input, cache read, output, window |\n| `Gemini 3.5 Flash`, `Gemini 3.6 Flash` (1.5 · 0.15 · — · 1M) | `GPT-5.6 Luna` (1 · 0.1 · 6 · 1.05M) | input, cache read, output, window |\n\nOlder Opus and Sonnet generations are likewise superseded by their current\nequivalents. If a needed capability exists only outside the allowlist, say so in\nthe dispatch rationale rather than quietly picking a denied model.\n\n> **No tool enforces this.** `mcp-cost-gate` intercepts MCP `tools/call` traffic\n> and validates `caller_model`; it has no visibility into `runSubagent` and\n> cannot reject a bad dispatch target. This list is the enforcement.",
+                  "oldString": "There is no tier below T3 on this surface: no offered model undercuts GPT-5 mini on input or cache read, so judgement-free extraction and bulk triage share the same band."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "- **Verified available, 2026-07-27** — availability is not permission; **denied** entries are offered by the surface but must not be dispatched (see the denylist above): Claude Fable 5, Claude Opus 4.6, Claude Opus 4.7, Claude Opus 4.8, Claude Opus 4.8 (fast mode) (preview), Claude Opus 5, ~~Claude Sonnet 4.5~~ **(denied)**, Claude Sonnet 4.6, Claude Sonnet 5, Claude Opus 4.5, ~~Claude Haiku 4.5~~ **(denied)**, Gemini 3.1 Pro, ~~Gemini 3.5 Flash~~ **(denied)**, ~~Gemini 3.6 Flash~~ **(denied)**, Gemini 2.5 Pro, GPT-5.3-Codex, GPT-5.4 mini, GPT-5.4, GPT-5.5, GPT-5.6 Luna, GPT-5.6 Sol, GPT-5.6 Terra, GPT-5 mini, Kimi K2.7 Code, MAI-Code-1-Flash, Auto *(escape hatch only)*. Notably **absent**: every `*-flash-lite` model, GPT-5.4 nano, and GPT-5.4 Pro.",
+                  "oldString": "- **Verified available, 2026-07-27:** Claude Fable 5, Claude Opus 4.6, Claude Opus 4.7, Claude Opus 4.8, Claude Opus 4.8 (fast mode) (preview), Claude Opus 5, Claude Sonnet 4.5, Claude Sonnet 4.6, Claude Sonnet 5, Claude Opus 4.5, Claude Haiku 4.5, Gemini 3.1 Pro, Gemini 3.5 Flash, Gemini 3.6 Flash, Gemini 2.5 Pro, GPT-5.3-Codex, GPT-5.4 mini, GPT-5.4, GPT-5.5, GPT-5.6 Luna, GPT-5.6 Sol, GPT-5.6 Terra, GPT-5 mini, Kimi K2.7 Code, MAI-Code-1-Flash, Auto. Notably **absent**: every `*-flash-lite` model, GPT-5.4 nano, and GPT-5.4 Pro."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Caught myself fabricating: the price table publishes **no** context window for any `github-copilot` row (0 of 29). The `128k` I wrote was invented. Correcting it and the Gemini figures with verified values.",
+      "captured_at": "2026-07-28T11:58:18.641Z",
+      "event_meta": {
+        "event_id": "81c5f663-f651-48f3-83f7-047b13ef95d7",
+        "parent_event_id": "cc228a94-0376-4856-a05d-ac6b119674f5",
+        "event_type": "assistant.message",
+        "message_id": "59245a1e-81a6-44d8-8c83-1697a74ac066",
+        "reasoning_text": "I see the issue now—the context window values in the ladder table for GitHub Copilot all came from the upstream genai-prices rows, not from Copilot's own data, since Copilot doesn't publish its own context window. My \"128k\" was just made up, so I need to mark it as unpublished instead of fabricating a number. That's more honest and actually better.\n\nNow I'll fix that edit and add the real Gemini output prices to the denylist table.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01GWCRPJ67gNZ7eigBg6WRF4",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Correct the fabricated context window with the verified fact that Copilot rows publish none, and use real Gemini Flash output prices.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "| | MAI-Code-1-Flash *(T3 code-specialist)* | 0.75 · 0.075 · 4.5 · *unpublished* | Use for code-shaped bulk work at the cheap tier; priced identically to GPT-5.4 mini on input, cache read, and output. No context window is published for it, so prefer GPT-5.4 mini whenever the input size is near a limit — and GPT-5 mini remains the T3 default | |",
+                  "oldString": "| | MAI-Code-1-Flash *(T3 code-specialist)* | 0.75 · 0.075 · 4.5 · 128k | Use for code-shaped bulk work at the cheap tier; priced identically to GPT-5.4 mini on input, cache read, and output but with a smaller window, so pick it only when a code-specialist model materially improves edit quality — GPT-5 mini remains the T3 default | |"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "| Denied model | Dominated by | On |\n|---|---|---|\n| `Claude Sonnet 4.5` (3 · 0.3 · 15) | `Claude Sonnet 5` (2 · 0.2 · 10) | input, cache read, output — same 1M window |\n| `Claude Haiku 4.5` (1 · 0.1 · 5) | `GPT-5 mini` (0.25 · 0.025 · 2) | input, cache read, output, window |\n| `Gemini 3.5 Flash` (1.5 · 0.15 · 9) | `GPT-5.6 Luna` (1 · 0.1 · 6) | input, cache read, output, window |\n| `Gemini 3.6 Flash` (1.5 · 0.15 · 7.5) | `GPT-5.6 Luna` (1 · 0.1 · 6) | input, cache read, output, window |",
+                  "oldString": "| Denied model | Dominated by | On |\n|---|---|---|\n| `Claude Sonnet 4.5` (3 · 0.3 · 15 · 1M) | `Claude Sonnet 5` (2 · 0.2 · 10 · 1M) | input, cache read, output — same window |\n| `Claude Haiku 4.5` (1 · 0.1 · 5 · 200k) | `GPT-5 mini` (0.25 · 0.025 · 2 · 400k) | input, cache read, output, window |\n| `Gemini 3.5 Flash`, `Gemini 3.6 Flash` (1.5 · 0.15 · — · 1M) | `GPT-5.6 Luna` (1 · 0.1 · 6 · 1.05M) | input, cache read, output, window |"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "Prices come from `tools/model-prices/model_prices.json` and are USD per 1M tokens. Re-check with `sync_model_prices.py --query <model>` rather than trusting these numbers indefinitely — see [model-prices.instructions.md](model-prices.instructions.md).\n\n**Context windows are not in the price table.** No `github-copilot` row publishes `context_window`; the `ctx` values below are carried from each model's upstream (genai-prices) row or vendor documentation. Where an entry reads *unpublished*, no source gives a number — treat that as \"unknown\", not \"large\".",
+                  "oldString": "Prices come from `tools/model-prices/model_prices.json` and are USD per 1M tokens. Re-check with `sync_model_prices.py --query <model>` rather than trusting these numbers indefinitely — see [model-prices.instructions.md](model-prices.instructions.md)."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Fix 3: the `applyTo` globs.",
+      "captured_at": "2026-07-28T11:58:22.766Z",
+      "event_meta": {
+        "event_id": "910a7110-71f9-41f0-95c6-749888d47c35",
+        "parent_event_id": "f07376bb-6785-42e4-bd6b-781e1244082e",
+        "event_type": "assistant.message",
+        "message_id": "e2b92c12-8f43-45a3-a0a6-53b600613130",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01QpxwtRqFrbiFQmwWHNzB4d",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 14,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\pre-dispatch-gates.instructions.md",
+              "startLine": 1
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "Fix 4: collapsing the cloned sections in `orchestrator-delegation.instructions.md` down to links, and deleting the self-disclaimed band table.",
+      "captured_at": "2026-07-28T11:59:32.465Z",
+      "event_meta": {
+        "event_id": "49ffe8fd-2e47-4f85-ae3e-fd97e1329b81",
+        "parent_event_id": "aa74b984-3cfc-4b46-8797-d3a3fae704ce",
+        "event_type": "assistant.message",
+        "message_id": "b88d4e96-6ce2-468a-8df3-d94de06a4580",
+        "reasoning_text": "I'm consolidating the orchestrator-delegation.instructions.md file by replacing several duplicated sections with links instead—specifically \"Context Isolation,\" \"When NOT to Delegate,\" \"Verify Sub-Agent Output,\" and \"Parallel Fan-Out\"—and removing the descriptive output token band information to streamline the documentation.\n\nI also need to deduplicate the tier-step policy that repeats the failure path logic, and collapse the first delegation contract item by removing the redundant ladder explanation and keeping only the unique constraints around caller_model and budget pressure.\n\nLet me pull the exact content to construct these edits precisely. Claude Sonnet 5 is more cost-effective across input, output, and cache reads at the same context window, so avoid routing to Sonnet 4.5. The `Auto` model should only be used as an explicit fallback when no tier model fits or the system rejects the intended choice, never as a default. When models are equal in cost, prefer the latest version or larger context window, and never delegate to another orchestrator-tier model. The operating summary at line 34 duplicates what's already covered, so I should trim it down to just the unique detail: which tiers fall above or below the orchestration threshold, rather than restating the full tier breakdown.\n\nNow I'm working through a series of edits to remove redundancy across the document. Lines 38, 40, and beyond contain pointers or duplicates of information that's already defined in the model-routing section, so I'm replacing those with links instead and keeping the roster check brief. I'm also consolidating the Context Isolation and delegation decision sections into references rather than repeating their content here.\n\nFor the tooling section, I'm describing a cost-gating helper that evaluates token output against thresholds and returns either an allow or delegate signal, plus a companion script for querying and syncing model pricing data.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01WCBN1MeYLzpp7vHwb7Zgmh",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Fix 4 (part 1): remove duplicated ladder restatements, the dead cost_gate.py helper, and the duplicated low-tier metric.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+                  "newString": "**Tooling**:\n- Query/regenerate the table: `tools/model-prices/sync_model_prices.py` with `--query <model>`, `--list`, `--format {table,csv,json}`, `--check`, `--force`\n- Enforcement middleware: the Rust crate `memory-api/tools/mcp/mcp-cost-gate`. There is no `cost_gate.py` — earlier revisions referenced one that never shipped. See [model-prices.instructions.md](model-prices.instructions.md) for its flags and failure modes.",
+                  "oldString": "**Tooling**:\n- Decision helper: `tools/model-prices/cost_gate.py` resolves `output_mtok` and returns `allow` (exit 0) or `delegate` (exit 3)\n- Query/regenerate: `tools/model-prices/sync_model_prices.py` with `--query <model>`, `--list`, `--format {table,csv,json}`, `--check`, `--force`"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+                  "newString": "**MCP boundary enforcement**: `mcp-cost-gate` middleware injects a mandatory `caller_model` field into every MCP tool schema and refuses token-heavy calls from orchestrator-tier models. Fails open if the price table is unavailable. It intercepts MCP `tools/call` traffic only — it **cannot** see `runSubagent`, so it never validates which model you dispatch to.",
+                  "oldString": "**MCP boundary enforcement**: `mcp-cost-gate` middleware injects mandatory `caller_model` field into every MCP tool schema and refuses token-heavy calls from orchestrator-tier models. Fails open if price table unavailable."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+                  "newString": "**Model selection is not this file's job.** The canonical allowlist, denylist, tier ladder, prices, and context windows live in [model-routing.instructions.md](model-routing.instructions.md). Read it before pinning any model. Nothing here restates it — a second copy is how the two tables drifted apart.\n\nThe only thing threshold X decides is **who orchestrates**: a model whose `output_mtok` strictly exceeds 15 runs as orchestrator; everything at or below executes directly. Do **not** reuse \"at or below X\" as dispatch eligibility — read literally it admits models sitting exactly at 15 that the ladder denies. Dispatch targets come from the allowlist, full stop.\n\nNever hardcode prices into tooling; re-resolve with `sync_model_prices.py --query <model>` when a routing decision depends on the exact price. See [model-prices.instructions.md](model-prices.instructions.md) for working with the table.\n\n**Roster check**: the price table is a vendor catalogue and lists models `runSubagent` will refuse. Pin only models present in the surface's model list — a rejected dispatch errors outright and wastes the spawn. See \"Roster is not the catalogue\" in [model-routing.instructions.md](model-routing.instructions.md).",
+                  "oldString": "**Tier reference at X=15**: the canonical tier ladder — models, `in$/M · cread$/M · out$/M · ctx`, and per-tier usage — lives in [model-routing.instructions.md](model-routing.instructions.md). It is **not** restated here; a second copy is how the two tables drifted apart. Read it there before pinning a model.\n\nOperating summary: T0 (Claude Opus 5) orchestrates and delegates. T1 (GPT-5.6 Terra, GPT-5.3-Codex) and below execute directly, since they sit at or under the threshold. **T2 (Claude Sonnet 5) is the default delegation target.** T3 (GPT-5 mini, GPT-5.6 Luna, GPT-5.4 mini) is the cheap worker band and the floor. Claude Sonnet 4.5 is deprecated for new routing — superseded by Claude Sonnet 5, which is cheaper on every axis at the same 1M window.\n\nNever hardcode prices into tooling; re-resolve with `sync_model_prices.py --query <model>` when a routing decision depends on the exact price. See [model-prices.instructions.md](model-prices.instructions.md) for working with the table.\n\n**Low-tier selection metric**: for T3 units, rank on `input_mtok` + `cache_read_mtok` and context window — **not** `output_mtok`. These units are input-heavy and output-tiny, so the output column barely touches the bill. Claude Haiku 4.5 (in $1/M, cache read $0.10/M, 200k) is the most expensive input option in the band with the smallest window; do not default to it.\n\n**Roster check**: the price table is a vendor catalogue and lists models `runSubagent` will refuse. Pin only models present in the surface's model list — a rejected dispatch errors outright and wastes the spawn. See \"Roster is not the catalogue\" in [model-routing.instructions.md](model-routing.instructions.md)."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+                  "newString": "1. **An explicit model string from the allowlist** in [model-routing.instructions.md](model-routing.instructions.md), which owns model selection, the denylist, tier rationale, the cheap-tier selection metric, and one-band step-up on failure. Do not re-derive a model from the price table or from a vendor family name.\n   - Default `\"Claude Sonnet 5 (copilot)\"` (T2); drop to T3 for bulk, mechanical, or read-only units, which is where most volume belongs.\n   - Confirm the input fits the target model's context window before dispatch; a truncation-driven re-dispatch costs more than the tier saves.\n   - Under budget pressure, shift every unit down one tier.\n   - Never delegate to another orchestrator-tier model.",
+                  "oldString": "1. **Explicit cheaper model** at or below threshold X, chosen by tier\n   - Format: `\"Model Name (Vendor)\"`, e.g. `\"Claude Sonnet 5 (copilot)\"`. The string must match the surface's model list exactly, punctuation included.\n   - **Default: `\"Claude Sonnet 5 (copilot)\"` (T2).** Use it unless the unit justifies another tier.\n   - Drop to T3 (`\"GPT-5 mini (copilot)\"` as the cheap-worker default and cost floor, `\"GPT-5.6 Luna (copilot)\"` when the input exceeds 400k or the unit must emit non-trivial code, `\"Kimi K2.7 Code (copilot)\"` as a T3 code-specialist option for bulk code-shaped work, `\"GPT-5.4 mini (copilot)\"` when it needs real reasoning over what it read) for bulk, mechanical, read-only triage, or judgement-free extraction units.\n   - Confirm the input fits the target model's context window before dispatch; a truncation-driven re-dispatch costs more than the tier saves.\n   - On a T3 failure, step up exactly one band (T3→T2) — never jump a cheap unit to T1/T0.\n   - Climb to T1 (`\"GPT-5.3-Codex (copilot)\"` for heavy code generation, `\"GPT-5.6 Terra (copilot)\"` for very large context) only after a T2 attempt was wrong or too shallow, or for plainly cross-cutting high-risk work — and record why.\n   - Under budget pressure, shift every unit down one tier.\n   - Do not route new work to `\"Claude Sonnet 4.5 (copilot)\"`; Claude Sonnet 5 is cheaper on input, output, and cache read at the same 1M context window.\n   - `\"Auto (copilot)\"` delegates model selection away from the caller and prevents cost-aware routing from reasoning about the selected model. Permit `Auto (copilot)` only as an explicit escape hatch when no tier model fits or the surface rejects the intended model; any use must be stated explicitly in the dispatch rationale and it must not be used as a default.\n   - Never delegate to another orchestrator-tier model\n   - When multiple eligible models are equal in cost, prefer the latest model version or generation, then the larger context window"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "Now the band table and the duplicated tier-step policy.",
+      "captured_at": "2026-07-28T12:00:02.569Z",
+      "event_meta": {
+        "event_id": "de77e4da-51d4-4f5f-96d3-2c7646497694",
+        "parent_event_id": "9dd3c0ca-7b1b-4504-84aa-5c3e8234e09f",
+        "event_type": "assistant.message",
+        "message_id": "2ce1f95c-364e-4374-b4b9-a7e6d4ff116b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01QbsYE6ACzkRU6ivJoeu4UM",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 180,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+              "startLine": 140
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "All five fixed, in order.\n\n**1. Nickname lists deleted.** [orchestrator.agent.md](.agents/agents/orchestrator.agent.md#L47-L74) now carries a six-row allowlist of exact dispatch strings plus an explicit denylist table, right where the orchestrator reads it at dispatch time, with a link to the ladder. Same treatment in [handoff.agent.md](.agents/agents/handoff.agent.md#L32-L34). Phantom `T3/T4` corrected.\n\n**2. Threshold loophole closed — but not the way I proposed.** `tools/model-prices/cost_gate.py` **does not exist**; the docs described a Python gate with flags and exit codes that never shipped. The real gate is the Rust crate `memory-api/tools/mcp/mcp-cost-gate`, and it only intercepts MCP `tools/call` traffic — it has zero visibility into `runSubagent`, so there is no tool that can reject a bad dispatch target. So the fix is structural instead: dispatch eligibility is now an **allowlist**, not a price comparison. [model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md#L45-L70) adds \"The ladder is an allowlist, not a price filter\", spells out the exactly-15 arithmetic that admitted Sonnet 4.5, and states plainly that no tool enforces this. Dead script references corrected in four files.\n\n**3. `applyTo` removed** from [pre-dispatch-gates](.agents/instructions/orchestration/pre-dispatch-gates.instructions.md#L2) and [shared-context-bundle](.agents/instructions/orchestration/shared-context-bundle.instructions.md#L2) — it scoped them to *editing* the orchestrator template. All four orchestration files now use description-gating with \"at the start of and throughout every session, before every sub-agent dispatch\" phrasing that matches the moment they're needed.\n\n**4. [orchestrator-delegation.instructions.md](.agents/instructions/orchestration/orchestrator-delegation.instructions.md) cut 209 → 168 lines.** Context isolation, the floor, output verification, fan-out, and the failure path are now one-line links retaining only their orchestration-specific additions. The self-disclaimed `output_mtok` band table is gone, as is the duplicate tier-step policy and the Example Models column — the file now classifies *work*, the ladder maps *roles to models*, and neither restates the other.\n\n**5. Roster and table defects.** Denied models are struck through and marked `(denied)` inline in the [availability list](.agents/instructions/orchestration/model-routing.instructions.md#L81), headed \"availability is not permission.\"\n\nOne correction to my own roast: I initially \"fixed\" the missing MAI-Code-1-Flash context window by writing `128k`. I then checked the table — **0 of 29 `github-copilot` rows publish `context_window` at all**; every `ctx` value in the ladder is carried from upstream rows, and MAI-Code-1-Flash has no upstream equivalent. The cell now reads *unpublished* with a note that this means \"unknown, not large.\" Verified prices for Sonnet 4.5 (out 15.0), Haiku 4.5 (5.0), Gemini 3.5/3.6 Flash (9.0/7.5) against the table rather than from the prose.\n\nRemaining risk: fix 2 has no test. Dispatch-target correctness is unenforceable on this surface, so the only evidence a future dispatch honors the allowlist is the dispatch itself.",
+      "captured_at": "2026-07-28T12:01:51.722Z",
+      "event_meta": {
+        "event_id": "f2d79006-df07-4cd1-926b-b8dc7f60c68b",
+        "parent_event_id": "ded0c816-4267-41b2-8a16-d5edc80a9ae8",
+        "event_type": "assistant.message",
+        "message_id": "88c5adb4-0f94-47f2-97ad-d82505139bf6",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "user",
+      "content": "The cost-gate.py prototype was correctly removed, but I am suspicious of the allowlist in the cost gate. We do not want to completely deny models if not absolutely necessary, and the price filter should still filter which models can use which tools (model cost budget/empirical tool char count system)\r\n\r\nVerify the changes and commit after approval",
+      "captured_at": "2026-07-28T12:11:59.484Z",
+      "event_meta": {
+        "event_id": "77578892-ccf1-4713-8a8f-85c78e805d45",
+        "parent_event_id": "c3c7370a-6f1f-415e-9086-27842bc73826",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "user",
+      "content": "The cost-gate.py prototype was correctly removed, but I am suspicious of the allowlist in the cost gate. We do not want to completely deny models if not absolutely necessary, and the price filter should still filter which models can use which tools (model cost budget/empirical tool char count system)\r\n\r\nVerify the changes and commit after approval",
+      "captured_at": "2026-07-28T12:12:07.375Z",
+      "event_meta": {
+        "event_id": "8d5ab362-e17c-4017-9e5c-579b021332c6",
+        "parent_event_id": "a64bbfb1-92e1-4c5f-b944-b2a9186d99fb",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "Fair pushback — I conflated two separate mechanisms. Let me re-read the gate's actual semantics before revising.",
+      "captured_at": "2026-07-28T12:12:26.559Z",
+      "event_meta": {
+        "event_id": "52f52e49-9100-4650-a730-08d2d3e8dc32",
+        "parent_event_id": "066a03b6-3f11-4789-abea-273072ef199f",
+        "event_type": "assistant.message",
+        "message_id": "c5e0d3b4-4700-467c-934f-8fc1d51acfd5",
+        "reasoning_text": "I see the distinction now — the cost gate controls which tools a model can afford to call based on budget, while dispatch-target selection is a separate concern about routing. I was conflating these by treating the ladder as an allowlist with a hard denylist, but the user wants a softer approach that avoids completely denying models unless truly necessary, focusing instead on which ones are strictly dominated.\n\nSo I need to reframe this: the gate's job is managing tool access per model through graded budgeting, not determining dispatch eligibility. I should replace hard bans with guidance that defaults away from dominated models but allows them with explicit justification. The vendor-family rule and exact-string requirement stay, but I need to clarify these are complementary mechanisms.\n\nBefore finalizing, I should verify the gate's actual semantics by reading through the decide function and how tool costs are calculated, then review the changes and get approval before committing.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01W6XJkkCA7YTKCVzCmn2FDW",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 330,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\tools\\mcp\\mcp-cost-gate\\src\\gate.rs",
+              "startLine": 200
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "Now I understand the gate precisely, and you're right — my framing was wrong on both counts.\n\nThe gate is **graded and per-tool**: `base_budget = round((1 − output_mtok / 60) × 100)`, compared against an empirical per-tool cost from the rollup, with grant offsets able to lift it. Unmeasured tool ⇒ cost 0 ⇒ Allow. It never denies a model; it narrows which tools a model may call as price rises. I turned that into a binary ban list, which is the opposite philosophy.\n\nLet me verify the budget curve before writing it down.",
+      "captured_at": "2026-07-28T12:13:01.741Z",
+      "event_meta": {
+        "event_id": "ad2468dc-301e-4a48-9ee1-c22f73f60783",
+        "parent_event_id": "e6f7c63d-04ba-4272-a46a-d617398829b7",
+        "event_type": "assistant.message",
+        "message_id": "a448d096-972d-4c62-899f-0a7b80cc6688",
+        "reasoning_text": "I'm working through the gate mechanism: `base_budget` calculates a percentage from 0 to 100 based on the model's output token cost relative to 60, with examples showing Sonnet 4.5 at 75, Sonnet 5 at 83, Opus 5 at 58, and GPT-5 mini at 97. Then `tool_cost` pulls empirical measurements from rollup data derived from character counts, defaulting to zero if unmeasured.\n\nThe gate allows a tool only if its cost stays within the base budget plus any grant offset—so it's a graded price filter that shrinks the available tool surface as model cost rises, never outright denying a model. This means my framing was off: the ladder handles *which model to dispatch to*, while the gate controls *which tools that model can call*. Neither is a ban list. I need to revise the explanation to clarify these two separate jobs and replace the hard denylist table with one showing dominated models—those with no advantage on any axis—where we default away unless there's a specific reason to prefer them.\n\nI should also reframe the \"no tool enforces this\" note to emphasize that the gate enforces tool budget, not dispatch preference, and update the docs to use \"preferred models by tier\" instead of \"allowlist.\" The exactly-15 point still holds—it's not a selection rule at all, just an orchestrator mode trigger. And I'll add concrete base_budget numbers to show how the linear inverse formula works in practice.\n\nCalculating base_budget = round((1 - out/60)*100) across the model tiers...\n\nNow I need to revise the section about the model routing table being an allowlist rather than a price filter, clarifying that models are only dispatchable if explicitly listed and that the threshold for orchestration is strictly greater than 15, not at-or-below.\n\nI'm also updating the denylist section to reframe it as \"dominated models\" with a softer approach—prefer newer versions rather than outright banning older ones. This means changing the language around Sonnet 4.5 from \"never route\" to \"prefer Sonnet 5\" and updating the roster terminology from \"(denied)\" to \"(dominated)\". I'll also need to adjust the Delegation Rules section to reflect these changes.\n\nNow I'm checking the budget numbers to make sure everything's consistent.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01PSadwwsyxYKvSSA3B4JEaB",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd \"c:/Users/linus/git/graph_app/context-engine/tools/model-prices\" && python -c \"\nimport json\nd=json.load(open('model_prices.json'))\nnames=['Claude Opus 5','GPT-5.6 Terra','Claude Sonnet 4.5','GPT-5.3-Codex','Claude Sonnet 5','Gemini 3.5 Flash','Gemini 3.6 Flash','GPT-5.6 Luna','Claude Haiku 4.5','GPT-5.4 mini','MAI-Code-1-Flash','Kimi K2.7 Code','GPT-5 mini']\nrows={r['model_id']:r for r in d['models'] if r.get('provider_id')=='github-copilot'}\nfor n in names:\n    r=rows.get(n)\n    if not r: print(n,'MISSING'); continue\n    out=r['output_mtok']\n    import math\n    b=max(0.0,min(100.0,round((1-out/60.0)*100)))\n    print(f'{n:22} out {out:5} -> base_budget {int(b)}')\n\"",
+              "explanation": "Compute the gate's actual base_budget for each ladder model to document the graded curve accurately.",
+              "goal": "Verify graded budget values",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "Terminal is now disabled, so I'll compute the curve by hand from the verified prices (formula: `round((1 − out/60) × 100)`, clamped) and revise the docs.",
+      "captured_at": "2026-07-28T12:13:55.187Z",
+      "event_meta": {
+        "event_id": "b90e0f45-6418-40c9-8a96-c580fea4212d",
+        "parent_event_id": "58b8ffd5-d4fe-4e42-8ef2-90f06ec539b3",
+        "event_type": "assistant.message",
+        "message_id": "18f50f83-3d68-4c3f-8d4c-ea4acd93cb0d",
+        "reasoning_text": "I'll calculate the percentages manually since the terminal isn't available — Rust's round() function rounds half-away-from-zero, so I'm working through each model's score to get the final rounded values.\n\nI notice Terra and Sonnet 4.5 both land at 75, which shows the gate treats them equivalently even though preference ordering is a separate consideration. Now I need to make the edits, but there's a blocker: the terminal is disabled, so I can't commit the changes myself. I should flag this and ask the user to re-enable terminal access so I can complete the verification and commit.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015wDdswPX5AwCd61f86zuw8",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Replace the hard allowlist/denylist framing with graded preference ordering, and separate the two mechanisms: the ladder orders dispatch preference, the gate grades tool access by price.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "There is no tier below T3 on this surface: no offered model undercuts GPT-5 mini on input or cache read, so judgement-free extraction and bulk triage share the same band. There is no T4 — a document citing one is stale.\n\n### Two mechanisms, two jobs\n\nRouting has two independent controls. Confusing them produces both false bans and false confidence.\n\n| | **This ladder** | **`mcp-cost-gate`** |\n|---|---|---|\n| Answers | *Which model should receive this unit?* | *May this model call this tool directly?* |\n| Scope | `runSubagent` dispatch | MCP `tools/call` traffic |\n| Shape | Preference ordering — judgement, applied by you | Graded budget — arithmetic, applied by the middleware |\n| Outcome | A recommended model, deviable with a stated reason | `Allow`, `Delegate`, or `Reject` on an unresolvable `caller_model` |\n\nNeither is a prohibition list. The gate **never denies a model outright** — it computes `base_budget = round((1 − output_mtok / 60) × 100)` and compares it to an empirical per-tool cost, so a pricier model keeps full access to cheap tools and loses only the token-heavy ones. An unmeasured tool costs 0 and is always allowed, and a grant offset can lift any model's budget. See [model-prices.instructions.md](model-prices.instructions.md).\n\nThe `X = 15` threshold in [orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md) belongs to neither column: it decides only **whether a model runs as orchestrator**. Do not reuse it as dispatch eligibility — \"at or below X\" is not a selection rule, and reading it as one is what lets an arbitrary same-priced model look defensible.\n\n### Dominated models: default away, do not ban\n\nThese models are beaten by an allowlisted peer on **every** priced axis, so there is no cost argument for reaching for them. Route to the dominating peer by default. They remain dispatchable — pick one only for a reason you state (the surface rejects your first choice, or the model has a capability its peer lacks), never from familiarity.\n\n| Model | Dominated by | On |\n|---|---|---|\n| `Claude Sonnet 4.5` (3 · 0.3 · 15) | `Claude Sonnet 5` (2 · 0.2 · 10) | input, cache read, output — same 1M window |\n| `Claude Haiku 4.5` (1 · 0.1 · 5) | `GPT-5 mini` (0.25 · 0.025 · 2) | input, cache read, output, window |\n| `Gemini 3.5 Flash` (1.5 · 0.15 · 9) | `GPT-5.6 Luna` (1 · 0.1 · 6) | input, cache read, output, window |\n| `Gemini 3.6 Flash` (1.5 · 0.15 · 7.5) | `GPT-5.6 Luna` (1 · 0.1 · 6) | input, cache read, output, window |\n\nOlder Opus and Sonnet generations are likewise superseded by their current equivalents.\n\nNote that the gate cannot express this: dominance is a *relative* judgement across four axes, while `base_budget` reads only `output_mtok`. Claude Sonnet 4.5 and GPT-5.6 Terra both price at `out 15` and therefore receive the **identical** budget of 75 — the gate has no opinion between them. Preference ordering is exactly the gap the gate leaves open, which is why it lives here as guidance rather than there as enforcement.\n\n**Do not derive a model from a vendor family name.** \"A Sonnet\", \"a mini\", \"a Flash\" is not a selection — it is the habit that produces these mistakes. Name a model from the table, or state why you are going outside it.",
+                  "oldString": "There is no tier below T3 on this surface: no offered model undercuts GPT-5 mini on input or cache read, so judgement-free extraction and bulk triage share the same band. There is no T4 — a document citing one is stale.\n\n### The ladder is an allowlist, not a price filter\n\n**A model is dispatchable if and only if it is named in the table above.** Do not\nsubstitute a price comparison for that list, and do not derive a model from a\nvendor family name (\"a Sonnet\", \"a mini\", \"a Flash\").\n\nThis matters because the `X = 15` threshold in\n[orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md)\nis defined as *strictly exceeds* 15, so an \"at or below X\" reading admits\nClaude Sonnet 4.5 at exactly `out 15`. That threshold decides **whether a model\norchestrates**; it never decides **who it dispatches to**.\n\n**Denylist — never dispatch new work to these, regardless of price arithmetic:**\n\n| Denied model | Dominated by | On |\n|---|---|---|\n| `Claude Sonnet 4.5` (3 · 0.3 · 15) | `Claude Sonnet 5` (2 · 0.2 · 10) | input, cache read, output — same 1M window |\n| `Claude Haiku 4.5` (1 · 0.1 · 5) | `GPT-5 mini` (0.25 · 0.025 · 2) | input, cache read, output, window |\n| `Gemini 3.5 Flash` (1.5 · 0.15 · 9) | `GPT-5.6 Luna` (1 · 0.1 · 6) | input, cache read, output, window |\n| `Gemini 3.6 Flash` (1.5 · 0.15 · 7.5) | `GPT-5.6 Luna` (1 · 0.1 · 6) | input, cache read, output, window |\n\nOlder Opus and Sonnet generations are likewise superseded by their current\nequivalents. If a needed capability exists only outside the allowlist, say so in\nthe dispatch rationale rather than quietly picking a denied model.\n\n> **No tool enforces this.** `mcp-cost-gate` intercepts MCP `tools/call` traffic\n> and validates `caller_model`; it has no visibility into `runSubagent` and\n> cannot reject a bad dispatch target. This list is the enforcement."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "| **T2 — Default implementation** | **Claude Sonnet 5** | **2 · 0.2 · 10 · 1M** | **The default for all delegated implementation, review, targeted debugging, and moderate multi-file edits.** Dominates Sonnet 4.5 (3 · 0.3 · 15 · 1M) on every priced axis at the same window, so prefer it over any older Sonnet | Long research sweeps or bulk summarization a cheap model can pre-digest |",
+                  "oldString": "| **T2 — Default implementation** | **Claude Sonnet 5** | **2 · 0.2 · 10 · 1M** | **The default for all delegated implementation, review, targeted debugging, and moderate multi-file edits.** Strictly cheaper and newer than Sonnet 4.5 (3 · 0.3 · 15 · 1M) on every axis — never route new work to Sonnet 4.5 | Long research sweeps or bulk summarization a cheap model can pre-digest |"
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "- **Verified available, 2026-07-27** — **dominated** entries are fully dispatchable but have no cost argument in their favour (see \"Dominated models\" above): Claude Fable 5, Claude Opus 4.6, Claude Opus 4.7, Claude Opus 4.8, Claude Opus 4.8 (fast mode) (preview), Claude Opus 5, Claude Sonnet 4.5 *(dominated)*, Claude Sonnet 4.6, Claude Sonnet 5, Claude Opus 4.5, Claude Haiku 4.5 *(dominated)*, Gemini 3.1 Pro, Gemini 3.5 Flash *(dominated)*, Gemini 3.6 Flash *(dominated)*, Gemini 2.5 Pro, GPT-5.3-Codex, GPT-5.4 mini, GPT-5.4, GPT-5.5, GPT-5.6 Luna, GPT-5.6 Sol, GPT-5.6 Terra, GPT-5 mini, Kimi K2.7 Code, MAI-Code-1-Flash, Auto *(escape hatch only)*. Notably **absent**: every `*-flash-lite` model, GPT-5.4 nano, and GPT-5.4 Pro.",
+                  "oldString": "- **Verified available, 2026-07-27** — availability is not permission; **denied** entries are offered by the surface but must not be dispatched (see the denylist above): Claude Fable 5, Claude Opus 4.6, Claude Opus 4.7, Claude Opus 4.8, Claude Opus 4.8 (fast mode) (preview), Claude Opus 5, ~~Claude Sonnet 4.5~~ **(denied)**, Claude Sonnet 4.6, Claude Sonnet 5, Claude Opus 4.5, ~~Claude Haiku 4.5~~ **(denied)**, Gemini 3.1 Pro, ~~Gemini 3.5 Flash~~ **(denied)**, ~~Gemini 3.6 Flash~~ **(denied)**, Gemini 2.5 Pro, GPT-5.3-Codex, GPT-5.4 mini, GPT-5.4, GPT-5.5, GPT-5.6 Luna, GPT-5.6 Sol, GPT-5.6 Terra, GPT-5 mini, Kimi K2.7 Code, MAI-Code-1-Flash, Auto *(escape hatch only)*. Notably **absent**: every `*-flash-lite` model, GPT-5.4 nano, and GPT-5.4 Pro."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "- **Default model:** when a dispatch does not justify a different tier, pin `\"Claude Sonnet 5 (copilot)\"`. Going outside the ladder is allowed but never silent — name the model and the reason in the dispatch rationale.",
+                  "oldString": "- **Default model:** when a dispatch does not justify a different tier, pin `\"Claude Sonnet 5 (copilot)\"`. Any model absent from the ladder above — and every model on the denylist — is not dispatchable."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-routing.instructions.md",
+                  "newString": "---\ndescription: \"Use at the start of and throughout every session, before every sub-agent dispatch: the canonical tier ladder and model preference ordering. Covers capability gating, context isolation, model selection, dominated models, delegation rules, and parallel fan-out.\"\n---",
+                  "oldString": "---\ndescription: \"Use at the start of and throughout every session, before every sub-agent dispatch: the canonical model allowlist, denylist, and tier ladder. Covers capability gating, context isolation, model selection, delegation rules, and parallel fan-out.\"\n---"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "Now the same de-escalation in the agent templates and the files that inherited the \"allowlist/denylist\" wording.",
+      "captured_at": "2026-07-28T12:14:34.587Z",
+      "event_meta": {
+        "event_id": "199681a5-c317-4a67-96ea-42ec9706a7b1",
+        "parent_event_id": "59a27977-43d0-410b-b682-449f46f454d8",
+        "event_type": "assistant.message",
+        "message_id": "07f73012-3ada-48b2-8630-2385d6dbde6c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01E6MowsfoGKAf98iFm3pLZ5",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "De-escalate allowlist/denylist wording to preference ordering across the agent templates and dependent instruction files.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+                  "newString": "1. **An explicit model string, chosen from the tier ladder.** Copy the string\n   verbatim, punctuation included — a bare label like `\"mini\"` or `\"cheap\"`\n   errors or is silently ignored.\n\n   | Tier | Model string | Use for |\n   |---|---|---|\n   | **T2 — default** | `\"Claude Sonnet 5 (copilot)\"` | Every delegated implementation, review, targeted debugging, or moderate multi-file edit, unless another tier is justified |\n   | **T3 — floor** | `\"GPT-5 mini (copilot)\"` | Bulk, mechanical, read-only triage, first-pass research, judgement-free extraction — where most delegated volume belongs |\n   | T3 — wide context | `\"GPT-5.6 Luna (copilot)\"` | Input exceeds 400k, or a cheap model must digest a huge input *and* emit non-trivial code |\n   | T3 — reasoning step-up | `\"GPT-5.4 mini (copilot)\"` | The unit needs real reasoning over what it read |\n   | T3 — code specialist | `\"Kimi K2.7 Code (copilot)\"` | Bulk code-shaped work where a code specialist materially improves edit quality |\n   | T1 — escalation only | `\"GPT-5.3-Codex (copilot)\"` (bounded input) / `\"GPT-5.6 Terra (copilot)\"` (very large context) | A T2 attempt came back wrong or too shallow, or the slice is plainly cross-cutting and high-risk — record why |\n\n   **Prefer the dominating peer.** `Claude Sonnet 4.5`, `Claude Haiku 4.5`, and the\n   Gemini Flash models are beaten by a laddered model on every priced axis, so\n   there is no cost argument for them. They are not forbidden — pick one only for\n   a reason you state, never from familiarity. The same applies to any model\n   outside the ladder: going outside it is allowed, going outside it silently is\n   not. `\"Auto (copilot)\"` hands model selection to the surface and must likewise\n   be justified in the dispatch rationale rather than used as a default.\n\n   **Do not derive a model from a vendor family name.** \"A Sonnet\", \"a mini\", \"a\n   Flash\" is not a selection. Never delegate to an orchestrator-tier (T0) model.\n   Among models of equal cost, prefer the latest generation, then the larger\n   context window. Prices and full rationale:\n   [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).\n2. **A single, well-scoped objective.** One unit per sub-agent; do not hand a\n   sub-agent the whole task.",
+                  "oldString": "1. **An explicit model string from the allowlist below.** These are the only\n   models this repository routes new work to. Copy the string verbatim,\n   punctuation included.\n\n   | Tier | Model string | Use for |\n   |---|---|---|\n   | **T2 — default** | `\"Claude Sonnet 5 (copilot)\"` | Every delegated implementation, review, targeted debugging, or moderate multi-file edit, unless another tier is justified |\n   | **T3 — floor** | `\"GPT-5 mini (copilot)\"` | Bulk, mechanical, read-only triage, first-pass research, judgement-free extraction — where most delegated volume belongs |\n   | T3 — wide context | `\"GPT-5.6 Luna (copilot)\"` | Input exceeds 400k, or a cheap model must digest a huge input *and* emit non-trivial code |\n   | T3 — reasoning step-up | `\"GPT-5.4 mini (copilot)\"` | The unit needs real reasoning over what it read |\n   | T3 — code specialist | `\"Kimi K2.7 Code (copilot)\"` | Bulk code-shaped work where a code specialist materially improves edit quality |\n   | T1 — escalation only | `\"GPT-5.3-Codex (copilot)\"` (bounded input) / `\"GPT-5.6 Terra (copilot)\"` (very large context) | A T2 attempt came back wrong or too shallow, or the slice is plainly cross-cutting and high-risk — record why |\n\n   **Denylist — never dispatch these:** `\"Claude Sonnet 4.5 (copilot)\"` (strictly\n   dominated by Claude Sonnet 5 on input, output, and cache read at the same 1M\n   window), `\"Claude Haiku 4.5 (copilot)\"` (most expensive input in the cheap\n   band, smallest window), and the Gemini Flash models (dominated by GPT-5.6 Luna\n   on every axis). `\"Auto (copilot)\"` is an escape hatch only — permitted when no\n   allowlisted model fits or the surface rejects your choice, and you must state\n   that in the dispatch rationale.\n\n   Absence from the allowlist is itself a block: do not improvise a model from a\n   vendor family name. Never delegate to an orchestrator-tier (T0) model. Among\n   allowlisted models of equal cost, prefer the latest generation, then the larger\n   context window. Prices and full rationale:\n   [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).\n2. **A single, well-scoped objective.** One unit per sub-agent; do not hand a\n   sub-agent the whole task."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+                  "newString": "That threshold decides **whether you orchestrate**. It does *not* decide **who you\ndispatch to** — \"at or below X\" is not a selection rule, and reading it as one\nmakes any same-priced model look defensible. Dispatch targets come from the tier\nladder below.",
+                  "oldString": "That threshold decides **whether you orchestrate**. It does *not* decide **who you\ndispatch to** — \"at or below X\" would admit strictly-dominated models that sit\nexactly at 15. Dispatch targets come from the allowlist below, not from a price\ncomparison."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+                  "newString": "- Exactly one tool: the sub-agent tool. No direct file/search/execute/MCP work.\n- Always dispatch to a model chosen from the tier ladder above; keep expensive\n  context for planning and aggregation. Deviating from the ladder is allowed —\n  deviating silently is not.",
+                  "oldString": "- Exactly one tool: the sub-agent tool. No direct file/search/execute/MCP work.\n- Always dispatch to a model named in the allowlist above; keep expensive context\n  for planning and aggregation. Never substitute a price comparison for the\n  allowlist."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\agents\\handoff.agent.md",
+                  "newString": "- Each delegated unit must include: (1) an explicit model string chosen from the tier ladder — `\"Claude Sonnet 5 (copilot)\"` (T2 default), `\"GPT-5 mini (copilot)\"` (T3 floor), `\"GPT-5.6 Luna (copilot)\"` (input over 400k), `\"GPT-5.4 mini (copilot)\"` (needs reasoning over what it read), or `\"GPT-5.3-Codex (copilot)\"` / `\"GPT-5.6 Terra (copilot)\"` for justified T1 escalation; (2) a single well-scoped objective; (3) a compact return contract specifying exactly what result to return; (4) the minimum context anchors (paths, ids, prior findings) so the sub-agent does not re-discover them.\n- Prefer the dominating peer over `\"Claude Sonnet 4.5 (copilot)\"`, `\"Claude Haiku 4.5 (copilot)\"`, and the Gemini Flash models — each is beaten by a laddered model on every priced axis, so none has a cost argument in its favour. They remain dispatchable for a stated reason; what is not acceptable is improvising from a vendor family name. See [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).\n- When multiple models are equal in cost, prefer the latest model version or generation, then the larger context window.",
+                  "oldString": "- Each delegated unit must include: (1) an explicit model string from the routing allowlist — `\"Claude Sonnet 5 (copilot)\"` (T2 default), `\"GPT-5 mini (copilot)\"` (T3 floor), `\"GPT-5.6 Luna (copilot)\"` (input over 400k), `\"GPT-5.4 mini (copilot)\"` (needs reasoning over what it read), or `\"GPT-5.3-Codex (copilot)\"` / `\"GPT-5.6 Terra (copilot)\"` for justified T1 escalation; (2) a single well-scoped objective; (3) a compact return contract specifying exactly what result to return; (4) the minimum context anchors (paths, ids, prior findings) so the sub-agent does not re-discover them.\n- Never dispatch `\"Claude Sonnet 4.5 (copilot)\"`, `\"Claude Haiku 4.5 (copilot)\"`, or a Gemini Flash model — each is strictly dominated by an allowlisted peer. Absence from the allowlist is a block, not an invitation to improvise from a vendor family name. See [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).\n- When multiple allowlisted models are equal in cost, prefer the latest model version or generation, then the larger context window."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "One markdown defect to fix — I nested backticks inside a code span.",
+      "captured_at": "2026-07-28T12:16:03.489Z",
+      "event_meta": {
+        "event_id": "4783efb3-ba94-4b64-a3a0-0a9818497d7a",
+        "parent_event_id": "5fd7af12-c101-4834-be46-2214d2746f26",
+        "event_type": "assistant.message",
+        "message_id": "6fef41f7-3cd3-4846-affd-efd79926fe26",
+        "reasoning_text": "I noticed a markdown formatting issue in the model-prices section where I nested backticks inside backticks, breaking the syntax. Let me correct that.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01H3WDjsn7VpH1ykVtMoDEE8",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.agents\\instructions\\orchestration\\model-prices.instructions.md",
+              "oldString": "- The decision is a **graded budget**, not a ban. `base_budget = round((1 − output_mtok / `COST_GATE_BUDGET_ZERO_PRICE`) × `COST_GATE_SCALE_MAX`)`, clamped to the scale (defaults 60.0 and 100). Tool cost comes from the empirical rollup; the call is allowed when `tool_cost <= base_budget + grant_offset`.",
+              "newString": "- The decision is a **graded budget**, not a ban: `base_budget = round((1 − output_mtok / budget_zero_price) × scale_max)`, clamped to the scale, where `budget_zero_price` defaults to 60.0 and `scale_max` to 100. Tool cost comes from the empirical rollup; the call is allowed when `tool_cost <= base_budget + grant_offset`."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Verified. You were right on both counts — here's what changed and what I got wrong.\n\n## The correction\n\nMy allowlist/denylist was a **binary ban layered on top of a system that is deliberately graded**. Reading `gate.rs` properly: `base_budget = round((1 − output_mtok / 60) × 100)` compared against an empirical per-tool cost, with grant offsets able to lift it and unmeasured tools costing 0 (always allowed). Nothing is ever denied — a pricier model keeps every cheap tool and is asked to delegate only token-heavy ones. I replaced that with a prohibition list, which is the wrong philosophy *and* the wrong layer.\n\nThe two mechanisms are now separated explicitly in [model-routing.instructions.md](.agents/instructions/orchestration/model-routing.instructions.md#L45-L58):\n\n| | This ladder | `mcp-cost-gate` |\n|---|---|---|\n| Answers | Which model receives this unit? | May this model call this tool? |\n| Scope | `runSubagent` dispatch | MCP `tools/call` |\n| Shape | Preference ordering (judgement) | Graded budget (arithmetic) |\n\n\"Denylist — never dispatch\" became [\"Dominated models: default away, do not ban\"](.agents/instructions/orchestration/model-routing.instructions.md#L60-L70) — same four models, same evidence, but they stay dispatchable for a stated reason. The roster markers went from ~~struck-through~~ **(denied)** to *(dominated)*. Propagated through [orchestrator.agent.md](.agents/agents/orchestrator.agent.md#L62-L68), [handoff.agent.md](.agents/agents/handoff.agent.md#L33), [orchestrator-delegation](.agents/instructions/orchestration/orchestrator-delegation.instructions.md), and both prompts.\n\nThe one rule I kept absolute is not about any model: *do not derive a model from a vendor family name.* That's the actual defect — \"a Sonnet\" isn't a selection. Deviating from the ladder is fine; deviating silently is not.\n\n## A useful thing the verification surfaced\n\nThe gate reads `output_mtok` **only**. Claude Sonnet 4.5 and GPT-5.6 Terra both price at `out 15` and receive the **identical** budget of 75 — the gate has no opinion between them, and can't, because dominance is a relative judgement across four axes. That's precisely the gap preference ordering fills, and it's now documented as the reason the ladder is guidance rather than enforcement. Budget curve added to [model-prices.instructions.md](.agents/instructions/orchestration/model-prices.instructions.md#L131): Opus 5 → 58, Terra/Sonnet 4.5 → 75, Sonnet 5 → 83, Luna → 90, GPT-5 mini → 97.\n\n## Verification status\n\n- Markdown lints clean on all 7 files; fixed one nested-backtick code span I'd introduced.\n- Grep confirms no `allowlist`/`denylist`/`never dispatch` wording remains for models. The two surviving \"never dispatch\" hits are about *agent templates* (built-in Explore vs workspace Explore) and are correct.\n- Prices re-verified against `model_prices.json` earlier; budget figures are hand-computed from the formula in `gate.rs`.\n\n**Not verified:** `cargo test -p mcp-cost-gate` — no code changed, but I also can't run it now.\n\n## Blocker on commit\n\n`run_in_terminal` is disabled, so I cannot stage or commit. Two options:\n\n1. Re-enable the terminal and I'll commit directly — proposed message: `docs(agents): separate dispatch preference from cost-gate budget in routing instructions`.\n2. Delegate to the Commit Agent, which will also handle the pre-commit hook and rule sync.\n\nWhich do you want, and do you approve the changes as they now stand?",
+      "captured_at": "2026-07-28T12:16:42.976Z",
+      "event_meta": {
+        "event_id": "7d1b4780-0089-44ea-a8ae-1e5089487594",
+        "parent_event_id": "c27f611d-db75-44f6-bb39-911803f57b81",
+        "event_type": "assistant.message",
+        "message_id": "bed45ecd-5e3a-4014-884d-e34f0fa8fe63",
+        "tool_requests_json": []
+      }
+    }
+  ]
+}

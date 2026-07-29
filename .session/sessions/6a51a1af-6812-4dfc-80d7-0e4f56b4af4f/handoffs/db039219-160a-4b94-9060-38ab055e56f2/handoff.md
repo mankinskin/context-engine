@@ -1,0 +1,62 @@
+# Handoff: db039219-160a-4b94-9060-38ab055e56f2
+
+## Summary
+- **Workspace Session**: `6a51a1af-6812-4dfc-80d7-0e4f56b4af4f`
+- **Outgoing Run**: `22633ff8-ab1e-43e6-9940-7ebdb09f50ee`
+- **Created**: 2026-07-28T21:59:41.203217200+00:00
+- **Objective**: Complete ticket 5cbae4be: capture a real post-9d527ad1 delegation session plus a post-9d527ad1 comparison anchor, replay both through the existing 10d21210 harness, and record the resulting metrics as evidence for epic 79c4ac3e acceptance criteria 4, 5 and 6 - the sole remaining blocker to closing the epic.
+- **Implementation Ready**: true
+
+## Resume Command
+```bash
+session-cli resume --workspace-session-id 6a51a1af-6812-4dfc-80d7-0e4f56b4af4f --predecessor-run-id 22633ff8-ab1e-43e6-9940-7ebdb09f50ee
+```
+
+## Target Tickets
+- `5cbae4be-9f62-49ca-827e-44bed8242bc6`
+- `79c4ac3e-fd53-48bf-babb-43d27555c4bd`
+
+## Target Files
+- `.benchmark/10d21210/README.md`
+- `.benchmark/10d21210/baseline/delegation_cost_report.json`
+- `memory-api/crates/session-api/src/delegation_cost.rs`
+- `memory-api/crates/session-api/tests/delegation_cost_benchmark.rs`
+
+## Decisions
+- Benchmark architecture is REPLAY-ONLY: deterministic replay over checked-in event logs, no live multi-agent runs. AC4 non-determinism is satisfied by determinism-by-construction (run count 1, spread 0).
+- All three draft specs (7be68a48, ec3b13f1, eeaf5479) were promoted from draft to reviewed with traceability populated; spec health reported 227 checked and 0 issues.
+- Epic AC1 was amended to the measured baseline of 172 tools and ~24k schema tokens instead of the never-measured 164 tools and ~37k figures.
+- AC rewrites were performed as part of this close rather than deferred: 77eb143b AC2 restated to 118 of 334, and AC6 rewritten to detection-toward-zero.
+- The cheap gate sub-agent is the MANDATED pre-dispatch mechanism; the narrow orchestrator tool grant alternative is rejected. The explore agent template is designated the gate agent with fail-fast semantics and a ceiling of 5 turns and 10 tool calls.
+- Epic AC6 evidence will come from capturing a fresh post-9d527ad1 session, not from amending AC6 to accept payload telemetry and not from closing with AC6 partially evidenced.
+
+## Non-Goals
+- Do NOT build a live multi-agent benchmark harness or run repeated live orchestrations; the replay-only architecture is a binding decision.
+- Do NOT fix the substitutable_shell_count versus classify_shell_command cd-chain divergence here; it is tracked as 278d22d1 and seven sibling thresholds are frozen against the current value.
+- Do NOT implement MCP-over-shell enforcement; 77eb143b was measurement-only and enforcement is tracked as 0231bfca.
+- Do NOT rebase the published benchmark README threshold numbers; sibling acceptance criteria cite them as frozen.
+- Do NOT commit live session captures, the repository-local MCP config, or the mcp-cost-gate lane owned by another agent.
+
+## Context Anchors
+- Epic 79c4ac3e: all 11 dependency children are now done; the epic itself remains state=new and CANNOT close until ACs 4, 5 and 6 have measured evidence.
+- Epic ACs 1, 2 and 3 are satisfied now. AC1 was amended this iteration to the measured baseline of 172 tools and ~24k schema tokens, superseding the never-measured 164 tools and ~37k figures, citing the cd19fed4 tool-grant regression probe prompt as evidence source.
+- Published thresholds live in the 10d21210 benchmark README and are frozen: AC4 turn count baseline 713 dropping to 535 or fewer (at least 25 percent drop) AND substitutable_shell_count baseline 105 of 334 dropping to 53 or fewer (at least 50 percent relative drop); AC5 redispatch_count baseline 10 dropping to 0.
+- Both checked-in baseline sessions (3e9bc20b and 41966513) have ALL-ZERO telemetry because they predate 9d527ad1. Any AC6 comparison against them would be real-telemetry-versus-zero and is INVALID; a post-9d527ad1 comparison anchor must also be captured.
+- The benchmark is replay-only by binding user decision: deterministic replay over checked-in event logs via compute_delegation_cost_report_from_events. No live multi-agent harness exists and none should be built.
+- The benchmark directory was previously UNTRACKED despite 10d21210 being done; it is now committed as root 772204b6, so the 10d21210 AC2 deliverable is finally in git.
+- Commits this iteration: memory-api e73687b; root d36a19c0, 29ff43c8, 36027385, 772204b6, e0a4ed40 (submodule pointer). Nothing pushed.
+- Open follow-ups already ticketed: 278d22d1 (substitutable_shell_count versus classify_shell_command cd-chain divergence), 7200f269 (gate-mode marker for the explore agent template), 0231bfca (MCP-over-shell enforcement proposal), 94c61173 (empirical model-tier resolution check), 818e894a (ambient rule-store pollution causing unrelated flakes).
+- ANOMALY: adding the edge from 79c4ac3e to 5cbae4be as depends_on was rejected by the ticket store as dependency cycle detected, despite no reverse depends_on existing. 5cbae4be is only linked to the epic. Possible ticket-api defect where linked is treated as symmetric. Left unforced deliberately.
+- Known unfixed: the 4817a5cc git-tracking defect; live session captures remain untracked, blocked behind the workspace-model redesign.
+- 77eb143b honest finding: corrected read_like_exploratory is 118 versus the original ad-hoc 116 (off by 1.7 percent), so the earlier different-session-slice justification was retracted. substitutable_shell_count stayed at 105 of 334 because it classifies on the raw command head and was untouched by the cd-chain fix.
+
+## Risk Notes
+AC6 is the fragile one: both checked-in baseline sessions have all-zero telemetry because they predate 9d527ad1, so any comparison against them is invalid by construction - a post-9d527ad1 comparison anchor must be captured too, not just the post-change session. Second risk: substitutable_shell_count and classify_shell_command share the same head list but apply it to different input (raw versus cd-stripped), and seven sibling thresholds are frozen against the raw-head value, so do not silently change it while measuring; this is tracked as 278d22d1. Third: the replay-only architecture means no live comparison exists, so the measured drop is only as meaningful as the comparability of the two captured sessions - document how comparability was established.
+
+## Workflow
+- **Nodes**: 0
+- **Edges**: 0
+- **Not Done**: 0
+
+## Validation
+- `vt-session-api-handoff-path-validation`: pass (required)

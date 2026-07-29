@@ -1,0 +1,55 @@
+# Handoff: d8244132-fa9a-4414-a365-8a98c06c14ab
+
+## Summary
+- **Workspace Session**: `8ba9f3a5-39d2-4d74-a61e-8e26ad048f6b`
+- **Outgoing Run**: `b71d26b3-112d-451a-85f6-d630fa291ee8`
+- **Created**: 2026-07-28T16:03:54.127553400+00:00
+- **Objective**: Implement ticket 7de9f4f0 (Completion-claim audit): require verified-by evidence before a ticket may reach done, so self-reported completion can no longer pass silently through the ticket store.
+- **Implementation Ready**: true
+
+## Resume Command
+```bash
+session-cli resume --workspace-session-id 8ba9f3a5-39d2-4d74-a61e-8e26ad048f6b --predecessor-run-id b71d26b3-112d-451a-85f6-d630fa291ee8
+```
+
+## Target Tickets
+- `7de9f4f0-0189-40c7-ac0a-0669e2aab57c`
+
+## Target Files
+- `memory-api/crates/ticket-api/src/storage/store.rs`
+- `memory-api/crates/ticket-api/src/storage/store/release.rs`
+- `memory-api/crates/ticket-api/src/health.rs`
+- `.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/history.ndjson`
+- `.spec/specs/7be68a48-f4e5-49a2-b9a5-118f07b48b90/sections/Traceability.md`
+
+## Decisions
+- Verified-by semantics: any mechanism claiming completion is verified MUST require a read-back of the artifact, not merely a successful write call. The spec store silently accepted a 0-byte write and spec_section_get then failed on it, yet the writing agent reported success.
+- Evidence model: the audit treats the ticket's own history and its linked validation evidence as the source of truth, never self-reported completion text in the description.
+- Scope boundary: this ticket is about completion integrity and evidence enforcement, not about telemetry.
+- Motivating precedent: ticket 9d527ad1 reached done TWICE against work that provably did not exist; its history.ndjson records those revisions. In the closing iteration a Commit Agent also reported a file committed while its own git status showed it still dirty, nearly losing the AC3 test. Self-reported completion is not evidence.
+
+## Non-Goals
+- Do not re-open the abandoned transcript-usage-extraction approach; three research passes established the raw Copilot transcript JSONL carries no usage field and no model field.
+- Do not re-litigate the mcp-cost-gate telemetry design or the proxy-side observability enum that was added and then removed at user direction.
+- Do not touch memory-api/crates/session-api/src/store/config/persistence.rs.
+- Do not retroactively re-verify historical done tickets beyond making the unverified pattern discoverable.
+
+## Context Anchors
+- Predecessor ticket 9d527ad1 closed to done with all six ACs independently re-verified by a reviewer who re-ran every command rather than accepting agent reports.
+- Commits from the predecessor iteration: memory-api submodule c8beaa1 and ab9887f; root 73cb866a and 71ef53d3.
+- AC4/AC6 are satisfied by the pre-existing session-api mechanism: Option<u64> token-load fields in crates/session-api/src/model.rs (~L242-253) with skip_serializing_if, set to None for non-MCP transcript-derived events in crates/session-api/src/hook.rs (~L323-332), covered by the passing test rollup_with_no_estimates_yields_none in crates/session-api/src/subagent_rollup.rs.
+- Spec 7be68a48 now has a real non-empty Traceability section (1481 bytes) and its stale ticket-title references at body.md lines ~17 and ~131 are corrected.
+- Known dirty and OUT OF SCOPE: memory-api/tools/mcp/mcp-cost-gate/src/gate.rs is an unrelated local edit owned by another agent; several root .ticket/tickets/* and untracked .session/sessions/* paths are also unrelated background activity.
+
+## Risk Notes
+The enforcement point must not deadlock existing workflows: many in-flight tickets have no verified-by evidence recorded, so a hard gate applied retroactively could block every current close. Prefer gating new transitions and surfacing legacy gaps via health_check rather than a blanket block. Also note the ticket store auto-walks multi-hop transitions by default, so any gate must fire on each traversed hop, not only on the caller's requested target state.
+
+## Workflow
+- **Nodes**: 0
+- **Edges**: 0
+- **Not Done**: 0
+
+## Validation
+- `7de9f4f0-completion-audit`: all tests pass, including new coverage asserting a ticket cannot reach done without verified-by evidence (required)
+- `7de9f4f0-readback-required`: the audit path must detect and reject the empty artifact rather than accepting the successful write as proof (required)
+- `persistence-rs-untouched`: empty; confirms persistence.rs stayed untouched (required)

@@ -1,0 +1,52 @@
+{
+  "handoff_id": "e2e6acb9-64ff-4bd2-ae3e-bb45bb62b953",
+  "workspace_session_id": "6a51a1af-6812-4dfc-80d7-0e4f56b4af4f",
+  "outgoing_run_id": "22633ff8-ab1e-43e6-9940-7ebdb09f50ee",
+  "created_at": "2026-07-28T21:33:59.538819200Z",
+  "resume_command": "session-cli resume --workspace-session-id 6a51a1af-6812-4dfc-80d7-0e4f56b4af4f --predecessor-run-id 22633ff8-ab1e-43e6-9940-7ebdb09f50ee",
+  "workflow": {
+    "workflow": {}
+  },
+  "validation": [
+    {
+      "validation_spec_id": "vt-pdf-t0-verification-spike-round1",
+      "required": true,
+      "outcome": "round-1 passed; round-2 must extend it to the four untested pdf-extract failure modes",
+      "command": "cargo run against the pdf-spike scratch crate"
+    }
+  ],
+  "objective": "Complete PDF T0 verification spike round 2 (ticket fc94716e): (a) empirically exercise pdf-extract against missing-ToUnicode, Type0/CID, scanned/no-text-layer, and malformed-xref PDFs to close AC#4, and (b) write the single collated capability-to-crate-to-API table required by the Deliverable section to close AC#5. Both were explicitly NOT waived by the user.",
+  "target_tickets": [
+    "fc94716e",
+    "322a4737"
+  ],
+  "decisions": [
+    "AC#4 NOT waived: a second spike round is required; T3 (a4d7df73) may not absorb this coverage.",
+    "AC#5 NOT waived: T0 stays blocked until the collated capability-to-crate-to-API table exists.",
+    "Spec 83f05962 draft state does NOT gate fc94716e reaching in-review; its Open Risk section has been updated with round-1 outcomes.",
+    "T0 fold-in scoped to T2 (e9c0e280) only; T1, T6, T7 and T8 deliberately left untouched.",
+    "Round-1 evidence captured into test-api as vt-pdf-t0-verification-spike-round1 with 3 executions.",
+    "Session-store prune and gc tooling gap ticketed as e3474d5f; the root cause of the missing session manifest was deliberately NOT ticketed.",
+    "field_map silently dropping state writes stays recorded as evidence inside 29a56eef rather than its own ticket."
+  ],
+  "non_goals": [
+    "Do not fold T0 findings into T1, T6, T7, or T8.",
+    "Do not promote spec 83f05962 out of draft.",
+    "Do not begin implementation on T1 through T9; T0 must close first.",
+    "Do not commit the session-api working-tree changes in the memory-api submodule - they belong to other in-progress work.",
+    "Do not use update_ticket field_map to set state; it reports success and persists nothing."
+  ],
+  "context_anchors": [
+    "Round-1 scratch crate is the gitignored pdf-spike project under the target tmp directory, pinning lopdf 0.44, krilla 0.8.2, pdf-extract 0.12; its run_full, build_err2 and krilla_err3 log files hold the real evidence.",
+    "Round-1 confirmed: lopdf has NO reorder and NO rotate API (compiler error E0599) - hand-roll reorder via the page-tree Kids array and rotation via a Rotate integer; both round-trip through save and reload.",
+    "Round-1 confirmed: lopdf does not decode CCITTFaxDecode or JPXDecode, but get_page_images returns raw encoded bytes plus the filter list, so DCT and JPX survive as passthrough.",
+    "Round-1 confirmed: get_page_images on a page lacking a Resources dictionary returns a DictKey error; callers must map this to an empty result, not an error.",
+    "Round-1 confirmed: pdf-extract PANICS rather than erroring on a missing MediaBox, at line 2408 of its lib module; catch_unwind contains it and execution continues.",
+    "Round-1 confirmed: krilla Font has no Default impl, so caller-supplied font bytes are mandatory; NotoSans-Regular (OFL) is the named candidate.",
+    "Round-1 confirmed: lopdf 0.44 and 0.42 build and run together.",
+    "Fixtures can be synthesized in-process with lopdf Document builders, shrinking the vendoring plan.",
+    "All 12 PDF-track tickets were frozen in the off-schema state 'open' and were repaired by direct manifest edit; fc94716e and epic 322a4737 are now in-implementation, the other ten are new.",
+    "Known store bugs to work around: bf62e2f9 (ticket description writes overwrite silently - always read, merge, write, verify), f986e666 (empty spec updates succeed silently), 29a56eef (create_ticket accepts off-schema states, health_check misses them, and field_map drops state writes)."
+  ],
+  "risk_notes": "Round-1 review found the reported claims overstated downstream effects ('5 tickets updated' was 4; 'validation evidence on 3 tickets' was 0 in test-api). Verify every claim against the stores before reporting it in round 2. The worktree is intentionally dirty: other agents' session-api changes in the memory-api submodule and unrelated agent, spec and ticket edits must not be committed."
+}

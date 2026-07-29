@@ -1,0 +1,54 @@
+# Handoff: 25ac3db7-aa2e-4fc3-919a-b3ccd39084a6
+
+## Summary
+- **Workspace Session**: `6a51a1af-6812-4dfc-80d7-0e4f56b4af4f`
+- **Outgoing Run**: `22633ff8-ab1e-43e6-9940-7ebdb09f50ee`
+- **Created**: 2026-07-28T23:42:18.335675300+00:00
+- **Objective**: Embed a persistent step-graph snapshot in session_handoff (ticket f35f4dd9-1a05-47ee-b334-809bb34e63a7) and then author interruption-recovery instructions plus a resume-interrupted prompt template (ticket 36b04541-9bf1-433c-b100-77c3b7cb5855), which depends on it, directly targeting this session's own stale-handoff failure mode.
+- **Implementation Ready**: true
+
+## Resume Command
+```bash
+session-cli resume --workspace-session-id 6a51a1af-6812-4dfc-80d7-0e4f56b4af4f --predecessor-run-id 22633ff8-ab1e-43e6-9940-7ebdb09f50ee
+```
+
+## Target Tickets
+- `f35f4dd9-1a05-47ee-b334-809bb34e63a7`
+- `36b04541-9bf1-433c-b100-77c3b7cb5855`
+
+## Target Files
+- `memory-api/crates/session-api/src/model/handoff.rs`
+- `memory-api/crates/session-api/src/model/workflow.rs`
+- `memory-api/crates/session-api/src/store/config/handoff_finish.rs`
+- `memory-api/crates/session-api/src/store/config/workflow.rs`
+- `memory-api/crates/session-api/src/store/config/runtime_workflow.rs`
+- `memory-api/crates/session-api/tests/handoff_roundtrip.rs`
+- `memory-api/crates/session-api/tests/handoff_folder_storage.rs`
+- `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml`
+
+## Decisions
+- f35f4dd9: step graph is an embedded snapshot, not a separate store fetch; required for implementation-readiness; nodes and tickets are independent and interchangeable; ordering uses existing order and depends-on edges only; no ticket mirroring; spec 5e52039d updated in place rather than a new spec.
+- 36b04541: standalone instruction file, not folded into loop-closure; detection signal is stale board entries only, no workflow-node-status or transcript heuristics; no new staleness threshold for durable session runtimes; recovery produces a human-confirmed draft handoff-equivalent; a dedicated resume-interrupted prompt template is required.
+- This iteration's spec-fn-workaround decision: remapped kind fn code_refs to kind function and widened spec-api's SymbolKind vocabulary with real Field, EnumVariant, and Block variants rather than downgrading specs to draft.
+- This iteration's citation-fix-now decision: corrected all 4 known-inaccurate code_ref line ranges in specs 1f77f652 and 351389c0 before committing rather than deferring to a follow-up ticket.
+- This iteration's spec-mcp-still-stale decision: accepted CLI and unit test evidence as sufficient to close ticket 20717710 after a live spec-mcp MCP tool restart did not pick up the fix; the stale MCP binary should be its own infrastructure ticket if it recurs, not a reopen of 20717710.
+
+## Non-Goals
+- Unrelated in-flight work already present in both the top-level repo and the memory-api submodule is out of scope for this handoff: ticket-api health and store changes, ticket 818e894a, session-api examples additions beyond what f35f4dd9 itself requires, and general session-store and test-store churn visible in git status.
+- Re-litigating this iteration's closed tickets bf62e2f9, f986e666, and 20717710, which are done.
+- Standing up a session-mcp MCP server tool surface fix for the missing session_handoff grant seen mid-iteration, noted only as a tooling gap observation, not an objective of this handoff.
+- Investigating why the live spec-mcp MCP server did not pick up the code_ref fix after restart, accepted as a known gap, not part of this handoff's scope.
+
+## Context Anchors
+- bf62e2f9-7bdb-471d-a8c3-e160fe87e610 done, spec 1f77f652 authored and reviewed this iteration
+- f986e666-d8db-4845-ba86-eb4bb89484ce done, spec 351389c0 refreshed and reviewed this iteration
+- 20717710-a18d-4640-bea8-f7ee5b593327 done, spec-api SymbolKind vocabulary widened; CLI and unit test confirmed, MCP tool check waived
+- memory-api submodule commit b055905
+- top-level repo commit c7efb8dc
+- spec 5e52039d-aabc-434d-bdf3-eca63e312476 Handoff Package Schema, reviewed, linked ticket d3af78d7, is the spec f35f4dd9 must update in place
+- ticket d3af78d7-9486-43c0-aae7-ddd5681d9807 original schema-enforcement ticket that 5e52039d was built around
+
+## Workflow
+- **Nodes**: 0
+- **Edges**: 0
+- **Not Done**: 0
