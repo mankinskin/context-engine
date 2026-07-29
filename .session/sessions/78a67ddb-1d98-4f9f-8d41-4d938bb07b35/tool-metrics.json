@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "78a67ddb-1d98-4f9f-8d41-4d938bb07b35",
-  "captured_at": "2026-07-29T11:05:40.818Z",
+  "captured_at": "2026-07-29T11:09:19.708Z",
   "tools": {
     "file_search": {
       "call_count": 3,
@@ -157,6 +157,36 @@
       ],
       "duration_ms_values": [
         14
+      ]
+    },
+    "mcp_session-mcp_session_handoff": {
+      "call_count": 2,
+      "success_count": 1,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        5860,
+        5808
+      ],
+      "duration_ms_values": [
+        43,
+        141
+      ]
+    },
+    "mcp_session-mcp_session_runtime_init": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        152
+      ],
+      "duration_ms_values": [
+        12
       ]
     },
     "mcp_spec-mcp_spec_get": {
@@ -696,8 +726,8 @@
       ]
     },
     "runSubagent": {
-      "call_count": 3,
-      "success_count": 3,
+      "call_count": 4,
+      "success_count": 4,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -705,17 +735,19 @@
       "input_char_sizes": [
         5658,
         7272,
-        5729
+        5729,
+        2362
       ],
       "duration_ms_values": [
         212036,
         225580,
-        343868
+        343868,
+        327166
       ]
     },
     "run_in_terminal": {
-      "call_count": 97,
-      "success_count": 97,
+      "call_count": 101,
+      "success_count": 101,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -817,7 +849,11 @@
         225,
         191,
         221,
-        211
+        211,
+        194,
+        1335,
+        211,
+        221
       ],
       "duration_ms_values": [
         1003,
@@ -916,7 +952,11 @@
         250,
         151,
         182,
-        596
+        596,
+        191,
+        1011,
+        238,
+        1072
       ]
     },
     "session_store_sql": {
@@ -968,8 +1008,8 @@
       ]
     },
     "tool_search": {
-      "call_count": 3,
-      "success_count": 3,
+      "call_count": 5,
+      "success_count": 5,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -977,12 +1017,16 @@
       "input_char_sizes": [
         90,
         91,
-        57
+        57,
+        43,
+        58
       ],
       "duration_ms_values": [
         1081,
         375,
-        363
+        363,
+        248,
+        348
       ]
     },
     "vscode_askQuestions": {
