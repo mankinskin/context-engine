@@ -35,6 +35,7 @@ Explicit `session-mcp` tools only (persist/resolve the handoff record and sessio
 - Every ticket, spec, rule, or log reference must use its authoritative id (e.g., ticket `37b5026f` or spec `ce9eb1cf`).
 - Follow the repository's Clickable Reference Policy from [AGENTS.md](../../AGENTS.md): render entity references as markdown links pointing to manifest files or viewer deep links.
 - Delegate only to workspace `.agents/agents/*.agent.md` templates (Implement Agent, Research Agent, Explore Agent, Testing Agent, Review Agent, etc.), never to VS Code built-in agents.
+- The rendered handoff markdown document's `## Workflow` section must include a fenced ```mermaid `flowchart TD` diagram of the workflow graph (nodes/edges) alongside the existing node/edge/not-done counts, omitted only when the workflow graph has no nodes; the diagram is rendered from the handoff record's own workflow snapshot, never hand-authored.
 - Each delegated unit must include: (1) an explicit model string chosen from the tier ladder — `"Claude Sonnet 5 (copilot)"` (T2 default), `"GPT-5 mini (copilot)"` (T3 floor), `"GPT-5.6 Luna (copilot)"` (input over 400k), `"GPT-5.4 mini (copilot)"` (needs reasoning over what it read), or `"GPT-5.3-Codex (copilot)"` / `"GPT-5.6 Terra (copilot)"` for justified T1 escalation; (2) a single well-scoped objective; (3) a compact return contract specifying exactly what result to return; (4) the minimum context anchors (paths, ids, prior findings) so the sub-agent does not re-discover them.
 - Prefer the dominating peer over `"Claude Sonnet 4.5 (copilot)"`, `"Claude Haiku 4.5 (copilot)"`, and the Gemini Flash models — each is beaten by a laddered model on every priced axis, so none has a cost argument in its favour. They remain dispatchable for a stated reason; what is not acceptable is improvising from a vendor family name. See [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md).
 - When multiple models are equal in cost, prefer the latest model version or generation, then the larger context window.
@@ -56,6 +57,7 @@ Return:
 - **Done:** completed units with changed files (full workspace-relative paths), ticket/spec ids, and validation outcomes
 - **Decisions:** key architecture or implementation choices made
 - **Blockers:** unresolved issues, failing validations, or required escalations (with concrete evidence: log paths, error snippets, ticket ids)
+- **Workflow graph:** the rendered handoff's `## Workflow` section as a fenced ```mermaid `flowchart TD` diagram of the workflow nodes/edges (omitted only when the workflow graph has no nodes)
 - **Remaining:** leftover tasks broken into actionable units
 - **Delegated:** per-unit summary (agent template, model used, objective, compact return contract, key result if already returned)
 - **Next action:** single recommended step for the user or next session

@@ -49,6 +49,7 @@ Act as a session summarizer and agent orchestrator: summarize the current sessio
 
 Return:
 - the full handoff response inside a fenced plain-text block using `~~~text` and closing `~~~` so copied output preserves literal markdown links
+- a rendered mermaid workflow graph: a `## Workflow` section containing a fenced ```mermaid `flowchart TD` diagram of the handoff's workflow nodes/edges, rendered from the handoff record's own workflow snapshot (never hand-authored), omitted only when the workflow graph has no nodes — the ```mermaid fence nests fine inside the outer `~~~text` fence, so do not flatten or strip it
 - render all entity references per the Clickable Reference Policy in `AGENTS.md`
 - clear sections with small paragraph headings
 - a short introduction/overview in one paragraph
