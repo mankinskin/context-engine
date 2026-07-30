@@ -58,6 +58,43 @@ from `list_workspaces`.
   only treat it as a real gap if the descendant tickets are genuinely absent
   from the aggregated index.
 
+### Reading Tickets: View Profiles and Parts
+
+A ticket is not one description file — it is a set of typed `parts/<uuid>.md`
+files (kinds: `objective`, `requirements`, `design`, `examples`,
+`acceptance_criteria`, `review`, `validation`, `notes`, `amendment`, plus any
+free-form attachment kind), indexed by `[[parts]]` in `ticket.toml`. Legacy
+tickets with no `[[parts]]` synthesize an `objective` part automatically.
+
+`get_ticket` / `ticket get` / `ticket describe` project reads through a named
+`--view` profile instead of returning everything. **Default to the narrowest
+profile that answers the question** — this is also a token-cost win:
+
+| Profile | Contains | Use for |
+|---|---|---|
+| `summary` (default) | metadata + `objective` | Orienting on a ticket you have not started. |
+| `plan` | `objective` + `requirements` + `design` + `examples` + `acceptance_criteria` + refs | Implementing — everything needed to execute. |
+| `review` | `acceptance_criteria` + `review` + `validation` | Verifying — the criteria plus what was recorded against them. |
+| `full` | every part present (core and free-form) + refs | Auditing or migrating; rarely needed for routine work. |
+
+Use `--parts <kind,kind,...>` to pull specific kinds outside a named profile.
+An unknown profile or unknown kind is rejected, not silently returned empty.
+
+Write to a specific part with `write-part`/`write_part` (`--kind <KIND>`), not
+by replacing the whole description. See
+[lifecycle.instructions.md](lifecycle.instructions.md) for the `planned`-state
+freeze contract that governs which kinds are writable when.
+
+### Typed References (`[[refs]]`)
+
+Attach external context — specs, test executions, logs, rules, files, commits
+— through the `[[refs]]` table in `ticket.toml` rather than inlining links or
+prose pointers inside a part. Each entry has a `kind` in
+`{spec, test_execution, log, rule, file, commit}`, a `ce://...` `urn`, and an
+optional `note`. Unknown kinds and malformed URNs are rejected at write time.
+The `plan` and `full` view profiles include `[[refs]]`; `summary` and `review`
+do not.
+
 ### Discovery Before Creating
 
 Always search for existing tickets before creating new ones. Duplicate tickets
@@ -83,7 +120,7 @@ Use `ticket next` to find the highest-priority unblocked tickets:
   pick work that directly reduces the root blocker set.
 
 ```bash
-# Find unblocked ready tickets you can work on now (priority-ordered)
+# Find unblocked planned tickets you can work on now (priority-ordered)
 ticket next --toon
 
 # For a blocked tracker/epic, find immediate actionable leaf blockers under it

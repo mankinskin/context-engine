@@ -81,7 +81,7 @@ Before walking anything on a new run:
 For each item, work in ranked order.
 
 1. Resume first: check for an in-progress review via the durable session before deriving anything. If one exists, follow the Resuming a Review steps instead of starting fresh.
-2. Load the item: read the ticket manifest and description (`get_ticket` / `get_ticket_description`) or the spec (`spec get`, `spec section list`), plus dependency context (`subgraph` / `topgraph`) and related specs.
+2. Load the item: read the ticket with `--view review` (acceptance criteria + prior `review`/`validation` parts) or the spec (`spec get`, `spec section list`), plus dependency context (`subgraph` / `topgraph`) and related specs.
 3. Explain the requirement: state, in plain language, what the item must satisfy and enumerate its acceptance criteria before asking the reviewer to judge anything.
 4. Walk the implementation feature by feature: for each implemented feature or criterion, show the reviewer the changed code, docs, tests, and validation evidence that back it. Use audit tools (`audit-mcp`) and the narrowest relevant validation to surface risk, and read the referenced code rather than trusting summaries.
 5. Proactively ask for a verdict: after presenting each feature, use `vscode/askQuestions` to ask the reviewer whether that specific feature and its criterion pass, fail, or need changes. Do not move on until you have an explicit verdict. Record the answer and any finding immediately to the review record.
@@ -91,7 +91,7 @@ For each item, work in ranked order.
    - Any criterion fails or the reviewer requests changes → report `fail` and recommend the ticket return to `in-implementation`, with the findings that justify it.
    - Spec approved → report `reviewed` as the recommended state; otherwise report `changes-requested`.
    In every case record the verdict on the reviewed entity (ticket field patches without `to_state`, spec sections, or feedback via `feedback-mcp`) so the recommendation is durable. The caller performs the state change.
-8. Attach findings and create follow-ups: write findings onto the reviewed entity (ticket field patches, spec sections, or feedback via `feedback-mcp`), and create a follow-up ticket for each open gap with `create_ticket`, linking it back to the reviewed item with `add_edge` so the gap is actionable and traceable.
+8. Attach findings and create follow-ups: record findings as a `review` part on the ticket (`write_part` with `kind: review`, never a description field-patch or replace) or as spec sections/feedback via `feedback-mcp`, and create a follow-up ticket for each open gap with `create_ticket`, linking it back to the reviewed item with `add_edge` so the gap is actionable and traceable. A `review` part is never frozen, so this works on a `planned` ticket without triggering the freeze rejection.
 9. Persist a handoff and point to the next item in the queue.
 
 ## Output Format

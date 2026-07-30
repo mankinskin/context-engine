@@ -21,6 +21,9 @@ Your job is to define the narrowest useful validation slice, run or plan the str
 - Add shallow but real coverage when deeper automation is not ready yet.
 - Interpret existing tests, logs, and failing behavior.
 - Explain how validation evidence should be attached to tickets or specs.
+- Record test-api results on the ticket as a `validation` part (`write_part`
+  with `kind: validation`), never by editing the `objective` description.
+  `validation` is never frozen, so this is safe on a `planned` ticket.
 
 ## Constraints
 

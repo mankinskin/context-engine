@@ -39,9 +39,9 @@ names the current state, the legal next states, and the mandatory intermediate
 waypoint(s), for example:
 
 ```
-invalid state transition 'new' -> 'in-implementation'; current state 'new'
-allows next states [cancelled, ready]; to reach 'in-implementation', first
-transition through: ready
+invalid state transition 'open' -> 'in-implementation'; current state 'open'
+allows next states [cancelled, planned]; to reach 'in-implementation', first
+transition through: planned
 ```
 
 To advance explicitly across multiple states you can also name the waypoints
@@ -99,6 +99,31 @@ applies to CLI, MCP, and HTTP equally.
 
 To customize enforcement per ticket type, edit the corresponding schema file
 under `crates/ticket-api/schemas/<type>.toml`.
+
+## Plan Freezing at `planned`
+
+Entering `planned` freezes five **planning** part kinds: `objective`,
+`requirements`, `design`, `examples`, `acceptance_criteria`. Writing to a
+frozen part is **hard-rejected** — `enforce_part_write_gate` is the sole write
+path and applies identically across CLI, MCP, and HTTP. `review`,
+`validation`, `notes`, `amendment`, and free-form kinds are never frozen and
+stay writable in every state, so recording progress never requires touching
+the plan.
+
+Two recovery paths when a frozen part needs correcting:
+
+- **Amendment (preferred).** Write a new part with `--supersedes <part_id>`
+  (CLI `write-amendment`, MCP `write_amendment`) to record the correction
+  without unfreezing the original.
+- **Re-plan.** Transition the ticket back to `open`, which clears the frozen
+  flag on all five planning kinds; edit freely, then re-enter `planned` to
+  re-freeze.
+
+Never record a review outcome, status update, or validation result by editing
+`objective` — write it as its own part (`review` or `validation` kind,
+`description_mode: append` when using whole-description writes at all). See
+[workflow.instructions.md](workflow.instructions.md) for the read-side view
+profiles.
 
 ## Review Gate Before Closing
 

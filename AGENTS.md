@@ -131,7 +131,7 @@ Formatting conflict policy (canonical):
 
 ## Token-Efficient Output
 
-See token-efficient workflow guidance in [.agents/instructions/orchestration/](.agents/instructions/orchestration/) covering compact output, bounded file inspection, tool output handling, differential patching, and model-cost-aware routing.
+See token-efficient workflow guidance in [.agents/instructions/orchestration/](.agents/instructions/orchestration/) covering compact output, bounded file inspection, tool output handling, differential patching, and model-cost-aware routing. For ticket reads, default to the narrowest `--view` profile (`summary` to orient, `plan` to implement, `review` to verify) instead of pulling a whole ticket — see [ticket/workflow.instructions.md](.agents/instructions/ticket/workflow.instructions.md).
 
 ## Clickable Reference Policy
 

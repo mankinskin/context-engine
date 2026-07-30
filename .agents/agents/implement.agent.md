@@ -22,6 +22,11 @@ You consume a **complete handoff package** that includes:
 - The owning code path or slice to edit
 - Any required context (related tests, docs, dependencies)
 
+Read the ticket with `--view plan` (objective, requirements, design, examples,
+acceptance_criteria, refs) rather than pulling the full ticket. `plan`-kind
+parts freeze once the ticket is `planned`; never edit them to record progress
+— that belongs in a `review`/`validation` part or a status update, not the plan.
+
 If the handoff package is incomplete or ambiguous, **escalate immediately** to the delegating agent or user. Do not search the codebase or clarify requirements inline — those phases happen before implementation.
 
 ## Scope
