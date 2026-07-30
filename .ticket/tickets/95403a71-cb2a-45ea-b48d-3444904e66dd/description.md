@@ -34,3 +34,4 @@ Derived from AGENT_WORKFLOW_OPTIMIZATIONS.md conversation, "Step 3: Fixing Entit
 **Unintended files:** `rtk git status` shows only question-quality.instructions.md (modified) and entity-disambiguation.instructions.md (new) attributable to this ticket; all other working-tree changes (other ticket folders, session folders, memory-api submodule pointer, deleted swarm-worker.prompt.md) are unrelated background activity from other agents and were left untouched.
 
 No fix needed — no defect found. State set to in-review; done requires separate human approval.
+Final review re-confirmed at HEAD after commit 975454f8: both ACs met, no regression, no attributable validation failures (only pre-existing store-wide index drift from concurrent agents). Closing.
