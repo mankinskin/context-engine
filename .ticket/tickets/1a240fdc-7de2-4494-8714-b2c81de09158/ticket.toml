@@ -1,0 +1,9 @@
+id = "1a240fdc-7de2-4494-8714-b2c81de09158"
+created_at = "2026-07-30T14:36:26.635243400+00:00"
+title = "Retry-limit escalation policy for worker-tier test failures"
+state = "open"
+component = "agent-orchestration"
+depends_on = ["feb5784c-ece7-40d3-9617-3faee2f6a753"]
+effort = "~700 tokens"
+priority = "medium"
+type = "feature"
