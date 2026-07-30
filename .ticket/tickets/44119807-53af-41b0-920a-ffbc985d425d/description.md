@@ -1,28 +1,34 @@
-## Problem
+## Status: returned from 3rd review (FAIL) — user decisions require further rework
 
-`output_char_sizes` is empty for every tool in every session. Implement capture from whichever sources T1 (76941e78) proved carry the data, layered by fidelity.
+Review verdict (3rd pass, 2026-07-30): AC1 conditional pass (independently confirmed real evidence, but coverage measured at only ~24%, 7/29 real calls), AC2 pass, AC3 pass, AC4 pass — but overall FAIL because the user's decisions on the open judgement calls require rework before this can close.
 
-## Design
+### User decisions (confirmed via interview 2026-07-30, do not re-litigate)
+1. **Retry-loop latency**: the current ~2.4s worst-case synchronous retry (in `SessionStoreConfig::capture_copilot_transcript_with_tool_response`) is **not acceptable**. Required: move the retry off the hook's synchronous critical path entirely — async/non-blocking, not just a smaller bound.
+2. **AC1 real coverage (~24%, 7/29)**: **not acceptable** as final state. Requires further investigation into why most qualifying real calls in the post-fix window still didn't resolve within the retry budget, and/or a different mitigation with materially higher catch rate.
+3. **Cross-session rollup gap**: `output_source` is captured per-session (`ToolCallSummary`) but never threaded through the cross-session `ToolAggregation` rollup (`session tool-metrics` CLI path in `tool_metrics.rs`). User decided: **fold this into 44119807 now**, do not defer to sibling ticket T3 (eb984596).
+4. **Follow-up ticket 74b56d66-d94f-4422-bda6-5f583d8f7ec4**: user decided to **close it** (satisfied by the review's independent AC1 verification) — attempted but blocked: ticket-store enforces `depends_on` progression, so 74b56d66 cannot move to `done` while 44119807 is still `in-review`/`in-implementation`. Close it as the very first action once 44119807 reaches `done`.
 
-Populate `ToolCallSummary::output_char_sizes` in [tool_metrics.rs](memory-api/crates/session-api/src/tool_metrics.rs) `record_event_tool_call`, which today reads `output_chars` / `response_chars` from the event payload and finds nothing. The work is to make those fields real at capture time.
+### Objective for next implementation pass
+Redesign the real-output-size capture path so it does not add synchronous latency to the hook's critical path, while achieving materially higher than ~24% real-session coverage. Two established root causes remain from prior passes and are NOT to be re-investigated (already confirmed via live diagnostic evidence, see history.ndjson for full detail):
+- VS Code fires PostToolUse before flushing the triggering call's own transcript completion entry (empirically: 750ms insufficient, 5s usually sufficient, but not always — hence the low catch rate even at 2.4s).
+- `merge_events`'s `captured_event_key` dedup + `record_event_tool_call`'s per-`tool_call_id` dedup mean an override must land on the FIRST persist of an event or it is permanently lost — there is no "catch up later" path today.
 
-Layered sources, highest fidelity first:
+Design options to evaluate for the async rework (not prescriptive, next implementer's call, but flag ambiguity back to interview if genuinely undecidable):
+- Defer the output-size backfill to a later event (e.g. `SessionEnd`/`Stop` hook, which fires well after the transcript has caught up) instead of trying to resolve it synchronously inside the triggering `PostToolUse` invocation.
+- Or: persist a lightweight "pending override" record and reconcile it opportunistically on a LATER hook invocation (fixing the dedup-drops-second-copy bug in `record_event_tool_call`/`merge_events` so a late-arriving override can still land).
 
-1. **Hook payload** — extend `args_from_hook_stdin` in [args.rs](memory-api/crates/session-api/src/bin/copilot-capture-hook/args.rs) to retain `tool_response`/`tool_output` and thread it into the captured `tool.execution_complete` event as `output_chars`. Conditional on T1 AC1/AC2.
-2. **Spill-file stat** — when `spill_pointer` is set (or a `chat-session-resources/<session>/<tool_call_id>__*` directory exists), stat `content.txt` and record its size. Must be resilient to the file being absent later; a missing spill file yields "unmeasured", never zero.
-3. **MCP proxy telemetry** — set `COST_GATE_TELEMETRY_LOG` and write the aggregator that folds the JSONL into the rollup. Supersedes 4aa13ba7.
+### Target files (from this pass, still uncommitted on disk, do not revert)
+- memory-api/crates/session-api/src/bin/copilot-capture-hook.rs (`build_tool_response_override`, `stat_spill_output_chars` — bare/suffix id split and spill-path convention are correct, keep)
+- memory-api/crates/session-api/src/hook/transcript.rs (`ToolResponseOverride.output_source` field — correct, keep)
+- memory-api/crates/session-api/src/store/config/capture_query.rs (the synchronous retry loop — THIS is what must be replaced with an async/deferred design)
+- memory-api/crates/session-api/src/tool_metrics.rs (`output_source` on `ToolCallSummary` — correct, keep; still needs threading into `ToolAggregation`/rollup per decision 3)
+- memory-api/crates/session-api/tests/copilot_capture_hook_e2e.rs (8 tests, all green — keep, extend for the new async/rollup behavior)
 
-## Required: source attribution
+### Validation required before next review
+- `cargo build -p session-api`, `cargo test -p session-api` (184 lib + 8/8 e2e, currently green — must remain green).
+- New test(s) covering `output_source` reaching the `ToolAggregation`/`session tool-metrics` rollup output.
+- Fresh live-session evidence (read back from a real `.session/sessions/<id>/events.json`) showing the new mechanism's real catch rate is materially above ~24%, with the actual measured rate cited.
+- Confirm the hook's own synchronous latency is no longer bounded by the transcript-catch-up wait (i.e., PostToolUse returns promptly regardless of override outcome).
 
-Every recorded output size carries an `output_source` discriminant (`hook_payload` | `spill_file` | `mcp_telemetry`). A call with no source is recorded as **unmeasured**, distinct from a call measured at zero. This distinction is what makes the coverage metric in the sibling ticket meaningful, and its absence is why the previous track could not tell a broken pipeline from a healthy one.
-
-## Acceptance criteria
-
-- AC1 — After one real captured session, `.session/sessions/<id>/tool-metrics.json` contains a tool with a non-empty `output_char_sizes`, **verified by reading the file**. Cite the session id and the observed value in the ticket's status summary.
-- AC2 — Each recorded size carries an `output_source`; a call whose size is unknown is absent from `output_char_sizes` rather than recorded as `0`.
-- AC3 — An e2e test drives the real `copilot-capture-hook` binary over a producer-shaped transcript fixture and asserts a non-zero output size, in the style of `e2e_hook_binary_populates_tool_metrics_from_captured_tool_events` in [copilot_capture_hook_e2e.rs](memory-api/crates/session-api/tests/copilot_capture_hook_e2e.rs).
-- AC4 — Re-running aggregation over the existing ~200-session store does not regress the already-restored call/duration/input metrics.
-
-## Non-goals
-
-- Re-calibrating `tokens_at_max` — downstream, 8c4d1d9c.
+### Non-goals (unchanged)
+- MCP proxy telemetry capture layer (deferred per original T2 design).
