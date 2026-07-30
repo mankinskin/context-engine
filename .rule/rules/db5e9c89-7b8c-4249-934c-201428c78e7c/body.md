@@ -7,4 +7,3 @@ Key prompts:
 - `spec.prompt.md` — spec workflow
 - `debug-test.prompt.md` — debug/test workflow
 - `research.prompt.md` — research workflow
-- `swarm-worker.prompt.md` — swarm execution

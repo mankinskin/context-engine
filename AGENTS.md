@@ -42,7 +42,6 @@ Use static references as support:
 - Bug fix: after the ticket/spec setup, follow `.agents/prompts/debug-test.prompt.md` when available.
 - Feature or refactor (>5 files, >100 LOC, or unclear scope): use `.agents/prompts/tickets.prompt.md` to establish the ticket set, then `.agents/prompts/spec.prompt.md` to update the spec before implementation.
 - Unfamiliar module or unclear behavior: follow `.agents/prompts/research.prompt.md` when available before locking the spec or implementation plan.
-- Swarm execution: use `.agents/prompts/swarm-worker.prompt.md`.
 
 ## Quality Gates
 
@@ -103,7 +102,6 @@ let _tracing = init_test_tracing!(&graph);
 
 - API patterns and gotchas: `CHEAT_SHEET.md`
 - Ticket workflow details: `.agents/prompts/tickets.prompt.md`
-- Swarm workflow details: `.agents/prompts/swarm-worker.prompt.md`
 - Path-specific rules: `.agents/instructions/*.instructions.md`
 - Cline adapter surface: `.clinerules/`
 

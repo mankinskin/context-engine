@@ -56,23 +56,12 @@ Never hardcode prices into tooling; re-resolve with `sync_model_prices.py --quer
 
 Each sub-agent dispatch MUST include:
 
-1. **An explicit model string chosen from the tier ladder** in [model-routing.instructions.md](model-routing.instructions.md), which owns model selection, preference ordering, dominated-model notes, the cheap-tier selection metric, and one-band step-up on failure. Do not re-derive a model from the price table or from a vendor family name.
-   - Default `"Claude Sonnet 5 (copilot)"` (T2); drop to T3 for bulk, mechanical, or read-only units, which is where most volume belongs.
-   - Confirm the input fits the target model's context window before dispatch; a truncation-driven re-dispatch costs more than the tier saves.
-   - Under budget pressure, shift every unit down one tier.
-   - Never delegate to another orchestrator-tier model.
+1. **An explicit model string chosen from the tier ladder** in [model-routing.instructions.md](model-routing.instructions.md), which owns the T2 default, the bulk/mechanical drop to T3, context-window fit, and the budget-pressure step-down — do not re-derive a model from the price table or restate its default/step-down rules here.
+   - Never delegate to another orchestrator-tier model (T0) — that constraint is not covered by the ladder file and lives only here.
 2. **Single well-scoped objective** — one unit per sub-agent, never the whole task
 3. **Compact return contract** — ask for exactly the facts/edits/results needed (file paths, line ranges, diff summary, decision, short findings list), not a transcript
    - Suggested shape: `scope | finding | outcome | blocker | pointer`
-4. **Shared context bundle** — pass resolved artifact CONTENT inline, not just ids/paths
-   - Resolved tickets: full TOML + description markdown, not just ticket id
-   - Resolved specs: full body + sections, not just spec id/slug
-   - Handoff package: complete JSON, not just a reference
-   - Relevant file skeletons: bounded interface-level view, not "read it yourself"
-   - Validation commands: exact command list, not "figure out what to run"
-   - For parallel siblings: compute shared prefix ONCE, duplicate into each prompt
-   - Size target: 2k-5k tokens per bundle
-   - See `.agents/instructions/orchestration/shared-context-bundle.instructions.md`
+4. **Shared context bundle** — governs which artifact content to inline (resolved tickets/specs, handoff package, file skeletons, validation commands), the parallel-sibling shared-prefix optimization, and the 2k-5k token size target. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md).
 5. **Workspace agent template only** — dispatch to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent); never dispatch to a VS Code built-in agent (e.g. the built-in Explore), which is not integrated with our MCP toolset. For read-only probes use the workspace **Explore Agent** template.
 
 ## Context Isolation
@@ -85,9 +74,7 @@ The pre-dispatch self-containment checklist lives in [model-routing.instructions
 
 ## Pre-Dispatch Quality Gates
 
-Run pre-dispatch gates for EVERY delegation by dispatching the **Explore Agent** template (`.agents/agents/explore.agent.md`, `"GPT-5 mini (copilot)"`) as the gate agent — this is the mandated mechanism, not one of several options. Each delegation class (Implement, Review, Testing, Commit) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.
-
-A `{pass: false, blocker: ...}` verdict means the delegation is NOT dispatched: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works. The gate itself is capped at ≤5 turns/≤10 tool calls by its own template contract.
+Run pre-dispatch gates for EVERY delegation — this governs the mandated gate mechanism (dispatch the Explore Agent template as gate agent), the per-delegation-class gate sets (Implement/Review/Testing/Commit), and the fail-fast semantics for a `{pass: false}` verdict. See [pre-dispatch-gates.instructions.md](pre-dispatch-gates.instructions.md).
 
 ## Required Workflow
 
