@@ -174,6 +174,7 @@ This satisfies AC3: Explore, Research, and Commit all route to GPT-5 mini, cheap
 - If a subagent errors, returns empty, refuses, or replies that it lacks context: first retry **once** with a more self-contained prompt (the usual cause is context isolation, not a broken tool).
 - If it still fails, abandon delegation and do the subtask inline; record the failure as a one-line finding.
 - Escalate a subtask *up a tier* only for **quality** insufficiency (the cheaper model's answer is wrong or too shallow), and record why.
+- For a worker-tier step that fails a *test* specifically (not a generic error/refusal), the retry cap and required escalation action are defined in [retry-limit.instructions.md](retry-limit.instructions.md): exactly one self-fix retry, then escalate — do not extend this general failure path's retry-once rule into a second same-tier attempt for test failures.
 
 ## Inspection Before Delegation or Premium Reasoning
 

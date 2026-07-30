@@ -14,3 +14,4 @@ Cross-reference pre-dispatch-gates.instructions.md so the two fail-fast concepts
 
 ## Source
 Derived from AGENT_WORKFLOW_OPTIMIZATIONS.md conversation, "Step 4: Break the Infinite Iteration Loop", "Fail-Fast Hard Stop".
+Implemented .agents/instructions/orchestration/retry-limit.instructions.md (new) defining the one-self-fix-retry cap with escalation to Planner/Architect, distinguished from pre-dispatch fail-fast; cross-referenced from model-routing.instructions.md Failure Path. Review verdict pass-with-fixes: a clarifying paragraph was added resolving the retry-vs-terminate ambiguity against write-and-die.instructions.md. All 3 ACs met.

@@ -6,6 +6,8 @@ description: "Use at the start of and throughout every session, whenever spawnin
 
 Sub-agents spawn with zero inherited context and must rediscover artifacts independently. When multiple sub-agents (especially parallel siblings) need the same artifact, each pays for the same discovery. This instruction defines a shared context bundle protocol that eliminates redundant reads.
 
+This is also how a fresh session started after a Worker's one-step-then-terminate dispatch receives its context — see [write-and-die.instructions.md](write-and-die.instructions.md).
+
 ## Measured Cost
 
 Cross-agent duplicate reads from analyzed sessions (`tmp/subagent_cost_probe.py`):

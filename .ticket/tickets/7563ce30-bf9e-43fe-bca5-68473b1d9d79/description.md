@@ -15,3 +15,4 @@ This should be reconciled with existing shared-context-bundle.instructions.md (c
 
 ## Source
 Derived from AGENT_WORKFLOW_OPTIMIZATIONS.md conversation, "Step 2: Streamlining Handoffs and Context", "The Write-and-Die Pattern".
+Implemented .agents/instructions/orchestration/write-and-die.instructions.md (new) defining the one-step-then-terminate Worker dispatch contract, with a reciprocal cross-reference in shared-context-bundle.instructions.md for how the next fresh session receives context, and an explicit Worker vs Planner/frontier-tier distinction. Review verdict pass. All 3 ACs met.

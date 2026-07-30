@@ -14,3 +14,4 @@ Add an instruction establishing a split-responsibility testing contract:
 
 ## Source
 Derived from AGENT_WORKFLOW_OPTIMIZATIONS.md conversation, "Step 4: Solving the Small Models Suck at Testing Problem".
+Implemented .agents/instructions/testing/split-responsibility-testing.instructions.md (new) forbidding worker-tier edits to frontier-authored test files, with the exception path routed through the spec's blocker mechanism (Planner/Architect or human reviewer authorized to change a test), Playwright/browser-verification handling, and a cross-reference from assertions.instructions.md. Review verdict pass. All 3 ACs met.

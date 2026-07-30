@@ -9,3 +9,4 @@ Batches the tickets that define the Planner/Worker dispatch contract: the archit
 
 ## Sequencing note
 The spec ticket hard-blocks (`depends_on`) the three policy tickets since they use "worker-tier" terminology the spec formally defines. The three policy tickets are otherwise independent of each other and can run in parallel once the spec lands.
+All four children done: feb5784c (spec), 1a240fdc (retry cap), 7563ce30 (write-and-die), 44c6cc5c (split-responsibility testing). Epic acceptance criteria satisfied.
