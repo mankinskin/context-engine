@@ -1,0 +1,18 @@
+{
+  "id": "exec-val-session-api-tool-metrics-e2e-fail-turnonly-revert",
+  "validation_spec_id": "val-session-api-tool-metrics-e2e",
+  "outcome": "failed",
+  "executed_at": "2026-07-30T11:16:55.776323Z",
+  "detail": "Deliberate AC3 revert: compute_session_summary_with_events event-loop (`for event in events { record_event_tool_call(...) }`) commented out, making the computation turn-only. Rerun of `cargo test -p session-api --test copilot_capture_hook_e2e e2e_val_session_api_tool_metrics_gate_asserts_nonempty_tools_map` -> FAILED. Panic: \"tool-metrics.json should exist once a tool call was captured from a producer-shaped transcript: Os { code: 2, kind: NotFound, ... }\" — with tools empty the hook lazily skips writing tool-metrics.json at all, so the artifact read-back fails outright. This is the proof the gate is real: the turn-only regression is caught by artifact read-back, not by a passing-test count. Implementation reverted back to the real (event-aware) computation immediately after this run; see companion passing execution exec-val-session-api-tool-metrics-e2e-pass-1 (before) and the post-restore rerun.",
+  "links": {
+    "ticket_ids": [
+      "ce7b7bde-fa29-4ad0-9524-70629dcddd19"
+    ]
+  },
+  "provenance": {
+    "domain": "session-api",
+    "operation": "cargo-test",
+    "transport": "cli",
+    "run_id": "ce7b7bde-t4-fail-1"
+  }
+}

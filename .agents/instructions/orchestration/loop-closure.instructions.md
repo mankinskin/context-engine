@@ -12,6 +12,7 @@ The iteration loop must close before handoff. Every iteration moves through disc
 2. **Close the loop.** Every passing iteration must produce a handoff package. Handoff the completed evidence, updated specs, validated test results, and next session's implementation-ready context.
 3. **Do not skip review.** Before moving a ticket to `in-review`, ensure the spec is updated and validation evidence is captured.
 4. **Do not skip handoff.** After committing, generate the handoff package so the next session knows what was completed and what remains.
+5. **A session's own diagnosis is not a deferred finding.** When a session's own diagnosis produces a new blocking ticket, that ticket becomes the next unit of work in the same session — not a future backlog item — unless the user explicitly defers it. Do not pivot to unrelated work in the same session after creating the ticket. See ticket `ce7b7bde` for the recurrence this rule closes: session `d4868a37` diagnosed four independent breaks, created tickets `4aa13ba7` and `574560bf`, then pivoted to unrelated review work in the same session; both tickets sat `new` for roughly six subsequent sessions before being picked up.
 
 ## Scope
 
@@ -30,3 +31,4 @@ The iteration loop must close before handoff. Every iteration moves through disc
 - Committing partial work "to save progress."
 - Skipping handoff because "the ticket is done."
 - Marking work complete without review-ready validation evidence.
+- Diagnosing a blocker, filing a ticket for it, then pivoting to unrelated work in the same session instead of picking up the ticket just filed.

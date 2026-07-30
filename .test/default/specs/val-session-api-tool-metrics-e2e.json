@@ -1,0 +1,11 @@
+{
+  "id": "val-session-api-tool-metrics-e2e",
+  "title": "session-api tool-metrics e2e: hook binary populates non-empty tools map from producer-shaped transcript",
+  "command": "cargo test -p session-api --test copilot_capture_hook_e2e e2e_val_session_api_tool_metrics_gate_asserts_nonempty_tools_map",
+  "detail": "Drives the real copilot-capture-hook binary over a producer-shaped transcript (tool.execution_start/complete events, no role:Tool turns) and reads back the persisted tool-metrics.json, asserting the `tools` map is non-empty. Recurrence guardrail for ticket ce7b7bde: replaces proxy evidence (unit-test counts hand-constructing role:Tool turns the real producer never emits) with artifact read-back.",
+  "links": {
+    "ticket_ids": [
+      "ce7b7bde-fa29-4ad0-9524-70629dcddd19"
+    ]
+  }
+}

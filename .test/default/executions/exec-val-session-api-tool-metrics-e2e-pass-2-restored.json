@@ -1,0 +1,18 @@
+{
+  "id": "exec-val-session-api-tool-metrics-e2e-pass-2-restored",
+  "validation_spec_id": "val-session-api-tool-metrics-e2e",
+  "outcome": "passed",
+  "executed_at": "2026-07-30T11:18:04.274302800Z",
+  "detail": "compute_session_summary_with_events restored to the real event-aware implementation. Rerun of the full e2e suite `cargo test -p session-api --test copilot_capture_hook_e2e -- --nocapture` -> 6 passed; 0 failed, including e2e_val_session_api_tool_metrics_gate_asserts_nonempty_tools_map (tools map non-empty, read_file.call_count == 1). Confirms restore-and-pass after the deliberate AC3 revert; no regression in the other 5 hook e2e tests.",
+  "links": {
+    "ticket_ids": [
+      "ce7b7bde-fa29-4ad0-9524-70629dcddd19"
+    ]
+  },
+  "provenance": {
+    "domain": "session-api",
+    "operation": "cargo-test",
+    "transport": "cli",
+    "run_id": "ce7b7bde-t4-pass-2"
+  }
+}
