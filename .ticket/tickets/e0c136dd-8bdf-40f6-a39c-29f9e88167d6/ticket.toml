@@ -1,7 +1,7 @@
 id = "e0c136dd-8bdf-40f6-a39c-29f9e88167d6"
 created_at = "2026-05-12T10:51:38.630385800+00:00"
 title = "Gate install and deinstall documentation continuously in CI"
-state = "ready"
+state = "planned"
 acceptance_criteria = "Continuously validate install and deinstall docs in CI across executable Docker tests, .spec contracts, and .rule-generated README documentation."
 component = "documentation-tooling"
 depends_on = ["0ffac34a-4e33-426c-8eef-ef6482ab3bde"]

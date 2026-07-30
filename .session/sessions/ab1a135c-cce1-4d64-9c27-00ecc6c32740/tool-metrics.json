@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "session_id": "ab1a135c-cce1-4d64-9c27-00ecc6c32740",
+  "captured_at": "2026-07-29T11:46:47.171Z",
+  "tools": {
+    "apply_patch": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        399
+      ],
+      "duration_ms_values": [
+        19
+      ]
+    },
+    "create_file": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        13336,
+        6899,
+        13318,
+        4203
+      ],
+      "duration_ms_values": [
+        19,
+        20,
+        17,
+        17
+      ]
+    },
+    "list_dir": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        72,
+        114
+      ],
+      "duration_ms_values": [
+        4,
+        12
+      ]
+    },
+    "multi_replace_string_in_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        7738
+      ],
+      "duration_ms_values": [
+        37
+      ]
+    },
+    "read_file": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        161,
+        154,
+        162,
+        162,
+        161
+      ],
+      "duration_ms_values": [
+        11,
+        18,
+        14,
+        93,
+        75
+      ]
+    }
+  }
+}

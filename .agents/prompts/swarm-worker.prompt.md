@@ -61,7 +61,7 @@ Provide these inputs before execution (prefer a single Assignment Packet):
 
 6. Update ticket state
 - Add progress metadata (what changed, why, evidence).
-- Transition state according to workflow rules (for example: ready -> in-implementation -> in-review).
+- Transition state according to workflow rules (for example: planned -> in-implementation -> in-review).
 - Record dependency impacts or new blockers.
 
 7. Prepare handoff

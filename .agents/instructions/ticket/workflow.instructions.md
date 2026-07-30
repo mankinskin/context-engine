@@ -21,8 +21,8 @@ ticket board show --toon
 # Check for stale in-implementation tickets that may conflict with your work
 ./target/debug/ticket.exe list --where state=in-implementation --toon
 
-# Survey all new tickets
-./target/debug/ticket.exe list --where state=new --toon
+# Survey all open tickets
+./target/debug/ticket.exe list --where state=open --toon
 
 # Check overall graph health
 ./target/debug/ticket.exe health --all --toon
@@ -106,7 +106,7 @@ The command returns tickets in **any non-terminal state** whose `depends_on`
 edges all point to `done`/`cancelled` tickets. Results are sorted by:
 
 1. **State progress** — tickets closest to `done` appear first (for example
-   `in-review` > `in-implementation` > `ready` > `new`). Progress is determined
+   `in-review` > `in-implementation` > `planned` > `open`). Progress is determined
    by the state's index in the schema's `states` list.
 2. **Priority** — `critical > high > medium > low > none`.
 3. **Creation date** — oldest first (FIFO tiebreaker).
@@ -135,7 +135,7 @@ and update those links:
 ```bash
 # Find what a completed ticket blocks
 ./target/debug/ticket.exe topgraph <id> --json \
-  | jq -r '.payload.nodes[] | select(.state=="new" or .state=="ready") | .id'
+  | jq -r '.payload.nodes[] | select(.state=="open" or .state=="planned") | .id'
 ```
 
 Add missing `depends_on` edges when you discover undocumented dependencies. Use
@@ -211,8 +211,8 @@ ticket health abcd1234 --where type=tracker-improvement --toon
 # Health-check all tickets
 ticket health --all --toon
 
-# Health-check all new tickets (--where filter)
-ticket health --all --where state=new --toon
+# Health-check all open tickets (--where filter)
+ticket health --all --where state=open --toon
 ```
 
 ### Command Chaining (pipe via --stdin)
@@ -223,9 +223,9 @@ ticket list --where priority=high --json \
   | jq -r '.payload.items[].id' \
   | ticket health --stdin --toon
 
-# Subgraph → filter new tickets → health check
+# Subgraph → filter open tickets → health check
 ticket subgraph abcd1234 --json \
-  | jq -r '.payload.nodes[] | select(.state=="new") | .id' \
+  | jq -r '.payload.nodes[] | select(.state=="open") | .id' \
   | ticket health --stdin --toon
 
 # Topgraph → health check all reverse dependencies

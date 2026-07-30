@@ -1,7 +1,7 @@
 id = "7de9f4f0-0189-40c7-ac0a-0669e2aab57c"
 created_at = "2026-07-28T13:57:59.125613500+00:00"
 title = "Completion-claim audit: require verified-by evidence before a ticket may reach done"
-state = "new"
+state = "open"
 component = "agent-tooling"
 handoff_package = { handoff_id = "d8244132-fa9a-4414-a365-8a98c06c14ab", objective = "Implement ticket 7de9f4f0 (Completion-claim audit): require verified-by evidence before a ticket may reach done, so self-reported completion can no longer pass silently through the ticket store.", target_tickets = ["7de9f4f0-0189-40c7-ac0a-0669e2aab57c"], target_files = ["memory-api/crates/ticket-api/src/storage/store.rs", "memory-api/crates/ticket-api/src/storage/store/release.rs", "memory-api/crates/ticket-api/src/health.rs", ".ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/history.ndjson", ".spec/specs/7be68a48-f4e5-49a2-b9a5-118f07b48b90/sections/Traceability.md"], validation = [{ validation_spec_id = "7de9f4f0-completion-audit", required = true, outcome = "all tests pass, including new coverage asserting a ticket cannot reach done without verified-by evidence", command = "cargo test -p ticket-api" }, { validation_spec_id = "7de9f4f0-readback-required", required = true, outcome = "the audit path must detect and reject the empty artifact rather than accepting the successful write as proof", command = "spec_section_get on a section written as 0 bytes" }, { validation_spec_id = "persistence-rs-untouched", required = true, outcome = "empty; confirms persistence.rs stayed untouched", command = "git diff --stat -- memory-api/crates/session-api/src/store/config/persistence.rs" }], open_escalations = [] }
 linked = ["32067e83-7c60-40b7-9d2e-4c419020adcf"]

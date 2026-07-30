@@ -1,7 +1,7 @@
 id = "bd71ecc7-4631-407c-a156-d1d77de2ca33"
 created_at = "2026-07-27T02:39:48.842402500+00:00"
 title = "repo-wide search: bounded counts-first search tool suite (api + cli + mcp)"
-state = "new"
+state = "open"
 component = "agent-tooling"
 depends_on = ["244c3113-e28f-44d7-b9a8-f5dd45d2895c"]
 status_summary = "## Blocked — Awaiting Filesystem Operations\n\nThis ticket depends on [244c3113 filesystem operations](../244c3113-e28f-44d7-b9a8-f5dd45d2895c/ticket.toml), which moved to `in-review` on 2026-07-27 after passing independent audit.\n\n**Blocker status**: Implementation complete, validation passed (56 tests), security design approved (GO verdict after three audit rounds). Awaiting human review before unblocking this ticket.\n\n**What changes when unblocked**: Once 244c3113 closes, this ticket becomes actionable and should move from `new` to `ready`."

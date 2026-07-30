@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "session_id": "7751c409-17b1-44c9-88b7-4bc50c6f2ca5",
+  "captured_at": "2026-07-29T12:19:43.691Z",
+  "tools": {
+    "create_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        3230,
+        2008
+      ],
+      "duration_ms_values": [
+        46,
+        51
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        72
+      ],
+      "duration_ms_values": [
+        23
+      ]
+    },
+    "mcp_peek-mcp_peek_count": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        98,
+        99,
+        105
+      ],
+      "duration_ms_values": [
+        41,
+        33,
+        57
+      ]
+    },
+    "mcp_peek-mcp_peek_read": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        117,
+        124
+      ],
+      "duration_ms_values": [
+        25,
+        43
+      ]
+    },
+    "read_file": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        168,
+        161,
+        162
+      ],
+      "duration_ms_values": [
+        35,
+        95,
+        80
+      ]
+    },
+    "tool_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "input_char_sizes": [
+        98
+      ],
+      "duration_ms_values": [
+        393
+      ]
+    }
+  }
+}

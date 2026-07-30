@@ -28,7 +28,7 @@ the end of a session:
 
 `update --to-state <state>` **auto-walks** the shortest legal path by default.
 If the target is not a direct neighbor of the current state (for example
-`new -> in-implementation`, which must pass through `ready`), the update
+`open -> in-implementation`, which must pass through `planned`), the update
 traverses the required intermediate waypoints automatically and lands on the
 requested state.
 

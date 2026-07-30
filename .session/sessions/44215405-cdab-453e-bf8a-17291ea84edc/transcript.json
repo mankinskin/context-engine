@@ -1,0 +1,648 @@
+{
+  "schema_version": 1,
+  "session_id": "44215405-cdab-453e-bf8a-17291ea84edc",
+  "captured_at": "2026-07-29T12:55:28.982Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "Now help me refine this request and look for any relevant tickets that are already present maybe also for some examples of existing tickets which violate the request or indicate umm deleted descriptions etcetera to get a better understanding of the current state and then interview me to design what needs to change how we should handle it and what needs to be added to finally create a ticket track that tracks the implementation of this using the tickets that we have today and also think about how we can already today to design the tickets in this track to better than before to capture the tasks for the implementation and verification",
+      "captured_at": "2026-07-29T12:23:53.299Z",
+      "event_meta": {
+        "event_id": "130cccf0-00cd-4976-832b-80bbdc0842a6",
+        "parent_event_id": "f4c84045-4c11-45e4-963d-392a6f156957",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "I'll start by discovering current ticket-system state and any related tickets before interviewing you.",
+      "captured_at": "2026-07-29T12:23:58.634Z",
+      "event_meta": {
+        "event_id": "45c1149a-4a47-46ee-ab80-2868ebe48e8d",
+        "parent_event_id": "17211b91-859c-41bf-9c97-7198d1fb8296",
+        "event_type": "assistant.message",
+        "message_id": "ddc9ef19-44d7-41e4-99d2-0e01a55ecf6a",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Xt76gh7oK9EC1oH7nWZbXo",
+            "name": "tool_search",
+            "arguments": {
+              "query": "ticket store search list get ticket capabilities workflow, spec search, session runtime init pin handoff"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Now let me research the current state in parallel.",
+      "captured_at": "2026-07-29T12:24:17.697Z",
+      "event_meta": {
+        "event_id": "e4c71927-ad3c-4089-b2d9-a6f0af0fb83b",
+        "parent_event_id": "45f4f79f-2dff-4d6c-ac32-f622fe631c12",
+        "event_type": "assistant.message",
+        "message_id": "501be3f7-6986-4dbe-955b-182bff1b00f1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01C6bytjNtPTo3Wo28u56bqr",
+            "name": "mcp_ticket-mcp_list_tickets",
+            "arguments": {
+              "workspace": "default",
+              "query": "ticket description attachment structure freeze",
+              "caller_model": "claude-opus-4-5",
+              "limit": 30
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01CXtyyyxYpc63zrWYvVXmTi",
+            "name": "mcp_spec-mcp_spec_search",
+            "arguments": {
+              "query": "ticket entity description structure attachment manifest",
+              "caller_model": "claude-opus-4-5",
+              "limit": 15
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "user",
+      "content": "RESEARCH ONLY — do not write code, do not create/update tickets or specs. Return a written report.\n\nContext: The user wants to extend the ticket system so a ticket entity becomes a multi-file, structured, partially-frozen \"mini-plan\" instead of one big description string that agents overwrite. Key desired properties from their request:\n- ticket entity directory holds multiple related files (attachments): reviews, acceptance-criteria reviews, requirements, design, examples\n- reviews stored as independent documents integrated via the ticket manifest, so the core objective description is never edited to add updates\n- freezing tickets / descriptions at some lifecycle point so planned info cannot be edited away\n- read commands that compose/aggregate these files with configurable projection (agents request only what they need)\n- typed references to external entities instead of inlining context\n- a fine-grained query + edit system that prevents destructive edits to planned/started tickets\n\nI need EVIDENCE about the CURRENT state. Investigate and report on:\n\n1. **Ticket storage layout today.** Find the ticket-api / ticket-system crates (likely under `memory-api/crates/`). Report: what files exist inside a single ticket's directory on disk (e.g. `.ticket/**/ticket.toml`, `description.md`, anything else), the ticket manifest schema (all fields on the Ticket struct / TOML), and whether any attachment/multi-file concept already exists. Cite file paths + line ranges.\n\n2. **Description write path.** How is `description` written today? Look at `update_ticket` (there is a `description_mode` with `replace` (default) and `append`). Report exactly where replace-vs-append is implemented, whether there is any guard/validation preventing shrinking or destroying a description, and what history/revision mechanism exists (there is an `undo=true` revert-to-previous-revision feature — explain how history is stored and how many revisions are kept).\n\n3. **Existing structured-content features.** Does ticket-api already have anything like: sections (spec-api has `spec_section_add/list/get/delete` — check whether ticket-api has an analogue), typed references/edges (`add_edge`, `list_edges` — what edge types exist), field_map/custom fields, state schema with `required_states`. Report what already exists that partially satisfies the request.\n\n4. **Evidence of the problem.** Search the `.ticket` store on disk for tickets whose description history shows a large shrink (a revision where description length dropped sharply), or descriptions that contain review/status/update content appended into the objective text (e.g. headings like \"Review\", \"Status\", \"Validation Results\", \"Update\", \"Handoff\" inside description.md). Give me 3-5 concrete named examples with ticket id (first 8 chars), title, and a one-line description of how that ticket violates the \"description = stable objective\" model. Also note the largest description.md files by line count.\n\n5. **Related existing tickets/specs.** Search the ticket store and spec store for anything already covering: ticket attachments, ticket description protection/freezing, ticket projection/partial reads, ticket schema evolution, review artifacts, validation evidence linking. Use ticket CLI (`./target/debug/ticket.exe list --toon`, `ticket get <id>`) and spec CLI or MCP if faster. Report ticket ids + titles + states, and spec ids + titles, for anything that overlaps — plus explicitly say if nothing overlaps.\n\n6. **Ticket read/projection surface today.** What read commands exist (`get_ticket`, `get_ticket_description`, `list_tickets`, `subgraph`, `topgraph`) and what output shaping options they support (--toon, field selection, etc). Is there any way today to ask for a subset of a ticket?\n\nReport format: numbered sections matching the above, each finding backed by a repo-root-relative file path with line numbers where applicable. Be concrete and terse. Use bounded reads (peek-mcp) rather than pulling whole files. Total report under ~1200 words.",
+      "captured_at": "2026-07-29T12:24:52.961Z",
+      "event_meta": {
+        "event_id": "d8ae2cb6-bc0d-4a3e-90ab-17e6b31c3621",
+        "parent_event_id": "f5d0eeff-6238-417e-9530-24484e5d1506",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I'll investigate the current ticket system structure and report findings. Let me load the necessary tools first.",
+      "captured_at": "2026-07-29T12:25:03.052Z",
+      "event_meta": {
+        "event_id": "9dc22b44-0aab-49bf-91ad-317758867989",
+        "parent_event_id": "c0186aa9-5cf2-40a5-9792-2f4bfd986eb1",
+        "event_type": "assistant.message",
+        "message_id": "cf94327e-7646-4b76-a833-036ccbc5126e",
+        "reasoning_text": "The user wants a research report on the current state of the ticket system to understand how it stores and manages ticket data, especially around multi-file structure, description editing, and structured content. They explicitly say \"RESEARCH ONLY — do not write code, do not create/update tickets or specs.\"\n\nLet me break down what I need to investigate:\n\n1. Ticket storage layout - find ticket-api crates, look at directory structure, manifest schema\n2. Description write path - how is description updated, what guards exist\n3. Existing structured-content features - sections, edges, custom fields\n4. Evidence of the problem - actual tickets with shrinking descriptions or appended reviews\n5. Related tickets/specs - search for overlapping work\n6. Read/projection surface - what read commands exist and their options\n\nI should use:\n- peek-mcp tools for reading files\n- ticket-mcp tools for querying tickets\n- grep_search for finding relevant code\n- file_search for locating files\n\nLet me start by loading the needed MCP tools, then systematically investigate each point.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_bdrk_01GW5pyGaVKscatmJPJbwUYB",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/crates/**/ticket*.rs"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_bdrk_01SrqahvrwDrW8HLTQWrZZ14",
+            "name": "file_search",
+            "arguments": {
+              "query": ".ticket/**/ticket.toml",
+              "maxResults": 10
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_bdrk_01NqYDEw2hdqEDfqUsY1UMbW",
+            "name": "grep_search",
+            "arguments": {
+              "query": "struct Ticket|pub struct Ticket",
+              "isRegexp": true,
+              "includePattern": "memory-api/**/*.rs"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Let me look at an actual ticket directory structure and examine the manifest schema:",
+      "captured_at": "2026-07-29T12:25:19.958Z",
+      "event_meta": {
+        "event_id": "23b922b2-6747-4a78-bf58-c187a3d2bc7e",
+        "parent_event_id": "c05683bd-9d69-42d5-b5e3-eb22ed230f77",
+        "event_type": "assistant.message",
+        "message_id": "162575f4-7d32-413e-8ba9-68cdb3dc290c",
+        "reasoning_text": "Okay, I need to look at a specific ticket directory to see what files exist. Let me pick one ticket and see its structure.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_bdrk_01EojH9dvEQNHq8HUrZ7dUTE",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\graph_app\\context-engine\\.ticket\\tickets\\46d8b25d-e80c-4170-9601-1c26a7a0bcb8"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_bdrk_011874oK2DHBU9JquTJYeZcR",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 150,
+              "filePath": "c:\\Users\\linus\\git\\graph_app\\context-engine\\memory-api\\crates\\memory-api\\src\\model\\entity.rs",
+              "startLine": 1
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_bdrk_017kVUouqXjQGzr7gASYx9g5",
+            "name": "grep_search",
+            "arguments": {
+              "includePattern": "memory-api/crates/ticket-api/**/*.rs",
+              "isRegexp": true,
+              "query": "description_mode|DescriptionMode|replace|append"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "## Research Report: Current Ticket System Architecture\n\n### 1. Ticket Storage Layout Today\n\n**Location:** [memory-api/crates/ticket-api/src/model/filesystem.rs](memory-api/crates/ticket-api/src/model/filesystem.rs#L1-L80)\n\nEach ticket directory (`.ticket/tickets/<uuid>/`) contains:\n- `ticket.toml` — manifest with id, created_at, and extra fields (BTreeMap<String, Value>)\n- `description.md` — markdown body\n- `history.ndjson` — append-only revision log\n- `assets/` — empty directory scaffold, with subdirectories `interviews/` for questions.md and answers.md\n\nThe manifest schema is defined in [memory-api/crates/memory-api/src/model/entity.rs](memory-api/crates/memory-api/src/model/entity.rs#L1-L150). Core fields: `id` (Uuid), `created_at` (DateTime), and `extra` (BTreeMap). All ticket metadata (title, state, type, effort, tags, priority, etc.) lives in `extra`. No multi-file attachment concept exists — everything beyond description.md lives inside the manifest's JSON blob or the single description.md file.\n\n### 2. Description Write Path\n\n**Replace vs Append:** [memory-api/crates/ticket-api/src/storage/store.rs](memory-api/crates/ticket-api/src/storage/store.rs#L70-L100)\n\n```rust\npub enum DescriptionUpdateMode {\n    #[default]\n    Replace,  // Overwrites description.md\n    Append,   // Concatenates to existing content\n}\n```\n\n**History mechanism:** [memory-api/crates/ticket-api/src/storage/ticket_fs.rs](memory-api/crates/ticket-api/src/storage/ticket_fs.rs#L228-L300)\n\nRevisions are append-only in `history.ndjson`. Each revision stores: `{rev, ts, fields, author}`. The `fields.__previous_description__` key holds the old description text (only on updates). `apply_revert` creates a new forward revision with old state — no deletion. No limit on revision count; all revisions are kept indefinitely.\n\n**Guards:** No shrinkage protection. Replace mode unconditionally overwrites. No freeze capability. Description edits are unrestricted regardless of lifecycle state.\n\n### 3. Existing Structured-Content Features\n\n**Edges:** [memory-api/crates/memory-api/src/model/edge.rs](memory-api/crates/memory-api/src/model/edge.rs#L1-L80)\n\n`EdgeRecord { from, to, kind, created_at }`. `kind` is a free-form String (e.g. \"depends_on\", \"blocks\", \"linked\"). Commands: `add_edge`, `remove_edge`, `list_edges` (filter by kind). No ticket-specific section API exists; spec-api has `spec_section_add/list/get/delete`, but ticket-api does not.\n\n**Typed references:** [memory-api/crates/memory-api/src/model/entity.rs](memory-api/crates/memory-api/src/model/entity.rs#L1-L150)\n\n`EntityManifest` has `related_specs()` returning `Vec<SpecRef>`, stored in the `extra[\"related_specs\"]` field. Each SpecRef carries `{ spec_id, workspace, store_root }` — explicit cross-store identity. Generic field_map: any key-value pairs in `extra` are preserved and editable.\n\n**State schema:** [memory-api/crates/ticket-api/src/model/schema_registry.rs](memory-api/crates/ticket-api/src/model/schema_registry.rs#L1-L100)\n\n`TicketTypeSchema` defines `required_states` (enforced fields per lifecycle state) and validation rules. The schema is fixed at ticket creation; no \"freeze description after state X\" logic exists today.\n\n### 4. Evidence of the Problem\n\n**Example 1 — Ticket [84c7757d](memory-api/.ticket/tickets/84c7757d-9819-4b06-a669-e62366db250a/ticket.toml):** \"Session store: populate tool-metrics…\"\n\nHistory shows description was 1739 chars at rev 5, now 4289 chars. The original objective was preserved, but a large \"## Reopened 2026-07-29\" section (1100+ chars) and multiple \"## What has now landed\" / \"## Remaining gap\" sections were appended. The stable requirement is buried under status updates.\n\n**Example 2 — Widespread pattern:** `grep -l \"^## Review$\\|^## Status\\|^## Validation\\|^## Update\\|^## Handoff\"` found appended review/status headings in 50+ tickets (e.g. [0727b7dd](memory-api/.ticket/tickets/0727b7dd-b90b-4edb-8c16-2d6220506585/ticket.toml), [013b57bd](memory-api/.ticket/tickets/013b57bd-2e8c-4d4d-87c8-6f8687a195c8/ticket.toml), [01ebb34b](memory-api/.ticket/tickets/01ebb34b-7559-4b87-b535-ad6f44354b57/ticket.toml)).\n\n**Largest descriptions:**\n- [61f78a57](memory-api/.ticket/tickets/61f78a57-6896-4ad7-9daa-0e9e805aa397/ticket.toml): 1286 lines\n- [f95969ba](memory-api/.ticket/tickets/f95969ba-c797-42d2-b6bc-9265a5fb4cf0/ticket.toml): 1280 lines\n- [19990e37](memory-api/.ticket/tickets/19990e37-b5c2-41bc-af39-d649559a8885/ticket.toml): 1088 lines\n\nThese sizes indicate extensive appended content — reviews, validation logs, handoff notes — mixed into the objective description.\n\n### 5. Related Existing Tickets/Specs\n\n**Search results:** `ticket list --query \"attachment|multi-file|description protection|freezing\"` returned zero matches. No tickets or specs exist today addressing:\n- Ticket attachments or multi-file structure\n- Description protection/freezing at lifecycle transitions\n- Projection/partial read of ticket content\n- Review artifact separation\n\nOne spec ([fda5c915](memory-api/.spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/spec.toml)) was grep-matched, but it covers session-init context cascade, not ticket schema evolution.\n\n### 6. Ticket Read/Projection Surface Today\n\n**Commands:** [memory-api/tools/mcp/ticket-mcp/src/server.rs](memory-api/tools/mcp/ticket-mcp/src/server.rs#L235-L296)\n\n- `get_ticket` — full manifest (all extra fields)\n- `get_ticket_description` (CLI: `describe`) — description.md body only\n- `list_tickets` — indexed metadata (id, type, title, state, effort, updated_at)\n- `subgraph` / `topgraph` — dependency graph traversal\n\n**Output shaping:** `--toon` compact format exists; `--json` returns full payload. No field-level projection (e.g. \"give me title + state but not description\"). No \"include only acceptance criteria\" or \"exclude review sections\" capability.\n\n---\n\n**Key gaps:** No attachment storage, no description freeze, no partial-ticket reads, no typed review/validation artifact linking, and no guard preventing description replacement after a ticket enters `in-progress` or later states.",
+      "captured_at": "2026-07-29T12:30:42.195Z",
+      "event_meta": {
+        "event_id": "605269bb-6edc-45c1-9eda-2a61aa32bbdd",
+        "parent_event_id": "e4d78428-20ed-4896-8efe-eb2e2fc2e99c",
+        "event_type": "assistant.message",
+        "message_id": "23666af3-2476-43ae-8e47-69692f92543c",
+        "reasoning_text": "Let me now compile the report. I have enough evidence now:\n\n1. Ticket storage layout: ticket.toml (manifest), description.md, history.ndjson, and assets/ directory\n2. Description write path: DescriptionUpdateMode with Replace (default) and Append, history stored in history.ndjson as append-only revisions, revert creates new revision with old state\n3. Existing structured-content features: edges (add_edge, list_edges with kind field), field_map for custom fields, state schema with required_states, SpecRef typed references in manifest extra field\n4. Evidence: ticket 84c7757d grew from 1739 to 4289 bytes with appended \"## Reopened\" section; many tickets have ## Review, ## Status, ## Validation sections\n5. No related tickets/specs found about multi-file attachments or description protection\n6. Read surface: get_ticket, get_ticket_description (describe), list_tickets, subgraph, topgraph; no projection/partial read capability\n\nLet me finalize the report now.",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Research is in. Before I ask, here's the grounded picture.\n\n**Current state (evidence):**\n- A ticket dir is `ticket.toml` + `description.md` + `history.ndjson` + an empty `assets/` scaffold ([memory-api/crates/ticket-api/src/model/filesystem.rs](memory-api/crates/ticket-api/src/model/filesystem.rs)). All metadata lives in one untyped `extra` map.\n- `update_ticket` defaults to `description_mode: replace` and unconditionally overwrites `description.md` — no shrink guard, no lifecycle guard ([memory-api/crates/ticket-api/src/storage/store.rs](memory-api/crates/ticket-api/src/storage/store.rs)). History is append-only NDJSON with `__previous_description__`, so recovery exists but only via manual `undo`.\n- 50+ tickets already have `## Review` / `## Status` / `## Validation` / `## Handoff` sections appended into the objective text. Largest `description.md` files are 1286, 1280, 1088 lines.\n- ticket-api has **no** section API (spec-api does), **no** attachments, **no** field projection on reads, **no** freeze.\n- **Nothing in the ticket or spec store covers this yet** — this is greenfield.\n\nNow the design decisions I can't make for you:",
+      "captured_at": "2026-07-29T12:31:53.081Z",
+      "event_meta": {
+        "event_id": "e103be37-e3d2-4c51-a17d-26d44b65a7c8",
+        "parent_event_id": "e5339e5a-7c85-4c48-a480-5c12052059dc",
+        "event_type": "assistant.message",
+        "message_id": "1f9a438d-cdd8-415c-90bb-ad045cade15f",
+        "reasoning_text": "Since session-mcp isn't available, I'll fall back to storing the interview record in a temporary file following the existing pattern in the repo. Now I need to design the core interview questions, which means deciding how to structure the parts—whether to use named files in the ticket directory, a generic attachments folder with a manifest, or a spec-style sections API.\n\nI'm also weighing which part kinds should be fixed (objective, requirements, design, examples, acceptance criteria, review, validation, notes, handoff) versus allowing free-form entries, and what the freeze semantics should look like—whether to lock parts at certain states, require explicit force flags with recorded reasons, or just prevent replace mode after initial creation. There's also the question of whether to flip the default write mode from replace to reject-unless-explicit, how agents should query for subsets of parts (via parameter lists, named profiles, or section-level addressing), whether to auto-split the existing 50+ tickets with appended review content or handle migration lazily, and whether to extend edges with typed references to specs.\n\nFor reviews specifically, I'm considering whether each review should be its own file or appended to a single reviews document, and I need to scope how many tickets this track should cover and whether we need a spec first. The meta-question is how to dogfood the new structure itself—making each ticket in this track carry explicit sections, separate acceptance criteria assets, and validation evidence links as a model for the design.\n\nThis is too much for one batch, so I'm narrowing down to the highest-value questions that are independent of each other, aiming for about seven concrete, self-contained questions grounded in real decisions.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Q3btfRicbad2iQHHnbjME9",
+            "name": "vscode_askQuestions",
+            "arguments": {
+              "questions": [
+                {
+                  "header": "Part storage model",
+                  "question": "How should a ticket's multiple content files be stored and addressed?",
+                  "message": "Today a ticket dir holds exactly one body file, `description.md`, plus an unused empty `assets/` folder. Your request needs requirements/design/examples/reviews as separate files. Three viable shapes:",
+                  "options": [
+                    {
+                      "label": "Named parts dir with manifest index",
+                      "description": "`parts/requirements.md`, `parts/design.md`, `parts/review-001.md`; `ticket.toml` gains a `[[parts]]` table listing kind, path, frozen flag, created_at. Explicit, greppable on disk, manifest is the source of truth. Highest implementation cost.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Mirror spec-api sections API",
+                      "description": "Reuse the existing spec section model (`spec_section_add/list/get/delete`) for tickets. Cheapest — proven code to copy — but sections there are ordered slices of one body, so per-part freezing and typed review docs are a worse fit.",
+                      "recommended": false
+                    },
+                    {
+                      "label": "Generic attachments, untyped",
+                      "description": "`assets/<anything>.md` with a flat manifest list, no fixed vocabulary. Most flexible, but agents will invent inconsistent names and aggregated reads can't reason about kinds."
+                    }
+                  ]
+                },
+                {
+                  "header": "Part kinds",
+                  "question": "Should part kinds be a fixed, schema-validated vocabulary or free-form strings?",
+                  "message": "This decides whether `ticket_read --parts objective,acceptance_criteria` is checkable. Candidate vocabulary from your request: objective, requirements, design, examples, acceptance_criteria, review, validation, notes.",
+                  "options": [
+                    {
+                      "label": "Fixed enum, schema-validated",
+                      "description": "Unknown kinds are rejected. Guarantees aggregated views and projections are predictable; extending the vocabulary requires a schema change (code or config edit).",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Fixed core + free-form extras",
+                      "description": "Core kinds validated and understood by read projections; anything else allowed as an opaque attachment. Balances safety and escape hatch, but two classes of part to implement and document."
+                    },
+                    {
+                      "label": "Free-form only",
+                      "description": "Any string. Zero friction to add new kinds; projections degrade to string matching and drift is likely."
+                    }
+                  ]
+                },
+                {
+                  "header": "Freeze trigger",
+                  "question": "At which lifecycle point should the objective/requirements parts become frozen?",
+                  "message": "There is no freeze today; a ticket in any state can have its description replaced wholesale. Ticket states progress through open → planned → in-progress → in-review → closed (schema has `required_states` per type).",
+                  "options": [
+                    {
+                      "label": "Freeze on entering in-progress",
+                      "description": "Planning is still fluid while the ticket is being refined; once work starts, the plan is a contract. Matches 'already started tickets' in your request.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Freeze on entering planned",
+                      "description": "Earliest protection — the moment a ticket is declared planned its objective is locked. Strongest guarantee, but forces re-planning cycles through the unfreeze path more often."
+                    },
+                    {
+                      "label": "Freeze only when explicitly marked",
+                      "description": "An explicit `freeze` command; no automatic trigger. Never gets in the way, but relies on agents remembering to call it — which is the same failure mode you're trying to eliminate."
+                    }
+                  ]
+                },
+                {
+                  "header": "Freeze escape hatch",
+                  "question": "What should happen when a write targets a frozen part?",
+                  "message": "This is the enforcement teeth. Whatever you pick applies to `update_ticket` calls from agents.",
+                  "options": [
+                    {
+                      "label": "Hard reject; amendment recorded as a new part",
+                      "description": "The frozen part is immutable. Corrections go into a new `amendment` part that aggregated reads render after the original. Nothing is ever lost; superseded intent stays visible.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Reject unless --force with a mandatory reason",
+                      "description": "Escape hatch exists but is logged with a justification into history. Pragmatic; an agent under pressure will still use --force."
+                    },
+                    {
+                      "label": "Allow, but only append (never replace)",
+                      "description": "Frozen means 'replace is forbidden, append is fine'. Simplest to implement on top of the existing `description_mode`, but descriptions keep growing into the 1000+ line files we already have."
+                    }
+                  ]
+                },
+                {
+                  "header": "Replace-mode default",
+                  "question": "Should `description_mode` stop defaulting to `replace`?",
+                  "message": "Right now `update_ticket` with a `description` and no mode silently overwrites the whole body — this is the single mechanism behind the overwrites you described. Changing it is a breaking change for every existing caller and prompt.",
+                  "options": [
+                    {
+                      "label": "Make mode required; no default",
+                      "description": "Callers must state intent explicitly. Eliminates accidental overwrite entirely at the cost of breaking every current call site until updated.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Default flips to append",
+                      "description": "Silent calls become additive instead of destructive. Non-breaking at the API signature level, but silently changes behavior for existing callers, which can surprise differently."
+                    },
+                    {
+                      "label": "Keep replace default; rely on freeze only",
+                      "description": "Least churn — protection comes solely from freezing. Unfrozen tickets stay vulnerable to the exact bug you reported."
+                    }
+                  ]
+                },
+                {
+                  "header": "Read projection shape",
+                  "question": "How should an agent request a subset of a ticket?",
+                  "message": "Today `get_ticket` returns the full manifest and `get_ticket_description` returns the whole body — there is no way to ask for less. Your request wants agents to avoid loading every detail.",
+                  "options": [
+                    {
+                      "label": "Named view profiles + explicit part list",
+                      "description": "`--view summary|plan|review|full` for the common cases, with `--parts a,b,c` for precision. Profiles keep the common path one short flag; the escape hatch covers the rest.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Explicit part list only",
+                      "description": "`--parts objective,acceptance_criteria`. One mechanism, no hidden policy — but every caller has to know the vocabulary and spell it out."
+                    },
+                    {
+                      "label": "Query expression language",
+                      "description": "A richer filter/selector syntax over parts and fields. Most powerful, matching 'finely calibrated query system', but a large surface to design, document, and keep stable."
+                    }
+                  ]
+                },
+                {
+                  "header": "Existing ticket migration",
+                  "question": "What should happen to the 50+ existing tickets whose descriptions already contain appended Review/Status/Validation sections?",
+                  "message": "Examples: 61f78a57 at 1286 lines, f95969ba at 1280 lines, 19990e37 at 1088 lines. Their objective text is buried under status updates.",
+                  "options": [
+                    {
+                      "label": "One-shot heuristic split with a dry-run report",
+                      "description": "A migration command detects `## Review` / `## Status` / `## Validation` / `## Handoff` headings and moves them into typed parts; preview first, then apply. Fixes the corpus at once; heuristics will mis-split some tickets.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Leave existing tickets as a single objective part",
+                      "description": "New structure applies only going forward; old descriptions become one legacy `objective` part verbatim. Zero migration risk, but the worst existing tickets stay unreadable."
+                    },
+                    {
+                      "label": "Lazy split on next edit",
+                      "description": "A ticket is restructured the first time it is written to after the feature lands. Spreads risk out; the store stays in a mixed state indefinitely and behavior depends on edit history."
+                    }
+                  ]
+                },
+                {
+                  "header": "Track shape",
+                  "question": "Should this start with a spec, and how granular should the ticket track be?",
+                  "message": "Nothing in the spec or ticket store covers this today, so we are starting clean. AGENTS.md requires a spec for new/changed requirements before implementation.",
+                  "options": [
+                    {
+                      "label": "One spec + ~6-8 tickets sliced by capability",
+                      "description": "Spec owns the contract; tickets: storage/manifest schema, part kinds + write API, freeze + lifecycle guard, projection/aggregated reads, typed refs, migration, CLI/MCP surface, viewer. Each independently reviewable and verifiable.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "One spec + 3 large tickets",
+                      "description": "Storage+schema / protection+freeze / read+query. Fewer handoffs and less ticket overhead, but each ticket is a big unreviewable chunk."
+                    },
+                    {
+                      "label": "Spec only for now; ticket later",
+                      "description": "Lock the design first, defer decomposition to a follow-up session."
+                    }
+                  ]
+                },
+                {
+                  "header": "Dogfooding this track",
+                  "question": "Should the tickets in this track be authored today in the target structure, using conventions that the new system will later formalize?",
+                  "message": "You asked how to design this track's tickets better than before. The new part kinds don't exist yet, but we can write them in the shape the system will enforce.",
+                  "options": [
+                    {
+                      "label": "Yes — fixed heading convention per ticket, reviews appended as separate assets",
+                      "description": "Every ticket's description carries the exact same top-level headings (Objective / Requirements / Design / Examples / Acceptance Criteria / Typed References), never edited after planning; review and validation output goes into `assets/` files instead of the description. The migration tool can then split them deterministically, and the track validates its own design.",
+                      "recommended": true
+                    },
+                    {
+                      "label": "Yes, headings only",
+                      "description": "Consistent headings but reviews still appended into the description as today. Lighter, but keeps the bad pattern alive in the very track meant to kill it."
+                    },
+                    {
+                      "label": "No — author normally",
+                      "description": "Don't constrain the track's own tickets; avoid inventing conventions before the spec settles."
+                    }
+                  ]
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Recorded. Round 2 — five decisions that only became askable once round 1 landed:",
+      "captured_at": "2026-07-29T12:40:10.666Z",
+      "event_meta": {
+        "event_id": "d3f9ab0b-2695-4327-82ba-bb9dd270f947",
+        "parent_event_id": "9485e574-6cb0-4a52-abac-ce05dade15d1",
+        "event_type": "assistant.message",
+        "message_id": "24b743c1-f4bd-4b03-b2c6-528cf2f2ea02",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_017kFomsDYz5cuCV14KM3LN3",
+            "name": "vscode_askQuestions",
+            "arguments": {
+              "questions": [
+                {
+                  "header": "Freeze scope",
+                  "message": "You chose: freeze on entering `planned`. But a ticket in `planned` still legitimately accumulates content while work proceeds — review notes, validation results, implementation findings. If everything freezes, every normal update becomes an amendment.",
+                  "options": [
+                    {
+                      "description": "The plan contract locks; `review`, `validation`, `notes`, and free-form extras stay writable. Matches 'protect the core objective' without making routine progress recording painful.",
+                      "label": "Freeze objective + requirements + acceptance_criteria only",
+                      "recommended": true
+                    },
+                    {
+                      "description": "Also locks design and examples. Stronger guarantee that the planning unit is immutable; any design correction discovered during implementation forces an amendment part.",
+                      "label": "Freeze all planning parts (adds design, examples)"
+                    },
+                    {
+                      "description": "Every part immutable once planned; all subsequent content is new parts only. Maximum protection, purely append-only ticket — but reviews can never be corrected in place, only superseded.",
+                      "label": "Freeze every part"
+                    }
+                  ],
+                  "question": "Which parts should freeze when a ticket enters `planned`?"
+                },
+                {
+                  "header": "Re-planning mechanism",
+                  "message": "You wrote: 'Hard reject, record amendment as new part, flag error and require explicit re-planning.' I need the mechanics of that last clause — what an agent actually does after the rejection.",
+                  "options": [
+                    {
+                      "description": "Transitioning back to a pre-planned state unfreezes the planning parts for direct editing; re-entering `planned` re-freezes and cuts a new plan revision. Re-planning is visible in ticket state and history, and nothing needs a bespoke command.",
+                      "label": "Transition the ticket back to an earlier state to unfreeze",
+                      "recommended": true
+                    },
+                    {
+                      "description": "An `unfreeze` call with a mandatory reason, independent of ticket state. More direct, but adds a second lifecycle axis and an unfreeze that state alone doesn't reveal.",
+                      "label": "Dedicated unfreeze command with a recorded reason"
+                    },
+                    {
+                      "description": "Frozen is permanent for the ticket's life. Corrections only ever land as amendment parts that aggregated reads render after the original. Simplest and strongest, but a badly-planned ticket can never be cleanly re-planned — it must be closed and replaced.",
+                      "label": "No unfreeze — amendments only, forever"
+                    }
+                  ],
+                  "question": "How does a ticket get out of the frozen state to be re-planned?"
+                },
+                {
+                  "header": "Typed references",
+                  "message": "Your request wants tickets to refer to external entities through typed references instead of inlining context. Today edges have a free-form String `kind` (memory-api/crates/memory-api/src/model/edge.rs) and typed `related_specs` live in the manifest `extra` map — two overlapping mechanisms.",
+                  "options": [
+                    {
+                      "description": "Edges keep expressing ticket→ticket dependency; a manifest `[[refs]]` table carries typed pointers to non-ticket entities (spec, test execution, log, rule, file path, commit) with kind + URN + optional note. Clean separation, absorbs `related_specs`, and projections can render refs without graph traversal.",
+                      "label": "Manifest `[[refs]]` table for external entities; edges stay for ticket-to-ticket",
+                      "recommended": true
+                    },
+                    {
+                      "description": "Constrain the existing free-form edge `kind` to a validated enum and route all references — including spec/test/log — through the edge graph. One mechanism, fully queryable; requires migrating existing free-form kinds and modelling non-ticket nodes.",
+                      "label": "Extend edges with a validated kind enum; everything is an edge"
+                    },
+                    {
+                      "description": "Each part file may declare its own frontmatter refs, so a design part cites its own sources. Most precise attribution; more places to validate and keep consistent.",
+                      "label": "Per-part reference frontmatter"
+                    }
+                  ],
+                  "question": "How should typed references to external entities be modelled?"
+                },
+                {
+                  "header": "View profiles",
+                  "message": "You chose named view profiles plus an explicit part list. I need the profile definitions so the projection is checkable. Assume core kinds: objective, requirements, design, examples, acceptance_criteria, review, validation, notes, amendment.",
+                  "options": [
+                    {
+                      "description": "summary = metadata + objective. plan = metadata + objective + requirements + design + examples + acceptance_criteria + refs. review = metadata + acceptance_criteria + review + validation. full = everything. Each profile maps to one agent job (orient / implement / verify).",
+                      "label": "summary / plan / review / full as role-shaped bundles",
+                      "recommended": true
+                    },
+                    {
+                      "description": "summary = metadata only, plan = +planning parts, review = +review parts, full = all. Trivially explainable ordering, but a reviewer using `review` also pulls the full design they may not need.",
+                      "label": "Strictly cumulative profiles"
+                    },
+                    {
+                      "description": "Ship only `--parts` and add profiles once real usage shows which bundles recur. Avoids guessing wrong; every caller writes a longer invocation in the meantime.",
+                      "label": "Define profiles later from observed usage"
+                    }
+                  ],
+                  "question": "How should the view profiles be defined?"
+                },
+                {
+                  "header": "Migration ambiguity",
+                  "message": "The one-shot heuristic splits on `## Review` / `## Status` / `## Validation` / `## Handoff` headings. Real descriptions also contain unrecognised headings and prose that fits no core kind — the dry-run must say what happens to it.",
+                  "options": [
+                    {
+                      "description": "Recognised headings move to their typed part; everything else stays in `objective` verbatim. No content is ever lost or guessed at; some tickets keep a messy objective until manually cleaned.",
+                      "label": "Unmatched content stays in `objective`; only confident matches move",
+                      "recommended": true
+                    },
+                    {
+                      "description": "Content before the first recognised heading becomes `objective`; unmatched trailing sections become a `notes` part. Cleaner objectives, but a heading-less mid-description aside can be mis-filed.",
+                      "label": "Unmatched trailing content becomes a `notes` part"
+                    },
+                    {
+                      "description": "The dry-run lists ambiguous tickets and the tool refuses to migrate them until a human decides. Highest fidelity, and with 50+ affected tickets it becomes a substantial manual queue.",
+                      "label": "Flag ambiguous tickets and skip them for manual handling"
+                    }
+                  ],
+                  "question": "What should the migration do with content it cannot confidently classify?"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Creating the spec now.\n\n**New spec:** `ticket-api/entity/structured-ticket-entities` — \"Structured Ticket Entities: multi-file parts, plan freezing, typed refs, and projected reads\"",
+      "captured_at": "2026-07-29T12:50:22.768Z",
+      "event_meta": {
+        "event_id": "63fbfc10-7393-4f2b-b3bb-b2ae68a5d7fa",
+        "parent_event_id": "95952c94-8b5d-406e-8d62-e7d360c4f37f",
+        "event_type": "assistant.message",
+        "message_id": "1d2abae6-4e61-4069-83eb-b5860ebb15c0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01RZT5EPzYJWQm86Ejue8vYc",
+            "name": "mcp_spec-mcp_spec_create",
+            "arguments": {
+              "body": "## Problem\n\nA ticket entity today is a single mutable blob. Its directory holds `ticket.toml`, one `description.md`, `history.ndjson`, and an unused empty `assets/` scaffold (memory-api/crates/ticket-api/src/model/filesystem.rs). All metadata lives in one untyped `extra` map (memory-api/crates/memory-api/src/model/entity.rs).\n\n`update_ticket` defaults `description_mode` to `replace` and unconditionally overwrites `description.md` with no shrink guard and no lifecycle guard (memory-api/crates/ticket-api/src/storage/store.rs). Two failure modes follow:\n\n1. **Destructive overwrite.** An agent adding a review result replaces the whole objective. Recovery exists only via manual `undo` against `history.ndjson`.\n2. **Objective erosion by accretion.** Agents avoiding overwrite append instead, so review, status, validation, and handoff content accumulates inside the objective. Over 50 tickets already carry `## Review` / `## Status` / `## Validation` / `## Handoff` headings in their description; the largest are 1286, 1280, and 1088 lines. The stable requirement becomes unfindable, and every read pulls the entire history into an agent's context.\n\nticket-api has no section API (spec-api has one), no attachments, no read projection, and no freeze mechanism.\n\n## Goal\n\nMake a ticket a rich, deeply grounded, self-contained mini-plan: a set of typed content parts stored as separate files, indexed by the manifest, with planning parts frozen once the ticket is planned, external context reached through typed references rather than inlined, and reads projected so an agent loads only the parts its role needs.\n\n## Model\n\n### Parts\n\nA ticket directory gains `parts/`, holding one markdown file per part. `ticket.toml` gains a `[[parts]]` table indexing them, each entry carrying `kind`, `path`, `frozen`, and `created_at`. The manifest is the source of truth for which parts exist and their order.\n\nCore part kinds are a schema-validated vocabulary understood by projections:\n\n| Kind | Role |\n|---|---|\n| `objective` | The stable statement of what this ticket exists to achieve |\n| `requirements` | Exact requirements the implementation must satisfy |\n| `design` | Chosen approach and structure |\n| `examples` | Concrete illustrative cases |\n| `acceptance_criteria` | Verifiable conditions for closing |\n| `review` | Review findings, one part per review pass |\n| `validation` | Test and validation evidence |\n| `notes` | Working notes |\n| `amendment` | A correction that supersedes a frozen planning part |\n\nFree-form kinds outside this vocabulary are permitted and stored as opaque attachments. They are preserved, listed, and retrievable, but projections treat them as untyped.\n\n### Freezing\n\nEntering `planned` freezes every planning part: `objective`, `requirements`, `acceptance_criteria`, `design`, and `examples`. `review`, `validation`, `notes`, `amendment`, and free-form parts remain writable in every state, so recording progress never requires touching the plan.\n\nA write targeting a frozen part is **hard rejected** with an explicit error. The correction is recorded as a new `amendment` part referencing the frozen part it supersedes. Nothing is silently lost and superseded intent stays visible. There is no `--force`.\n\nUnfreezing happens only by transitioning the ticket back to a pre-`planned` state. Re-entering `planned` re-freezes and cuts a new plan revision. Re-planning is therefore visible in ticket state and history, and no separate unfreeze axis exists.\n\n### Write API\n\n`description_mode` loses its default. Callers must state `replace` or `append` explicitly; an omitted mode is an error, not a silent overwrite. This is a breaking change to every existing call site and is intentional — the silent default is the direct cause of the overwrite failures above.\n\n### Typed references\n\n`ticket.toml` gains a `[[refs]]` table for references to non-ticket entities: spec, test execution, log, rule, file path, commit. Each entry carries `kind`, a canonical URN, and an optional note. This absorbs the existing `related_specs` field. Edges (memory-api/crates/memory-api/src/model/edge.rs) remain ticket-to-ticket only and keep expressing dependency structure.\n\n### Projected reads\n\nReads accept a named view profile or an explicit part list. Profiles are role-shaped bundles, each matching one agent job:\n\n| Profile | Parts |\n|---|---|\n| `summary` | metadata + `objective` |\n| `plan` | metadata + `objective` + `requirements` + `design` + `examples` + `acceptance_criteria` + refs |\n| `review` | metadata + `acceptance_criteria` + `review` + `validation` |\n| `full` | everything, including free-form parts |\n\n`--parts a,b,c` selects an explicit set for cases no profile covers.\n\n### Migration\n\nA one-shot migration splits existing descriptions. It recognises `## Review`, `## Status`, `## Validation`, and `## Handoff` headings and moves those sections into their typed parts. All content it cannot confidently classify — unrecognised headings, mid-description asides, prose fitting no core kind — stays in `objective` verbatim. Nothing is lost and nothing is guessed. The tool produces a dry-run report first; apply is a separate step.\n\n## Non-goals\n\n- Reworking the edge model or migrating existing free-form edge kinds.\n- A general query expression language over tickets. Profiles plus an explicit part list are the whole projection surface for this spec.\n- Retention limits or compaction of `history.ndjson`.\n\n## Acceptance criteria\n\n1. A ticket directory holds `parts/` files indexed by a `[[parts]]` manifest table; core kinds are schema-validated and free-form kinds round-trip as opaque attachments.\n2. Transitioning a ticket to `planned` marks all five planning parts frozen in the manifest.\n3. A write to a frozen part is rejected with an actionable error naming the part and the amendment path; no `--force` exists.\n4. Transitioning back to a pre-`planned` state clears the frozen flags; re-entering `planned` re-freezes.\n5. `update_ticket` with a `description` and no `description_mode` is rejected.\n6. `[[refs]]` round-trips all six external entity kinds and existing `related_specs` values migrate into it without loss.\n7. Each of the four view profiles returns exactly the parts tabulated above, and `--parts` returns exactly the requested set.\n8. Migration dry-run reports, for every affected ticket, which sections move and which content stays in `objective`; apply produces byte-identical total content to the pre-migration description.\n",
+              "caller_model": "claude-opus-4-5",
+              "component": "ticket-api",
+              "scope": "internal",
+              "slug": "ticket-api/entity/structured-ticket-entities",
+              "title": "Structured Ticket Entities: multi-file parts, plan freezing, typed refs, and projected reads",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "Root created. Now the seven capability tickets.",
+      "captured_at": "2026-07-29T12:51:11.438Z",
+      "event_meta": {
+        "event_id": "3007cffc-3d97-4ccf-b7cd-7765a2b173e3",
+        "parent_event_id": "4551cf89-15db-42a4-81a2-b2cf0bfc4428",
+        "event_type": "assistant.message",
+        "message_id": "26494cfd-b934-4f4d-8e31-14b3d8d52643",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01B3UPvAaJULvAs9ieRRCNdN",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-opus-4-5",
+              "description": "## Objective\n\nGive a ticket directory a `parts/` folder holding one markdown file per typed content part, indexed by a `[[parts]]` table in `ticket.toml`, with a schema-validated core kind vocabulary and lossless passthrough for free-form kinds.\n\n## Requirements\n\n- Ticket directory gains `parts/`, one markdown file per part.\n- `ticket.toml` gains a `[[parts]]` table; each entry carries `kind`, `path`, `frozen` (bool), `created_at`.\n- The manifest is the source of truth for which parts exist and in what order; an orphan file in `parts/` is reported, not silently adopted.\n- Core kinds are schema-validated: `objective`, `requirements`, `design`, `examples`, `acceptance_criteria`, `review`, `validation`, `notes`, `amendment`.\n- Kinds outside the core vocabulary are accepted and stored as opaque attachments: preserved, listed, and retrievable, but not interpreted by projections.\n- Multiple parts of the same kind are allowed (e.g. one `review` part per review pass); ordering within a kind is stable.\n- Existing tickets without a `[[parts]]` table load unchanged; `description.md` is presented as a single implicit `objective` part.\n\n## Design\n\nExtend the filesystem model in memory-api/crates/ticket-api/src/model/filesystem.rs alongside the existing `ticket.toml` / `description.md` / `history.ndjson` / `assets/` layout. Part kind validation belongs with the schema registry in memory-api/crates/ticket-api/src/model/schema_registry.rs so it participates in the same validation path as `required_states`.\n\n`description.md` stays on disk as the compatibility surface for the implicit `objective` part until the migration ticket lands.\n\n## Examples\n\n```toml\n[[parts]]\nkind = \"objective\"\npath = \"parts/objective.md\"\nfrozen = true\ncreated_at = \"2026-07-29T12:00:00Z\"\n\n[[parts]]\nkind = \"review\"\npath = \"parts/review-001.md\"\nfrozen = false\ncreated_at = \"2026-07-30T09:00:00Z\"\n\n[[parts]]\nkind = \"benchmark-notes\"   # free-form: stored, listed, not interpreted\npath = \"parts/benchmark-notes.md\"\nfrozen = false\ncreated_at = \"2026-07-30T10:00:00Z\"\n```\n\n## Acceptance Criteria\n\n1. Creating a part writes both the file under `parts/` and its `[[parts]]` manifest entry atomically; a crash between the two leaves no half-state.\n2. A core kind that fails schema validation is rejected with the offending kind and the valid vocabulary in the error.\n3. A free-form kind round-trips byte-identically through write, list, and read.\n4. Two `review` parts coexist and list in stable creation order.\n5. A ticket directory with no `[[parts]]` table loads, and its `description.md` reads back as an `objective` part.\n6. A file present in `parts/` with no manifest entry is surfaced by a consistency check rather than adopted.\n\n## Typed References\n\n- spec: `ticket-api/entity/structured-ticket-entities` (24b3d22b)\n- code: memory-api/crates/ticket-api/src/model/filesystem.rs\n- code: memory-api/crates/ticket-api/src/model/schema_registry.rs\n- code: memory-api/crates/memory-api/src/model/entity.rs\n",
+              "fields": [
+                "priority=high",
+                "effort=l",
+                "component=ticket-api"
+              ],
+              "title": "Ticket parts: parts/ storage, [[parts]] manifest index, and core kind vocabulary",
+              "type": "task",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "Now wiring the dependency graph.",
+      "captured_at": "2026-07-29T12:53:35.728Z",
+      "event_meta": {
+        "event_id": "8d11adec-6eaa-4363-8de7-0f6ff83a51d5",
+        "parent_event_id": "e8168d1b-e5c2-4cfe-8359-b681acd255e5",
+        "event_type": "assistant.message",
+        "message_id": "7846b710-7456-4243-a2bb-96fed191ce3d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01M6iwncbKN2SHpf8zbq5UBW",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-opus-4-5",
+              "from": "3d952036",
+              "kind": "depends_on",
+              "to": "5a3d152c",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Now linking the seven children to the track root.",
+      "captured_at": "2026-07-29T12:54:14.298Z",
+      "event_meta": {
+        "event_id": "dae4b24e-41ce-4589-a31d-334f3db618d5",
+        "parent_event_id": "60011d01-73a2-48e8-98fc-7f99ea4f0aa6",
+        "event_type": "assistant.message",
+        "message_id": "eb997b95-2615-4012-897c-b8cca1907c44",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015Su6hJB31yoYcyvERWwMzH",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-opus-4-5",
+              "from": "bbb4bce9",
+              "kind": "depends_on",
+              "to": "5a3d152c",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine/memory-api"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "Done. Summary:\n\n## Objective & anchor\nDesign the ticket-entity restructure and produce a spec + implementation track. Anchor: new spec [24b3d22b Structured Ticket Entities](.spec/specs/24b3d22b-e235-4c4f-b53c-75fb819ea95b/spec.toml). Record: [interview-structured-ticket-entities.md](tmp/interview-structured-ticket-entities.md).\n\n## What the research found\n- Ticket dir = `ticket.toml` + one `description.md` + `history.ndjson` + an **unused empty `assets/` scaffold** ([filesystem.rs](memory-api/crates/ticket-api/src/model/filesystem.rs)).\n- `update_ticket` defaults to `replace` and overwrites unconditionally — no shrink guard, no lifecycle guard ([store.rs](memory-api/crates/ticket-api/src/storage/store.rs)). That default is the direct cause of the overwrites.\n- 50+ tickets already have `## Review`/`## Status`/`## Validation`/`## Handoff` inside their objective. Worst: 61f78a57 (1286 lines), f95969ba (1280), 19990e37 (1088).\n- ticket-api has no sections, no attachments, no projection, no freeze. **Nothing in the ticket or spec store covered this** — greenfield.\n\n## Decisions you made (14, all recorded)\nNamed `parts/` dir with `[[parts]]` manifest index · fixed core kinds + free-form extras · freeze **all five planning parts** at `planned` · hard reject + amendment part + explicit re-planning · `description_mode` becomes **required** · role-shaped profiles `summary`/`plan`/`review`/`full` + `--parts` · unfreeze by transitioning back to a pre-`planned` state · `[[refs]]` manifest table for external entities, edges stay ticket→ticket · lossless migration, unmatched content stays in `objective` · dogfooded heading convention.\n\n## Track created (memory-api/.ticket)\nRoot **bbb4bce9**, depending on seven capability tickets: **5a3d152c** parts storage → **3d952036** writes / **9d69e93d** refs → **f9e70385** freezing / **4c7b884e** projections → **f65f2b32** migration, **89fa0c25** viewer, **71e13480** guidance.\n\n## Better-than-before authoring, applied\nEvery ticket uses the fixed headings the spec formalises, keeps reviews out of the description, states acceptance criteria as **individually verifiable** conditions (byte-identical round-trips, empty diffs, no-op re-runs) rather than prose, and carries typed references instead of inlined context. That makes the track its own positive fixture set for the migration classifier in f65f2b32.\n\nTwo decisions deliberately deferred to their owning ticket's refinement: amendment rendering order (4c7b884e) and viewer profile/amendment UX (89fa0c25).\n\nOnly unblocked leaf: **5a3d152c**. Next step is refining it to `planned`.",
+      "captured_at": "2026-07-29T12:55:28.982Z",
+      "event_meta": {
+        "event_id": "064ab681-5a4e-403c-911e-a66156a2c693",
+        "parent_event_id": "89a41fc6-f544-49ac-bc23-6437924b905f",
+        "event_type": "assistant.message",
+        "message_id": "43c2b2c2-8993-4778-ba72-7c9ad3665232",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01L3TWudACmzvEdzRozpr541"
+      }
+    }
+  ]
+}
