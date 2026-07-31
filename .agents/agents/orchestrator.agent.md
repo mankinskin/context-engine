@@ -133,6 +133,7 @@ git checkout main
 git merge --ff-only agent/<short-id>-<slug>
 git -C .worktrees/<short-id>-<slug> submodule deinit --all --force
 git worktree remove --force .worktrees/<short-id>-<slug>
+git worktree prune
 git submodule init
 git branch -d agent/<short-id>-<slug>
 ```
