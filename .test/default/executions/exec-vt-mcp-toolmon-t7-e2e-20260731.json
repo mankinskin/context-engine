@@ -1,0 +1,18 @@
+{
+  "id": "exec-vt-mcp-toolmon-t7-e2e-20260731",
+  "validation_spec_id": "vt-mcp-toolmon-t7-e2e",
+  "outcome": "passed",
+  "executed_at": "2026-07-31T14:26:57.746701500Z",
+  "detail": "3x `cargo test -p mcp-toolmon` runs from memory-api/tools/mcp/mcp-toolmon: identical counts each run — 76 passed (42 lib + 1 crash_inflight_subprocess + 3 handshake + 16 integration_gate + 1 integration_reload_end_to_end + 4 shadow + 5 supervisor + 4 watcher), 0 failed, 0 flaky. clippy -p mcp-toolmon --all-targets: 0 warnings introduced by new test files; pre-existing warnings confined to unmodified src/gate.rs, src/proxy.rs, src/supervisor.rs. Build clean.",
+  "links": {
+    "ticket_ids": [
+      "15c66e77-379b-4a1f-b2a2-4cf1cb808af9"
+    ]
+  },
+  "provenance": {
+    "domain": "mcp-toolmon",
+    "operation": "cargo test -p mcp-toolmon (3x)",
+    "transport": "cli",
+    "run_id": "t7-validation-20260731"
+  }
+}

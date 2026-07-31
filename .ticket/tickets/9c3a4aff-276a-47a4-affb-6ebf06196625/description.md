@@ -34,3 +34,7 @@ Define a `Policy` trait (e.g. `fn on_tools_list`, `fn on_tool_call_request`, `fn
 - Transport core ported to tokio: `src/supervisor.rs` (`Supervisor`) owns the child's stdin/stdout behind `tokio::sync::Mutex`, giving pumps a stable seam a future T4 supervisor can swap without rewriting them. `main.rs` runs on a multi-thread tokio runtime with async stdio pumps (`tokio::process::Command`, `tokio::io`).
 - Tests: 55 passed (54 pre-existing unchanged + 1 new `policy_trait_dispatch`), 0 failed. `cargo build -p mcp-toolmon` clean; `cargo clippy` shows only pre-existing warnings in unmodified `gate.rs` and one pre-existing warning at `proxy.rs:148` (`needless_as_bytes`, predates this ticket). Smoke test: piped `initialize` through `target/debug/mcp-toolmon.exe -- peek-mcp`, observed valid `{"id":1,"jsonrpc":"2.0","result":{...}}`.
 - No behavior deviations identified; all `COST_GATE_*` env vars, `costGateWarning` injection, `verdict` subcommand, and extra-arg forwarding are unchanged.
+
+
+## Verification note (2026-07-31)
+cargo test -p mcp-toolmon -p toolmon-policy-api -p toolmon-costgate -> 76/76 passed, run twice, 0 flakes. Property A (proxied target-server functionality not compromised) and Property B (child hot-restart) both PROVEN. Full evidence and known limitations recorded on epic 25780944.

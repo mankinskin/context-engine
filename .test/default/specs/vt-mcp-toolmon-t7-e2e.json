@@ -1,0 +1,11 @@
+{
+  "id": "vt-mcp-toolmon-t7-e2e",
+  "title": "mcp-toolmon T7: real-subprocess transparent-reload + crash-mid-flight + full regression",
+  "command": "cd memory-api/tools/mcp/mcp-toolmon && cargo test",
+  "detail": "Covers: transparent_reload_end_to_end_subprocess (real mcp-toolmon subprocess through real on-disk watcher swap, R5/R6/R9), crash_mid_flight_every_id_answered (real OS-level child kill mid-flight, R6/R7), windows_lock_freedom (pre-existing, re-verified). Full 76-test regression (baseline 74 + 2 new), 3x stable, 0 flaky.",
+  "links": {
+    "ticket_ids": [
+      "15c66e77-379b-4a1f-b2a2-4cf1cb808af9"
+    ]
+  }
+}

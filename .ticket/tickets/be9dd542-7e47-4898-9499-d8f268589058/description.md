@@ -24,3 +24,7 @@ Pure rename, no behavior change. Move directory, update `Cargo.toml` package/bin
 - install-tools.sh
 - any matched docs/instructions files (discover via grep for `mcp-cost-gate`)
 Renamed mcp-cost-gate crate/binary/dir to mcp-toolmon (behavior-neutral). git mv with history preserved; Cargo.toml package+bin renamed; root workspace member updated; install-tools.sh tool_names/mcp_tool_names/tool_path/tool_bin updated; internal binary-name strings (log prefix, usage text, CARGO_BIN_EXE_ env var) updated; build+tests pass (54/54); installed to ~/.cargo/bin/mcp-toolmon.exe; smoke-tested --help path and a real JSON-RPC initialize proxied through a live child MCP server; .vscode/mcp.json, .github/mcp.json, and opencode.json flipped to \"mcp-toolmon\" only after install+smoke succeeded. gate.rs, COST_GATE_* env vars, costGateWarning field, verdict subcommand, and lib crate name mcp_cost_gate left untouched per scope. Old mcp-cost-gate.exe left in place, untouched.
+
+
+## Verification note (2026-07-31)
+cargo test -p mcp-toolmon -p toolmon-policy-api -p toolmon-costgate -> 76/76 passed, run twice, 0 flakes. Property A (proxied target-server functionality not compromised) and Property B (child hot-restart) both PROVEN. Full evidence and known limitations recorded on epic 25780944.

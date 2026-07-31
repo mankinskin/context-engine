@@ -38,3 +38,7 @@ Implemented shadow-copy execution (`src/shadow.rs`) + fixture bins for the shado
 - Tests: `shadow_copy_spawns_from_shadow_path`, `shadow_dir_env_override`, `startup_sweep_removes_dead_shadow`, `windows_lock_freedom` (`#[cfg(windows)]`) all added and passing in `tests/shadow.rs`. 59/59 total (55 prior + 4 new).
 - Smoke-verified: piped `initialize` through `mcp-toolmon -- peek-mcp`, got a real result payload, and observed the shadow copy on disk at `/tmp/mcp-toolmon/peek-mcp-25404-b5bee4bb59256985/peek-mcp.exe`.
 - Not implemented: on-graceful-exit shadow-dir deletion (ticket's pre-addendum AC mentions it; spec R12 only requires startup-sweep + post-swap supersession, no exit-time cleanup, so left out to match spec normative text; startup sweep bounds accumulation instead).
+
+
+## Verification note (2026-07-31)
+cargo test -p mcp-toolmon -p toolmon-policy-api -p toolmon-costgate -> 76/76 passed, run twice, 0 flakes. Property A (proxied target-server functionality not compromised) and Property B (child hot-restart) both PROVEN. Full evidence and known limitations recorded on epic 25780944.

@@ -41,3 +41,7 @@ New tests: `tests/handshake.rs` (`handshake_replayed_before_tool_calls`, `handsh
 `cargo build -p mcp-toolmon`: clean. `cargo test -p mcp-toolmon`: 67 passed (64 baseline + 3 new), 0 failed. Smoke test: `initialize` piped through `mcp-toolmon -- peek-mcp` returned a real result payload (protocolVersion, capabilities, serverInfo, instructions).
 
 Remaining risk: divergence logging is not tested against a plain-stderr capture (no `gag`-style crate in the dep tree); it is proven via an in-process `divergence_log` field mirroring the `eprintln!`, which is honest but does not prove the literal stderr text shape byte-for-byte.
+
+
+## Verification note (2026-07-31)
+cargo test -p mcp-toolmon -p toolmon-policy-api -p toolmon-costgate -> 76/76 passed, run twice, 0 flakes. Property A (proxied target-server functionality not compromised) and Property B (child hot-restart) both PROVEN. Full evidence and known limitations recorded on epic 25780944.

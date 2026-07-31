@@ -19,6 +19,14 @@ The proxy core should be rewritten on tokio, using `tokio::process::Command` and
 
 The rollout sequence is normative: rename the crate source to `mcp-toolmon`, update the root `Cargo.toml` members and `install-tools.sh`, build/test/install the new `mcp-toolmon` binary, smoke-test that installed binary, then and only then flip the `command` entries in `.vscode/mcp.json` and `.github/mcp.json` from `mcp-cost-gate` to `mcp-toolmon`, reload VS Code, and finally delete the old `~/.cargo/bin/mcp-cost-gate.exe` once nothing is using it. This is zero-downtime because the new filename does not contend with the lock held by the running old binary; flipping config too early would strand all 12 MCP servers, including the ticket and spec servers this workflow depends on.
 
+### Decision 3: proxy self-reload limitation and thin-core resolution
+
+`mcp-toolmon` cannot hot-reload itself. Shadow-copy execution protects the child MCP server binary from the Windows file lock, but the proxy's own `.exe` is held by its own running process, so updating the proxy still requires a VS Code window reload. That limitation is accepted as deliberate behavior, not a defect.
+
+The resolution path is to keep the proxy core thin and stable, with transport/interception logic isolated from policy so rebuild churn stays low. Policy and gate implementations, including the cost gate, belong behind the `Policy` trait boundary in separate libraries rather than inside the transport core. The current scope is only that clean separation of concerns; dynamic linking remains deferred until gate-code changes are frequent enough that reload cost becomes a real cost.
+
+Deferred / Future Work: if policy churn proves high in practice, the separated policy libraries can later be loaded dynamically so gate updates no longer require a VS Code reload. That is explicitly out of scope for the current work.
+
 ## Non-Goals
 
 - No new MCP tool is injected into `tools/list` to trigger restarts. Rejected explicitly: 12 duplicate tool schemas would cost context on every request across every wrapped server.

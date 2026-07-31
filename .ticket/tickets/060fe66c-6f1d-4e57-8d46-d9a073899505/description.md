@@ -39,3 +39,7 @@ Implemented `Supervisor::swap_child()` / `swap_child_with_drain_ms()` in `memory
 Validation: `cargo build -p mcp-toolmon` clean; `cargo test -p mcp-toolmon` 64/64 passed (59 prior + 5 new), zero regressions. Smoke: `initialize` piped through `mcp-toolmon -- peek-mcp` returned a real `serverInfo`/`capabilities` result payload.
 
 Concern for T6: the reader pump's `read_line` only returns `None` (ending the pump) on supervisor shutdown or a live child's real stdout EOF; an unexpected crash outside of an explicit `swap_child()` call currently stops relaying until the next swap rather than auto-triggering one -- T6's watcher is expected to detect that and call `swap_child()`.
+
+
+## Verification note (2026-07-31)
+cargo test -p mcp-toolmon -p toolmon-policy-api -p toolmon-costgate -> 76/76 passed, run twice, 0 flakes. Property A (proxied target-server functionality not compromised) and Property B (child hot-restart) both PROVEN. Full evidence and known limitations recorded on epic 25780944.

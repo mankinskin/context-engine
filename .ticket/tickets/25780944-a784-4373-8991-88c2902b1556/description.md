@@ -30,3 +30,25 @@ T1 rename, T2 policy-trait extraction, T3 shadow-copy exec, T4 lifecycle supervi
 
 ## Done condition
 All child tickets closed; all 12 servers run via `mcp-toolmon`; a live rebuild-while-running is transparent to MCP clients with no dropped connection, no orphaned requests, and calls after reload hit the new binary.
+
+
+## Verification summary (2026-07-31)
+
+Test suite: `cargo test -p mcp-toolmon -p toolmon-policy-api -p toolmon-costgate` -> 76 passed / 0 failed / 0 ignored, run twice with identical per-target counts, no flakes. Breakdown: mcp-toolmon lib 20, crash_inflight_subprocess 1, handshake 3, integration_gate 16, integration_reload_end_to_end 1, shadow 4, supervisor 5, watcher 4, toolmon-costgate 22.
+
+**Property A — proxied target-server functionality is not compromised: PROVEN.**
+- test_stdio_cheap_model_allowed (tests/integration_gate.rs#L471): full stdio round-trip through the real mcp-toolmon binary; allowed call forwards to child, response returned, caller_model stripped from forwarded arguments (#L550-553).
+- test_stdio_expensive_model_refused (tests/integration_gate.rs#L375): expensive model + expensive tool refused before reaching the child.
+- tools_list_response_gets_schema_injected (mcp-toolmon lib proxy tests): caller_model injected into each tool schema in a tools/list response.
+- handshake_replayed_before_tool_calls (tests/handshake.rs#L75-89): after a swap the next tools/call succeeds because the replayed initialize already completed against the new child.
+
+**Property B — child hot-restart works as expected: PROVEN.**
+- transparent_reload_end_to_end_subprocess (tests/integration_reload_end_to_end.rs#L100): external-process test; real handshake, pre-swap call served "v1" (#L133), canonical binary overwritten on disk, real watcher detects the change, notifications/tools/list_changed observed (#L155-160), racing in-flight request id=3 answered (#L167-169), post-swap call returns "v2" (#L195), exactly one initialize response for the whole session (#L200-205), ids 1/2/3 all answered (#L208-210).
+- integration_watcher_real_poll (tests/watcher.rs): real on-disk overwrite detected by the actual mtime/size poller; list_changed observed; subsequent call returns "v2".
+- swap_child_replaces_running_child (tests/supervisor.rs#L97-119): pre-swap "v1", post-swap "v2", no synthesized errors.
+- inflight_request_synthesized_error_on_kill (tests/supervisor.rs#L122-158): a request pending at swap time receives exactly one synthesized JSON-RPC error carrying the original request id (code -32001); supervisor healthy afterward.
+- crash_auto_recovery_respawns_and_serves_again (tests/watcher.rs): spontaneous child crash detected, supervisor auto-respawns and resumes serving.
+
+**Known limitations (not proven, recorded honestly):**
+1. In-flight preservation across a swap is a no-loss guarantee, not a real-answer guarantee: a pending request gets either its real result or a clean synthesized JSON-RPC error (-32001), never a drop or hang.
+2. crash_auto_recovery_respawns_and_serves_again documents a race: a write issued between an unexpected crash and its detection can vanish into the dead child's pipe with no synthesized error.\n3. No test drives a real VS Code client; tests use a hand-built stdio harness speaking raw JSON-RPC.\n4. No coverage of TOOLMON_POLL_MS/TOOLMON_DRAIN_MS boundary values or repeated v1->v2->v1 swap cycles.\n5. mcp-toolmon cannot hot-reload itself — updating the proxy binary still requires a VS Code reload; accepted design limitation, mitigated by keeping the proxy thin with policy/gate logic in toolmon-policy-api and toolmon-costgate.\n\nSee follow-up ticket f7244064 (shutdown-latency root cause) for a related but separate, not-yet-fixed issue on the whole-process shutdown path (not the hot-swap path).
