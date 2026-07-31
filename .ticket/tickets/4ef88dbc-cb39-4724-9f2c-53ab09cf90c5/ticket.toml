@@ -1,7 +1,7 @@
 id = "4ef88dbc-cb39-4724-9f2c-53ab09cf90c5"
 created_at = "2026-07-31T19:57:10.151890100+00:00"
 title = "Add a git-worktree helper script for the agent isolation protocol"
-state = "open"
+state = "in-review"
 acceptance_criteria = "1. `new <short-id> <slug>` bootstraps a worktree per the fetch/checkout/pull/worktree-add sequence, initializes ALL 5 submodules (not just one), and prints the resolved worktree path and branch name. 2. `list` enumerates existing worktrees with their branches. 3. `rebase <name>` fetches origin and rebases the named worktree onto origin/main. 4. `merge <name>` performs a `--ff-only` merge into main and fails loudly (never falls back to a non-ff merge) when main has moved. 5. `remove <name>` runs full teardown per the protocol, including `git submodule deinit --all --force`, `git worktree remove --force`, `git worktree prune`, and the `git submodule init` repair step. 6. `doctor` detects and repairs the case where the main checkout's submodules were silently deinitialized by an in-worktree `submodule deinit`. 7. Every mutating subcommand supports `--dry-run`, printing the commands it would run without executing them. 8. Every mutating subcommand refuses to run when invoked from inside a worktree rather than the main checkout. 9. .agents/agents/orchestrator.agent.md's teardown block is updated to include the missing `git worktree prune` step so it matches .agents/instructions/commit/branch-worktree.instructions.md."
 component = "tooling"
 priority = "high"

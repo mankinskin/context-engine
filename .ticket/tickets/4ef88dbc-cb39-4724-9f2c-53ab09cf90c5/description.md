@@ -45,3 +45,35 @@ Repo conventions to follow: bash is the dominant scripting language (sh=16, ps1=
 Documentation fix in scope: `git worktree prune` appears in the teardown block of .agents/instructions/commit/branch-worktree.instructions.md but is MISSING from the equivalent teardown block in .agents/agents/orchestrator.agent.md. Add it there for consistency.
 
 This ticket implements the existing spec 2a710b29-13e9-40b8-8a53-c0ea366bd0bf (the worktree isolation protocol spec) — do not create a new spec.
+```
+## Implementation evidence
+
+Delivered on branch agent/4ef88dbc-worktree-helper, merged fast-forward to main as bb0b0ca3.
+Ticket-store commit: a415b25c.
+
+Created: tools/worktree/worktree.sh (425 lines).
+Modified: .agents/agents/orchestrator.agent.md — added the missing `git worktree prune` line to the
+teardown block, resolving the drift against .agents/instructions/commit/branch-worktree.instructions.md.
+
+Subcommands implemented: new, list, rebase, merge, remove, doctor; --dry-run honored by every
+mutating subcommand; destructive operations refuse to run from inside a linked worktree
+(guard compares `git rev-parse --git-dir` against `--git-common-dir`).
+
+Validation performed:
+- `bash -n` parse check: pass. shellcheck: NOT RUN — not installed in this environment.
+- `--help`, `list`, `doctor` executed against the real repository: pass.
+- `--dry-run` on new/merge/remove mutated nothing (`git worktree list` identical before/after).
+- Worktree guard refused a destructive subcommand run from inside a linked worktree.
+- Real round-trip: `new test0000 scratch` bootstrapped a worktree with all 5 submodules
+  initialized, then `remove test0000-scratch` tore it down; the main checkout's submodules
+  survived intact (5/5, no leading `-`).
+- Dogfooded: this ticket's own worktree was torn down by running the merged script itself.
+  Its output shows the submodule deinit clearing all 5 submodules from the shared .git/config
+  and the `git submodule init` repair step re-registering them — the sharp edge is real and
+  the script handles it.
+- Independent verification of all claims was performed by a separate agent against the
+  committed tree rather than accepted from the implementing agent's self-report.
+
+Known gaps: shellcheck lint unverified (not installed); the script is a prototype and is not
+wired into install-tools.sh.
+```
