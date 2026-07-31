@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "session_id": "18853b57-15d0-4f52-8c67-afa07d44678d",
+  "captured_at": "2026-07-31T20:11:57.491Z",
+  "tools": {
+    "create_directory": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        117
+      ],
+      "duration_ms_values": [
+        17
+      ]
+    },
+    "create_file": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        14415
+      ],
+      "duration_ms_values": [
+        26
+      ]
+    },
+    "file_search": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        40,
+        37,
+        38,
+        37
+      ],
+      "duration_ms_values": [
+        86,
+        78,
+        79,
+        76
+      ]
+    },
+    "grep_search": {
+      "call_count": 20,
+      "success_count": 20,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        85,
+        85,
+        83,
+        86,
+        86,
+        84,
+        85,
+        85,
+        83,
+        85,
+        87,
+        85,
+        83,
+        85,
+        85,
+        110,
+        131,
+        185,
+        173,
+        151
+      ],
+      "duration_ms_values": [
+        152,
+        132,
+        142,
+        137,
+        137,
+        148,
+        153,
+        133,
+        139,
+        321,
+        171,
+        99,
+        100,
+        164,
+        128,
+        111,
+        83,
+        78,
+        82,
+        96
+      ]
+    },
+    "list_dir": {
+      "call_count": 5,
+      "success_count": 4,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        62,
+        60,
+        64,
+        68,
+        54
+      ],
+      "duration_ms_values": [
+        7,
+        14,
+        15,
+        21,
+        15
+      ]
+    },
+    "mcp_ticket-mcp_create_ticket": {
+      "call_count": 4,
+      "success_count": 2,
+      "fail_count": 2,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        485
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        3363,
+        1783,
+        1827,
+        3407
+      ],
+      "duration_ms_values": [
+        15,
+        5,
+        74,
+        108
+      ]
+    },
+    "mcp_ticket-mcp_get_ticket": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        95
+      ],
+      "duration_ms_values": [
+        17
+      ]
+    },
+    "mcp_ticket-mcp_list_tickets": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        221
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        100
+      ],
+      "duration_ms_values": [
+        15
+      ]
+    },
+    "mcp_ticket-mcp_list_workspaces": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        34
+      ],
+      "duration_ms_values": [
+        15
+      ]
+    },
+    "mcp_ticket-mcp_update_ticket": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        236
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        205,
+        1458
+      ],
+      "duration_ms_values": [
+        97,
+        108
+      ]
+    },
+    "read_file": {
+      "call_count": 24,
+      "success_count": 23,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        147,
+        124,
+        122,
+        145,
+        140,
+        97,
+        143,
+        98,
+        137,
+        102,
+        102,
+        137,
+        139,
+        150,
+        167,
+        162,
+        146,
+        161,
+        161,
+        161,
+        159,
+        149,
+        151,
+        161
+      ],
+      "duration_ms_values": [
+        14,
+        7,
+        20,
+        42,
+        21,
+        28,
+        42,
+        26,
+        20,
+        22,
+        16,
+        22,
+        24,
+        22,
+        27,
+        13,
+        21,
+        29,
+        26,
+        19,
+        22,
+        20,
+        27,
+        25
+      ]
+    },
+    "replace_string_in_file": {
+      "call_count": 5,
+      "success_count": 5,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        695,
+        1505,
+        1732,
+        1908,
+        1397
+      ],
+      "duration_ms_values": [
+        14,
+        18,
+        41,
+        20,
+        27
+      ]
+    },
+    "runSubagent": {
+      "call_count": 7,
+      "success_count": 7,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        2858,
+        2924,
+        7376,
+        2335,
+        3873,
+        9347,
+        4657
+      ],
+      "duration_ms_values": [
+        144562,
+        351057,
+        84509,
+        57113,
+        37515,
+        463690,
+        90625
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 52,
+      "success_count": 52,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        118,
+        286,
+        894,
+        136,
+        2458,
+        3551,
+        310,
+        107,
+        489
+      ],
+      "output_source": [
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        477,
+        142,
+        127,
+        153,
+        240,
+        248,
+        891,
+        484,
+        263,
+        401,
+        408,
+        460,
+        365,
+        190,
+        216,
+        252,
+        304,
+        388,
+        426,
+        394,
+        595,
+        759,
+        338,
+        328,
+        391,
+        408,
+        436,
+        335,
+        543,
+        652,
+        320,
+        419,
+        376,
+        281,
+        351,
+        361,
+        299,
+        467,
+        275,
+        215,
+        244,
+        386,
+        406,
+        367,
+        368,
+        314,
+        446,
+        325,
+        403,
+        524,
+        388,
+        267
+      ],
+      "duration_ms_values": [
+        1218,
+        572,
+        277,
+        135,
+        2796,
+        7855,
+        1819,
+        3328,
+        1200,
+        358,
+        379,
+        519,
+        488,
+        97,
+        195,
+        272,
+        169,
+        325,
+        322,
+        1417,
+        2658,
+        1587,
+        1213,
+        241,
+        14913,
+        15176,
+        4089,
+        4242,
+        2752,
+        844,
+        706,
+        388,
+        536,
+        207,
+        430,
+        355,
+        227,
+        1281,
+        193,
+        299,
+        353,
+        263,
+        295,
+        363,
+        319,
+        216,
+        351,
+        221,
+        279,
+        385,
+        279,
+        414
+      ]
+    }
+  }
+}
