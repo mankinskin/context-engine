@@ -19,3 +19,18 @@ Define a `Policy` trait (e.g. `fn on_tools_list`, `fn on_tool_call_request`, `fn
 - memory-api/tools/mcp/mcp-toolmon/src/lib.rs
 - memory-api/tools/mcp/mcp-toolmon/src/policy.rs (new)
 - memory-api/tools/mcp/mcp-toolmon/tests/integration_gate.rs
+
+
+## Validation acceptance criteria (addendum)
+- [ ] `mcp_cost_gate` lib name renamed to `mcp_toolmon` in `Cargo.toml` `[lib] name` and all internal `use`/path references; `cargo build` and `cargo test` succeed with the new lib name
+- [ ] A `Policy` trait is defined in `src/policy.rs`; unit test `policy_trait_dispatch` asserts `CostGatePolicy::on_tools_list`/`on_tool_call_request`/`on_tool_call_response` are reached only through `Box<dyn Policy>` (or generic bound), not direct `gate::` calls from `proxy.rs`
+- [ ] Transport core ported to tokio (`tokio::process::Command`, async stdio pumps); an injectable `ReloadTrigger` seam (e.g. a directly callable async `swap_child()`-shaped hook, or an mpsc channel the supervisor consumes) is introduced at this layer specifically so T4's supervisor and T6's watcher can each drive a swap without depending on wall-clock polling in tests
+- [ ] All 54 pre-existing tests in `gate.rs`, `proxy.rs`, and `tests/integration_gate.rs` pass unchanged: `cargo test -p mcp-toolmon` (or equivalent path-based invocation) shows 54/54 passing, zero renamed/removed assertions beyond mechanical `mcp_cost_gate`→`mcp_toolmon` path updates
+- [ ] `COST_GATE_TABLE`, `COST_GATE_TOOL_METRICS`, `COST_GATE_GRANTS_DIR`, `COST_GATE_SCALE_MAX`, `COST_GATE_BUDGET_ZERO_PRICE`, `COST_GATE_TELEMETRY_LOG` env vars and the `costGateWarning` JSON field remain byte-compatible (asserted by the unmodified existing tests continuing to pass)
+## T2 completion note
+
+- `Policy` trait added in `src/policy.rs` (`on_tools_list`, `resolves`, `evaluate`); `CostGatePolicy` wraps `gate::Gate` unchanged. `proxy.rs` now dispatches through `Option<&dyn Policy>` in `handle_client_message`/`handle_server_message`, no direct `gate::` calls remain there.
+- Lib renamed `mcp_cost_gate` -> `mcp_toolmon` (`Cargo.toml` `[lib]` + all `use` sites in `src/main.rs` and `tests/integration_gate.rs`).
+- Transport core ported to tokio: `src/supervisor.rs` (`Supervisor`) owns the child's stdin/stdout behind `tokio::sync::Mutex`, giving pumps a stable seam a future T4 supervisor can swap without rewriting them. `main.rs` runs on a multi-thread tokio runtime with async stdio pumps (`tokio::process::Command`, `tokio::io`).
+- Tests: 55 passed (54 pre-existing unchanged + 1 new `policy_trait_dispatch`), 0 failed. `cargo build -p mcp-toolmon` clean; `cargo clippy` shows only pre-existing warnings in unmodified `gate.rs` and one pre-existing warning at `proxy.rs:148` (`needless_as_bytes`, predates this ticket). Smoke test: piped `initialize` through `target/debug/mcp-toolmon.exe -- peek-mcp`, observed valid `{"id":1,"jsonrpc":"2.0","result":{...}}`.
+- No behavior deviations identified; all `COST_GATE_*` env vars, `costGateWarning` injection, `verdict` subcommand, and extra-arg forwarding are unchanged.

@@ -106,3 +106,60 @@ Resolved by user decision: `src/main.rs` today spawns the child via `std::proces
 ## Related Specs
 
 - `viewer-ctl/lifecycle/server` (351e65fe-0629-4a0f-9c19-27dabb36b72f) — the Windows binary-lock problem for HTTP viewer servers is prior art for the shadow-copy fix here; that spec's domain (HTTP viewers) is explicitly out of scope for this spec.
+
+## Validation Strategy
+
+### Test fixture (C2)
+
+A new workspace member crate `memory-api/tools/mcp/mcp-toolmon/tests/fixtures/fake-mcp` provides two bin targets, `fake-mcp-v1` and `fake-mcp-v2`, each its own `src/bin/*.rs` source file (not templated from one source with an env flag) so the compiled binaries are byte-different by construction. Each is a minimal stdio JSON-RPC server that answers `initialize` and exposes one tool (`generation`) whose response embeds a literal generation string (`"v1"` / `"v2"`) baked into that binary's source. The fixture crate is added as a `[dev-dependencies]` path dependency of `mcp-toolmon` so `cargo test` builds it and integration tests can locate the executables via `env!("CARGO_BIN_EXE_fake-mcp-v1")` / `..._v2`. Tests copy `fake-mcp-v1`'s exe to a temp "canonical" path, start mcp-toolmon against it, overwrite that same path with the `fake-mcp-v2` bytes, drive a swap, and assert the `generation` tool call now returns `"v2"`.
+
+### Determinism (C1 / C3)
+
+T4 introduces a `ReloadTrigger` seam: `Supervisor::swap_child()` is a directly callable async method, and the watcher (T6) is only one caller of it. Unit and most integration tests call `swap_child()` (or push into an injected trigger channel consumed by the supervisor) directly and `.await` the result, so the swap is synchronous from the test's point of view — no sleeping on the real poll interval. Exactly one integration test (`integration_watcher_real_poll.rs`) exercises the real mtime/size poller end-to-end, using a short `TOOLMON_POLL_MS` and a `wait_until(condition, timeout, message)` bounded-wait helper in `tests/common/mod.rs`. Bare `sleep` as a synchronization primitive is disallowed in the test suite; `sleep` may only appear inside the fixture server or the debounce timer under test itself, never as the assertion mechanism.
+
+### Test matrix
+
+| Test | Level | Proves |
+|---|---|---|
+| `policy_trait_dispatch` | unit | `CostGatePolicy` reached only via `Policy` trait, identical output to pre-T2 |
+| `gate.rs` / `proxy.rs` existing 54 tests | unit | no regression (C6) |
+| `shadow_copy_spawns_from_shadow_path` | unit | spawned exe path != canonical path P (T3) |
+| `shadow_dir_env_override` | unit | `TOOLMON_SHADOW_DIR` honored (T3) |
+| `startup_sweep_removes_dead_shadow` | unit | R12 liveness-based cleanup |
+| `swap_child_replaces_running_child` | unit | supervisor swap via injected trigger, fake-mcp-v1→v2 (T4) |
+| `inflight_request_synthesized_error_on_kill` | unit | R6: pending request gets JSON-RPC error, not hang (T4) |
+| `respawn_backoff_no_process_exit` | unit | R7: proxy survives repeated respawn failure (T4) |
+| `handshake_replayed_before_tool_calls` | unit | R5 ordering: init + initialized replayed before routed calls (T5) |
+| `handshake_response_never_forwarded` | unit | client sees no second `initialize` response (T5) |
+| `capability_divergence_logged_not_fatal` | unit | mismatch logged, swap still succeeds (T5) |
+| `watcher_debounces_partial_write` | unit | injected clock/trigger, stable-across-2-polls logic, exactly one swap (T6, R11) |
+| `watcher_disabled_by_env` | unit | `TOOLMON_RELOAD=0` runs no poller (T6) |
+| `integration_reload_end_to_end` | integration | fake-mcp-v1→v2 via direct `swap_child()` call: no dropped connection, in-flight request resolved, post-swap call served by v2, `tools/list_changed` emitted (T7, R5/R6/R9) |
+| `integration_watcher_real_poll` | integration | the one real-timing test: file overwrite detected by actual poller within bounded wait (T6/T7) |
+| `windows_lock_freedom` | integration, `#[cfg(windows)]` | canonical path P renamable/overwritable while child runs from shadow copy (T3/C5) |
+
+### Negative / failure-path matrix (C4)
+
+- Corrupt/non-executable replacement binary: respawn fails, proxy does not exit, continues serving from last-known-good shadow, new requests during outage receive synthesized errors, no client stdio drop.
+- Kill child mid-request: in-flight request receives a JSON-RPC `error` object with the correlated `id`, never silence, never a hang.
+- Post-swap: client stdio never observes a second `initialize` response.
+- Respawn retries exhausted repeatedly: proxy still answers `tools/list`/`tools/call` for the old (last-known-good) binary; no process exit under any condition (R7).
+
+### Windows lock test (C5)
+
+`windows_lock.rs` is compiled only under `#[cfg(windows)]` (not `#[ignore]`) — on other platforms the test does not exist, since the scenario (Windows-specific `os error 5` mandatory-locking semantics) has no non-Windows analogue to gate against. It starts mcp-toolmon against a copied canonical path, asserts the child is running from a shadow copy, then renames/overwrites the canonical path from the test process itself and asserts success (no OS lock error) while mcp-toolmon keeps serving.
+
+### Regression guarantee (C6)
+
+All 54 existing tests in `gate.rs`, `proxy.rs`, and `tests/integration_gate.rs` must pass unchanged after every ticket T2–T7. `COST_GATE_*` env var names, the `costGateWarning` field shape, and the `verdict` subcommand output are asserted byte-identical pre/post by keeping their existing assertions untouched (rename-only diffs permitted).
+
+### Reviewer validation commands
+
+```bash
+cd memory-api/tools/mcp/mcp-toolmon
+cargo test                                   # unit + all integration tests, all platforms
+cargo test --test windows_lock               # Windows only; no-op/absent elsewhere
+cargo test --test integration_reload_end_to_end
+cargo test --test integration_watcher_real_poll
+cargo install --path . --bin mcp-toolmon --force   # must succeed while a prior instance runs a wrapped server
+```

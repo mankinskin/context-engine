@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "aa6b5e02-6f5e-45ac-aa23-71ae7a24ecb2",
-  "captured_at": "2026-07-31T11:36:01.254Z",
+  "captured_at": "2026-07-31T13:54:36.781Z",
   "tools": {
     "apply_patch": {
       "call_count": 1,
@@ -19,18 +19,44 @@
       ]
     },
     "create_file": {
-      "call_count": 1,
-      "success_count": 1,
-      "fail_count": 0,
+      "call_count": 14,
+      "success_count": 13,
+      "fail_count": 1,
       "timeout_count": 0,
       "hang_count": 0,
       "output_char_sizes": [],
       "output_source": [],
       "input_char_sizes": [
-        4126
+        4126,
+        3586,
+        3432,
+        507,
+        2446,
+        2446,
+        6112,
+        6227,
+        362,
+        20666,
+        10874,
+        8245,
+        14113,
+        8479
       ],
       "duration_ms_values": [
-        22
+        22,
+        29,
+        188,
+        8,
+        7,
+        7,
+        10,
+        26,
+        19,
+        18,
+        59,
+        32,
+        9,
+        7
       ]
     },
     "file_search": {
@@ -584,8 +610,8 @@
       ]
     },
     "list_dir": {
-      "call_count": 46,
-      "success_count": 41,
+      "call_count": 47,
+      "success_count": 42,
       "fail_count": 5,
       "timeout_count": 0,
       "hang_count": 0,
@@ -637,7 +663,8 @@
         132,
         94,
         107,
-        107
+        107,
+        96
       ],
       "duration_ms_values": [
         33,
@@ -685,7 +712,8 @@
         13,
         8,
         22,
-        25
+        25,
+        6
       ]
     },
     "mcp_fs-mcp_fs_list_dir": {
@@ -877,13 +905,17 @@
       ]
     },
     "mcp_peek-mcp_peek_count": {
-      "call_count": 7,
-      "success_count": 7,
+      "call_count": 14,
+      "success_count": 14,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
-      "output_char_sizes": [],
-      "output_source": [],
+      "output_char_sizes": [
+        30
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
       "input_char_sizes": [
         168,
         85,
@@ -891,7 +923,14 @@
         85,
         84,
         281,
-        143
+        143,
+        157,
+        144,
+        138,
+        134,
+        132,
+        140,
+        139
       ],
       "duration_ms_values": [
         45,
@@ -900,20 +939,31 @@
         10,
         10,
         24,
-        8
+        8,
+        16,
+        23,
+        24,
+        46,
+        23,
+        66,
+        59
       ]
     },
     "mcp_peek-mcp_peek_grep": {
-      "call_count": 29,
-      "success_count": 27,
-      "fail_count": 2,
+      "call_count": 46,
+      "success_count": 42,
+      "fail_count": 4,
       "timeout_count": 0,
       "hang_count": 0,
       "output_char_sizes": [
         4051,
-        191
+        191,
+        113,
+        196
       ],
       "output_source": [
+        "hook_payload",
+        "hook_payload",
         "hook_payload",
         "hook_payload"
       ],
@@ -946,7 +996,24 @@
         138,
         136,
         126,
-        382
+        382,
+        232,
+        226,
+        198,
+        178,
+        178,
+        229,
+        202,
+        191,
+        141,
+        221,
+        212,
+        196,
+        211,
+        214,
+        194,
+        189,
+        181
       ],
       "duration_ms_values": [
         36,
@@ -977,12 +1044,29 @@
         8,
         10,
         8,
-        31
+        31,
+        16,
+        10,
+        10,
+        10,
+        10,
+        17,
+        10,
+        10,
+        4,
+        6,
+        4,
+        18,
+        22,
+        14,
+        28,
+        27,
+        18
       ]
     },
     "mcp_peek-mcp_peek_read": {
-      "call_count": 154,
-      "success_count": 45,
+      "call_count": 155,
+      "success_count": 46,
       "fail_count": 109,
       "timeout_count": 0,
       "hang_count": 0,
@@ -1154,7 +1238,8 @@
         109,
         111,
         111,
-        108
+        108,
+        165
       ],
       "duration_ms_values": [
         65,
@@ -1310,20 +1395,23 @@
         9,
         11,
         10,
-        8
+        8,
+        15
       ]
     },
     "mcp_peek-mcp_peek_skeleton": {
-      "call_count": 13,
-      "success_count": 12,
+      "call_count": 19,
+      "success_count": 18,
       "fail_count": 1,
       "timeout_count": 0,
       "hang_count": 0,
       "output_char_sizes": [
         37424,
-        64
+        64,
+        2806
       ],
       "output_source": [
+        "hook_payload",
         "hook_payload",
         "hook_payload"
       ],
@@ -1340,7 +1428,13 @@
         140,
         140,
         140,
-        135
+        135,
+        120,
+        126,
+        124,
+        144,
+        145,
+        124
       ],
       "duration_ms_values": [
         42,
@@ -1355,7 +1449,13 @@
         81,
         98,
         77,
-        53
+        53,
+        4,
+        3,
+        3,
+        16,
+        18,
+        45
       ]
     },
     "mcp_rule-mcp_rule_list": {
@@ -1754,8 +1854,8 @@
       ]
     },
     "mcp_ticket-mcp_get_ticket": {
-      "call_count": 97,
-      "success_count": 95,
+      "call_count": 108,
+      "success_count": 106,
       "fail_count": 2,
       "timeout_count": 0,
       "hang_count": 0,
@@ -1777,9 +1877,19 @@
         1222,
         715,
         1142,
-        911
+        911,
+        2535,
+        4197,
+        3843,
+        3259,
+        3718
       ],
       "output_source": [
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
         "hook_payload",
         "hook_payload",
         "hook_payload",
@@ -1896,7 +2006,18 @@
         102,
         81,
         89,
-        89
+        89,
+        92,
+        92,
+        92,
+        92,
+        92,
+        92,
+        92,
+        92,
+        92,
+        92,
+        92
       ],
       "duration_ms_values": [
         75,
@@ -1995,7 +2116,18 @@
         21,
         18463,
         1294,
-        2297
+        2297,
+        23,
+        28,
+        19,
+        21,
+        22,
+        18,
+        21,
+        22,
+        22,
+        164,
+        29
       ]
     },
     "mcp_ticket-mcp_get_ticket_description": {
@@ -2378,18 +2510,20 @@
       ]
     },
     "mcp_ticket-mcp_update_ticket": {
-      "call_count": 78,
-      "success_count": 62,
-      "fail_count": 16,
+      "call_count": 90,
+      "success_count": 72,
+      "fail_count": 18,
       "timeout_count": 0,
       "hang_count": 0,
       "output_char_sizes": [
         352,
         355,
         366,
-        203
+        203,
+        192
       ],
       "output_source": [
+        "hook_payload",
         "hook_payload",
         "hook_payload",
         "hook_payload",
@@ -2473,7 +2607,19 @@
         90,
         93,
         95,
-        93
+        93,
+        1611,
+        1343,
+        974,
+        1959,
+        1326,
+        1255,
+        1531,
+        2412,
+        2440,
+        2656,
+        2681,
+        2743
       ],
       "duration_ms_values": [
         1114,
@@ -2553,7 +2699,19 @@
         1328,
         1255,
         1240,
-        1222
+        1222,
+        93,
+        106,
+        170,
+        197,
+        252,
+        319,
+        136,
+        24,
+        135,
+        20,
+        118,
+        108
       ]
     },
     "mcp_ticket-mcp_workflow": {
@@ -2623,8 +2781,8 @@
       ]
     },
     "multi_replace_string_in_file": {
-      "call_count": 3,
-      "success_count": 3,
+      "call_count": 16,
+      "success_count": 16,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -2633,17 +2791,43 @@
       "input_char_sizes": [
         2552,
         2065,
-        5144
+        5144,
+        9128,
+        2003,
+        1925,
+        614,
+        1685,
+        5023,
+        786,
+        1707,
+        1638,
+        8271,
+        6526,
+        10408,
+        3658
       ],
       "duration_ms_values": [
         73,
         218,
-        70
+        70,
+        70,
+        38,
+        31,
+        8,
+        22,
+        21,
+        63,
+        23,
+        22,
+        25,
+        31,
+        12,
+        6
       ]
     },
     "read_file": {
-      "call_count": 281,
-      "success_count": 242,
+      "call_count": 334,
+      "success_count": 295,
       "fail_count": 39,
       "timeout_count": 0,
       "hang_count": 0,
@@ -2930,7 +3114,60 @@
         154,
         154,
         109,
-        156
+        156,
+        152,
+        139,
+        142,
+        139,
+        139,
+        143,
+        145,
+        155,
+        145,
+        158,
+        143,
+        129,
+        291,
+        293,
+        137,
+        144,
+        96,
+        129,
+        146,
+        134,
+        152,
+        142,
+        148,
+        139,
+        140,
+        180,
+        145,
+        145,
+        144,
+        292,
+        153,
+        148,
+        150,
+        143,
+        142,
+        145,
+        181,
+        181,
+        150,
+        139,
+        152,
+        151,
+        152,
+        152,
+        152,
+        137,
+        133,
+        131,
+        129,
+        165,
+        129,
+        139,
+        131
       ],
       "duration_ms_values": [
         31,
@@ -3213,12 +3450,65 @@
         22,
         26,
         27,
-        25
+        25,
+        21,
+        15,
+        21,
+        18,
+        22,
+        20,
+        21,
+        21,
+        30,
+        77,
+        6,
+        5,
+        18,
+        5,
+        5,
+        5,
+        5,
+        5,
+        11,
+        4,
+        32,
+        19,
+        19,
+        20,
+        21,
+        18,
+        27,
+        21,
+        18,
+        32,
+        24,
+        28,
+        23,
+        21,
+        23,
+        23,
+        22,
+        21,
+        27,
+        31,
+        24,
+        19,
+        21,
+        45,
+        62,
+        30,
+        34,
+        26,
+        31,
+        48,
+        32,
+        31,
+        5
       ]
     },
     "replace_string_in_file": {
-      "call_count": 6,
-      "success_count": 6,
+      "call_count": 27,
+      "success_count": 27,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -3230,7 +3520,28 @@
         1762,
         1295,
         1047,
-        461
+        461,
+        1274,
+        469,
+        10630,
+        283,
+        4596,
+        983,
+        1049,
+        1326,
+        1335,
+        26145,
+        2025,
+        1163,
+        2631,
+        9292,
+        2483,
+        763,
+        913,
+        318,
+        2517,
+        2387,
+        6393
       ],
       "duration_ms_values": [
         29,
@@ -3238,12 +3549,33 @@
         32,
         33,
         36,
-        28
+        28,
+        24,
+        22,
+        21,
+        6,
+        8,
+        18,
+        5,
+        7,
+        5,
+        21,
+        27,
+        21,
+        25,
+        24,
+        23,
+        24,
+        21,
+        6,
+        7,
+        6,
+        9
       ]
     },
     "runSubagent": {
-      "call_count": 57,
-      "success_count": 57,
+      "call_count": 69,
+      "success_count": 69,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -3320,7 +3652,19 @@
         5272,
         5451,
         4139,
-        4196
+        4196,
+        7355,
+        7486,
+        3246,
+        3544,
+        3716,
+        4750,
+        4724,
+        7702,
+        4883,
+        8148,
+        3034,
+        7576
       ],
       "duration_ms_values": [
         198399,
@@ -3379,12 +3723,24 @@
         67448,
         149891,
         306508,
-        116128
+        116128,
+        165513,
+        598404,
+        93896,
+        106637,
+        236252,
+        391080,
+        84686,
+        846947,
+        584587,
+        622105,
+        269361,
+        502360
       ]
     },
     "run_in_terminal": {
-      "call_count": 255,
-      "success_count": 255,
+      "call_count": 305,
+      "success_count": 305,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -3441,9 +3797,11 @@
         2557,
         58,
         7,
-        718
+        718,
+        258
       ],
       "output_source": [
+        "hook_payload",
         "hook_payload",
         "hook_payload",
         "hook_payload",
@@ -3753,7 +4111,57 @@
         272,
         248,
         304,
-        321
+        321,
+        6009,
+        271,
+        315,
+        347,
+        235,
+        234,
+        221,
+        363,
+        521,
+        202,
+        264,
+        291,
+        166,
+        191,
+        223,
+        230,
+        282,
+        174,
+        361,
+        268,
+        284,
+        656,
+        215,
+        749,
+        268,
+        290,
+        309,
+        154,
+        293,
+        361,
+        285,
+        293,
+        327,
+        358,
+        539,
+        255,
+        532,
+        206,
+        217,
+        224,
+        167,
+        185,
+        541,
+        185,
+        490,
+        179,
+        208,
+        232,
+        158,
+        194
       ],
       "duration_ms_values": [
         309116,
@@ -4010,7 +4418,57 @@
         818,
         2533,
         247,
-        2497
+        2497,
+        7550,
+        105547,
+        286,
+        1314,
+        4902,
+        4283,
+        988,
+        702,
+        406,
+        194,
+        1197,
+        1196,
+        1146,
+        1139,
+        2586,
+        1622,
+        3302,
+        190,
+        300210,
+        8252,
+        1999,
+        1578,
+        117,
+        714,
+        205,
+        482,
+        287,
+        88,
+        159,
+        293,
+        3658,
+        4547,
+        2757,
+        2823,
+        1387,
+        213,
+        573,
+        1912,
+        4827,
+        3814,
+        3650,
+        1190,
+        381,
+        1063,
+        589,
+        191,
+        2426,
+        1208,
+        3869,
+        7896
       ]
     },
     "semantic_search": {
@@ -4036,6 +4494,27 @@
         20085,
         20105,
         20070
+      ]
+    },
+    "send_to_terminal": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        351
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        80,
+        80
+      ],
+      "duration_ms_values": [
+        2507,
+        2521
       ]
     },
     "session_store_sql": {
@@ -4076,8 +4555,8 @@
       ]
     },
     "vscode_askQuestions": {
-      "call_count": 3,
-      "success_count": 3,
+      "call_count": 5,
+      "success_count": 5,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -4086,12 +4565,16 @@
       "input_char_sizes": [
         969,
         2232,
-        1237
+        1237,
+        2315,
+        1694
       ],
       "duration_ms_values": [
         193675,
         179115,
-        71205
+        71205,
+        4193945,
+        1341542
       ]
     }
   }

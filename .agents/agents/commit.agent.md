@@ -1,7 +1,7 @@
 ---
 name: "Commit Agent"
-description: "Use when committing changes across the repo or submodules. Handles pre-commit hooks, rule sync, generated file regeneration, submodule pointer updates, and conventional commit messages."
-tools: [read, search, execute, ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/update_ticket, ticket-mcp/close_ticket, ticket-mcp/cancel_ticket, ticket-mcp/board_check_in, ticket-mcp/board_check_out, ticket-mcp/board_heartbeat, ticket-mcp/board_show, rule-mcp/generate_file, rule-mcp/generate_target, rule-mcp/scan, rule-mcp/list]
+description: "Use when committing changes across the repo or submodules. Handles pre-commit hooks, generated file regeneration, submodule pointer updates, and conventional commit messages."
+tools: [read, search, execute, ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/update_ticket, ticket-mcp/close_ticket, ticket-mcp/cancel_ticket, ticket-mcp/board_check_in, ticket-mcp/board_check_out, ticket-mcp/board_heartbeat, ticket-mcp/board_show]
 argument-hint: "Optional commit message prefix or scope hint."
 user-invocable: true
 model: "GPT-5 mini"
@@ -13,19 +13,19 @@ Your job is to commit all pending changes correctly: regenerating generated outp
 
 ## MCP Tool Grant
 
-Explicit tool list (no wildcards): `ticket-mcp` state-transition and board tools for board hygiene during commit; `rule-mcp` generation/scan tools for regenerating rule-managed outputs before staging. No `session-mcp`/`context-mcp` — commit never manages session workflows or the context-engine graph.
+Explicit tool list (no wildcards): `ticket-mcp` state-transition and board tools for board hygiene during commit. No `session-mcp`/`context-mcp` — commit never manages session workflows or the context-engine graph.
 
 ## Scope
 
 - Survey all pending changes across the root repo and every submodule.
-- Identify rule-managed generated files that need regeneration before staging.
+- Identify generated files that need regeneration before staging (see [generated-files.instructions.md](../instructions/commit/generated-files.instructions.md)).
 - Stage and commit in logical batches with appropriate conventional-commit messages.
 - Update submodule pointers in the correct bottom-up order.
-- Resolve pre-commit hook failures by running the required `rule sync-targets` regeneration.
+- Resolve pre-commit hook failures by regenerating the affected outputs.
 
 ## Constraints
 
-- Never edit rule-managed generated files (`.clinerules/10-core-rules.md`, submodule `README.md`) directly; always regenerate via `cargo run -p rule-cli --bin rule -- sync-targets --config <config>`. The root `AGENTS.md`, `.github/copilot-instructions.md`, and everything under `.agents/**` are hand-owned — edit them directly and do not route them through the rule system.
+- Never edit generated files directly; always regenerate them via their owning generator. The root `AGENTS.md`, `.github/copilot-instructions.md`, and everything under `.agents/**` are hand-owned — edit them directly.
 - Commit submodules in deepest-first order before updating parent pointers.
 - Do not use `git commit --no-verify` unless the hook failure is a confirmed false positive; document why if used.
 - Keep each commit focused on one logical concern (source changes, generated outputs, ticket/spec store, submodule pointers).
@@ -40,13 +40,7 @@ Explicit tool list (no wildcards): `ticket-mcp` state-transition and board tools
 
 ## Pre-commit hook behavior
 
-The hook at `.githooks/pre-commit` blocks commits that stage rule-related files when the generated outputs differ from disk. Fix with:
-
-```bash
-cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml
-git add .clinerules/10-core-rules.md <other generated files>
-git commit -m "..."
-```
+The hook at `.githooks/pre-commit` blocks commits when staged generated outputs differ from disk. Regenerate the affected outputs, stage them, and re-commit.
 
 ## Commit message conventions
 
@@ -57,14 +51,14 @@ Types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `perf`
 Examples:
 - `feat(token-efficiency): add peek-cli — token-bounded file inspection utility`
 - `chore(tickets): update tracker and child ticket states`
-- `chore(specs): update spec store history from rule sync-targets run`
+- `chore(specs): update spec store history`
 - `chore: update memory-viewers submodule pointer`
 
 ## Required Workflow
 
 1. Survey changes: `git status --short` and `git submodule foreach --recursive 'git status --short'`.
 2. Identify dirty submodules and plan bottom-up commit order.
-3. Check for rule-managed drift: if any `.rule/` entries, `rule-targets*.yaml`, or generated outputs were changed, run `rule sync-targets` before staging.
+3. Check for generated-output drift and regenerate before staging.
 4. Stage and commit each logical batch with a focused message.
 5. Update submodule pointers deepest-first.
 6. Verify clean state: `git status --short`.

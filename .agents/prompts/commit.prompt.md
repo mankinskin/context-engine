@@ -1,5 +1,5 @@
 ---
-description: "Commit staged or unstaged changes across the repo and all submodules, handling pre-commit hooks, rule sync, and generated files correctly."
+description: "Commit staged or unstaged changes across the repo and all submodules, handling pre-commit hooks and generated files correctly."
 name: "commit"
 argument-hint: "[message]"
 agent: "agent"
@@ -15,7 +15,7 @@ Reference [commit.instructions.md](../instructions/commit/) and [AGENTS.md](./AG
 
 1. Run `git status --short` and `git submodule foreach --recursive 'git status --short'` to survey all changes.
 2. Identify dirty submodules (lowercase `m` in status output) and plan commit order: deepest-first, then parent pointer updates.
-3. Check whether any rule-managed files have drifted. If `.rule/`, `rule-targets.yaml`, or any rule-generated output was changed, run `cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml` before staging.
+3. Check whether any generated files have drifted and regenerate them before staging (see [generated-files.instructions.md](../instructions/commit/generated-files.instructions.md)).
 4. Stage and commit in logical batches (see [commit.instructions.md](../instructions/commit/) for batch order).
 5. For each batch, write a conventional-commit message: `<type>(<scope>): <imperative summary>`.
 6. After all root-repo commits are done, update submodule pointers deepest-first.
@@ -23,9 +23,9 @@ Reference [commit.instructions.md](../instructions/commit/) and [AGENTS.md](./AG
 
 ## Key rules
 
-- Never edit still-generated rule-managed files (`.clinerules/**`, submodule `README.md`) directly. Always regenerate via `rule sync-targets`. Root `AGENTS.md`, `.github/copilot-instructions.md`, and everything under `.agents/**` are hand-owned — edit them directly.
+- Never edit generated files directly. Always regenerate via the owning generator. Root `AGENTS.md`, `.github/copilot-instructions.md`, and everything under `.agents/**` are hand-owned — edit them directly.
 - Commit submodules in deepest-first order before updating parent pointers.
-- The pre-commit hook blocks commits that stage rule-related files with drifted generated outputs. Fix by running `rule sync-targets` and re-staging.
+- The pre-commit hook blocks commits that stage generated outputs that have drifted from disk. Fix by regenerating and re-staging.
 - Use `git commit --no-verify` only for confirmed false-positive hook failures; document why in the commit message.
 
 ## Response

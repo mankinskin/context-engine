@@ -7,9 +7,7 @@ description: "Use when performing the repository commit workflow. Covers checkin
 git status --short
 git submodule foreach --recursive 'git status --short && echo "=== $name ==="'
 
-2. Regenerate generated outputs when applicable:
-
-cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml
+2. Regenerate generated outputs when applicable (see [generated-files.instructions.md](./generated-files.instructions.md)).
 
 3. Stage in logical batches and commit each batch with an appropriate conventional commit message.
 

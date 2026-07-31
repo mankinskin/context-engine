@@ -20,3 +20,11 @@ Add a poller that periodically checks P's (mtime, size) and, on suspected change
 - memory-api/tools/mcp/mcp-toolmon/src/main.rs
 - memory-api/tools/mcp/mcp-toolmon/src/proxy.rs
 - memory-api/tools/mcp/mcp-toolmon/tests/ (watcher debounce tests)
+
+
+## Validation acceptance criteria (addendum)
+- [ ] Unit test `watcher_debounces_partial_write`: an injected/fake clock or trigger drives the watcher through a simulated partial write (mtime/size changes then changes again before stabilizing); test asserts `swap_child()` (or equivalent trigger) is invoked exactly once, not zero, not more than once
+- [ ] Unit test `watcher_disabled_by_env`: with `TOOLMON_RELOAD=0`, test asserts no poller task/thread is spawned (e.g. via a spawn-count hook or by asserting a file change is never detected within a bounded wait)
+- [ ] Integration test `integration_watcher_real_poll` (the ONE test using the real poller, per spec C1): `TOOLMON_POLL_MS` set low; canonical path overwritten with fake-mcp-v2 bytes from outside; test uses the shared `wait_until(condition, timeout, msg)` helper (no bare `sleep` as the assertion) to observe `notifications/tools/list_changed` and a subsequent `generation` call returning `"v2"`
+- [ ] Test asserts no new tool appears in `tools/list` responses (same check as T4, re-verified with the watcher path enabled)
+- [ ] `cargo test -p mcp-toolmon` includes all four named watcher tests, all passing

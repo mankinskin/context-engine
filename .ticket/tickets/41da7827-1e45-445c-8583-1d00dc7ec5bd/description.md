@@ -17,3 +17,27 @@ Cache the client's original `initialize` request params verbatim, plus the `noti
 - memory-api/tools/mcp/mcp-toolmon/src/handshake.rs (new)
 - memory-api/tools/mcp/mcp-toolmon/src/proxy.rs
 - memory-api/tools/mcp/mcp-toolmon/tests/ (handshake replay tests)
+
+
+## Validation acceptance criteria (addendum)
+- [ ] Unit test `handshake_replayed_before_tool_calls`: after a direct `swap_child()` call, the fake-mcp-v2 process's captured stdin transcript shows `initialize` then `notifications/initialized` before any `tools/call` frame
+- [ ] Unit test `handshake_response_never_forwarded`: the client-facing transcript across a swap contains exactly one `initialize` response (the original), never a second one from the new child
+- [ ] Unit test `capability_divergence_logged_not_fatal`: new child's `initialize` response declares different capabilities than the cached original; test asserts a log/warning record is produced AND the swap still completes successfully (post-swap tool call succeeds)
+- [ ] `cargo test -p mcp-toolmon` includes all three named handshake tests, all passing
+## T5 completion note
+
+Implemented handshake replay cache in `Supervisor` (memory-api/tools/mcp/mcp-toolmon/src/supervisor.rs), no separate handshake.rs module needed — the cache is a small private `HandshakeCache` struct + methods on `Supervisor` itself, since `write_line`/`read_line` are the natural interception points already used by both main.rs and tests.
+
+- Cache populated verbatim on first observation inside `Supervisor::write_line` (initialize request + id) and `notifications/initialized` (also via write_line).
+- Baseline `initialize` response captured inside `Supervisor::read_line` by id-correlation.
+- Replay (`replay_handshake`) runs on the new `ChildHandles` BEFORE it is installed into `self.current`, in both the normal respawn path and the last-known-good fallback path in `swap_child_with_drain_ms`. This structurally guarantees ordering (no other caller can reach the new child pre-handshake) and suppression (the reader pump only ever reads via `self.current`, so it cannot observe the replayed response).
+- Capability divergence (protocolVersion/capabilities/serverInfo) logged to stderr and also recorded in a `divergence_log` field for test assertion; never aborts the swap.
+- No-cache case (swap before any handshake observed) is a clean no-op.
+
+Fixtures extended: fake-mcp-v1/v2 now reject `tools/call` received before `initialize` with a JSON-RPC error, which is what makes the ordering test honest. Still byte-different (only the ordering guard + comment header changed, GENERATION/serverInfo.name differ as before).
+
+New tests: `tests/handshake.rs` (`handshake_replayed_before_tool_calls`, `handshake_response_never_forwarded`, `capability_divergence_logged_not_fatal`), all passing. 4 pre-existing T4 tests in `tests/supervisor.rs` needed a `perform_handshake()` helper call added before their first `tools/call` (they previously called `generation` with no prior `initialize`, which the new fixture guard now rejects) — behavior/assertions unchanged, only test setup added.
+
+`cargo build -p mcp-toolmon`: clean. `cargo test -p mcp-toolmon`: 67 passed (64 baseline + 3 new), 0 failed. Smoke test: `initialize` piped through `mcp-toolmon -- peek-mcp` returned a real result payload (protocolVersion, capabilities, serverInfo, instructions).
+
+Remaining risk: divergence logging is not tested against a plain-stderr capture (no `gag`-style crate in the dep tree); it is proven via an in-process `divergence_log` field mirroring the `eprintln!`, which is honest but does not prove the literal stderr text shape byte-for-byte.

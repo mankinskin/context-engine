@@ -91,19 +91,6 @@
         "COST_GATE_GRANTS_DIR": "${workspaceFolder}/.session/grants"
       }
     },
-    "rule-mcp": {
-      "type": "stdio",
-      "command": "mcp-toolmon",
-      "args": [
-        "--",
-        "rule-mcp"
-      ],
-      "env": {
-        "COST_GATE_TABLE": "${workspaceFolder}/tools/model-prices/model_prices.json",
-        "COST_GATE_TOOL_METRICS": "${workspaceFolder}/.session/tool-metrics-rollup.json",
-        "COST_GATE_GRANTS_DIR": "${workspaceFolder}/.session/grants"
-      }
-    },
     "audit-mcp": {
       "type": "stdio",
       "command": "mcp-toolmon",

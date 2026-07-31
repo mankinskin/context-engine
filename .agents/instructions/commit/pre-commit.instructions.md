@@ -7,17 +7,13 @@ description: "Use when troubleshooting or configuring the repository pre-commit 
 The hook runs checks on staged files (examples):
 
 - `.vscode/tasks.json` / `.vscode/tasks.d/*.jsonc` — regenerate tasks and reject drift
-- `rule-targets.yaml` and `.rule/**` — `rule sync-targets --check`
-- `memory-viewers/rule-targets.yaml` and `memory-api/rule-targets.yaml` — per-submodule rule checks
 
 ## Resolving failures
 
-Regenerate the failing outputs and stage them before re-committing:
+Regenerate the failing output and stage it before re-committing:
 
 ```bash
-cargo run -p rule-cli --bin rule -- sync-targets --config rule-targets.yaml
-git add .clinerules/10-core-rules.md
-git commit -m "chore(rule): regenerate targets"
+git commit -m "chore: regenerate generated output"
 ```
 
 ## Bypass (rare)

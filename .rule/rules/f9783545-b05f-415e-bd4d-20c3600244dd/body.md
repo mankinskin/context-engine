@@ -1,4 +1,0 @@
-- Shared managed-viewer suites under `viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
-- Spec-viewer release suite at `memory-viewers/spec-viewer/frontend/dioxus/` (`npm run test:e2e:release`).
-- Ticket-viewer release suite at `memory-viewers/ticket-viewer/frontend/dioxus/` (`npm run test:e2e:release`).
-- Doc-viewer and log-viewer keep local Playwright wrappers under `memory-viewers/doc-viewer/e2e/` and `memory-viewers/log-viewer/e2e/` that import the shared suites.

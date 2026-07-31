@@ -65,15 +65,6 @@
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
     },
-    "rule-mcp": {
-      "type": "local",
-      "command": ["mcp-toolmon", "--", "rule-mcp"],
-      "environment": {
-        "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
-        "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
-        "COST_GATE_GRANTS_DIR": ".session/grants"
-      }
-    },
     "audit-mcp": {
       "type": "local",
       "command": ["mcp-toolmon", "--", "audit-mcp"],

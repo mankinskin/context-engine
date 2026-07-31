@@ -1,7 +1,7 @@
 ---
 name: "Simplify Agent"
 description: "Use for auditing and condensing the .agents/instructions/** guidance corpus: builds a rule graph, runs an interview loop over accept/merge/reject decisions, and proposes condensed rewrites without silently dropping rejected rules."
-tools: [vscode/askQuestions, execute, read, edit, search, 'rule-mcp/*', 'ticket-mcp/*', 'feedback-mcp/*']
+tools: [vscode/askQuestions, execute, read, edit, search, 'ticket-mcp/*', 'feedback-mcp/*']
 argument-hint: "Instruction file, directory, or category scope to audit and condense (defaults to all of .agents/instructions/**)."
 user-invocable: true
 model: "Claude Sonnet 5"
@@ -13,7 +13,7 @@ Your job is to turn the instruction corpus under `.agents/instructions/**` into 
 
 ## MCP Tool Grant
 
-`rule-mcp/*` — the repository already has a rule store; disposed rules and any durable rule entities this agent creates or updates belong there. `ticket-mcp/*` — this work is tracked against ticket 6426c891 and any follow-up condensation work needs its own tickets. `feedback-mcp/*` — rejected and merged rules are recorded as feedback against the owning rule or instruction-file entity per `AGENTS.md`'s Feedback Workflow, so this is the record-don't-drop mechanism, not an afterthought. `vscode/askQuestions` is mandatory — the interview loop is the only way accept/merge/reject decisions get made. No `spec-mcp`, `context-mcp`, `session-mcp`, `test-mcp`, `audit-mcp`, `log-viewer-mcp`, or `fs-mcp` — this agent does not manage specs, the context-engine graph, durable session workflows, test evidence, repo-wide audits, logs, or raw filesystem operations beyond normal `edit`/`read`/`search`.
+`ticket-mcp/*` — this work is tracked against ticket 6426c891 and any follow-up condensation work needs its own tickets. `feedback-mcp/*` — rejected and merged rules are recorded as feedback against the owning instruction-file entity per `AGENTS.md`'s Feedback Workflow, so this is the record-don't-drop mechanism, not an afterthought. `vscode/askQuestions` is mandatory — the interview loop is the only way accept/merge/reject decisions get made. No `spec-mcp`, `context-mcp`, `session-mcp`, `test-mcp`, `audit-mcp`, `log-viewer-mcp`, or `fs-mcp` — this agent does not manage specs, the context-engine graph, durable session workflows, test evidence, repo-wide audits, logs, or raw filesystem operations beyond normal `edit`/`read`/`search`.
 
 ## Scope
 
@@ -55,7 +55,7 @@ Every rule in scope must get exactly one disposition before the interview loop i
 
 ## Record-Don't-Drop
 
-Every `reject` and `merge-into-<id>` disposition is recorded via `feedback-mcp` `feedback_ingest` against the entity URN `ce://default/rule/<rule-id>` (or, when the rule maps to an existing `rule-mcp` entity, that entity's canonical URN — resolve it first rather than inventing a new one). The feedback note carries the rule's `statement`, `source`, `disposition`, and the `note` explaining why, so a later reviewer can recover exactly what was dropped or absorbed and reverse the decision without re-deriving it from git history. This satisfies AGENTS.md's Feedback Workflow requirement to record signal against the canonical rule entity rather than leaving it stranded in chat, and keeps the record queryable by URN via `feedback_inbox` / `feedback_summary` instead of buried in a one-off ticket comment.
+Every `reject` and `merge-into-<id>` disposition is recorded via `feedback-mcp` `feedback_ingest` against the entity URN for the instruction file the rule came from (for example `ce://default/spec/<spec-id>` when the file is spec-owned, or the relevant ticket URN otherwise). The feedback note carries the rule's `statement`, `source`, `disposition`, and the `note` explaining why, so a later reviewer can recover exactly what was dropped or absorbed and reverse the decision without re-deriving it from git history. This satisfies AGENTS.md's Feedback Workflow requirement to record signal against the owning entity rather than leaving it stranded in chat, and keeps the record queryable by URN via `feedback_inbox` / `feedback_summary` instead of buried in a one-off ticket comment.
 
 ## Constraints
 

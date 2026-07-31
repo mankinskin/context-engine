@@ -28,6 +28,16 @@ Before writing or editing a spec:
 
 Prefer `spec-mcp` and `ticket-mcp` tools when available. Fall back to `./target/debug/spec.exe` and `./target/debug/ticket.exe` when needed.
 
+### Rule-Governed Introduction by Readiness
+
+Every spec must be introduced in-session by a governing PolicyRule, conditioned on the spec's computed readiness status:
+
+- **implemented** — present the spec as a live, fully dependable contract dependents can immediately rely on.
+- **partial-with-gaps** — present the spec but list the explicit unimplemented positions so agents do not assume gaps are complete.
+- **coming-soon / not-implemented** — present a "coming soon" note so agents know the spec is defined but unimplemented.
+
+This keeps spec availability legible to agents, avoids context bloat, and ensures every active spec has an active governing rule.
+
 ### Discovery Before Creating
 
 Always search for an existing spec before creating a new one. Duplicate specs weaken the repository contract.

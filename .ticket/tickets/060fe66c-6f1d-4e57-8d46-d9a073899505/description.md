@@ -18,3 +18,24 @@ Introduce a supervisor component owning the child process handle and in-flight r
 - memory-api/tools/mcp/mcp-toolmon/src/main.rs
 - memory-api/tools/mcp/mcp-toolmon/src/shadow.rs
 - memory-api/tools/mcp/mcp-toolmon/tests/ (supervisor swap/failure tests)
+
+
+## Validation acceptance criteria (addendum)
+- [ ] Unit test `swap_child_replaces_running_child`: using the fake-mcp-v1/v2 fixture (see spec Validation Strategy), directly `.await`s `swap_child()`, then asserts a `generation` tool call returns `"v2"` — no reliance on the real poller/wall-clock
+- [ ] Unit test `inflight_request_synthesized_error_on_kill`: a request is issued to a fake child rigged to hang; `swap_child()` is invoked mid-flight; the test asserts the client receives a JSON-RPC response with an `error` object and the same `id` as the original request, within the drain window
+- [ ] Unit test `respawn_backoff_no_process_exit`: swap is pointed at a corrupt/non-executable binary; test asserts the proxy process/task does not exit or panic, retries are observed (e.g. via a counter or log hook), and the proxy continues answering `tools/call` using the last-known-good (v1) shadow copy
+- [ ] Unit test confirms no new tool entry appears in a `tools/list` response before/after a swap (grep the response tool name list)
+- [ ] `cargo test -p mcp-toolmon` includes all three named supervisor tests, all passing, with zero added wall-clock sleeps as the assertion mechanism
+## Completion note (T4)
+
+Implemented `Supervisor::swap_child()` / `swap_child_with_drain_ms()` in `memory-api/tools/mcp/mcp-toolmon/src/supervisor.rs`.
+
+- Atomicity: replaced the three separate `child`/`stdin`/`stdout` mutexes with one `RwLock<Option<Arc<ChildHandles>>>` holding a single bundled `ChildHandles` struct per generation. Every `read_line`/`write_line` snapshots the `Arc` under one lock acquisition, so stdin/stdout/child can never be observed from mismatched generations.
+- Pending-request tracking: `record_pending`/`resolve_pending`/`synthesize_and_clear`, wired into `main.rs`'s client and reader loops. Kill drains pending ids for up to `TOOLMON_DRAIN_MS` (default 2000, env-driven; tests use `swap_child_with_drain_ms` to avoid env races), then synthesizes `{"error":{"code":-32001,...}}` JSON-RPC responses for any left over.
+- Never-exit fallback: retry with capped exponential backoff (25ms->500ms, 4 attempts), then falls back to a durably-snapshotted last-known-good shadow copy (fixed a real bug found during implementation: `shadow::make_shadow_copy` keys its dest path only by canonical-path hash, so a naive re-copy-and-retry would have overwritten the last-known-good file with corrupt bytes before it could be used -- added `snapshot_last_known_good` to guard against this).
+- `main.rs`: child death/respawn failure no longer calls `process::exit`; only client stdin EOF still shuts the proxy down. Added best-effort shadow-directory cleanup on graceful shutdown.
+- Tests (`tests/supervisor.rs`, 5 new): `swap_child_replaces_running_child`, `inflight_request_synthesized_error_on_kill`, `respawn_backoff_no_process_exit`, `no_swap_tool_appears_in_tools_list`, `concurrent_swap_produces_no_corrupted_responses` (proves absence of observable corruption under concurrent swap; the internal invariant itself is structural, not independently provable by an external test).
+
+Validation: `cargo build -p mcp-toolmon` clean; `cargo test -p mcp-toolmon` 64/64 passed (59 prior + 5 new), zero regressions. Smoke: `initialize` piped through `mcp-toolmon -- peek-mcp` returned a real `serverInfo`/`capabilities` result payload.
+
+Concern for T6: the reader pump's `read_line` only returns `None` (ending the pump) on supervisor shutdown or a live child's real stdout EOF; an unexpected crash outside of an explicit `swap_child()` call currently stops relaying until the next swap rather than auto-triggering one -- T6's watcher is expected to detect that and call `swap_child()`.

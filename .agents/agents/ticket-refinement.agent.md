@@ -1,7 +1,7 @@
 ---
 name: "Ticket Refinement Agent"
 description: "Use when creating, reviewing, or updating ticket-system tickets through codebase research, user interviews, and implementation planning."
-tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, execute, read, agent, ms-azuretools.vscode-containers, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'rule-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, execute, read, agent, ms-azuretools.vscode-containers, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Ticket scope/component, current problem statement, and whether you want creation, review, or updates."
 user-invocable: true
 model: "Claude Sonnet 5"
@@ -13,7 +13,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 
 ## MCP Tool Grant
 
-Wildcard grant on `ticket-mcp/*` is core to the role (full lifecycle CRUD). `spec-mcp/*`/`test-mcp/*`/`rule-mcp/*`/`audit-mcp/*`/`feedback-mcp/*`/`fs-mcp/*` wildcards are justified: ticket refinement research spans any of these stores. `context-mcp` and `session-mcp` are dropped — ticket refinement never edits the context-engine graph or manages durable session workflows.
+Wildcard grant on `ticket-mcp/*` is core to the role (full lifecycle CRUD). `spec-mcp/*`/`test-mcp/*`/`audit-mcp/*`/`feedback-mcp/*`/`fs-mcp/*` wildcards are justified: ticket refinement research spans any of these stores. `context-mcp` and `session-mcp` are dropped — ticket refinement never edits the context-engine graph or manages durable session workflows.
 
 ## Scope
 

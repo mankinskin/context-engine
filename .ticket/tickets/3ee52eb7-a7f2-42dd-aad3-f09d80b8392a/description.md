@@ -19,3 +19,22 @@ On startup, resolve the child binary's canonical path P (from the `--` args, PAT
 - memory-api/tools/mcp/mcp-toolmon/src/main.rs
 - memory-api/tools/mcp/mcp-toolmon/src/shadow.rs (new)
 - memory-api/tools/mcp/mcp-toolmon/tests/ (new shadow-copy unit tests)
+
+
+## Validation acceptance criteria (addendum)
+- [ ] Unit test `shadow_copy_spawns_from_shadow_path`: after startup, the child process's own reported/observed executable path differs from canonical path P (e.g. assert via a fixture binary that echoes its own `std::env::current_exe()`)
+- [ ] Unit test `shadow_dir_env_override`: setting `TOOLMON_SHADOW_DIR` to a temp dir causes the shadow copy to be created under that dir, not the default
+- [ ] Unit test `startup_sweep_removes_dead_shadow`: a shadow artifact whose owning pid is not alive is deleted on next startup sweep; a shadow artifact whose pid IS alive is retained
+- [ ] Integration test `windows_lock_freedom` (`#[cfg(windows)]` in `tests/windows_lock.rs`): while mcp-toolmon runs a child spawned from a shadow copy of a temp "canonical" path P, the test process itself renames/overwrites P and asserts no OS lock error (previously reproduced as `os error 5`); test is absent (not `#[ignore]`) on non-Windows targets
+- [ ] `cargo test -p mcp-toolmon` includes the above three unit tests plus (on Windows) `windows_lock_freedom`, all passing
+## T3 completion note
+
+Implemented shadow-copy execution (`src/shadow.rs`) + fixture bins for the shadow/reload test matrix.
+
+- Canonical resolution: bare names go through PATH (+PATHEXT on Windows); path-like args are canonicalized directly. `resolve_canonical()`.
+- Shadow copy: `make_shadow_copy()` copies P into `<root>/<name>-<pid>-<hash>/<exe>`; `Supervisor::spawn`/`spawn_with_shadow_dir` spawn the shadow exe, falling back to P with a stderr log on any copy/resolution failure (never fails startup).
+- Startup sweep: `sweep_startup()` deletes shadow dirs whose encoded pid is dead (checked via `/proc/<pid>` or `kill -0` on unix, `tasklist` on Windows); best-effort, never fatal. No TTL, per spec R12.
+- Fixture crate deviation (IMPORTANT): the spec calls for a separate `tests/fixtures/fake-mcp` workspace-member crate with `fake-mcp-v1`/`v2` bins consumed via `env!("CARGO_BIN_EXE_fake-mcp-v1")`. Empirically verified that `CARGO_BIN_EXE_<name>` is only set by Cargo for bin targets of the package under test, never for a dependency crate's bins (confirmed: adding the fixture as a path dev-dependency compiled fine but left `CARGO_BIN_EXE_fake-mcp-v1` undefined at test-compile time). Fix: `fake-mcp-v1`/`fake-mcp-v2` are declared as `[[bin]]` targets of `mcp-toolmon` itself, sourced from `tests/fixtures/fake-mcp/src/bin/*.rs` (still two genuinely separate, byte-different source files). This makes the env vars resolve for real (verified) at the cost of not being an isolated workspace member — flag for T4/T6/T7, which depend on this fixture.
+- Tests: `shadow_copy_spawns_from_shadow_path`, `shadow_dir_env_override`, `startup_sweep_removes_dead_shadow`, `windows_lock_freedom` (`#[cfg(windows)]`) all added and passing in `tests/shadow.rs`. 59/59 total (55 prior + 4 new).
+- Smoke-verified: piped `initialize` through `mcp-toolmon -- peek-mcp`, got a real result payload, and observed the shadow copy on disk at `/tmp/mcp-toolmon/peek-mcp-25404-b5bee4bb59256985/peek-mcp.exe`.
+- Not implemented: on-graceful-exit shadow-dir deletion (ticket's pre-addendum AC mentions it; spec R12 only requires startup-sweep + post-swap supersession, no exit-time cleanup, so left out to match spec normative text; startup sweep bounds accumulation instead).

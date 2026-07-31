@@ -1,1 +1,0 @@
-The four principles owned at the context-engine root apply across every nested workspace (memory-api, viewer-api, doc/log/ticket/spec viewers, audit, context-trace/search/read/insert/api).
