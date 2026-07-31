@@ -13,3 +13,4 @@ Define (spec or instruction, to be decided during implementation) a mechanism to
 
 ## Source
 Derived from AGENT_WORKFLOW_OPTIMIZATIONS.md conversation, "Step 3: Optimizing Guidance and System Files", "Dynamic Prompt Injection".
+Review verdict: approve-with-fixes; meta-glob defect fixed in follow-up; all 4 acceptance criteria met; verification grep: all 20 files have `applyTo`, 8 of them `"**"`, zero remaining `.agents/**`.

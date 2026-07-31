@@ -1,10 +1,11 @@
 id = "9cd886d5-330e-40b4-b972-071e2609fe35"
 created_at = "2026-07-30T14:36:26.701601700+00:00"
-title = "Scoped/dynamic guidance injection by ticket domain tag"
-state = "open"
+title = "Define applyTo-class scheme across .agents/instructions/**"
+state = "done"
 component = "agent-guidance"
 effort = "~2k tokens"
-parts = [{ id = "042ce0e8-a070-4516-93f2-678dc8525305", kind = "notes", path = "parts/042ce0e8-a070-4516-93f2-678dc8525305.md", frozen = false, created_at = "2026-07-30T15:57:21.099210900Z" }]
+linked = ["527fc2cf-7796-4320-a340-0161941f3154"]
+parts = [{ id = "042ce0e8-a070-4516-93f2-678dc8525305", kind = "notes", path = "parts/042ce0e8-a070-4516-93f2-678dc8525305.md", frozen = false, created_at = "2026-07-30T15:57:21.099210900Z" }, { id = "3a6b631f-b334-4737-b029-74f30fc7d0e1", kind = "objective", path = "parts/3a6b631f-b334-4737-b029-74f30fc7d0e1.md", frozen = false, created_at = "2026-07-31T14:47:56.543264Z" }, { id = "0dbafe0e-e1e5-49da-a951-0312225474d6", kind = "review", path = "parts/0dbafe0e-e1e5-49da-a951-0312225474d6.md", frozen = false, created_at = "2026-07-31T14:53:48.989836700Z" }]
 priority = "low"
-risk_level = "medium"
+risk_level = "low"
 type = "feature"
