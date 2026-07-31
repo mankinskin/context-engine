@@ -6034,6 +6034,9 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "tokio",
+ "toolmon-costgate",
+ "toolmon-policy-api",
 ]
 
 [[package]]
