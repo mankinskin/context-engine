@@ -131,14 +131,12 @@ Then pass the resolved worktree path and branch name in that sub-agent's context
 ```bash
 git checkout main
 git merge --ff-only agent/<short-id>-<slug>
-git -C .worktrees/<short-id>-<slug> submodule deinit --all --force
 git worktree remove --force .worktrees/<short-id>-<slug>
 git worktree prune
-git submodule init
 git branch -d agent/<short-id>-<slug>
 ```
 
-If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`. The `git submodule init` line is not optional: `submodule deinit` inside a worktree rewrites the shared `.git/config` and deinitializes the main checkout's submodules too, so re-running init immediately afterwards is what repairs it.
+If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`. `--force` alone handles the worktree's initialized submodules and is safe once the merge above proves the branch is integrated — never add a `submodule deinit` step here: it rewrites the shared `.git/config` and silently deinitializes the main checkout's submodules too.
 
 Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
 

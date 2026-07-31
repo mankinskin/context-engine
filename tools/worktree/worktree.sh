@@ -22,8 +22,8 @@ subcommands:
   merge <name>            Fast-forward-only merge <name>'s branch into main.
                           Fails loudly (never falls back to a real merge) if main
                           has moved past what <name> rebased onto.
-  remove <name>           Full teardown of <name>: submodule deinit, worktree
-                          remove, worktree prune, submodule init repair, branch -d.
+  remove <name>           Full teardown of <name>: worktree remove --force,
+                          worktree prune, branch -d.
   doctor                  Detect + repair deinitialized submodules in the MAIN
                           checkout (sharp edge from `submodule deinit` run inside
                           a worktree), and report stale worktree registrations.
@@ -325,10 +325,10 @@ cmd_remove() {
     require_worktree_exists "$wtpath"
     branch=$(git -C "$wtpath" branch --show-current || true)
 
-    run git -C "$wtpath" submodule deinit --all --force
+    # --force alone handles initialized submodules; a prior `submodule deinit`
+    # would instead corrupt the shared .git/config (see instructions).
     run git -C "$mw" worktree remove --force "$wtpath"
     run git -C "$mw" worktree prune
-    run git -C "$mw" submodule init
 
     if [[ -n "$branch" ]]; then
         run git -C "$mw" branch -d "$branch"

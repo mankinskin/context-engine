@@ -140,16 +140,14 @@ If `--ff-only` fails, `main` moved after the branch rebased. Do not merge — se
 Tear down after a successful merge:
 
 ```bash
-git -C .worktrees/<short-id>-<slug> submodule deinit --all --force
 git worktree remove --force .worktrees/<short-id>-<slug>
 git worktree prune
-git submodule init
 git branch -d agent/<short-id>-<slug>
 ```
 
-The `submodule deinit` step is not optional here. `git worktree remove` refuses outright with `fatal: working trees containing submodules cannot be moved or removed` while the worktree's submodules are still initialized. Deinitializing inside the worktree does not affect the main checkout's submodules. Use `-d`, never `-D`, so git refuses to delete a branch that was not actually merged.
+`git worktree remove` refuses outright with `fatal: working trees containing submodules cannot be moved or removed` while the worktree's submodules are still initialized — `--force` alone bypasses that refusal, is safe once the branch is confirmed merged (the fast-forward above already proves it), and needs no prior deinit step. Use `-d`, never `-D`, so git refuses to delete a branch that was not actually merged.
 
-Two sharp edges in that sequence. `git worktree remove` still refuses after the deinit, so `--force` is required — safe only once the branch is confirmed merged, which the fast-forward above already proves. And `submodule deinit` rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. The `git submodule init` line repairs it from `.gitmodules`; run it before doing anything else in the main checkout, and confirm with `git submodule status` that no entry carries a `-` prefix. Working-tree files are not lost when this happens — only the config registration.
+One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration.
 
 ## Submodules
 
