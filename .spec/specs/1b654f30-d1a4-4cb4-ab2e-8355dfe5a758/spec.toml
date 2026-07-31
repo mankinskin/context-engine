@@ -1,10 +1,10 @@
 id = "1b654f30-d1a4-4cb4-ab2e-8355dfe5a758"
 created_at = "2026-07-30T15:11:34.208630500+00:00"
 title = "Two-tier Planner/Worker model routing architecture"
-state = "draft"
+state = "approved"
 code_refs = [{ description = "Canonical tier ladder this spec's Planner (T0) and per-step Worker tier selection resolve through; preserved unchanged.", file = ".agents/instructions/orchestration/model-routing.instructions.md", kind = "module", line_end = 90, line_start = 20, symbol = "Tiered Model Ladder (Smartness vs Cost)" }, { description = "Existing multi-hop delegation contract and Reasoner/Sequencer/Executor role mapping this spec reconciles with (Sequencer decomposition superseded, delegation contract mechanics preserved).", file = ".agents/instructions/orchestration/orchestrator-delegation.instructions.md", kind = "module", line_end = 141, line_start = 55, symbol = "Delegation Contract / Case-Capability-Role Mapping" }]
 component = "agent-orchestration"
-related_tickets = [".ticket/tickets/feb5784c-ece7-40d3-9617-3faee2f6a753/ticket.toml"]
+related_tickets = [".ticket/tickets/feb5784c-ece7-40d3-9617-3faee2f6a753/ticket.toml", ".ticket/tickets/1a240fdc-7de2-4494-8714-b2c81de09158/ticket.toml", ".ticket/tickets/7563ce30-bf9e-43fe-bca5-68473b1d9d79/ticket.toml", ".ticket/tickets/44c6cc5c-35c0-4cf0-b607-186914c21e5d/ticket.toml"]
 scope = "internal"
 slug = "agent-orchestration/planner-worker-two-tier"
 type = "specification"
