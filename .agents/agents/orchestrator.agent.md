@@ -124,18 +124,20 @@ git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main
 git -C .worktrees/<short-id>-<slug> submodule update --init --recursive
 ```
 
-Then pass the resolved worktree path and branch name in that sub-agent's context bundle. A worker left to derive its own worktree path will guess wrong, and a worker that lands in the repository root will overwrite another agent's uncommitted work.
+Then pass the resolved worktree path and branch name in that sub-agent's context bundle. A worker left to derive its own worktree path will guess wrong, and a worker that lands in the repository root will overwrite another agent's uncommitted work. Initialize every submodule, not only the one being edited: the root `Cargo.toml` has workspace members inside several of them, and cargo cannot load the workspace while any are empty.
 
 **After the unit reports ready**, you hold the merge monopoly: no sub-agent ever merges into `main`, because merge order across concurrent branches is a global decision no worker can see. The branch has already rebased onto `main` and resolved its own conflicts, so integration must be a fast-forward and must be asserted as one:
 
 ```bash
 git checkout main
 git merge --ff-only agent/<short-id>-<slug>
-git worktree remove .worktrees/<short-id>-<slug>
+git -C .worktrees/<short-id>-<slug> submodule deinit --all --force
+git worktree remove --force .worktrees/<short-id>-<slug>
+git submodule init
 git branch -d agent/<short-id>-<slug>
 ```
 
-If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`.
+If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`. The `git submodule init` line is not optional: `submodule deinit` inside a worktree rewrites the shared `.git/config` and deinitializes the main checkout's submodules too, so re-running init immediately afterwards is what repairs it.
 
 Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
 
