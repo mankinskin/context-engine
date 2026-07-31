@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator Agent"
 description: "Expensive-model entry point that only plans and delegates: it decomposes work, dispatches each unit to cheaper sub-agents, and aggregates their results. It performs no direct file, search, execute, or MCP work itself."
-tools: [vscode/askQuestions, agent]
+tools: [vscode/askQuestions, read, agent, audit-mcp/audit_summary, 'compact-terminal-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*']
 argument-hint: "High-level task or goal to decompose and delegate to cheaper sub-agents."
 user-invocable: true
 model: "Claude Opus 5"
