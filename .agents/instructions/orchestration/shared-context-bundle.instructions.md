@@ -1,5 +1,6 @@
 ---
 description: "Use at the start of and throughout every session, whenever spawning a sub-agent: shared context bundle protocol that stops sub-agents rediscovering the same artifacts. Covers bundle composition, inline content passing, parallel fan-out optimization, and read deduplication."
+applyTo: "**"
 ---
 
 ## Purpose

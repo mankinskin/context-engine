@@ -1,5 +1,6 @@
 ---
 description: "Use when deciding whether to narrate or execute routine operations. Covers eliminating explanatory self-talk for obvious next steps."
+applyTo: "**"
 ---
 
 ## Routine Action Discipline

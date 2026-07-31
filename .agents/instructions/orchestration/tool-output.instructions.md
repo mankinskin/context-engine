@@ -1,5 +1,6 @@
 ---
 description: "Use when handling tool result output, managing command spills, or working with the compact-terminal MCP or CLI transports. Covers output reduction and spill-file inspection."
+applyTo: "**/*.sh,**/*.ps1"
 ---
 
 ## Default Agent Tool Suite

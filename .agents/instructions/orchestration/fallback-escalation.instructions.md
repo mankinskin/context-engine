@@ -1,5 +1,6 @@
 ---
 description: "Use when compact tooling is unavailable or insufficient. Covers documenting tooling gaps and fallback patterns."
+applyTo: "**/*.sh,**/*.ps1"
 ---
 
 ## Fallback Escalation

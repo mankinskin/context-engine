@@ -1,5 +1,6 @@
 ---
 description: "Use at the start of and throughout every session, immediately before spawning any sub-agent: pre-dispatch quality gates for delegation. Covers per-delegation-class gate sets, tool calls implementing each check, and fail-fast semantics."
+applyTo: "**"
 ---
 
 ## Purpose

@@ -1,5 +1,6 @@
 ---
 description: "Use when reading workspace files or conducting structural exploration. Covers bounded reads, peek CLI usage, repo_map.toon orientation, and avoiding full-file pulls."
+applyTo: "**/*.md,**/*.toon"
 ---
 
 ## Default Agent Tool Suite

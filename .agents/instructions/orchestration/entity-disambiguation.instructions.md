@@ -1,5 +1,6 @@
 ---
 description: "Use in every agent response, not only interview questions: the general entity disambiguation protocol. Covers first-mention establishment, proximity shorthand, context-reset re-establishment, and the ban on bare pronoun references to entities."
+applyTo: "**"
 ---
 
 ## Entity Disambiguation Protocol

@@ -1,5 +1,6 @@
 ---
 description: "Use when deciding whether to search, clarify, or implement. Covers phase separation: planning/discovery/interview happen before implementation, and the Implement Agent operates only on complete handoff packages."
+applyTo: ".agents/prompts/**,**/*.md"
 ---
 
 ## Phase Separation

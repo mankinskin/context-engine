@@ -1,5 +1,6 @@
 ---
 description: "Use when editing files. Covers surgical replacement patterns and avoiding full-file rewrites."
+applyTo: "**"
 ---
 
 ## Differential Patching

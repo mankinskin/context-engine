@@ -67,6 +67,28 @@ applyTo: "<glob>,<glob>"   # optional
   - Use `applyTo: "**"` only for guidance that must be active in **every**
     session; keep those files short.
 
+-### applyTo-class convention (orchestration/**)
+
+Files under `.agents/instructions/orchestration/**` are split into two classes:
+
+- **Always-on (`applyTo: "**"`)** — a small, genuinely general set of
+  cross-cutting behavioral defaults that must be active in every session
+  regardless of which files are being touched: `differential-patching`,
+  `entity-disambiguation`, `routine-actions`, `model-routing`,
+  `orchestrator-delegation`, `pre-dispatch-gates`, `shared-context-bundle`,
+  `write-and-die`. Membership is determined by whether the rule's trigger is a
+  SESSION PHASE or behavior (for example: dispatch/routing, worker lifecycle,
+  pre-dispatch gating, or response formatting) rather than by file type or
+  length; file-length is NOT the criterion. Rules tied to a specific file
+  domain should use a domain glob via `applyTo` instead.
+- **Domain-scoped (`applyTo: "<glob>"`)** — every other orchestration file gets
+  a glob matching the file domain it actually governs when applied: ticket/spec
+  markdown+toml artifacts (`**/*.md,**/*.toml`), cost/config data files
+  (`**/*.json,**/*.toml`), shell/CLI usage (`**/*.sh,**/*.ps1`), source and test
+  files affected by write validation or retry policy (`**/*.rs,**/*.ts,...`),
+  or the agent/prompt configuration domain itself for orchestrator-only
+  dispatch mechanics (`.agents/**`).
+
 ## Selectivity and de-duplication
 
 - **Split by concern, not by size.** Each file should answer one question

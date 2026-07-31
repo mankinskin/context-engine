@@ -1,5 +1,6 @@
 ---
 description: "Use when encountering preflight write hook failures or configuring syntax validation for file-write operations."
+applyTo: "**/*.rs,**/*.ts,**/*.toml,**/*.json"
 ---
 
 ## Pre-flight Write Validation
