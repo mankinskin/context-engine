@@ -29,6 +29,8 @@ Explicit tool list (no wildcards): `ticket-mcp` state-transition and board tools
 - Commit submodules in deepest-first order before updating parent pointers.
 - Do not use `git commit --no-verify` unless the hook failure is a confirmed false positive; document why if used.
 - Keep each commit focused on one logical concern (source changes, generated outputs, ticket/spec store, submodule pointers).
+- Commit on the task's feature branch inside its own worktree. Never commit to `main`, and never merge a feature branch into `main` — the root orchestrator session holds the merge monopoly. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
+- Stage only files claimed by the task's board entry; `git add -A` from an implementation session is forbidden because it swallows concurrent agents' uncommitted work.
 
 ## Submodule commit order
 
@@ -56,12 +58,15 @@ Examples:
 
 ## Required Workflow
 
-1. Survey changes: `git status --short` and `git submodule foreach --recursive 'git status --short'`.
-2. Identify dirty submodules and plan bottom-up commit order.
-3. Check for generated-output drift and regenerate before staging.
-4. Stage and commit each logical batch with a focused message.
-5. Update submodule pointers deepest-first.
-6. Verify clean state: `git status --short`.
+1. Confirm the checkout: `git branch --show-current` must print the task's `agent/<ticket-short-id>-<slug>` branch. If it prints `main`, stop and escalate — the session is in the wrong checkout.
+2. Survey changes: `git status --short` and `git submodule foreach --recursive 'git status --short'`.
+3. Identify dirty submodules and plan bottom-up commit order.
+4. Check for generated-output drift and regenerate before staging.
+5. Stage and commit each logical batch with a focused message, staging only board-claimed files.
+6. Update submodule pointers deepest-first.
+7. Rebase the feature branch onto `origin/main`, resolve any conflicts here rather than on `main`, and re-run validation.
+8. Check out of the board with a `ready-to-merge: <branch> @ <sha>` reason and move the ticket to `in-review`.
+9. Verify clean state: `git status --short`.
 
 ## Output Format
 
@@ -70,4 +75,5 @@ Return:
 - commits made (batch, message, files)
 - pre-commit hook failures encountered and how resolved
 - submodule pointer updates
+- branch committed on, and whether it was marked ready to merge
 - final clean-state confirmation

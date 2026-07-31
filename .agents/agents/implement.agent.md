@@ -21,6 +21,7 @@ You consume a **complete handoff package** that includes:
 - The target ticket, spec, or failing behavior with clear acceptance criteria
 - The owning code path or slice to edit
 - Any required context (related tests, docs, dependencies)
+- The path of the git worktree assigned to this task and the name of its feature branch
 
 Read the ticket with `--view plan` (objective, requirements, design, examples,
 acceptance_criteria, refs) rather than pulling the full ticket. `plan`-kind
@@ -45,15 +46,19 @@ If the handoff package is incomplete or ambiguous, **escalate immediately** to t
 - If the first validation fails, repair the same slice or take one nearby hop to the controlling code path; do not reopen broad exploration.
 - Keep status output brief and implementation-focused.
 - Stop and ask for direction only when a focused search still leaves a material product or architecture ambiguity.
+- Work only inside the git worktree assigned to this task. Never edit, build, or commit in the repository root checkout, and never commit to `main`.
+- Claim the worktree with `session_check_in` and the ticket and file scope with `board_check_in` before the first edit; a conflict on either is an escalation, not something to work around. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
 
 ## Required Workflow
 
-1. Anchor on a concrete ticket, failing behavior, file, symbol, or generated target.
-2. Check the nearest owning code path, related ticket/spec context, and one neighboring test or call site.
-3. State one local hypothesis and the first cheap falsifying check.
-4. Make the smallest grounded edit that tests or implements that hypothesis.
-5. Run the first focused validation immediately after that edit.
-6. Iterate locally until the slice is correct, then summarize the result and evidence with minimal extra narration.
+1. Confirm the assigned worktree and branch: `git -C <worktree> branch --show-current` must print `agent/<ticket-short-id>-<slug>`, not `main`. Claim it with `session_check_in`, then claim the ticket and file scope with `board_check_in`.
+2. Anchor on a concrete ticket, failing behavior, file, symbol, or generated target.
+3. Check the nearest owning code path, related ticket/spec context, and one neighboring test or call site.
+4. State one local hypothesis and the first cheap falsifying check.
+5. Make the smallest grounded edit that tests or implements that hypothesis.
+6. Run the first focused validation immediately after that edit.
+7. Iterate locally until the slice is correct, then rebase onto `origin/main`, resolve any conflicts here, and re-run validation.
+8. Check out of the board with a `ready-to-merge:` reason, then summarize the result and evidence with minimal extra narration. Do not merge into `main`.
 
 ## Output Format
 
@@ -61,6 +66,7 @@ Return:
 - implementation target and owning slice
 - hypothesis and first check
 - edits made
+- worktree and branch used
 - validation run
 - remaining risk, if any
 - next action or done

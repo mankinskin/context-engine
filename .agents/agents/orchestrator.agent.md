@@ -110,6 +110,35 @@ EVERY sub-agent receives a **context bundle** containing resolved artifacts inli
 
 See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` for complete bundle composition rules.
 
+## Branch and Worktree Isolation
+
+Every implementation unit you dispatch runs in its own git worktree on its own branch cut from `main`. You own both ends of that lifecycle; the worker owns neither.
+
+**Before dispatching an implementation unit**, delegate the bootstrap:
+
+```bash
+git fetch origin
+git checkout main
+git pull --ff-only origin main
+git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main
+git -C .worktrees/<short-id>-<slug> submodule update --init --recursive
+```
+
+Then pass the resolved worktree path and branch name in that sub-agent's context bundle. A worker left to derive its own worktree path will guess wrong, and a worker that lands in the repository root will overwrite another agent's uncommitted work.
+
+**After the unit reports ready**, you hold the merge monopoly: no sub-agent ever merges into `main`, because merge order across concurrent branches is a global decision no worker can see. The branch has already rebased onto `main` and resolved its own conflicts, so integration must be a fast-forward and must be asserted as one:
+
+```bash
+git checkout main
+git merge --ff-only agent/<short-id>-<slug>
+git worktree remove .worktrees/<short-id>-<slug>
+git branch -d agent/<short-id>-<slug>
+```
+
+If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`.
+
+Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
+
 ## Required workflow
 
 1. **Plan.** Turn the goal into an ordered list of delegable units with clear
@@ -131,6 +160,7 @@ See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` f
   context for planning and aggregation. Deviating from the ladder is allowed —
   deviating silently is not.
 - Keep sub-agent scopes small and their return contracts compact.
+- Bootstrap a worktree and branch before every implementation dispatch, and merge into `main` yourself — never delegate the merge, and never let a worker touch `main`.
 - Do not narrate obvious next dispatches; spend reasoning budget on
   decomposition, reconciliation, and decisions.
 

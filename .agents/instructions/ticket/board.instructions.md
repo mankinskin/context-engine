@@ -29,6 +29,25 @@ owned. Check in when starting implementation; check out when done.
   --toon
 ```
 
+A board entry has no dedicated branch column, so record the branch and worktree in
+the `--intent` text using this fixed prefix:
+
+```bash
+--intent "branch=agent/<ticket-short-id>-<slug> worktree=.worktrees/<ticket-short-id>-<slug> — <planned work>"
+```
+
+Signal that a branch is integrable by checking out with a `ready-to-merge:` reason:
+
+```bash
+--reason "ready-to-merge: agent/<ticket-short-id>-<slug> @ <commit-sha> — rebased onto origin/main, <validation> passed"
+```
+
+The board claim covers ticket and file ownership only. The authoritative
+session-to-worktree-to-branch assignment is claimed separately with
+`session_check_in`. Both are required before the first edit, and a conflict on
+either is an escalation, not something to work around. See
+[branch-worktree.instructions.md](../commit/branch-worktree.instructions.md).
+
 ### WIP Limit
 
 `board show` reports `wip_limit_reached` and `next` surfaces a warning when the
