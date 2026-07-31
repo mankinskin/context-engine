@@ -1,0 +1,51 @@
+{
+  "handoff_id": "5e99b6ef-0b51-4b7d-9101-f1e825618e09",
+  "workspace_session_id": "918886cc-3f7d-4ced-b2a2-10e72e68abb4",
+  "outgoing_run_id": "411b4da5-f198-4d68-99da-f573ce780558",
+  "created_at": "2026-07-30T17:05:35.376888Z",
+  "resume_command": "session-cli resume --workspace-session-id 918886cc-3f7d-4ced-b2a2-10e72e68abb4 --predecessor-run-id 411b4da5-f198-4d68-99da-f573ce780558",
+  "workflow": {
+    "workflow": {}
+  },
+  "objective": "Close the remaining Structured Ticket Entities rework chain (5a3d152c real core-kind rejection in classify_part_kind, 0c02b304's 8 remaining discarded-Result append_history sites plus its stale review-claim correction, 5b3da351's stale README state-name lines, and 7ad82895's ticket-http registry-label bug as available parallel work), then immediately transition f9e70385 to in-review, 3d952036 to in-review, and d7141fac to done once the dependency gate clears - their own acceptance criteria are already fully evidenced and must not be re-reviewed.",
+  "target_tickets": [
+    "5a3d152c-faf7-4d33-8a4e-7ed19cf6b142",
+    "0c02b304-de04-4e29-818f-fb1e6797bdc0",
+    "5b3da351-1c87-4619-a0bc-6d7abe147d60",
+    "7ad82895-44d1-42b1-bade-3b426d32a98d",
+    "f9e70385-adb7-4942-a8fb-6a383863cc7e",
+    "3d952036-efd4-4f36-a77f-6b7f5058a0a0",
+    "d7141fac-8c1f-42c9-a392-7e400bb5f2ba"
+  ],
+  "target_files": [
+    "memory-api/crates/ticket-api/src/model/parts.rs",
+    "memory-api/crates/ticket-api/src/storage/ticket_fs.rs",
+    "memory-api/tools/mcp/ticket-mcp/README.md"
+  ],
+  "decisions": [
+    "User decision 1: 3d952036 AC5 - require the pub(crate)/pub mod visibility change to ticket-http rather than accepting 2/3 fixture coverage (non-default choice) - DONE this iteration.",
+    "User decision 2: 3d952036 AC6 - accept a manual test_record_execution as sufficient evidence for the non-machine-checkable doc requirement - DONE this iteration.",
+    "User decision 3: memory-api/.test is the authoritative test-api evidence store going forward (non-default choice, root .test store's discrete per-AC files were migrated and removed) - DONE this iteration.",
+    "User decision 4: transition d7141fac forward now despite no dedicated test-api execution of its own, since its review part already flags this as known-outstanding and the underlying blocker (f9e70385 freeze-gate bypass) is independently re-verified fixed - applied (advanced to the extent the dependency graph allows: remains in-review, blocked only by transitive deps on f9e70385/3d952036).",
+    "User decision 5: advance bc74e91f now (in-review then done) given full evidence - DONE, bc74e91f is done.",
+    "User decision 6: acknowledge vt-structured-ticket-entities-migration validation spec (zero executions) does not block any of the four tickets and remains f65f2b32's own open item - acknowledged, no action needed this iteration.",
+    "User decision 7: leave 7ad82895 in backlog untouched this run - done, confirmed non-blocking.",
+    "User decision 8: record the manual-verification execution now and close 3d952036's AC6/AC7 gap this run - DONE."
+  ],
+  "non_goals": [
+    "Do not re-review f9e70385, 3d952036, or bc74e91f's already-passing acceptance criteria from scratch - they are fully evidenced; only the dependency gate blocks further state transition for f9e70385/3d952036.",
+    "Do not accept the uncommitted classify_part_kind draft in memory-api/crates/ticket-api/src/model/parts.rs as reviewed or validated work - it was produced out of scope and must be independently verified or discarded, not built upon blindly.",
+    "Do not attempt to root-cause or fix the evidence-file-disappearance environmental hazard as part of closing the rework chain - only flag it if it recurs."
+  ],
+  "context_anchors": [
+    "Commits: memory-api 33ded7dd (trybuild fixtures for UpdateTicketInput/UpdateArgs/UpdateTicketBody, ticket-http pub mod visibility widening in serve/mod.rs and serve/handlers/tickets.rs, registry test TicketStore::init() fix, store.rs objective-staleness fix + bc74e91f regression test, memory-api/.test evidence records, ticket manifest/edge/review-part reconciliation) and 214ef83 (ticket-mcp server.rs/workflow.rs description_mode docstring clarification, verified no README regeneration diff)",
+    "Commits: root superproject 2baf2a89 and 6b09e113 (submodule pointer updates)",
+    "Ticket state: bc74e91f-d9ef-42df-8b72-94bd4743944c is now done.",
+    "Ticket state: f9e70385-adb7-4942-a8fb-6a383863cc7e and 3d952036-efd4-4f36-a77f-6b7f5058a0a0 remain in-implementation solely due to dependency-consistency gating on 5a3d152c and 5b3da351 (both in-implementation) - their own ACs are fully evidenced and passing.",
+    "Ticket state: d7141fac-8c1f-42c9-a392-7e400bb5f2ba remains in-review, its own transport-surface work fully verified, blocked only by the same transitive dependency gate.",
+    "Ticket state: 7ad82895-44d1-42b1-bade-3b426d32a98d (ticket-http registry workspace-label bug, 5 failing tests) confirmed non-blocking for the four reviewed tickets, remains open/backlog as standalone work.",
+    "Scope violation finding: during this iteration's handoff-authoring step, a sub-agent went out of scope and produced an uncommitted, unreviewed patch to memory-api/crates/ticket-api/src/model/parts.rs (classify_part_kind) attempting to start 5a3d152c. This patch was explicitly out of scope for this run and was NOT committed, NOT reviewed, and NOT validated against 5a3d152c's actual acceptance criteria. It remains as an uncommitted working-tree diff. The next session must treat it as an unreviewed draft only - re-verify it against 5a3d152c's real ACs from scratch (including the load_parts/ticket_fs.rs wiring the draft's own author flagged as incomplete) before accepting any of it, or discard it and start clean.",
+    "Environmental hazard (not root-caused): during this iteration, roughly 15 of 18 freshly-recorded test-api evidence files under memory-api/.test/default/executions/ briefly disappeared from disk between being written and a follow-up verification read, then had to be re-recorded. Other agents are confirmed concurrently active in this same shared worktree (git status showed unrelated in-flight changes to 5a3d152c/0c02b304/5b3da351/session-api files from other sessions). Leading theory is a concurrent process/agent's own store operation, not conclusively isolated to a specific test suite. If evidence files vanish unexpectedly again, investigate before silently re-recording."
+  ],
+  "risk_notes": "Primary risk is the uncommitted, out-of-scope classify_part_kind draft in ticket-api/src/model/parts.rs left in the working tree by a misbehaving sub-agent this iteration - it must be treated as unverified and either independently re-validated against 5a3d152c's real ACs (including wiring into load_parts/ticket_fs.rs, which its own author admits is missing) or discarded before any commit. Secondary risk is the unresolved evidence-file-disappearance hazard in memory-api/.test/default/executions/ - if it recurs, stop and investigate the cause (likely a concurrent agent or a test fixture using a non-isolated relative path) rather than silently re-recording lost evidence a third time."
+}

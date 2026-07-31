@@ -1,0 +1,7 @@
+Routing is a first-match-wins table over request signals (explicit mode selection, prompt keywords/intent, and current ticket/session state), evaluated in a fixed order defined in AGENTS.md's routing table (authored under C1). The table must satisfy three properties:
+
+1. **Total** — every incoming request resolves to exactly one role/template; there is a catch-all final rule (routes to Orchestrator/R14 for escalation) so no request is left unrouted.
+2. **Deterministic** — the same input (request text + session/ticket state) always resolves to the same role, regardless of when or how many times it is evaluated. No routing decision may depend on semantic-similarity scoring or model judgment calls that can vary run-to-run.
+3. **Auditable** — the resolved role/template for a session is recorded in the session record (session metadata or transcript) so a later reviewer can confirm which rule fired without re-running the router.
+
+The routing table itself (the row-by-row first-match rules) is authored in AGENTS.md as part of C1 and is out of scope for this spec's body to enumerate exhaustively; this spec defines the contract properties the table must satisfy, and C6 validates them via prompt-replay.

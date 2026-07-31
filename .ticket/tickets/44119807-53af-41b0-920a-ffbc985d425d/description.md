@@ -32,3 +32,11 @@ Design options to evaluate for the async rework (not prescriptive, next implemen
 
 ### Non-goals (unchanged)
 - MCP proxy telemetry capture layer (deferred per original T2 design).
+
+Progress update:
+
+- DONE: first-wins `tool_call_id` dedup in memory-api/crates/session-api/src/tool_metrics.rs replaced with rank-aware upgrade (hook_payload > spill_file > transcript_turn > unspecified), so a late-arriving richer tool-output copy now lands instead of being dropped.
+- DONE: blocking retry loop (MAX_ATTEMPTS=12 x 200ms) removed from `capture_copilot_transcript_with_tool_response` in memory-api/crates/session-api/src/store/config/capture_query.rs; sync path is single-parse/persist, late override reconciles on the next hook invocation.
+- DONE: validation green — `cargo test -p session-api` 228 passed / 1 ignored; capture+stop e2e 12 passed. New tests: `late_arriving_richer_output_copy_upgrades_the_dropped_record`, `poorer_or_duplicate_late_copy_never_downgrades_or_double_counts`, `capture_copilot_transcript_with_tool_response_never_blocks_on_missing_override_match`.
+- REMAINING: thread `output_source` through `ToolAggregation` into the cross-session rollup (`ToolTokenStats` / `ToolMetricsReport`) — in progress.
+- REMAINING: fresh live-session `output_char_sizes` coverage evidence, materially above the ~24% (7/29) measured in the failed 3rd-pass review. Spec 97f25cf8-f869-48d8-a48d-49d02badd188 proposes a >=90% threshold, PENDING USER CONFIRMATION.

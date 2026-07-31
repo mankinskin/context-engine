@@ -6,7 +6,9 @@ acceptance_criteria = "Host commands execute through a pluggable sandbox (Docker
 component = "agent-harness"
 depends_on = ["1c63db9d-afb3-4678-b0f6-14e6a4d5daca"]
 effort = "15k"
+parts = [{ id = "527debb4-1ab5-472a-a7ca-fc3a50fc8a77", kind = "objective", path = "parts/527debb4-1ab5-472a-a7ca-fc3a50fc8a77.md", frozen = true, created_at = "2026-07-30T21:02:34.869940400Z" }, { id = "6184c8c9-3e40-4ff1-9ba3-9db5479fd027", kind = "validation", path = "parts/6184c8c9-3e40-4ff1-9ba3-9db5479fd027.md", frozen = false, created_at = "2026-07-30T21:02:34.874036500Z" }, { id = "6d3a209e-957a-493a-ab0c-e094e4641674", kind = "requirements", path = "parts/6d3a209e-957a-493a-ab0c-e094e4641674.md", frozen = true, created_at = "2026-07-30T21:02:34.879811100Z" }, { id = "b90d751a-05a5-4d2a-983d-edbe0e550aca", kind = "design", path = "parts/b90d751a-05a5-4d2a-983d-edbe0e550aca.md", frozen = true, created_at = "2026-07-30T21:02:34.880150200Z" }, { id = "a775e7d4-1dc7-4946-b888-cc078f26974a", kind = "examples", path = "parts/a775e7d4-1dc7-4946-b888-cc078f26974a.md", frozen = true, created_at = "2026-07-30T21:02:34.880418200Z" }, { id = "609163f9-8859-4377-959a-8e9a501e88f5", kind = "acceptance_criteria", path = "parts/609163f9-8859-4377-959a-8e9a501e88f5.md", frozen = true, created_at = "2026-07-30T21:02:34.880596Z" }]
 phase = "planning"
+plan_revision = 1
 priority = "high"
 risk_level = "high"
 tags = "agent-harness,agent-core,sandbox,bollard,docker,policy"

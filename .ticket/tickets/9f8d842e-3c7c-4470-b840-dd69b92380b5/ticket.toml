@@ -1,12 +1,15 @@
 id = "9f8d842e-3c7c-4470-b840-dd69b92380b5"
 created_at = "2026-05-25T11:12:35.453917800+00:00"
 title = "[context-read] Replace root surgery with structural block materialization"
-state = "in-implementation"
+state = "planned"
 acceptance_criteria = "known-block commits materialize the next block structurally; try_extend_tail_with is removed from semantic growth; focused root-growth validation and manual decomposition inspection are recorded"
 component = "context-read"
 depends_on = ["b78a21bd-de8f-407f-a9b8-2664019240da"]
 effort = "1200"
+parts = [{ id = "ef594308-6e4a-4e21-acf5-7f14f78838bc", kind = "objective", path = "parts/ef594308-6e4a-4e21-acf5-7f14f78838bc.md", frozen = true, created_at = "2026-07-31T07:35:06.970031Z" }, { id = "06c37959-1ac2-41a9-b10d-c362130f7819", kind = "requirements", path = "parts/06c37959-1ac2-41a9-b10d-c362130f7819.md", frozen = true, created_at = "2026-07-31T07:35:06.970294800Z" }, { id = "0b740e3d-d3c9-4845-b7ad-61648d879eb0", kind = "design", path = "parts/0b740e3d-d3c9-4845-b7ad-61648d879eb0.md", frozen = true, created_at = "2026-07-31T07:35:06.970712100Z" }, { id = "5429d180-ec9f-47e6-a493-4fda800d3e22", kind = "examples", path = "parts/5429d180-ec9f-47e6-a493-4fda800d3e22.md", frozen = true, created_at = "2026-07-31T07:35:06.971055300Z" }, { id = "ee4e4e89-9b42-4466-98e9-1a82c4b6dd6d", kind = "acceptance_criteria", path = "parts/ee4e4e89-9b42-4466-98e9-1a82c4b6dd6d.md", frozen = true, created_at = "2026-07-31T07:35:06.971287200Z" }]
+plan_revision = 1
 priority = "high"
 risk_level = "high"
+status_summary = "Triage 2026-07-31: no implementation work landed; returned to planned for re-scoping."
 tags = "#context-read,#read,#algorithm,#root,#materialization,#reconciliation"
 type = "tracker-improvement"

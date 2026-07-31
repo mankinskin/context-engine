@@ -10,7 +10,7 @@ description: "Use when resolving model prices, syncing the model cost table, or 
 |---|---|
 | `tools/model-prices/model_prices.json` | The generated price table. Committed artifact; do not hand-edit. |
 | `tools/model-prices/sync_model_prices.py` | Fetches upstream prices and regenerates the table. Also serves offline queries. |
-| `memory-api/tools/mcp/mcp-cost-gate` | The cost gate: MCP middleware that resolves `caller_model` to an allow/delegate decision. Rust crate; there is no Python gate. |
+| `memory-api/tools/mcp/mcp-toolmon` | The cost gate: MCP middleware that resolves `caller_model` to an allow/delegate decision. Rust crate; there is no Python gate. |
 
 Upstream sources are [pydantic/genai-prices](https://github.com/pydantic/genai-prices) (`prices/data_slim.json`, MIT) and GitHub Copilot's published pricing table (`https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/models-and-pricing.yml` from the github/docs repo). The script is stdlib-only — no PyYAML dependency, no virtualenv needed.
 
@@ -123,10 +123,10 @@ Sync rules:
 
 ## The Cost Gate
 
-The gate is a Rust MCP middleware, [memory-api/tools/mcp/mcp-cost-gate](../../../memory-api/tools/mcp/mcp-cost-gate). There is **no** `cost_gate.py`; earlier revisions of this file documented one that never shipped.
+The gate is a Rust MCP middleware, [memory-api/tools/mcp/mcp-toolmon](../../../memory-api/tools/mcp/mcp-toolmon). There is **no** `cost_gate.py`; earlier revisions of this file documented one that never shipped.
 
 ```bash
-mcp-cost-gate -- <real-server-command> [server args...]
+mcp-toolmon -- <real-server-command> [server args...]
 ```
 
 - It fronts a real MCP stdio server: on `tools/list` it injects a required `caller_model` argument into every advertised tool schema; on `tools/call` it reads `arguments.caller_model`, decides allow/delegate, and strips the field before forwarding.
@@ -137,7 +137,7 @@ mcp-cost-gate -- <real-server-command> [server args...]
 - Configure via `COST_GATE_TABLE` (required for enforcement), `COST_GATE_TOOL_METRICS`, `COST_GATE_GRANTS_DIR`, `COST_GATE_SCALE_MAX`, `COST_GATE_BUDGET_ZERO_PRICE`.
 - The gate **fails open** when the price table is missing or unreadable — it becomes a transparent passthrough. A silently permissive gate looks identical to a correctly permissive one; verify `COST_GATE_TABLE` resolves before concluding that routing is unrestricted.
 - **The gate does not see `runSubagent`.** It only intercepts MCP `tools/call` traffic, so it governs *which tools a model may call*, not *which model receives a delegated unit*. Dispatch-target selection is routing judgement — see the tier ladder in [model-routing.instructions.md](model-routing.instructions.md).
-- After changing gate logic, run `cargo test -p mcp-cost-gate` before relying on it.
+- After changing gate logic, run `cargo test -p mcp-toolmon` before relying on it.
 
 ## When Prices Move
 

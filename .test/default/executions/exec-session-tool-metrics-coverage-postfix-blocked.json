@@ -1,0 +1,23 @@
+{
+  "id": "exec-session-tool-metrics-coverage-postfix-blocked",
+  "validation_spec_id": "session-tool-metrics-coverage",
+  "outcome": "blocked",
+  "executed_at": "2026-07-30T18:43:58.003877700Z",
+  "detail": "No real post-fix captured session exists yet. The rebuilt copilot-capture-hook binary is installed to PATH at 2026-07-30 20:40. A fresh real session will be generated when a Stop or SessionEnd hook fires with the new binary active.",
+  "links": {
+    "spec_ids": [
+      "97f25cf8-f869-48d8-a48d-49d02badd188"
+    ],
+    "ticket_ids": [
+      "44119807-53af-41b0-920a-ffbc985d425d",
+      "74b56d66-d94f-4422-bda6-5f583d8f7ec4"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/tools/scripts/session-tool-metrics-coverage.py",
+    "domain": "session-api",
+    "operation": "tool-metrics-coverage",
+    "transport": "cli",
+    "run_id": "coverage-evidence-2026-07-30"
+  }
+}

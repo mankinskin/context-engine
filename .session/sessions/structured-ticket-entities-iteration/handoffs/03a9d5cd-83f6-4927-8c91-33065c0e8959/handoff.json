@@ -1,0 +1,64 @@
+{
+  "handoff_id": "03a9d5cd-83f6-4927-8c91-33065c0e8959",
+  "workspace_session_id": "structured-ticket-entities-iteration",
+  "outgoing_run_id": "b089b9f2-56e9-4b38-9467-05686c84393e",
+  "created_at": "2026-07-30T20:41:06.211183Z",
+  "resume_command": "session-cli resume --workspace-session-id structured-ticket-entities-iteration --predecessor-run-id b089b9f2-56e9-4b38-9467-05686c84393e",
+  "workflow": {
+    "workflow": {}
+  },
+  "validation": [
+    {
+      "validation_spec_id": "vt-ticket-api-lib-20260730",
+      "required": true,
+      "outcome": "passed",
+      "command": "rtk cargo test -p ticket-api --lib"
+    },
+    {
+      "validation_spec_id": "vt-ticket-http-routes-spotcheck-20260730",
+      "required": true,
+      "outcome": "blocked by unresolved policy decisions",
+      "command": "spot-check ticket-http route tests and manifests before any transition"
+    }
+  ],
+  "objective": "Finish the structured-ticket-entities cleanup by resolving the remaining review-blocking gaps on 5a3d152c, 5b3da351, and 7ad82895, then re-verify the touched ticket-api and ticket-http evidence before any further state transitions.",
+  "target_tickets": [
+    "5a3d152c",
+    "5b3da351",
+    "7ad82895",
+    "887f5059",
+    "f90e66e5"
+  ],
+  "target_files": [
+    "memory-api/crates/ticket-api/src/storage/ticket_fs.rs",
+    "memory-api/crates/ticket-api/src/storage/tests/part_kind_rejection_tests.rs",
+    "memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/sections/required-states-one-way.md",
+    "memory-api/tools/http/ticket-http/src/serve/routes/tests.rs",
+    ".ticket/tickets/7ad82895-44d1-42b1-bade-3b426d32a98d/ticket.toml",
+    ".ticket/tickets/887f5059-650a-4fd0-a47b-e07b4a1959db/ticket.toml",
+    ".ticket/tickets/f90e66e5-6c14-4aff-a2e6-beaca9fb17b8/ticket.toml"
+  ],
+  "decisions": [
+    "Treat the stale bc74e91f health-check snapshot as non-authoritative; the manifest state is done",
+    "Keep 5a3d152c open until the read-path/load_parts wiring decision is resolved",
+    "Keep 5b3da351 open until the stale new/ready prose is regenerated out of the spec section",
+    "Keep 7ad82895 open; do not close it through the 887f5059 split yet",
+    "Record that the user does not want an extra evidence-safeguard requirement beyond the normal verification steps"
+  ],
+  "non_goals": [
+    "No implementation changes in this handoff",
+    "No ticket closure or transition changes in this handoff",
+    "No widening beyond the structured-ticket-entities / ticket-api / ticket-http follow-up set"
+  ],
+  "context_anchors": [
+    "bc74e91f",
+    "5a3d152c",
+    "5b3da351",
+    "7ad82895",
+    "f90e66e5",
+    "887f5059",
+    "d7141fac",
+    "f9e70385"
+  ],
+  "risk_notes": "The session began with an evidence-integrity mismatch: prior summaries did not match the live store or checkout. Future reviewers should re-read manifests and rerun the narrow validation commands before trusting any claimed completion."
+}

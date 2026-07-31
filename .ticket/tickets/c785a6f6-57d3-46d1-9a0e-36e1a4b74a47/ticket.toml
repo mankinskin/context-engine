@@ -5,6 +5,7 @@ state = "open"
 component = "repo-guidance"
 depends_on = ["3f62f10e-6f7d-4fa1-b205-97fe62babaf2"]
 effort = "1200"
+parts = [{ id = "436ac9f9-b529-4b4c-b0e8-b71d55b6c253", kind = "objective", path = "parts/436ac9f9-b529-4b4c-b0e8-b71d55b6c253.md", frozen = false, created_at = "2026-07-30T21:02:30.069707800Z" }, { id = "7563439d-6ddc-49e0-99f7-b797d78b4e61", kind = "validation", path = "parts/7563439d-6ddc-49e0-99f7-b797d78b4e61.md", frozen = false, created_at = "2026-07-30T21:02:30.073404100Z" }]
 priority = "high"
 spec_refs = "b8ddb54c-8939-4bbd-a3b3-2e469caa09da"
 tags = "readme,rule-api,docs,context-stack,parent-child"

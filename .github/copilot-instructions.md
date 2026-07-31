@@ -44,6 +44,8 @@ kubectl get pods           rtk kubectl pods
 
 When a repository CLI supports `--toon`, prefer `rtk <cmd> --toon ...` over `rtk <cmd> --json ...` for compact machine-readable output. Use the `toon-format` / `toon-rust` codec for encoding and decoding TOON instead of hand-rolled text transforms.
 
+`rtk` proxies executables; it cannot exec a shell script directly. On Windows, `rtk ./some-script.sh` fails with `os error 193`. Invoke the interpreter explicitly instead: `rtk bash ./some-script.sh`.
+
 ## Meta commands (use directly)
 
 ```bash

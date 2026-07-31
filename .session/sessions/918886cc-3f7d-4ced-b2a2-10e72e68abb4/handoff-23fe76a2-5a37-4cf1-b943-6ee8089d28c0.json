@@ -1,0 +1,43 @@
+{
+  "id": "23fe76a2-5a37-4cf1-b943-6ee8089d28c0",
+  "workspace": ".",
+  "workspace_session_id": "918886cc-3f7d-4ced-b2a2-10e72e68abb4",
+  "objective": "redesign the real-output-size capture path (currently a synchronous retry loop in capture_copilot_transcript_with_tool_response, memory-api/crates/session-api/src/store/config/capture_query.rs) to be async/non-blocking on the hook's critical path, while achieving materially higher than the ~24% (7/29) real-session coverage measured in this session; also thread the output_source discriminant through the cross-session ToolAggregation rollup in tool_metrics.rs (session tool-metrics CLI path).",
+  "target_tickets": [
+    "44119807-53af-41b0-920a-ffbc985d425d"
+  ],
+  "target_files": [
+    "memory-api/crates/session-api/src/store/config/capture_query.rs",
+    "memory-api/crates/session-api/src/tool_metrics.rs",
+    "memory-api/crates/session-api/src/bin/copilot-capture-hook.rs",
+    "memory-api/crates/session-api/tests/copilot_capture_hook_e2e.rs"
+  ],
+  "decisions": [
+    "(1) latency must be async/non-blocking, not just a smaller bound",
+    "(2) ~24% AC1 coverage is not acceptable, needs further investigation/fix",
+    "(3) output_source rollup threading folded into this ticket now, not deferred to T3",
+    "(4) follow-up ticket 74b56d66 should be closed once 44119807 reaches done (it is currently blocked from closing by depends_on progression enforcement)"
+  ],
+  "context_anchors": {
+    "root_causes": [
+      "VS Code fires PostToolUse before flushing the triggering call's own transcript completion entry",
+      "merge_events's captured_event_key dedup + record_event_tool_call's per-tool_call_id dedup mean an override must land on the very first persist of an event or is permanently lost"
+    ],
+    "design_options": [
+      "defer output-size backfill to a later hook event like SessionEnd/Stop",
+      "persist a pending-override record and fix the dedup-drops-second-copy bug so a late override can still land"
+    ]
+  },
+  "non_goals": [
+    "MCP proxy telemetry capture layer (deferred per original T2 design)"
+  ],
+  "validation": {
+    "build_cmd": "cargo build -p session-api",
+    "test_cmd": "cargo test -p session-api",
+    "test_requirements": "existing 184 lib + 8/8 e2e must remain green; add a new test proving output_source reaches ToolAggregation/rollup output; provide fresh live-session evidence read-back showing improved catch rate with measured rate cited"
+  },
+  "open_escalations": [],
+  "created_by": "handoff-agent",
+  "created_at": "2026-07-30T17:53:53.867288Z",
+  "workflow_nodes": []
+}

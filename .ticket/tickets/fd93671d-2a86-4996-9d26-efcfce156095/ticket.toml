@@ -6,7 +6,9 @@ acceptance_criteria = "Append-only NDJSON per-session event log + periodic check
 component = "agent-harness"
 depends_on = ["8ed0edbf-a765-4f4a-b50e-695aa79e9180"]
 effort = "18k"
+parts = [{ id = "5fc5708e-4783-4df4-aa9e-39f9d1d657df", kind = "objective", path = "parts/5fc5708e-4783-4df4-aa9e-39f9d1d657df.md", frozen = true, created_at = "2026-07-30T21:02:35.201126600Z" }, { id = "948f3cf0-5a40-4a78-846b-bae6f773f3fc", kind = "validation", path = "parts/948f3cf0-5a40-4a78-846b-bae6f773f3fc.md", frozen = false, created_at = "2026-07-30T21:02:35.205213800Z" }, { id = "b12e70a6-efac-44dc-9bfc-794d10c0bdc9", kind = "requirements", path = "parts/b12e70a6-efac-44dc-9bfc-794d10c0bdc9.md", frozen = true, created_at = "2026-07-30T21:02:35.211109100Z" }, { id = "9bee6f98-d663-4f7b-bc87-c1d0840c707e", kind = "design", path = "parts/9bee6f98-d663-4f7b-bc87-c1d0840c707e.md", frozen = true, created_at = "2026-07-30T21:02:35.211390800Z" }, { id = "b27e4718-36c2-44a7-a0e2-3cb93df43b17", kind = "examples", path = "parts/b27e4718-36c2-44a7-a0e2-3cb93df43b17.md", frozen = true, created_at = "2026-07-30T21:02:35.211722800Z" }, { id = "e31cd6b4-e812-4650-b5fd-6b4f40025322", kind = "acceptance_criteria", path = "parts/e31cd6b4-e812-4650-b5fd-6b4f40025322.md", frozen = true, created_at = "2026-07-30T21:02:35.211925800Z" }]
 phase = "planning"
+plan_revision = 1
 priority = "high"
 risk_level = "high"
 tags = "agent-harness,reliability,checkpoint,reconnect,tracing,watchdog"

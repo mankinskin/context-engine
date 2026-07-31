@@ -4,7 +4,7 @@
   "mcp": {
     "context-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "context-mcp"],
+      "command": ["mcp-toolmon", "--", "context-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -13,7 +13,7 @@
     },
     "ticket-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "ticket-mcp"],
+      "command": ["mcp-toolmon", "--", "ticket-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -22,7 +22,7 @@
     },
     "spec-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "spec-mcp"],
+      "command": ["mcp-toolmon", "--", "spec-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -31,7 +31,7 @@
     },
     "test-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "test-mcp"],
+      "command": ["mcp-toolmon", "--", "test-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -40,7 +40,7 @@
     },
     "feedback-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "feedback-mcp"],
+      "command": ["mcp-toolmon", "--", "feedback-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -49,7 +49,7 @@
     },
     "session-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "session-mcp"],
+      "command": ["mcp-toolmon", "--", "session-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -58,7 +58,7 @@
     },
     "peek-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "peek-mcp"],
+      "command": ["mcp-toolmon", "--", "peek-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -67,7 +67,7 @@
     },
     "rule-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "rule-mcp"],
+      "command": ["mcp-toolmon", "--", "rule-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -76,7 +76,7 @@
     },
     "audit-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "audit-mcp"],
+      "command": ["mcp-toolmon", "--", "audit-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -85,7 +85,7 @@
     },
     "compact-terminal-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "compact-terminal-mcp"],
+      "command": ["mcp-toolmon", "--", "compact-terminal-mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
@@ -94,7 +94,7 @@
     },
     "log-viewer-mcp": {
       "type": "local",
-      "command": ["mcp-cost-gate", "--", "log-viewer", "--mcp"],
+      "command": ["mcp-toolmon", "--", "log-viewer", "--mcp"],
       "environment": {
         "COST_GATE_TABLE": "tools/model-prices/model_prices.json",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",

@@ -6,6 +6,7 @@ acceptance_criteria = "context-read compiles after restructure; all tests pass; 
 component = "context-read"
 doc_category = "interview"
 effort = "1200"
+parts = [{ id = "a5d9c083-d32a-4741-9fc9-7fdd8a578a1d", kind = "objective", path = "parts/a5d9c083-d32a-4741-9fc9-7fdd8a578a1d.md", frozen = false, created_at = "2026-07-30T21:02:30.447060600Z" }, { id = "21fdec14-acd6-445c-9772-d7025f573184", kind = "validation", path = "parts/21fdec14-acd6-445c-9772-d7025f573184.md", frozen = false, created_at = "2026-07-30T21:02:30.451389800Z" }, { id = "6055469d-3fb9-41b2-b08f-9e2bd63db122", kind = "objective", path = "parts/6055469d-3fb9-41b2-b08f-9e2bd63db122.md", frozen = false, created_at = "2026-07-30T21:02:30.455362500Z" }]
 risk_level = "high"
 source_agent_files = "interviews/20260315_INTERVIEW_CONTEXT_READ_RESTRUCTURE.md"
 tags = "#interview,#context-read,#api,#restructuring,#architecture"

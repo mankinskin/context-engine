@@ -1,0 +1,15 @@
+{
+  "id": "session-tool-metrics-coverage",
+  "title": "Reproducible real-session output_char_sizes coverage measurement",
+  "command": "python3 memory-api/tools/scripts/session-tool-metrics-coverage.py <session-id>",
+  "detail": "Computes R5 coverage = (tool calls with non-empty output_char_sizes) / (total real tool calls) for any captured session under .session/sessions/, with per-source breakdown and residual-gap diagnosis from events.json.",
+  "links": {
+    "spec_ids": [
+      "97f25cf8-f869-48d8-a48d-49d02badd188"
+    ],
+    "ticket_ids": [
+      "44119807-53af-41b0-920a-ffbc985d425d",
+      "74b56d66-d94f-4422-bda6-5f583d8f7ec4"
+    ]
+  }
+}

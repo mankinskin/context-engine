@@ -37,7 +37,7 @@ tool_names=(
     audit-mcp
     compact-terminal-mcp
     fs-mcp
-    mcp-cost-gate
+    mcp-toolmon
 )
 
 mcp_tool_names=(
@@ -52,7 +52,7 @@ mcp_tool_names=(
     audit-mcp
     compact-terminal-mcp
     fs-mcp
-    mcp-cost-gate
+    mcp-toolmon
     log-viewer
 )
 
@@ -81,7 +81,7 @@ tool_path() {
         audit-mcp) printf '%s\n' "memory-api/tools/mcp/audit-mcp" ;;
         compact-terminal-mcp) printf '%s\n' "memory-api/tools/mcp/compact-terminal-mcp" ;;
         fs-mcp) printf '%s\n' "memory-api/tools/mcp/fs-mcp" ;;
-        mcp-cost-gate) printf '%s\n' "memory-api/tools/mcp/mcp-cost-gate" ;;
+        mcp-toolmon) printf '%s\n' "memory-api/tools/mcp/mcp-toolmon" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -114,7 +114,7 @@ tool_bin() {
         audit-mcp) printf '%s\n' "audit-mcp" ;;
         compact-terminal-mcp) printf '%s\n' "compact-terminal-mcp" ;;
         fs-mcp) printf '%s\n' "fs-mcp" ;;
-        mcp-cost-gate) printf '%s\n' "mcp-cost-gate" ;;
+        mcp-toolmon) printf '%s\n' "mcp-toolmon" ;;
         *)
             printf 'error: unknown tool: %s\n' "$1" >&2
             exit 1
@@ -160,7 +160,7 @@ Examples:
   ./install-tools.sh --tool viewer-ctl --tool ticket-cli
   ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
   ./install-tools.sh --tool audit-cli --tool rule-cli
-  ./install-tools.sh --tool mcp-cost-gate
+  ./install-tools.sh --tool mcp-toolmon
   ./install-tools.sh --mcp
   INSTALL_TOOLS="rule-cli,spec-cli" ./install-tools.sh --dry-run
 EOF

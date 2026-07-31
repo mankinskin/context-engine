@@ -1,0 +1,52 @@
+# Handoff: 03be645f-ec93-453f-94d7-cb9e6e40fa79
+
+## Summary
+- **Workspace Session**: `918886cc-3f7d-4ced-b2a2-10e72e68abb4`
+- **Outgoing Run**: `c97f51f8-6102-4f28-948c-39a7919d1a5c`
+- **Created**: 2026-07-30T15:57:21.075907+00:00
+- **Objective**: Pick up the next unit of implementable work under epic f13c9836 "[epic] Worker-tier dispatch contract": start 1a240fdc "Retry-limit escalation policy for worker-tier test failures" (lowest effort ~700 tokens, rank 1 of 3), a pure .agents/instructions/orchestration/ edit that depends only on spec 1b654f30's now-final Planner/Worker vocabulary (see its Roles, Plan Schema, and What Changes/What Is Preserved sections). Siblings 7563ce30 and 44c6cc5c are independent and parallelizable. Epic 7e8bc1c3's frontier (9cd886d5, 6426c891) is also unblocked and available.
+- **Implementation Ready**: true
+
+## Resume Command
+```bash
+session-cli resume --workspace-session-id 918886cc-3f7d-4ced-b2a2-10e72e68abb4 --predecessor-run-id c97f51f8-6102-4f28-948c-39a7919d1a5c
+```
+
+## Target Tickets
+- `1a240fdc-7de2-4494-8714-b2c81de09158`
+- `7563ce30-bf9e-43fe-bca5-68473b1d9d79`
+- `44c6cc5c-35c0-4cf0-b607-186914c21e5d`
+- `9cd886d5-330e-40b4-b972-071e2609fe35`
+- `6426c891-8d9b-40cc-a163-1ec421ce9d62`
+
+## Target Files
+- `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md`
+- `.agents/instructions/orchestration/orchestrator-delegation.instructions.md`
+- `.agents/instructions/orchestration/model-routing.instructions.md`
+- `.agents/instructions/orchestration/shared-context-bundle.instructions.md`
+- `.agents/instructions/testing/assertions.instructions.md`
+- `.agents/instructions/testing/test-execution.instructions.md`
+
+## Decisions
+- feb5784c's 6 open questions (plan validation ownership, mid-execution failure handling, immutability enforceability, pre-dispatch gate interaction, Sequencer role fate, plan amendment mechanics) were deliberately left unresolved by design, captured in spec 1b654f30, not blocking, deferred to whichever follow-up ticket each concretely affects (mid-execution failure handling -> 1a240fdc; write-and-die/context handoff -> 7563ce30; testing-role split -> 44c6cc5c).
+
+## Non-Goals
+- Do not re-open or re-implement 95403a71 or feb5784c -- both are closed/done.
+- Do not implement the Planner/Worker architecture itself this iteration -- spec-only groundwork (1b654f30) is final; no code or runtime behavior change ships from these three tickets, only instruction-file policy edits.
+
+## Context Anchors
+- commit 975454f8 -- deliverable commit (entity-disambiguation.instructions.md + spec 1b654f30 authoring)
+- commit 04c53279 -- closure commit transitioning 95403a71 and feb5784c to done
+- .spec/specs/1b654f30-d1a4-4cb4-ab2e-8355dfe5a758/body.md
+- ticket 95403a71-cb2a-45ea-b48d-3444904e66dd -- done
+- ticket feb5784c-ece7-40d3-9617-3faee2f6a753 -- done
+- epic f13c9836-5b74-433b-b3d2-e1475d080ad0 -- Worker-tier dispatch contract
+- epic 7e8bc1c3-c4dd-431a-965d-adf3ba0a1ad6 -- Guidance corpus quick-win track
+
+## Risk Notes
+1a240fdc/7563ce30/44c6cc5c are documentation-only instruction edits; validation should be manual cross-reference checks (each new instruction correctly links its named counterpart files), not automated tests.
+
+## Workflow
+- **Nodes**: 0
+- **Edges**: 0
+- **Not Done**: 0

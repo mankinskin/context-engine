@@ -6,7 +6,9 @@ acceptance_criteria = "rmcp client performs startup JSON-RPC stdio handshake and
 component = "agent-harness"
 depends_on = ["c684b092-7f5a-4ebe-aa6d-494f666f5dc8"]
 effort = "15k"
+parts = [{ id = "2598e2bb-f569-4b71-9d6f-c44203f77c57", kind = "objective", path = "parts/2598e2bb-f569-4b71-9d6f-c44203f77c57.md", frozen = true, created_at = "2026-07-30T21:02:34.574793500Z" }, { id = "68d3cc8b-bd2d-47e4-ab1f-f2f57721ad9d", kind = "validation", path = "parts/68d3cc8b-bd2d-47e4-ab1f-f2f57721ad9d.md", frozen = false, created_at = "2026-07-30T21:02:34.578447400Z" }, { id = "f74b9a5e-4278-477a-87f9-ae1595731799", kind = "requirements", path = "parts/f74b9a5e-4278-477a-87f9-ae1595731799.md", frozen = true, created_at = "2026-07-30T21:02:34.584461200Z" }, { id = "60446489-aaf8-4876-986c-ef7c01a88641", kind = "design", path = "parts/60446489-aaf8-4876-986c-ef7c01a88641.md", frozen = true, created_at = "2026-07-30T21:02:34.584732500Z" }, { id = "d5d86e98-8fa9-4aa7-9483-df87a38310d0", kind = "examples", path = "parts/d5d86e98-8fa9-4aa7-9483-df87a38310d0.md", frozen = true, created_at = "2026-07-30T21:02:34.584954100Z" }, { id = "6593459d-c07c-4aae-bd07-78409d93635a", kind = "acceptance_criteria", path = "parts/6593459d-c07c-4aae-bd07-78409d93635a.md", frozen = true, created_at = "2026-07-30T21:02:34.585228800Z" }]
 phase = "planning"
+plan_revision = 1
 priority = "high"
 risk_level = "medium"
 tags = "agent-harness,agent-core,mcp,rmcp,tool-routing"

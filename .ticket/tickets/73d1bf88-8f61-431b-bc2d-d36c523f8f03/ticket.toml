@@ -5,6 +5,7 @@ state = "done"
 acceptance_criteria = "affected normalization/materialization tests are reviewed and updated or retained with documented reasons; ticket and spec language stay consistent with the resulting contract"
 component = "context-read"
 depends_on = ["51cfdc74-4454-481d-91af-1d94b4934dec"]
+parts = [{ id = "bf1d23d1-56f1-471b-9cef-44e109c39b0f", kind = "objective", path = "parts/bf1d23d1-56f1-471b-9cef-44e109c39b0f.md", frozen = false, created_at = "2026-07-30T21:05:26.660525400Z" }, { id = "77b0b4b7-7cde-47b6-9189-1860b8f6f5cc", kind = "review", path = "parts/77b0b4b7-7cde-47b6-9189-1860b8f6f5cc.md", frozen = false, created_at = "2026-07-30T21:05:26.664257600Z" }, { id = "664a2fc1-5601-4044-a617-1750238c6c75", kind = "objective", path = "parts/664a2fc1-5601-4044-a617-1750238c6c75.md", frozen = false, created_at = "2026-07-30T21:05:26.668194500Z" }, { id = "80d91d31-1859-413e-a6f4-f30ce84e9275", kind = "validation", path = "parts/80d91d31-1859-413e-a6f4-f30ce84e9275.md", frozen = false, created_at = "2026-07-30T21:05:26.671883800Z" }]
 risk_level = "medium"
 tags = "#plan,#context-read,#tests,#normalization,#materialization,#contract"
 type = "tracker-improvement"

@@ -4,6 +4,7 @@ title = "[memory-api] Adopt shared README schema and parent-linked tool READMEs"
 state = "done"
 component = "repo-guidance"
 depends_on = ["2750018f-ed82-4a3a-9347-1fc47e9658c8"]
+parts = [{ id = "453abf62-b7cf-488b-a37f-22f1b2d6617b", kind = "objective", path = "parts/453abf62-b7cf-488b-a37f-22f1b2d6617b.md", frozen = false, created_at = "2026-07-30T21:05:26.926595700Z" }, { id = "86d90617-7e96-4cc7-92e6-fcb488eb433d", kind = "validation", path = "parts/86d90617-7e96-4cc7-92e6-fcb488eb433d.md", frozen = false, created_at = "2026-07-30T21:05:26.930792Z" }]
 priority = "high"
 spec_refs = "4f7d84d0-9876-43d5-9dd6-90a7f3ebc56c"
 tags = "readme,rule-api,docs,memory-api,parent-child"

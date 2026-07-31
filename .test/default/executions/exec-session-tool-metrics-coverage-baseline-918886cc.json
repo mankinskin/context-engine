@@ -1,0 +1,24 @@
+{
+  "id": "exec-session-tool-metrics-coverage-baseline-918886cc",
+  "validation_spec_id": "session-tool-metrics-coverage",
+  "outcome": "failed",
+  "executed_at": "2026-07-30T18:43:52.465224600Z",
+  "detail": "Baseline session 918886cc-3f7d-4ced-b2a2-10e72e68abb4: measured 11 / total 597 tool calls = 1.84% output_char_sizes coverage. All 11 measured via hook_payload. 7/29 ~24% claim could not be confirmed under the defined coverage formula; the handoff session shows 1.84%.",
+  "links": {
+    "spec_ids": [
+      "97f25cf8-f869-48d8-a48d-49d02badd188"
+    ],
+    "ticket_ids": [
+      "44119807-53af-41b0-920a-ffbc985d425d",
+      "74b56d66-d94f-4422-bda6-5f583d8f7ec4"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/tools/scripts/session-tool-metrics-coverage.py",
+    "test_id": "918886cc-3f7d-4ced-b2a2-10e72e68abb4",
+    "domain": "session-api",
+    "operation": "tool-metrics-coverage",
+    "transport": "cli",
+    "run_id": "coverage-evidence-2026-07-30"
+  }
+}

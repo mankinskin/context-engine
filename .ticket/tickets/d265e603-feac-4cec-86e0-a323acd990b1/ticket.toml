@@ -6,6 +6,7 @@ acceptance_criteria = "PathNode and IntoTransition traits introduced; query stre
 component = "context-search"
 doc_category = "plan"
 effort = "1200"
+parts = [{ id = "e10084be-4a54-4398-8e9d-d91f71ebf71a", kind = "objective", path = "parts/e10084be-4a54-4398-8e9d-d91f71ebf71a.md", frozen = false, created_at = "2026-07-30T21:02:30.047043700Z" }, { id = "eb9ec75b-9542-4b37-aa81-c74ee805a885", kind = "validation", path = "parts/eb9ec75b-9542-4b37-aa81-c74ee805a885.md", frozen = false, created_at = "2026-07-30T21:02:30.050942900Z" }, { id = "0217960f-c5cd-4800-b17a-3c0012b67637", kind = "objective", path = "parts/0217960f-c5cd-4800-b17a-3c0012b67637.md", frozen = false, created_at = "2026-07-30T21:02:30.054751200Z" }]
 risk_level = "medium"
 source_agent_files = "plans/20260303_PLAN_SEARCH_EVENT_REFACTORING.md"
 tags = "#plan,#refactoring,#visualization,#events,#search"

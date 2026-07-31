@@ -6,6 +6,7 @@ component = "agent-tooling"
 depends_on = ["8c67b96a-b88f-4710-b8e2-f65e59c4e61e", "b7c61f0e-ed42-4eef-8d3b-da934d7c0628"]
 effort = "6000"
 linked = ["0d3fdba6-45e6-4129-84f7-d98324c9519d", "8c67b96a-b88f-4710-b8e2-f65e59c4e61e"]
+parts = [{ id = "004787f4-c9b7-4cfd-ad70-f0c3b23332f2", kind = "review", path = "parts/004787f4-c9b7-4cfd-ad70-f0c3b23332f2.md", frozen = false, created_at = "2026-07-30T21:02:31.962549700Z" }]
 priority = "high"
 review_recommendation = "done"
 review_verdict = "pass-with-note"

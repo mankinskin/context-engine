@@ -46,7 +46,7 @@ There is no tier below T3 on this surface: no offered model undercuts GPT-5 mini
 
 Routing has two independent controls. Confusing them produces both false bans and false confidence.
 
-| | **This ladder** | **`mcp-cost-gate`** |
+| | **This ladder** | **`mcp-toolmon`** |
 |---|---|---|
 | Answers | *Which model should receive this unit?* | *May this model call this tool directly?* |
 | Scope | `runSubagent` dispatch | MCP `tools/call` traffic |

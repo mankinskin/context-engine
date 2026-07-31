@@ -1,0 +1,61 @@
+# Handoff: 281f6319-d76a-4bcf-9360-8998aa3e0cc6
+
+## Summary
+- **Workspace Session**: `structured-ticket-entities-iteration`
+- **Outgoing Run**: `b089b9f2-56e9-4b38-9467-05686c84393e`
+- **Created**: 2026-07-30T11:37:41.594143600+00:00
+- **Objective**: Rework the structured-ticket-entities fix chain per this iteration's review findings, then re-run Review then Interview then Commit then Handoff: close the live frozen-part write bypass in f9e70385 and 3d952036, eliminate the remaining silent history-append-swallow sites in 0c02b304, add real core-kind rejection in 5a3d152c, add compile-time description_mode enforcement in 3d952036, fix the disclosed stale rule-README state-name lines in 5b3da351, and record real test-api executions against the epic-required vt-structured-ticket-entities-rust and vt-structured-ticket-entities-migration validation-spec ids before any of these tickets return to in-review.
+- **Implementation Ready**: true
+
+## Resume Command
+```bash
+session-cli resume --workspace-session-id structured-ticket-entities-iteration --predecessor-run-id b089b9f2-56e9-4b38-9467-05686c84393e
+```
+
+## Target Tickets
+- `5a3d152c-faf7-4d33-8a4e-7ed19cf6b142`
+- `3d952036-efd4-4f36-a77f-6b7f5058a0a0`
+- `5b3da351-1c87-4619-a0bc-6d7abe147d60`
+- `f9e70385-adb7-4942-a8fb-6a383863cc7e`
+- `0c02b304-de04-4e29-818f-fb1e6797bdc0`
+- `d7141fac-8c1f-42c9-a392-7e400bb5f2ba`
+
+## Target Files
+- `memory-api/crates/ticket-api/src/storage/store.rs`
+- `memory-api/crates/ticket-api/src/storage/store/parts.rs`
+- `memory-api/crates/ticket-api/src/storage/store/lifecycle.rs`
+- `memory-api/crates/ticket-api/src/storage/store/query.rs`
+- `memory-api/crates/ticket-api/src/model/parts.rs`
+- `memory-api/crates/memory-api/src/model/schema.rs`
+- `memory-api/tools/mcp/ticket-mcp/src/server/types.rs`
+- `memory-api/tools/http/ticket-http/src/serve/handlers/tickets/types.rs`
+- `memory-api/tools/cli/ticket-cli/src/cli/args/operations.rs`
+- `.rule/README.md`
+
+## Decisions
+- Freeze-gate bypass: fix directly on f9e70385 by routing TicketStore update's legacy description write path through the same frozen-part check write_part uses, not a separate bug ticket.
+- History-append swallow: fix all 8 remaining discarded-Result append_history sites on 0c02b304 (ticket creation, attach, write_part, write_amendment_part, undo_part, add_edge, remove_edge) and correct 0c02b304's Not-satisfied-None claim.
+- 5a3d152c AC2 core-kind rejection is a genuine gap, not a descope -- add real validation, do not just amend the AC wording.
+- 3d952036 AC5: add real compile-time enforcement for description_mode (e.g. required-field builder or typestate), not just a wording correction.
+- Validation-spec-id mismatch: record real test-api executions against vt-structured-ticket-entities-rust and vt-structured-ticket-entities-migration (the epic-required ids) before 5a3d152c, 3d952036, f9e70385 close; do not just relabel bespoke ids.
+- d7141fac holds in in-review (not returned to in-implementation) pending the freeze-gate fix landing and re-verification; its own transport-exposure scope already passed review.
+- 5b3da351 returns to in-implementation solely to fix its disclosed stale rule-README state-name lines, then back to in-review.
+
+## Non-Goals
+- Do not touch f65f2b32 (description to parts migration), 9d69e93d (typed refs), 4c7b884e (projected reads), 89fa0c25 (viewer rendering), or 71e13480 (agent guidance) in this pass -- they remain open, downstream of this fix chain.
+- Do not reconcile the legacy-planned-ticket retroactive-freeze gap (existing planned tickets showing frozen false) in this pass -- that is f65f2b32's migration scope; only disclose it explicitly in f9e70385's description.
+
+## Context Anchors
+- Review findings and live-repro evidence recorded as new review-kind ticket parts on all 6 tickets (5a3d152c, 3d952036, 5b3da351, f9e70385, 0c02b304, d7141fac) written this session -- read via list_parts and get_part first; they contain exact evidence and the resolution decision per finding.
+- Live repro of the freeze bypass: on a scratch ticket with objective part frozen true, write_part correctly rejected the write with FrozenPartWrite, but update_ticket with description and description_mode replace on the same ticket succeeded, diverging the description from the frozen part.
+- cargo build workspace and cargo test for ticket-api and ticket-mcp were clean before this rework (154 lib plus integration tests passed; update_ticket_blocked_transition_reports_recovery_fields is no longer failing).
+- memory-api commit f44f112 and root commit 9e8d7ecd contain this session's ticket-store reconciliation (state transitions plus review parts); no source code was touched this session.
+
+## Workflow
+- **Nodes**: 0
+- **Edges**: 0
+- **Not Done**: 0
+
+## Validation
+- `vt-structured-ticket-entities-migration`: - (required)
+- `vt-structured-ticket-entities-rust`: - (required)

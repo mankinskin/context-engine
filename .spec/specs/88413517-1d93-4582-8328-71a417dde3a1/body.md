@@ -1,0 +1,1 @@
+Defines the 14-role taxonomy (R1-R14), the 9 consolidated agent templates, and the deterministic first-match-wins routing contract that replaces semantic-similarity guessing across the 17-template/24-prompt agent corpus.

@@ -4,6 +4,7 @@ title = "[ticket-api][memory-api] Batch residual SQLite and index writes during 
 state = "done"
 component = "ticket-api"
 effort = "2k tokens"
+parts = [{ id = "c9996570-e26b-44e1-975b-4c1ea920a8b4", kind = "objective", path = "parts/c9996570-e26b-44e1-975b-4c1ea920a8b4.md", frozen = false, created_at = "2026-07-30T21:02:31.609481900Z" }, { id = "0fdd176c-5e1c-4007-925d-9148bc4091e1", kind = "validation", path = "parts/0fdd176c-5e1c-4007-925d-9148bc4091e1.md", frozen = false, created_at = "2026-07-30T21:02:31.614037Z" }, { id = "8bb1810d-f01b-46b5-b070-e7b14cbd8f05", kind = "objective", path = "parts/8bb1810d-f01b-46b5-b070-e7b14cbd8f05.md", frozen = false, created_at = "2026-07-30T21:02:31.617985400Z" }]
 priority = "high"
 risk_level = "medium"
 tags = "ticket-api,memory-api,performance,sqlite,indexing,scan"
