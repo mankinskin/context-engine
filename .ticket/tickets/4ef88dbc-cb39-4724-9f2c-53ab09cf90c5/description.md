@@ -77,3 +77,52 @@ Validation performed:
 Known gaps: shellcheck lint unverified (not installed); the script is a prototype and is not
 wired into install-tools.sh.
 ```
+
+
+## Protocol correction: submodule deinit removed from teardown
+
+Post-merge sandbox research on git 2.54.0.windows.1 overturned a core assumption baked into the
+original teardown sequence and this ticket's own acceptance criteria (AC5, AC6).
+
+**Superseded teardown sequence** (originally documented and implemented):
+```
+git submodule deinit --all --force
+git worktree remove --force <path>
+git worktree prune
+git submodule init
+git branch -d <branch>
+```
+
+**Corrected teardown sequence** (now implemented and documented):
+```
+git worktree remove --force <path>
+git worktree prune
+git branch -d <branch>
+```
+
+**Empirical basis:** sandbox reproduction on git 2.54.0.windows.1 proved `git submodule deinit`
+is both unnecessary and the sole cause of shared-config corruption. `git worktree remove --force
+<path>` alone handles submodules — git's own docs state "Unclean worktrees or ones with submodules
+can be removed with --force." `extensions.worktreeConfig` does NOT isolate submodule config;
+submodule init/deinit always read and write the shared .git/config regardless of that setting.
+
+**Disproven hypothesis:** "each submodule needs its own worktree" was tested and disproven.
+`git -C <submodule> worktree add` works mechanically, but (1) the superproject still detects
+submodules structurally via the tracked .gitmodules file plus the submodule's nested .git file, so
+the removal refusal still triggers; (2) `git submodule status` reports the submodule as
+uninitialized because it was never registered through the normal path; (3) each submodule worktree
+would need its own separate teardown, multiplying the problem instead of solving it.
+
+**Fix applied:** commit 4909db52 (fix(tooling): drop harmful submodule deinit from worktree
+teardown) applied the corrected sequence across tools/worktree/worktree.sh,
+.agents/instructions/commit/branch-worktree.instructions.md, and .agents/agents/orchestrator.agent.md
+so all three now agree.
+
+**Validation:** sandbox reproduction of both the original failure mode and the fix; `bash -n`
+parse check; `--help`/`list`/`doctor` against the live repository; `--dry-run` proven non-mutating;
+the in-worktree guard proven to refuse destructive operations; two real round-trips (`new
+test0000 scratch` → `remove test0000-scratch`) against the live repository with the main
+checkout's 5 submodules and all 5 `[submodule]` config sections verified intact afterward.
+Evidence commit b84506a3 (chore(tickets): record worktree helper protocol fix evidence) recorded
+this in the ticket store. Superproject commit c6eb0a3a (memory-api submodule) was pushed to its
+own origin before the superproject push, per the "submodules pushed before superproject" rule.

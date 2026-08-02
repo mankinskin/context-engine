@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "18853b57-15d0-4f52-8c67-afa07d44678d",
-  "captured_at": "2026-07-31T20:50:47.826Z",
+  "captured_at": "2026-08-02T22:31:31.007Z",
   "turns": [
     {
       "sequence": 0,
@@ -2598,6 +2598,1013 @@
           }
         ],
         "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 107,
+      "role": "assistant",
+      "content": "All under .ticket/ and .session/, good.",
+      "captured_at": "2026-07-31T20:50:52.301Z",
+      "event_meta": {
+        "event_id": "a88583d2-f4ed-4511-9721-61f1e28e7d18",
+        "parent_event_id": "71a07a4e-0808-49a8-a154-af302082ad3a",
+        "event_type": "assistant.message",
+        "message_id": "e4c87cf8-1768-4b43-ad5d-eae03402f1b0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01P6XAKtNhf8mSncpGNC5VsT",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd c:/Users/linus/git/graph_app/context-engine && git add .ticket .session && git commit -m \"chore(tickets): record worktree helper protocol fix evidence\"",
+              "explanation": "Commit ticket/session store artifacts",
+              "goal": "Step 2 commit",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 108,
+      "role": "assistant",
+      "content": "All 5 submodules healthy, no leading `-`, all 5 config sections present.",
+      "captured_at": "2026-07-31T20:51:07.517Z",
+      "event_meta": {
+        "event_id": "e0c9446b-3d10-4f95-ad93-978320e349da",
+        "parent_event_id": "e6be1410-a7ad-44b2-a87e-c099f63f7e90",
+        "event_type": "assistant.message",
+        "message_id": "87a4d736-e033-4acb-9a82-0b7769bf63c5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01KH7zA4VnkExkZP4jQ3JSnQ",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd c:/Users/linus/git/graph_app/context-engine/memory-api && git push origin main",
+              "explanation": "Push memory-api submodule first per mandatory order",
+              "goal": "Step 4 push memory-api",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 109,
+      "role": "assistant",
+      "content": "Confirmed. Now push the superproject and check the other four submodules.",
+      "captured_at": "2026-07-31T20:51:16.632Z",
+      "event_meta": {
+        "event_id": "142501be-8562-4a49-a559-e8885d8514cb",
+        "parent_event_id": "51459279-b419-47b2-b5a0-18680b848058",
+        "event_type": "assistant.message",
+        "message_id": "3292d006-cc0f-4d48-bf76-3ed68c9af84d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_011z4SQ8D6DCbdSMvFAZ89us",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd c:/Users/linus/git/graph_app/context-engine && git push origin main",
+              "explanation": "Push the superproject after confirming submodule pointer is reachable",
+              "goal": "Step 4 push superproject",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 110,
+      "role": "assistant",
+      "content": "All four already in sync — no push needed. Now step 5.",
+      "captured_at": "2026-07-31T20:51:29.429Z",
+      "event_meta": {
+        "event_id": "aab4df0f-651f-46b2-88ac-122ad8036ca0",
+        "parent_event_id": "03f14bf1-8d1f-4aca-9a39-1e03c22573cb",
+        "event_type": "assistant.message",
+        "message_id": "0347830c-6d74-4c59-9b72-3d5046f5c08e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01QZikdJAB1dUPtWRz6SevxV",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd c:/Users/linus/git/graph_app/context-engine && git worktree list && echo \"---status---\" && git -C .worktrees/c060bf94-board-worktree-traceability status --short 2>&1 | head -20 && echo \"---log---\" && git -C .worktrees/c060bf94-board-worktree-traceability log --oneline -3 2>&1",
+              "explanation": "Re-confirm the orphaned directory holds no unique commits or changes",
+              "goal": "Step 5 verification",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 111,
+      "role": "assistant",
+      "content": "Not registered in `git worktree list`, no `.git`, empty scaffold subdirectories with no unique commits/content. Confirmed orphaned — deleting.",
+      "captured_at": "2026-07-31T20:51:52.368Z",
+      "event_meta": {
+        "event_id": "17c248f9-f3c8-4736-a506-9106b0b71519",
+        "parent_event_id": "1adc7c55-698a-42ab-b6ce-3a27ced2919b",
+        "event_type": "assistant.message",
+        "message_id": "459d6923-6654-419f-befa-51d1c31cdfad",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01ALr6RwZmi3AMWDGcrgCoAY",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rm -rf c:/Users/linus/git/graph_app/context-engine/.worktrees/c060bf94-board-worktree-traceability && cd c:/Users/linus/git/graph_app/context-engine && git worktree prune",
+              "explanation": "Delete the orphaned directory and prune worktree metadata",
+              "goal": "Step 5 delete",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 112,
+      "role": "assistant",
+      "content": "```\nSTEP0_MAIN_CLEAN: clean\nMERGE: ff ok, main at 4909db52\nTICKET_COMMIT: b84506a3 : chore(tickets): record worktree helper protocol fix evidence : 6 files\nTEARDOWN: ok\n  submodules after: 5/5 healthy\n  config sections after: all 5 present\nPUSH_MEMORY_API: ok — c6eb0a3a now on origin/main\nPUSH_SUPERPROJECT: ok — origin/main now at b84506a3\nPUSH_OTHER_SUBMODULES: none needed (context-stack, memory-kernel, memory-viewers, viewer-api all in sync with origin/main)\nSKIPPED_BACKUP_BRANCH: confirmed skipped (backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 not pushed)\nORPHAN_DELETED: deleted\nFINAL_STATE:\n  branch/sync: ## main...origin/main (in sync; 3 modified files are the live current session's own transcript/metrics, unrelated to this task)\n  recent commits:\n    b84506a3 chore(tickets): record worktree helper protocol fix evidence\n    4909db52 fix(tooling): drop harmful submodule deinit from worktree teardown\n    a415b25c chore(tickets): add worktree helper script and board dedup tickets\n    bb0b0ca3 feat(tooling): add git-worktree helper script for agent isolation protocol\n    1e5f3fc4 chore(tickets,specs): board worktree traceability ticket, spec, and review evidence\n  submodules: 5/5 healthy — context-stack@9da28661, memory-api@c6eb0a3a, memory-kernel@59dff483, memory-viewers@4938253a, viewer-api@6cbfcb59\n  worktrees: only main worktree registered (no agent worktrees remain)\n  local branches: backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439, main\n  doctor: submodules: all healthy in main checkout; worktree registrations: none stale\nREMAINING_UNPUSHED: none\n```",
+      "captured_at": "2026-07-31T20:52:09.872Z",
+      "event_meta": {
+        "event_id": "3a3c7bca-7a8c-48b5-88bd-e079fcc95070",
+        "parent_event_id": "9785d047-1398-45d3-828b-d7259968d661",
+        "event_type": "assistant.message",
+        "message_id": "b64baf65-db68-46ac-8e76-e0e054712ef5",
+        "reasoning_text": "The session files showing as modified are just from the current live session itself, which is expected and not something I need to commit since it's outside the scope of this task. Everything else is clean, and the branch is in sync with origin/main. Now I'll put together the final report.",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 113,
+      "role": "assistant",
+      "content": "Everything is pushed and clean. Collecting the handoff.",
+      "captured_at": "2026-07-31T20:52:48.194Z",
+      "event_meta": {
+        "event_id": "f1d2253e-0588-4b2f-be5f-40ba9ba0261e",
+        "parent_event_id": "413f95cb-f72e-46d1-958f-a89bddeb81b0",
+        "event_type": "assistant.message",
+        "message_id": "48466139-89aa-44eb-a2ab-f02f7406c34f",
+        "reasoning_text": "Now I'm preparing the handoff to the next session, dispatching the Handoff Agent to record the structured context and update the ticket states. Since ticket 4ef88dbc is in-review with a follow-up fix, I need to include that evidence in the handoff unit along with the key context anchors for both tickets.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01NfZ2PusY6wqvyX71DtaZQy",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Handoff Agent",
+              "description": "Persist session handoff",
+              "model": "Claude Sonnet 5 (copilot)",
+              "prompt": "You are recording a session handoff. You have NO prior context; everything you need is below. Use the session-mcp and ticket-mcp tools. Do not edit source code.\n\nWORKSPACE: c:/Users/linus/git/graph_app/context-engine. Ticket workspace: \"default\".\n\nHONESTY REQUIREMENT: if any tool call fails, report it verbatim and mark that output FAILED. Do not report a mutation you did not perform.\n\n=== WHAT HAPPENED THIS SESSION (verified facts) ===\n\nDelivered a prototype git-worktree helper script, then corrected it after research overturned a core assumption.\n\nCommits now on `main`, all pushed to origin (origin/main = b84506a3):\n- bb0b0ca3 feat(tooling): add git-worktree helper script for agent isolation protocol\n- a415b25c chore(tickets): add worktree helper script and board dedup tickets\n- 4909db52 fix(tooling): drop harmful submodule deinit from worktree teardown\n- b84506a3 chore(tickets): record worktree helper protocol fix evidence\nSubmodule memory-api commit c6eb0a3a was pushed to its own origin BEFORE the superproject, fixing a state where the superproject pointer referenced a commit that existed only locally.\n\nArtifact: tools/worktree/worktree.sh — subcommands `new`, `list`, `rebase`, `merge` (--ff-only, no fallback), `remove`, `doctor`; `--dry-run` on every mutating subcommand; a guard comparing `git rev-parse --git-dir` against `--git-common-dir` that refuses destructive operations from inside a linked worktree.\n\nTHE KEY TECHNICAL DECISION (this is the most important thing to carry forward):\nThe teardown sequence originally documented and implemented was:\n  submodule deinit --all --force → worktree remove --force → prune → submodule init (repair) → branch -d\nSandbox research on git 2.54.0.windows.1 proved the `submodule deinit` step is BOTH unnecessary AND the sole cause of shared-config corruption. `git worktree remove --force <path>` alone handles submodules; git's docs state \"Unclean worktrees or ones with submodules can be removed with --force.\" `extensions.worktreeConfig` does NOT isolate submodule config — submodule init/deinit always read and write the shared .git/config regardless.\nThe corrected sequence, now implemented and documented, is:\n  git worktree remove --force <path> → git worktree prune → git branch -d <branch>\nThis correction was applied to tools/worktree/worktree.sh, .agents/instructions/commit/branch-worktree.instructions.md, and .agents/agents/orchestrator.agent.md so all three agree.\n\nA related hypothesis — \"each submodule needs its own worktree\" — was tested and DISPROVEN: `git -C <submodule> worktree add` works mechanically, but the superproject still detects submodules structurally (via tracked .gitmodules + nested .git file) so the removal refusal still triggers, `git submodule status` reports the submodule uninitialized because it was never registered, and each submodule worktree needs its own separate teardown. It multiplies the problem instead of solving it.\n\nValidation performed: sandbox reproduction of both failure modes and the fix; `bash -n`; help/list/doctor against the live repo; `--dry-run` proven non-mutating; the in-worktree guard proven to refuse; and two real round-trips (`new test0000 scratch` → `remove test0000-scratch`) against the live repository with the main checkout's 5 submodules and all 5 `[submodule]` config sections verified intact afterward. The script was also dogfooded to tear down its own worktrees.\n\n=== TASK 1: append evidence to ticket 4ef88dbc-cb39-4724-9f2c-53ab09cf90c5 ===\nUse description_mode \"append\" (never \"replace\"). Append a section recording the protocol correction: the superseded teardown sequence, the corrected one, the empirical basis (git 2.54.0.windows.1 sandbox, git docs quote), that the \"per-submodule worktree\" hypothesis was tested and disproven with the three reasons above, that commit 4909db52 applied the fix across the script plus both guidance files, and that the round-trip validation passed with submodules intact. Leave the ticket in its current state (`in-review`) — do NOT transition it.\n\n=== TASK 2: persist a session handoff record ===\nUse the session handoff tool with these fields:\n- objective: the single next unit of work. Recommend: \"Deduplicate the stale board module in memory-kernel (ticket c320708d) — confirm no live callers of memory-kernel/src/storage/board.rs, then delete it or re-export the memory-api definitions, and prove `cargo check` passes workspace-wide.\"\n- target_tickets: c320708d-8dc1-46e2-ab5d-9903460ae27a\n- target_files: memory-kernel/src/storage/board.rs, memory-api/crates/memory-api/src/storage/board.rs\n- context_anchors: include the commit shas above; that the LIVE board copy is memory-api/crates/memory-api/src/storage/board.rs (425 lines, includes the ActiveWorktree type) and the STALE copy is memory-kernel/src/storage/board.rs (295 lines, lacks ActiveWorktree); that the divergence was introduced by ticket c060bf94 which added session_id/worktree_path/branch to BoardEntry plus a WorktreeConflict error and board_worktrees surfaces to the memory-api copy only; and that the user explicitly confirmed the duplication is NOT intentional.\n- decisions: the corrected teardown sequence; that submodule deinit must never be run inside a worktree; that the per-submodule-worktree hypothesis is disproven; that submodules must be pushed before the superproject.\n- non_goals: wiring worktree.sh into install-tools.sh; triaging the broader in-review ticket backlog; pushing the backup/pre-lockfile-rebase branch.\n- validation: the commands `bash -n tools/worktree/worktree.sh` and `bash tools/worktree/worktree.sh doctor`, plus `cargo check` for the dedup work.\n- risk_notes: shellcheck is NOT installed in this environment so the script has no lint coverage beyond `bash -n`; the parent repository at c:/Users/linus/git/graph_app tracks context-engine as a submodule and its pointer was NOT bumped this session; the local branch backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 is 2109 commits ahead of origin and was deliberately not pushed; roughly 37 tickets sit in `in-review` and were not triaged.\n- open_escalations: leave empty.\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nTICKET_EVIDENCE_APPENDED: <ok|FAILED: error>\nTICKET_STATE_VERIFIED: <state read back from store>\nHANDOFF_RECORDED: <ok, id=<handoff id>|FAILED: error>\nHANDOFF_OBJECTIVE: <the objective string as stored>\nTOOLS_AVAILABLE: <yes|no>\n```\nNothing else.\n"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01CJaVUfDMyCTjhBxGTzDs45"
+      }
+    },
+    {
+      "sequence": 114,
+      "role": "user",
+      "content": "You are recording a session handoff. You have NO prior context; everything you need is below. Use the session-mcp and ticket-mcp tools. Do not edit source code.\n\nWORKSPACE: c:/Users/linus/git/graph_app/context-engine. Ticket workspace: \"default\".\n\nHONESTY REQUIREMENT: if any tool call fails, report it verbatim and mark that output FAILED. Do not report a mutation you did not perform.\n\n=== WHAT HAPPENED THIS SESSION (verified facts) ===\n\nDelivered a prototype git-worktree helper script, then corrected it after research overturned a core assumption.\n\nCommits now on `main`, all pushed to origin (origin/main = b84506a3):\n- bb0b0ca3 feat(tooling): add git-worktree helper script for agent isolation protocol\n- a415b25c chore(tickets): add worktree helper script and board dedup tickets\n- 4909db52 fix(tooling): drop harmful submodule deinit from worktree teardown\n- b84506a3 chore(tickets): record worktree helper protocol fix evidence\nSubmodule memory-api commit c6eb0a3a was pushed to its own origin BEFORE the superproject, fixing a state where the superproject pointer referenced a commit that existed only locally.\n\nArtifact: tools/worktree/worktree.sh — subcommands `new`, `list`, `rebase`, `merge` (--ff-only, no fallback), `remove`, `doctor`; `--dry-run` on every mutating subcommand; a guard comparing `git rev-parse --git-dir` against `--git-common-dir` that refuses destructive operations from inside a linked worktree.\n\nTHE KEY TECHNICAL DECISION (this is the most important thing to carry forward):\nThe teardown sequence originally documented and implemented was:\n  submodule deinit --all --force → worktree remove --force → prune → submodule init (repair) → branch -d\nSandbox research on git 2.54.0.windows.1 proved the `submodule deinit` step is BOTH unnecessary AND the sole cause of shared-config corruption. `git worktree remove --force <path>` alone handles submodules; git's docs state \"Unclean worktrees or ones with submodules can be removed with --force.\" `extensions.worktreeConfig` does NOT isolate submodule config — submodule init/deinit always read and write the shared .git/config regardless.\nThe corrected sequence, now implemented and documented, is:\n  git worktree remove --force <path> → git worktree prune → git branch -d <branch>\nThis correction was applied to tools/worktree/worktree.sh, .agents/instructions/commit/branch-worktree.instructions.md, and .agents/agents/orchestrator.agent.md so all three agree.\n\nA related hypothesis — \"each submodule needs its own worktree\" — was tested and DISPROVEN: `git -C <submodule> worktree add` works mechanically, but the superproject still detects submodules structurally (via tracked .gitmodules + nested .git file) so the removal refusal still triggers, `git submodule status` reports the submodule uninitialized because it was never registered, and each submodule worktree needs its own separate teardown. It multiplies the problem instead of solving it.\n\nValidation performed: sandbox reproduction of both failure modes and the fix; `bash -n`; help/list/doctor against the live repo; `--dry-run` proven non-mutating; the in-worktree guard proven to refuse; and two real round-trips (`new test0000 scratch` → `remove test0000-scratch`) against the live repository with the main checkout's 5 submodules and all 5 `[submodule]` config sections verified intact afterward. The script was also dogfooded to tear down its own worktrees.\n\n=== TASK 1: append evidence to ticket 4ef88dbc-cb39-4724-9f2c-53ab09cf90c5 ===\nUse description_mode \"append\" (never \"replace\"). Append a section recording the protocol correction: the superseded teardown sequence, the corrected one, the empirical basis (git 2.54.0.windows.1 sandbox, git docs quote), that the \"per-submodule worktree\" hypothesis was tested and disproven with the three reasons above, that commit 4909db52 applied the fix across the script plus both guidance files, and that the round-trip validation passed with submodules intact. Leave the ticket in its current state (`in-review`) — do NOT transition it.\n\n=== TASK 2: persist a session handoff record ===\nUse the session handoff tool with these fields:\n- objective: the single next unit of work. Recommend: \"Deduplicate the stale board module in memory-kernel (ticket c320708d) — confirm no live callers of memory-kernel/src/storage/board.rs, then delete it or re-export the memory-api definitions, and prove `cargo check` passes workspace-wide.\"\n- target_tickets: c320708d-8dc1-46e2-ab5d-9903460ae27a\n- target_files: memory-kernel/src/storage/board.rs, memory-api/crates/memory-api/src/storage/board.rs\n- context_anchors: include the commit shas above; that the LIVE board copy is memory-api/crates/memory-api/src/storage/board.rs (425 lines, includes the ActiveWorktree type) and the STALE copy is memory-kernel/src/storage/board.rs (295 lines, lacks ActiveWorktree); that the divergence was introduced by ticket c060bf94 which added session_id/worktree_path/branch to BoardEntry plus a WorktreeConflict error and board_worktrees surfaces to the memory-api copy only; and that the user explicitly confirmed the duplication is NOT intentional.\n- decisions: the corrected teardown sequence; that submodule deinit must never be run inside a worktree; that the per-submodule-worktree hypothesis is disproven; that submodules must be pushed before the superproject.\n- non_goals: wiring worktree.sh into install-tools.sh; triaging the broader in-review ticket backlog; pushing the backup/pre-lockfile-rebase branch.\n- validation: the commands `bash -n tools/worktree/worktree.sh` and `bash tools/worktree/worktree.sh doctor`, plus `cargo check` for the dedup work.\n- risk_notes: shellcheck is NOT installed in this environment so the script has no lint coverage beyond `bash -n`; the parent repository at c:/Users/linus/git/graph_app tracks context-engine as a submodule and its pointer was NOT bumped this session; the local branch backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 is 2109 commits ahead of origin and was deliberately not pushed; roughly 37 tickets sit in `in-review` and were not triaged.\n- open_escalations: leave empty.\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nTICKET_EVIDENCE_APPENDED: <ok|FAILED: error>\nTICKET_STATE_VERIFIED: <state read back from store>\nHANDOFF_RECORDED: <ok, id=<handoff id>|FAILED: error>\nHANDOFF_OBJECTIVE: <the objective string as stored>\nTOOLS_AVAILABLE: <yes|no>\n```\nNothing else.",
+      "captured_at": "2026-07-31T20:52:51.505Z",
+      "event_meta": {
+        "event_id": "b32a85d1-df92-449d-8667-32722b080fd0",
+        "parent_event_id": "dce58ddd-9ee5-4598-b147-f4ef73f05903",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01NfZ2PusY6wqvyX71DtaZQy"
+      }
+    },
+    {
+      "sequence": 115,
+      "role": "assistant",
+      "content": "Now appending the evidence to ticket 4ef88dbc, then checking for a session-mcp tool.",
+      "captured_at": "2026-07-31T20:53:15.303Z",
+      "event_meta": {
+        "event_id": "7d92540e-5397-4042-98b6-77e51e02207d",
+        "parent_event_id": "c4240722-a68e-4231-b80d-aaf0d1cb8f01",
+        "event_type": "assistant.message",
+        "message_id": "28c58068-777d-4db2-88ea-f00aef0a12a4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01EmwgwpGncCQ4CAEWJ25Gf3",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "id": "4ef88dbc-cb39-4724-9f2c-53ab09cf90c5",
+              "workspace": "default",
+              "description_mode": "append",
+              "description": "\n\n## Protocol correction: submodule deinit removed from teardown\n\nPost-merge sandbox research on git 2.54.0.windows.1 overturned a core assumption baked into the\noriginal teardown sequence and this ticket's own acceptance criteria (AC5, AC6).\n\n**Superseded teardown sequence** (originally documented and implemented):\n```\ngit submodule deinit --all --force\ngit worktree remove --force <path>\ngit worktree prune\ngit submodule init\ngit branch -d <branch>\n```\n\n**Corrected teardown sequence** (now implemented and documented):\n```\ngit worktree remove --force <path>\ngit worktree prune\ngit branch -d <branch>\n```\n\n**Empirical basis:** sandbox reproduction on git 2.54.0.windows.1 proved `git submodule deinit`\nis both unnecessary and the sole cause of shared-config corruption. `git worktree remove --force\n<path>` alone handles submodules — git's own docs state \"Unclean worktrees or ones with submodules\ncan be removed with --force.\" `extensions.worktreeConfig` does NOT isolate submodule config;\nsubmodule init/deinit always read and write the shared .git/config regardless of that setting.\n\n**Disproven hypothesis:** \"each submodule needs its own worktree\" was tested and disproven.\n`git -C <submodule> worktree add` works mechanically, but (1) the superproject still detects\nsubmodules structurally via the tracked .gitmodules file plus the submodule's nested .git file, so\nthe removal refusal still triggers; (2) `git submodule status` reports the submodule as\nuninitialized because it was never registered through the normal path; (3) each submodule worktree\nwould need its own separate teardown, multiplying the problem instead of solving it.\n\n**Fix applied:** commit 4909db52 (fix(tooling): drop harmful submodule deinit from worktree\nteardown) applied the corrected sequence across tools/worktree/worktree.sh,\n.agents/instructions/commit/branch-worktree.instructions.md, and .agents/agents/orchestrator.agent.md\nso all three now agree.\n\n**Validation:** sandbox reproduction of both the original failure mode and the fix; `bash -n`\nparse check; `--help`/`list`/`doctor` against the live repository; `--dry-run` proven non-mutating;\nthe in-worktree guard proven to refuse destructive operations; two real round-trips (`new\ntest0000 scratch` → `remove test0000-scratch`) against the live repository with the main\ncheckout's 5 submodules and all 5 `[submodule]` config sections verified intact afterward.\nEvidence commit b84506a3 (chore(tickets): record worktree helper protocol fix evidence) recorded\nthis in the ticket store. Superproject commit c6eb0a3a (memory-api submodule) was pushed to its\nown origin before the superproject push, per the \"submodules pushed before superproject\" rule."
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NfZ2PusY6wqvyX71DtaZQy"
+      }
+    },
+    {
+      "sequence": 116,
+      "role": "assistant",
+      "content": "Verify state wasn't changed, then attempt to locate a session-mcp handoff tool.",
+      "captured_at": "2026-07-31T20:53:19.267Z",
+      "event_meta": {
+        "event_id": "c6eea4cd-ab41-4396-8446-778a61b7a0bc",
+        "parent_event_id": "8ad28452-2d3e-42b7-8980-1650e76bd61d",
+        "event_type": "assistant.message",
+        "message_id": "00f1ed5b-38d1-46f7-a134-024e6ee6d40d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Hy8zXthVXKk1mTbHpmYiKn",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "id": "4ef88dbc-cb39-4724-9f2c-53ab09cf90c5",
+              "view": "summary",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NfZ2PusY6wqvyX71DtaZQy"
+      }
+    },
+    {
+      "sequence": 117,
+      "role": "assistant",
+      "content": "State confirmed as `in-review`. Now searching for a session-mcp handoff tool.",
+      "captured_at": "2026-07-31T20:53:37.382Z",
+      "event_meta": {
+        "event_id": "b2a2ab8a-394a-4542-8d79-613fc47ff082",
+        "parent_event_id": "4587ef0b-6b15-48b3-86fd-91cd0adee552",
+        "event_type": "assistant.message",
+        "message_id": "eb8bf735-72f1-4425-b3ce-36f342a5bce3",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_017uhQRUHkx4Nt4c4V5kYnyk",
+            "name": "mcp_ticket-mcp_help",
+            "arguments": {
+              "caller_model": "claude-sonnet-5"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NfZ2PusY6wqvyX71DtaZQy"
+      }
+    },
+    {
+      "sequence": 118,
+      "role": "assistant",
+      "content": "Ticket evidence appended and verified. However, no `session-mcp` tool is present in this session's available tools — the ticket-mcp tool surface returned above is the complete tool list, and no `tool_search` function is available to load additional deferred tools. I cannot perform Task 2.\n\n```\nTICKET_EVIDENCE_APPENDED: ok\nTICKET_STATE_VERIFIED: in-review\nHANDOFF_RECORDED: FAILED: no session-mcp tool is available in this session (tool surface contains only ticket-mcp operations: health, list_workspaces, list_tickets, get_ticket, get_ticket_description, create_ticket, delete_ticket, list_edges, add_edge, remove_edge, prune_dangling_edges, subgraph, topgraph, health_check, update_ticket, close_ticket, cancel_ticket, workflow, next_tickets, board_*, list_parts, get_part, write_part, write_amendment, undo_part — no session_handoff or equivalent tool exists)\nHANDOFF_OBJECTIVE: N/A — not recorded\nTOOLS_AVAILABLE: no\n```",
+      "captured_at": "2026-07-31T20:53:47.022Z",
+      "event_meta": {
+        "event_id": "1ee34b86-85cc-47bf-99c4-2cb586ebe228",
+        "parent_event_id": "c71d565a-63e8-4dbb-9f5e-a34a55f800cd",
+        "event_type": "assistant.message",
+        "message_id": "7447a970-7b9c-4b4e-af16-f2677fa7b392",
+        "reasoning_text": "I'm checking whether the session-mcp tool is available in this environment, but it's not showing up in either the loaded tools or the deferred tools list, so I'll need to report that session handoff isn't supported here.",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01NfZ2PusY6wqvyX71DtaZQy"
+      }
+    },
+    {
+      "sequence": 119,
+      "role": "assistant",
+      "content": "Honest failure — that template lacked session tools. Retrying once with a different template.",
+      "captured_at": "2026-07-31T20:54:18.385Z",
+      "event_meta": {
+        "event_id": "71a67578-bb58-4019-b4cf-e1a31861952a",
+        "parent_event_id": "a65cc62f-eda1-46ad-9ce0-e71bee6f51fe",
+        "event_type": "assistant.message",
+        "message_id": "f6251dd7-f9a1-40e6-bf41-ba394643d8e5",
+        "reasoning_text": "The session-mcp tool isn't available in the current agent template, so I need to switch to a different agent that has access to it. The Implement Agent worked with other MCPs before, so let me try that one explicitly with the session tools.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01G7K574a1gu2uPhV1vWPxea",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Implement Agent",
+              "description": "Record session handoff",
+              "model": "GPT-5.4 mini (copilot)",
+              "prompt": "You are recording a durable session handoff record. You have NO prior context; everything you need is below. Do not edit source code.\n\nWORKSPACE: c:/Users/linus/git/graph_app/context-engine\n\nREQUIRED TOOL: the session-mcp handoff tool, named `mcp_session-mcp_session_handoff`. It may be a DEFERRED tool — if you have a `tool_search` capability, use it FIRST to load session-mcp tools (search for something like \"session handoff durable workflow\"). A previous agent failed this task because it did not have session-mcp loaded. If after attempting to load it the tool genuinely does not exist, report that honestly rather than inventing a substitute.\n\nYou will likely need a `workspace_session_id`. If `mcp_session-mcp_session_handoff` requires one and you do not have it, first call `mcp_session-mcp_session_runtime_init` with workspace \"c:/Users/linus/git/graph_app/context-engine\" to obtain or create the runtime session, then use the returned session id.\n\n=== CALL session_handoff WITH THESE EXACT FIELDS ===\n\nworkspace: c:/Users/linus/git/graph_app/context-engine\n\nobjective:\n\"Deduplicate the stale board module in memory-kernel (ticket c320708d) — confirm there are no live callers of memory-kernel/src/storage/board.rs, then either delete it or make it re-export the memory-api definitions, and prove cargo check passes workspace-wide.\"\n\ntarget_tickets:\n[\"c320708d-8dc1-46e2-ab5d-9903460ae27a\"]\n\ntarget_files:\n[\"memory-kernel/src/storage/board.rs\", \"memory-api/crates/memory-api/src/storage/board.rs\"]\n\ncontext_anchors (one string per entry):\n- \"main is at b84506a3 and fully pushed to origin/main; submodule memory-api commit c6eb0a3a was pushed to its own origin before the superproject, repairing a pointer that previously resolved only on this machine.\"\n- \"Commits this session: bb0b0ca3 feat(tooling): add git-worktree helper script; a415b25c chore(tickets): add worktree helper and board dedup tickets; 4909db52 fix(tooling): drop harmful submodule deinit from worktree teardown; b84506a3 chore(tickets): record worktree helper protocol fix evidence.\"\n- \"LIVE board module: memory-api/crates/memory-api/src/storage/board.rs, 425 lines, defines BoardEntry, BoardEntryStatus, BoardConfig, BoardSnapshot, ActiveWorktree, BoardHistorySnapshot, BoardCleanPreview, BoardCleanResult, ReconcileAction, BoardReconcileResult, BoardError.\"\n- \"STALE duplicate: memory-kernel/src/storage/board.rs, 295 lines, same set MINUS ActiveWorktree. It is off the live call path.\"\n- \"The divergence was introduced by ticket c060bf94, which added session_id/worktree_path/branch fields to BoardEntry plus the ActiveWorktree type, a WorktreeConflict error, and board_worktrees MCP/CLI surfaces — all applied to the memory-api copy only.\"\n- \"The user explicitly confirmed this duplication is NOT intentional, which is why ticket c320708d exists.\"\n- \"New tooling available: tools/worktree/worktree.sh with subcommands new, list, rebase, merge, remove, doctor; --dry-run on every mutating subcommand; refuses destructive operations from inside a linked worktree.\"\n- \"Environment quirk: a new worktree's submodule init can fail to find a memory-api commit that exists only in the main checkout's clone; worktree.sh new self-repairs this by fetching from the main checkout's submodule.\"\n\ndecisions (one string per entry):\n- \"Worktree teardown is now: git worktree remove --force <path>; git worktree prune; git branch -d <branch>. The former submodule deinit and submodule init repair steps were removed.\"\n- \"git submodule deinit must NEVER be run inside a linked worktree: it rewrites submodule.* in the SHARED .git/config and silently deinitializes the main checkout's submodules. git worktree remove --force handles submodules directly, per git's documentation.\"\n- \"extensions.worktreeConfig does not help — submodule init/deinit always read and write the shared .git/config regardless of that setting.\"\n- \"The hypothesis that each submodule needs its own worktree is DISPROVEN: the superproject still detects submodules structurally so the removal refusal still triggers, git submodule status reports the submodule uninitialized because it was never registered, and every submodule worktree needs its own separate teardown.\"\n- \"Submodules must always be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\"\n\nnon_goals:\n- \"Wiring tools/worktree/worktree.sh into install-tools.sh.\"\n- \"Triaging the broader in-review ticket backlog.\"\n- \"Pushing the backup/pre-lockfile-rebase branch.\"\n\nrisk_notes:\n\"shellcheck is NOT installed in this environment, so tools/worktree/worktree.sh has no lint coverage beyond bash -n. The parent repository at c:/Users/linus/git/graph_app tracks context-engine as a submodule and its pointer was NOT bumped this session. The local branch backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in in-review and were not triaged.\"\n\nvalidation (each entry needs a validation_spec_id and a command; invent stable descriptive ids if the store has none):\n- id \"worktree-script-parse\", command \"bash -n tools/worktree/worktree.sh\"\n- id \"worktree-script-doctor\", command \"bash tools/worktree/worktree.sh doctor\"\n- id \"workspace-cargo-check\", command \"cargo check --workspace\"\n\nopen_escalations: [] (empty)\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nSESSION_TOOLS_LOADED: <yes via tool_search|yes already present|NO — unavailable>\nRUNTIME_INIT: <ok, session id=<id>|not needed|FAILED: error>\nHANDOFF_RECORDED: <ok, id=<handoff id>|FAILED: exact error>\nFIELDS_STORED: <objective/target_tickets/target_files/context_anchors(n)/decisions(n)/non_goals(n)/validation(n) — confirm counts as actually stored>\n```\nNothing else.\n"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NfZ2PusY6wqvyX71DtaZQy"
+      }
+    },
+    {
+      "sequence": 120,
+      "role": "user",
+      "content": "You are recording a durable session handoff record. You have NO prior context; everything you need is below. Do not edit source code.\n\nWORKSPACE: c:/Users/linus/git/graph_app/context-engine\n\nREQUIRED TOOL: the session-mcp handoff tool, named `mcp_session-mcp_session_handoff`. It may be a DEFERRED tool — if you have a `tool_search` capability, use it FIRST to load session-mcp tools (search for something like \"session handoff durable workflow\"). A previous agent failed this task because it did not have session-mcp loaded. If after attempting to load it the tool genuinely does not exist, report that honestly rather than inventing a substitute.\n\nYou will likely need a `workspace_session_id`. If `mcp_session-mcp_session_handoff` requires one and you do not have it, first call `mcp_session-mcp_session_runtime_init` with workspace \"c:/Users/linus/git/graph_app/context-engine\" to obtain or create the runtime session, then use the returned session id.\n\n=== CALL session_handoff WITH THESE EXACT FIELDS ===\n\nworkspace: c:/Users/linus/git/graph_app/context-engine\n\nobjective:\n\"Deduplicate the stale board module in memory-kernel (ticket c320708d) — confirm there are no live callers of memory-kernel/src/storage/board.rs, then either delete it or make it re-export the memory-api definitions, and prove cargo check passes workspace-wide.\"\n\ntarget_tickets:\n[\"c320708d-8dc1-46e2-ab5d-9903460ae27a\"]\n\ntarget_files:\n[\"memory-kernel/src/storage/board.rs\", \"memory-api/crates/memory-api/src/storage/board.rs\"]\n\ncontext_anchors (one string per entry):\n- \"main is at b84506a3 and fully pushed to origin/main; submodule memory-api commit c6eb0a3a was pushed to its own origin before the superproject, repairing a pointer that previously resolved only on this machine.\"\n- \"Commits this session: bb0b0ca3 feat(tooling): add git-worktree helper script; a415b25c chore(tickets): add worktree helper and board dedup tickets; 4909db52 fix(tooling): drop harmful submodule deinit from worktree teardown; b84506a3 chore(tickets): record worktree helper protocol fix evidence.\"\n- \"LIVE board module: memory-api/crates/memory-api/src/storage/board.rs, 425 lines, defines BoardEntry, BoardEntryStatus, BoardConfig, BoardSnapshot, ActiveWorktree, BoardHistorySnapshot, BoardCleanPreview, BoardCleanResult, ReconcileAction, BoardReconcileResult, BoardError.\"\n- \"STALE duplicate: memory-kernel/src/storage/board.rs, 295 lines, same set MINUS ActiveWorktree. It is off the live call path.\"\n- \"The divergence was introduced by ticket c060bf94, which added session_id/worktree_path/branch fields to BoardEntry plus the ActiveWorktree type, a WorktreeConflict error, and board_worktrees MCP/CLI surfaces — all applied to the memory-api copy only.\"\n- \"The user explicitly confirmed this duplication is NOT intentional, which is why ticket c320708d exists.\"\n- \"New tooling available: tools/worktree/worktree.sh with subcommands new, list, rebase, merge, remove, doctor; --dry-run on every mutating subcommand; refuses destructive operations from inside a linked worktree.\"\n- \"Environment quirk: a new worktree's submodule init can fail to find a memory-api commit that exists only in the main checkout's clone; worktree.sh new self-repairs this by fetching from the main checkout's submodule.\"\n\ndecisions (one string per entry):\n- \"Worktree teardown is now: git worktree remove --force <path>; git worktree prune; git branch -d <branch>. The former submodule deinit and submodule init repair steps were removed.\"\n- \"git submodule deinit must NEVER be run inside a linked worktree: it rewrites submodule.* in the SHARED .git/config and silently deinitializes the main checkout's submodules. git worktree remove --force handles submodules directly, per git's documentation.\"\n- \"extensions.worktreeConfig does not help — submodule init/deinit always read and write the shared .git/config regardless of that setting.\"\n- \"The hypothesis that each submodule needs its own worktree is DISPROVEN: the superproject still detects submodules structurally so the removal refusal still triggers, git submodule status reports the submodule uninitialized because it was never registered, and every submodule worktree needs its own separate teardown.\"\n- \"Submodules must always be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\"\n\nnon_goals:\n- \"Wiring tools/worktree/worktree.sh into install-tools.sh.\"\n- \"Triaging the broader in-review ticket backlog.\"\n- \"Pushing the backup/pre-lockfile-rebase branch.\"\n\nrisk_notes:\n\"shellcheck is NOT installed in this environment, so tools/worktree/worktree.sh has no lint coverage beyond bash -n. The parent repository at c:/Users/linus/git/graph_app tracks context-engine as a submodule and its pointer was NOT bumped this session. The local branch backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in in-review and were not triaged.\"\n\nvalidation (each entry needs a validation_spec_id and a command; invent stable descriptive ids if the store has none):\n- id \"worktree-script-parse\", command \"bash -n tools/worktree/worktree.sh\"\n- id \"worktree-script-doctor\", command \"bash tools/worktree/worktree.sh doctor\"\n- id \"workspace-cargo-check\", command \"cargo check --workspace\"\n\nopen_escalations: [] (empty)\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nSESSION_TOOLS_LOADED: <yes via tool_search|yes already present|NO — unavailable>\nRUNTIME_INIT: <ok, session id=<id>|not needed|FAILED: error>\nHANDOFF_RECORDED: <ok, id=<handoff id>|FAILED: exact error>\nFIELDS_STORED: <objective/target_tickets/target_files/context_anchors(n)/decisions(n)/non_goals(n)/validation(n) — confirm counts as actually stored>\n```\nNothing else.",
+      "captured_at": "2026-07-31T20:54:21.743Z",
+      "event_meta": {
+        "event_id": "4a910249-9d68-41e7-a8a5-5d9153c88b9c",
+        "parent_event_id": "815fe0a9-8dae-4196-9e0b-6d5f873ab2fc",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01G7K574a1gu2uPhV1vWPxea"
+      }
+    },
+    {
+      "sequence": 121,
+      "role": "assistant",
+      "content": "The requested `session-mcp` handoff tool is not available on this surface, and there is no `tool_search` capability here to load it first. I’m checking whether any session runtime or handoff endpoint exists in the loaded toolset; if not, I’ll report the exact limitation rather than inventing a substitute.SESSION_TOOLS_LOADED: NO — unavailable\nRUNTIME_INIT: not needed\nHANDOFF_RECORDED: FAILED: session-mcp tools are unavailable on this surface; no mcp_session-mcp_session_handoff or mcp_session-mcp_session_runtime_init tool is present\nFIELDS_STORED: objective/target_tickets/target_files/context_anchors(0)/decisions(0)/non_goals(0)/validation(0) — no fields stored",
+      "captured_at": "2026-07-31T20:54:31.694Z",
+      "event_meta": {
+        "event_id": "011dfda8-9d2a-4190-b547-2d091fa8c637",
+        "parent_event_id": "fdcecf43-5fc9-4dba-b0cd-1de5ea5928f0",
+        "event_type": "assistant.message",
+        "message_id": "1cfaeb84-d2a1-4b83-ad5f-8aabbc4ce93c",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01G7K574a1gu2uPhV1vWPxea"
+      }
+    },
+    {
+      "sequence": 122,
+      "role": "assistant",
+      "content": "Session-mcp isn't exposed to sub-agents on this surface — two templates, same result. Falling back to the ticket store, which is durable and is where the next session will look anyway.",
+      "captured_at": "2026-07-31T20:55:01.379Z",
+      "event_meta": {
+        "event_id": "3d100038-8fab-4ada-97f9-83fdc6cdde1f",
+        "parent_event_id": "763c3bad-0c90-46d4-851d-8c64a93389bf",
+        "event_type": "assistant.message",
+        "message_id": "2ed2f900-5ab3-423f-a278-5cacee135cf7",
+        "reasoning_text": "The delegation approach won't work since session-mcp isn't available to sub-agents, so I need to handle this inline despite having no tools in the orchestrator. The ticket store is accessible though, so I can write the handoff content directly into ticket c320708d's description as a durable, discoverable record for the next session.\n\nI'll keep this efficient by using GPT-4 mini since ticket-mcp is confirmed working, then report back.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01NxSfxF3v6L5WzR1vUskuFf",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Implement Agent",
+              "description": "Write handoff to ticket",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are writing a handoff package into a ticket description. You have NO prior context; everything you need is below. Use the ticket-mcp tools (mcp_ticket-mcp_*). Do not edit source code.\n\nWORKSPACE: \"default\" (repository at c:/Users/linus/git/graph_app/context-engine)\nTARGET TICKET: c320708d-8dc1-46e2-ab5d-9903460ae27a\n\nHONESTY REQUIREMENT: if a tool call fails, report it verbatim and mark the field FAILED. Do not claim a mutation you did not perform. Verify by reading the ticket back afterward.\n\nCONTEXT: the durable session-handoff store is unavailable on this surface, so this handoff is being recorded on the ticket that represents the next unit of work instead.\n\nTASK: append EXACTLY the following markdown to ticket c320708d's description using description_mode \"append\" (never \"replace\"). Do not reword, summarize, or reformat it. Do not change the ticket's state.\n\n---BEGIN APPEND---\n\n## Handoff package (from the worktree-helper session)\n\n**Next objective:** confirm there are no live callers of `memory-kernel/src/storage/board.rs`, then either delete it or make it re-export the memory-api definitions, and prove `cargo check --workspace` passes.\n\n**Repository state at handoff:** `main` is at `b84506a3`, fully pushed to `origin/main`. Submodule `memory-api` commit `c6eb0a3a` was pushed to its own origin *before* the superproject, repairing a pointer that previously resolved only on the original machine. All five submodules are healthy and in sync.\n\n**Commits from that session:**\n- `bb0b0ca3` feat(tooling): add git-worktree helper script for agent isolation protocol\n- `a415b25c` chore(tickets): add worktree helper script and board dedup tickets\n- `4909db52` fix(tooling): drop harmful submodule deinit from worktree teardown\n- `b84506a3` chore(tickets): record worktree helper protocol fix evidence\n\n**The duplication to resolve:**\n- LIVE: `memory-api/crates/memory-api/src/storage/board.rs` — 425 lines; defines `BoardEntry`, `BoardEntryStatus`, `BoardConfig`, `BoardSnapshot`, `ActiveWorktree`, `BoardHistorySnapshot`, `BoardCleanPreview`, `BoardCleanResult`, `ReconcileAction`, `BoardReconcileResult`, `BoardError`.\n- STALE: `memory-kernel/src/storage/board.rs` — 295 lines; the same set **minus** `ActiveWorktree`. Off the live call path.\n- Cause of divergence: ticket `c060bf94` added `session_id`/`worktree_path`/`branch` to `BoardEntry`, plus the `ActiveWorktree` type, a `WorktreeConflict` error, and `board_worktrees` MCP/CLI surfaces — all applied to the memory-api copy only.\n- The user explicitly confirmed this duplication is **not** intentional.\n\n**Decisions carried forward:**\n- Worktree teardown is now `git worktree remove --force <path>` → `git worktree prune` → `git branch -d <branch>`. The former `submodule deinit` and `submodule init` repair steps were removed.\n- `git submodule deinit` must NEVER run inside a linked worktree: it rewrites `submodule.*` in the SHARED `.git/config` and silently deinitializes the main checkout's submodules. `git worktree remove --force` handles submodules directly, per git's own documentation.\n- `extensions.worktreeConfig` does not help — submodule init/deinit always read and write the shared `.git/config` regardless.\n- The \"each submodule needs its own worktree\" hypothesis is DISPROVEN: the superproject still detects submodules structurally so the removal refusal still triggers; `git submodule status` reports the submodule uninitialized because it was never registered; and every submodule worktree needs its own separate teardown.\n- Submodules must always be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\n\n**Tooling now available:** `tools/worktree/worktree.sh` — subcommands `new`, `list`, `rebase`, `merge`, `remove`, `doctor`; `--dry-run` on every mutating subcommand; refuses destructive operations from inside a linked worktree. Known quirk it self-repairs: a new worktree's submodule init can fail to find a memory-api commit present only in the main checkout's clone.\n\n**Validation commands:** `bash -n tools/worktree/worktree.sh`; `bash tools/worktree/worktree.sh doctor`; `cargo check --workspace`.\n\n**Non-goals:** wiring `worktree.sh` into `install-tools.sh`; triaging the in-review ticket backlog; pushing the `backup/pre-lockfile-rebase` branch.\n\n**Risks / open items:** `shellcheck` is NOT installed in this environment, so `worktree.sh` has no lint coverage beyond `bash -n`. The parent repository at `c:/Users/linus/git/graph_app` tracks context-engine as a submodule and its pointer was NOT bumped. The local branch `backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439` is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in `in-review` and were not triaged.\n\n---END APPEND---\n\nThen read the ticket back and confirm the append landed and the state is unchanged.\n\nRETURN CONTRACT — return ONLY:\n```\nAPPEND: <ok|FAILED: exact error>\nTICKET_STATE_AFTER: <state read back from store>\nAPPEND_VERIFIED_IN_STORE: <yes — handoff section present on re-read|no>\n```\nNothing else.\n"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01G7K574a1gu2uPhV1vWPxea"
+      }
+    },
+    {
+      "sequence": 123,
+      "role": "user",
+      "content": "You are writing a handoff package into a ticket description. You have NO prior context; everything you need is below. Use the ticket-mcp tools (mcp_ticket-mcp_*). Do not edit source code.\n\nWORKSPACE: \"default\" (repository at c:/Users/linus/git/graph_app/context-engine)\nTARGET TICKET: c320708d-8dc1-46e2-ab5d-9903460ae27a\n\nHONESTY REQUIREMENT: if a tool call fails, report it verbatim and mark the field FAILED. Do not claim a mutation you did not perform. Verify by reading the ticket back afterward.\n\nCONTEXT: the durable session-handoff store is unavailable on this surface, so this handoff is being recorded on the ticket that represents the next unit of work instead.\n\nTASK: append EXACTLY the following markdown to ticket c320708d's description using description_mode \"append\" (never \"replace\"). Do not reword, summarize, or reformat it. Do not change the ticket's state.\n\n---BEGIN APPEND---\n\n## Handoff package (from the worktree-helper session)\n\n**Next objective:** confirm there are no live callers of `memory-kernel/src/storage/board.rs`, then either delete it or make it re-export the memory-api definitions, and prove `cargo check --workspace` passes.\n\n**Repository state at handoff:** `main` is at `b84506a3`, fully pushed to `origin/main`. Submodule `memory-api` commit `c6eb0a3a` was pushed to its own origin *before* the superproject, repairing a pointer that previously resolved only on the original machine. All five submodules are healthy and in sync.\n\n**Commits from that session:**\n- `bb0b0ca3` feat(tooling): add git-worktree helper script for agent isolation protocol\n- `a415b25c` chore(tickets): add worktree helper script and board dedup tickets\n- `4909db52` fix(tooling): drop harmful submodule deinit from worktree teardown\n- `b84506a3` chore(tickets): record worktree helper protocol fix evidence\n\n**The duplication to resolve:**\n- LIVE: `memory-api/crates/memory-api/src/storage/board.rs` — 425 lines; defines `BoardEntry`, `BoardEntryStatus`, `BoardConfig`, `BoardSnapshot`, `ActiveWorktree`, `BoardHistorySnapshot`, `BoardCleanPreview`, `BoardCleanResult`, `ReconcileAction`, `BoardReconcileResult`, `BoardError`.\n- STALE: `memory-kernel/src/storage/board.rs` — 295 lines; the same set **minus** `ActiveWorktree`. Off the live call path.\n- Cause of divergence: ticket `c060bf94` added `session_id`/`worktree_path`/`branch` to `BoardEntry`, plus the `ActiveWorktree` type, a `WorktreeConflict` error, and `board_worktrees` MCP/CLI surfaces — all applied to the memory-api copy only.\n- The user explicitly confirmed this duplication is **not** intentional.\n\n**Decisions carried forward:**\n- Worktree teardown is now `git worktree remove --force <path>` → `git worktree prune` → `git branch -d <branch>`. The former `submodule deinit` and `submodule init` repair steps were removed.\n- `git submodule deinit` must NEVER run inside a linked worktree: it rewrites `submodule.*` in the SHARED `.git/config` and silently deinitializes the main checkout's submodules. `git worktree remove --force` handles submodules directly, per git's own documentation.\n- `extensions.worktreeConfig` does not help — submodule init/deinit always read and write the shared `.git/config` regardless.\n- The \"each submodule needs its own worktree\" hypothesis is DISPROVEN: the superproject still detects submodules structurally so the removal refusal still triggers; `git submodule status` reports the submodule uninitialized because it was never registered; and every submodule worktree needs its own separate teardown.\n- Submodules must always be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\n\n**Tooling now available:** `tools/worktree/worktree.sh` — subcommands `new`, `list`, `rebase`, `merge`, `remove`, `doctor`; `--dry-run` on every mutating subcommand; refuses destructive operations from inside a linked worktree. Known quirk it self-repairs: a new worktree's submodule init can fail to find a memory-api commit present only in the main checkout's clone.\n\n**Validation commands:** `bash -n tools/worktree/worktree.sh`; `bash tools/worktree/worktree.sh doctor`; `cargo check --workspace`.\n\n**Non-goals:** wiring `worktree.sh` into `install-tools.sh`; triaging the in-review ticket backlog; pushing the `backup/pre-lockfile-rebase` branch.\n\n**Risks / open items:** `shellcheck` is NOT installed in this environment, so `worktree.sh` has no lint coverage beyond `bash -n`. The parent repository at `c:/Users/linus/git/graph_app` tracks context-engine as a submodule and its pointer was NOT bumped. The local branch `backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439` is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in `in-review` and were not triaged.\n\n---END APPEND---\n\nThen read the ticket back and confirm the append landed and the state is unchanged.\n\nRETURN CONTRACT — return ONLY:\n```\nAPPEND: <ok|FAILED: exact error>\nTICKET_STATE_AFTER: <state read back from store>\nAPPEND_VERIFIED_IN_STORE: <yes — handoff section present on re-read|no>\n```\nNothing else.",
+      "captured_at": "2026-07-31T20:55:04.522Z",
+      "event_meta": {
+        "event_id": "b5164e22-6047-4dae-9ab1-583dcc665b5e",
+        "parent_event_id": "e14cd01e-75be-4313-a67a-eacb91993722",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 124,
+      "role": "assistant",
+      "content": "I'll fetch the ticket context first, then attempt the append and re-read to verify.",
+      "captured_at": "2026-07-31T20:55:27.640Z",
+      "event_meta": {
+        "event_id": "3ab1752c-6664-4784-81b2-a8fb588c5c7e",
+        "parent_event_id": "e5379a7a-4353-4ab8-9905-88224459e427",
+        "event_type": "assistant.message",
+        "message_id": "3e7c9c53-22f0-4288-b54c-d793e2f5cb67",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_gFeM1kksAuUF8KR88PdooQfO",
+            "name": "mcp_ticket-mcp_workflow",
+            "arguments": {
+              "caller_model": "GPT-5 mini",
+              "id": "c320708d-8dc1-46e2-ab5d-9903460ae27a",
+              "name": "fetch_ticket_context",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 125,
+      "role": "assistant",
+      "content": "Next I'll query ticket capabilities to locate an update operation.",
+      "captured_at": "2026-07-31T20:55:44.736Z",
+      "event_meta": {
+        "event_id": "65df1dfb-d3a1-45e1-b862-d27f57f5d769",
+        "parent_event_id": "689f93f6-e135-4351-8d65-291d8a2a8980",
+        "event_type": "assistant.message",
+        "message_id": "a88ed630-4c0a-4891-a708-30c57ee980c0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_lF0GUTvc9dydmmP3vQyRsoE5",
+            "name": "mcp_ticket-mcp_ticket_capabilities",
+            "arguments": {
+              "caller_model": "GPT-5 mini"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 126,
+      "role": "assistant",
+      "content": "I'll call the ticket update MCP to append the provided markdown to the ticket description.",
+      "captured_at": "2026-07-31T20:55:58.988Z",
+      "event_meta": {
+        "event_id": "24d6e552-e884-46d6-9891-49ab7931a3fe",
+        "parent_event_id": "2f9ffff2-856b-4598-9477-21ca6a303f90",
+        "event_type": "assistant.message",
+        "message_id": "f71376a0-b2f2-468b-a01b-345fd7b78327",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eX6KWBEklw5ELuwYirEmNGk5",
+            "name": "mcp_ticket-mcp_workflow",
+            "arguments": {
+              "caller_model": "GPT-5 mini",
+              "id": "c320708d-8dc1-46e2-ab5d-9903460ae27a",
+              "name": "mutate",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 127,
+      "role": "assistant",
+      "content": "Now I'll call `update_ticket` to append the exact markdown to the description.",
+      "captured_at": "2026-07-31T20:56:03.250Z",
+      "event_meta": {
+        "event_id": "e2226519-905d-42c4-aa1d-0ed1e1772d88",
+        "parent_event_id": "7addda73-74ba-4b75-91a4-a1027a9da97d",
+        "event_type": "assistant.message",
+        "message_id": "c5011268-96e1-4f1f-ad4b-96fafeb901f9",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_gFRxfpaRvYVaDVmmPykTaMc7",
+            "name": "mcp_ticket-mcp_workflow",
+            "arguments": {
+              "caller_model": "GPT-5 mini",
+              "id": "c320708d-8dc1-46e2-ab5d-9903460ae27a",
+              "name": "update_ticket",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 128,
+      "role": "assistant",
+      "content": "Attempting direct ticket update via `update_ticket` MCP call.",
+      "captured_at": "2026-07-31T20:56:23.924Z",
+      "event_meta": {
+        "event_id": "6f931d5f-cbc0-4508-9fa6-6d7a4c46a87d",
+        "parent_event_id": "730fec7e-f6eb-4d06-a167-b1a4ea5c89e3",
+        "event_type": "assistant.message",
+        "message_id": "8ccc1fc3-58fe-4eed-ac22-5ff8d9a35cc0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_QDYfaPtBMrigWN4UVeZYvNuR",
+            "name": "mcp_ticket-mcp_board_show",
+            "arguments": {
+              "caller_model": "GPT-5 mini",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 129,
+      "role": "assistant",
+      "content": "I'll fetch the current ticket description to append safely by replacing with the old+new content.",
+      "captured_at": "2026-07-31T20:56:39.026Z",
+      "event_meta": {
+        "event_id": "a27c8456-1e65-469b-9e9a-61cb5559a465",
+        "parent_event_id": "5a219940-4c87-448a-be05-f2367b091da8",
+        "event_type": "assistant.message",
+        "message_id": "ea217cad-f1ec-4db5-80c1-ad43dac0f15e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_e1AvxzT5e2oAgTKPOxoronF2",
+            "name": "mcp_ticket-mcp_board_show",
+            "arguments": {
+              "caller_model": "GPT-5 mini",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 130,
+      "role": "assistant",
+      "content": "I'll read the ticket manifest file to get its current state.",
+      "captured_at": "2026-07-31T20:58:14.786Z",
+      "event_meta": {
+        "event_id": "48b15589-f691-4964-b5e6-d544b25d45a7",
+        "parent_event_id": "cbb1aace-1301-45cb-bd21-fd8318380492",
+        "event_type": "assistant.message",
+        "message_id": "b99f83df-79d0-468f-bd83-7fb01938c5cb",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_grO7ypuqs9hXaqvZbCQHgDzi",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/graph_app/context-engine/.ticket/tickets/c320708d-8dc1-46e2-ab5d-9903460ae27a/ticket.toml",
+              "startLine": 1,
+              "endLine": 400
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 131,
+      "role": "assistant",
+      "content": "APPEND: FAILED: ERROR: Your input to the tool was invalid (must be equal to one of the allowed values)\nPlease check your input and try again.\nTICKET_STATE_AFTER: open\nAPPEND_VERIFIED_IN_STORE: no",
+      "captured_at": "2026-07-31T20:58:30.457Z",
+      "event_meta": {
+        "event_id": "73d82cc8-943d-484b-b35b-7db47f899e67",
+        "parent_event_id": "d85b8754-607b-495f-a017-2b45f9be6ecc",
+        "event_type": "assistant.message",
+        "message_id": "012acbe5-16b7-46e2-8b4d-f5e7b0e9b557",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01NxSfxF3v6L5WzR1vUskuFf"
+      }
+    },
+    {
+      "sequence": 132,
+      "role": "user",
+      "content": "You are appending text to a ticket description. You have NO prior context. A previous attempt failed with: `ERROR: Your input to the tool was invalid (must be equal to one of the allowed values)` — so pay close attention to exact parameter names and allowed values.\n\nTOOL TO USE: `mcp_ticket-mcp_update_ticket`\nPARAMETERS (use exactly these names):\n- `workspace`: \"default\"\n- `id`: \"c320708d-8dc1-46e2-ab5d-9903460ae27a\"\n- `description`: the markdown block below\n- `description_mode`: \"append\"   ← allowed values are exactly \"replace\" and \"append\"; there is no default\n- `caller_model`: \"claude-sonnet-5\"   ← must be a real price-table model id, NOT a vendor label like \"copilot\"\n\nDo NOT pass `to_state`, `fields`, `field_map`, `transition_states`, or any other optional parameter — passing an unexpected or wrongly-valued optional parameter is the most likely cause of the previous failure. Send only the five parameters listed above.\n\nIf it still fails, call `mcp_ticket-mcp_help` to read the tool's actual accepted parameters and allowed values, then retry once with corrected arguments. Report the exact error text if it fails again. Do NOT change the ticket's state under any circumstance.\n\nDESCRIPTION TO APPEND (verbatim, do not reword or reformat):\n\n## Handoff package (from the worktree-helper session)\n\n**Next objective:** confirm there are no live callers of `memory-kernel/src/storage/board.rs`, then either delete it or make it re-export the memory-api definitions, and prove `cargo check --workspace` passes.\n\n**Repository state at handoff:** `main` is at `b84506a3`, fully pushed to `origin/main`. Submodule `memory-api` commit `c6eb0a3a` was pushed to its own origin *before* the superproject, repairing a pointer that previously resolved only on the original machine. All five submodules are healthy and in sync.\n\n**Commits from that session:**\n- `bb0b0ca3` feat(tooling): add git-worktree helper script for agent isolation protocol\n- `a415b25c` chore(tickets): add worktree helper script and board dedup tickets\n- `4909db52` fix(tooling): drop harmful submodule deinit from worktree teardown\n- `b84506a3` chore(tickets): record worktree helper protocol fix evidence\n\n**The duplication to resolve:**\n- LIVE: `memory-api/crates/memory-api/src/storage/board.rs` — 425 lines; defines `BoardEntry`, `BoardEntryStatus`, `BoardConfig`, `BoardSnapshot`, `ActiveWorktree`, `BoardHistorySnapshot`, `BoardCleanPreview`, `BoardCleanResult`, `ReconcileAction`, `BoardReconcileResult`, `BoardError`.\n- STALE: `memory-kernel/src/storage/board.rs` — 295 lines; the same set **minus** `ActiveWorktree`. Off the live call path.\n- Cause of divergence: ticket `c060bf94` added `session_id`/`worktree_path`/`branch` to `BoardEntry`, plus the `ActiveWorktree` type, a `WorktreeConflict` error, and `board_worktrees` MCP/CLI surfaces — all applied to the memory-api copy only.\n- The user explicitly confirmed this duplication is **not** intentional.\n\n**Decisions carried forward:**\n- Worktree teardown is now `git worktree remove --force <path>` then `git worktree prune` then `git branch -d <branch>`. The former `submodule deinit` and `submodule init` repair steps were removed.\n- `git submodule deinit` must NEVER run inside a linked worktree: it rewrites `submodule.*` in the SHARED `.git/config` and silently deinitializes the main checkout's submodules. `git worktree remove --force` handles submodules directly, per git's own documentation.\n- `extensions.worktreeConfig` does not help — submodule init/deinit always read and write the shared `.git/config` regardless.\n- The \"each submodule needs its own worktree\" hypothesis is DISPROVEN: the superproject still detects submodules structurally so the removal refusal still triggers; `git submodule status` reports the submodule uninitialized because it was never registered; and every submodule worktree needs its own separate teardown.\n- Submodules must always be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\n\n**Tooling now available:** `tools/worktree/worktree.sh` — subcommands `new`, `list`, `rebase`, `merge`, `remove`, `doctor`; `--dry-run` on every mutating subcommand; refuses destructive operations from inside a linked worktree. Known quirk it self-repairs: a new worktree's submodule init can fail to find a memory-api commit present only in the main checkout's clone.\n\n**Validation commands:** `bash -n tools/worktree/worktree.sh`; `bash tools/worktree/worktree.sh doctor`; `cargo check --workspace`.\n\n**Non-goals:** wiring `worktree.sh` into `install-tools.sh`; triaging the in-review ticket backlog; pushing the `backup/pre-lockfile-rebase` branch.\n\n**Risks / open items:** `shellcheck` is NOT installed in this environment, so `worktree.sh` has no lint coverage beyond `bash -n`. The parent repository at `c:/Users/linus/git/graph_app` tracks context-engine as a submodule and its pointer was NOT bumped. The local branch `backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439` is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in `in-review` and were not triaged.\n\nAFTER the call: read the ticket back with `mcp_ticket-mcp_get_ticket_description` (workspace \"default\", id \"c320708d-8dc1-46e2-ab5d-9903460ae27a\", caller_model \"claude-sonnet-5\") and confirm the handoff section is actually present.\n\nRETURN CONTRACT — return ONLY:\n```\nAPPEND: <ok|FAILED: exact error text>\nRETRY_NEEDED: <no|yes — what was corrected>\nTICKET_STATE_AFTER: <state>\nAPPEND_VERIFIED_IN_STORE: <yes — section present on re-read|no>\n```\nNothing else.",
+      "captured_at": "2026-07-31T20:59:05.953Z",
+      "event_meta": {
+        "event_id": "73f7b899-76a2-4433-ae48-13aaae8a29a3",
+        "parent_event_id": "2611d8db-009b-45d1-a81c-b1738f5f4b3c",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_0126iMd977d2J67MKgQSMggM"
+      }
+    },
+    {
+      "sequence": 133,
+      "role": "user",
+      "content": "interruption occurred, credit budget has been refreshed. you can resume/retry now.",
+      "captured_at": "2026-08-02T22:22:39.358Z",
+      "event_meta": {
+        "event_id": "f471299e-cfea-4a48-91f7-f51287f5c6a7",
+        "parent_event_id": "da8cc459-3f5f-4863-b44b-a39c6333a241",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_0126iMd977d2J67MKgQSMggM"
+      }
+    },
+    {
+      "sequence": 134,
+      "role": "assistant",
+      "content": "Resuming. Three days elapsed and [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md) changed outside this session, so I'm re-inspecting before retrying the one outstanding item rather than assuming the state I left.",
+      "captured_at": "2026-08-02T22:23:14.573Z",
+      "event_meta": {
+        "event_id": "6968479b-fad4-4866-a980-1c1231ae9039",
+        "parent_event_id": "14a3bdd1-cf41-4ba7-a35f-f71c24d5de78",
+        "event_type": "assistant.message",
+        "message_id": "c6756edd-bfbc-4659-914d-6a42e2c9e0aa",
+        "reasoning_text": "The handoff append to ticket c320708d is still pending after two failed attempts—once from tool parameter validation and once from hitting the credit limit. Since branch-worktree.instructions.md was last edited three days ago, I should check the current repository state first to see if anything's changed and whether the ticket already has the handoff section added.\n\nI'll run a single inspection covering git status, recent commits, and what's in that file now, then proceed with retrying the append.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01ESZE1PKGgbzgZmoXR8U6pE",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Explore Agent",
+              "description": "Re-inspect repo and ticket state",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are re-inspecting repository and ticket state after a multi-day interruption. You have NO prior context; everything you need is below. STRICTLY READ-ONLY: do not commit, push, merge, checkout, edit, or modify anything. `git fetch` is permitted.\n\nMAIN CHECKOUT: c:/Users/linus/git/graph_app/context-engine\nSHELL: Git Bash / mingw on Windows, forward-slash paths.\nTicket workspace for ticket-mcp tools: \"default\". Use `caller_model` value \"gpt-5-mini\" on any ticket-mcp call.\n\n=== Q1: git state ===\n```bash\ngit fetch origin\ngit status -sb\ngit log --oneline -6\ngit submodule status\ngit worktree list\ngit branch --list\nls .worktrees 2>/dev/null || echo \"(.worktrees absent)\"\n```\nReport: is local `main` in sync with `origin/main`, or ahead/behind by how many? Are all five submodules (context-stack, memory-api, memory-kernel, memory-viewers, viewer-api) initialized (a commit hash with NO leading `-`)? Are there any leftover `agent/*` branches or registered worktrees? Is the working tree dirty, and if so summarize as a count per top-level directory (do not dump long lists)?\n\nThe last known state was: main at b84506a3, in sync with origin, 5/5 submodules healthy, no agent branches, no worktrees, and only the live session's own .session transcript files dirty. Report any DEVIATION from that explicitly.\n\n=== Q2: what changed in the instructions file ===\nThe file c:/Users/linus/git/graph_app/context-engine/.agents/instructions/commit/branch-worktree.instructions.md was modified by the user or an automated tool after commit b84506a3.\n```bash\ngit log --oneline -5 -- .agents/instructions/commit/branch-worktree.instructions.md\ngit diff HEAD -- .agents/instructions/commit/branch-worktree.instructions.md\ngit status --short -- .agents/instructions/commit/branch-worktree.instructions.md\n```\nReport whether the change is COMMITTED or UNCOMMITTED, and show the actual diff (if it is large, show only the hunks touching command blocks).\n\nCRITICAL CHECK: this file should document the worktree teardown sequence as exactly these three commands:\n```\ngit worktree remove --force <path>\ngit worktree prune\ngit branch -d <branch>\n```\nIt must NOT contain `git submodule deinit` in the teardown sequence (that command corrupts the shared .git/config). Quote the file's current teardown command block verbatim and state whether it still matches that corrected form or whether the edit reintroduced `submodule deinit`.\n\nAlso check the same thing in these two files and quote their teardown blocks:\n- c:/Users/linus/git/graph_app/context-engine/.agents/agents/orchestrator.agent.md (section \"Branch and Worktree Isolation\")\n- c:/Users/linus/git/graph_app/context-engine/tools/worktree/worktree.sh (the `remove` subcommand)\nRun: `grep -n \"submodule deinit\" .agents/instructions/commit/branch-worktree.instructions.md .agents/agents/orchestrator.agent.md tools/worktree/worktree.sh` and report every hit with its line and surrounding intent (is it a teardown instruction, or a warning telling readers NOT to do it?).\n\n=== Q3: ticket state ===\nUsing ticket-mcp tools, fetch ticket c320708d-8dc1-46e2-ab5d-9903460ae27a (workspace \"default\") and report:\n- its current state\n- whether its description ALREADY contains a section titled \"Handoff package (from the worktree-helper session)\". Two earlier attempts to append that section failed (one with a tool-parameter validation error, one interrupted by a credit limit), so it may be absent, present once, or accidentally present twice. Report exactly which.\nAlso fetch ticket 4ef88dbc-cb39-4724-9f2c-53ab09cf90c5 and report its state and whether its description contains a section about the protocol correction / dropped submodule deinit.\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nQ1_GIT:\n  main sync: <in sync|ahead N|behind N|diverged>\n  head: <sha> <subject>\n  submodules: <5/5 healthy|list any with leading ->\n  worktrees: <list or none>\n  agent branches: <list or none>\n  dirty: <n paths> (<dirs>) \n  DEVIATION_FROM_EXPECTED: <none|describe>\n\nQ2_INSTRUCTIONS:\n  change committed?: <committed in <sha>|UNCOMMITTED working-tree edit>\n  diff: <hunks, or \"no diff vs HEAD\">\n  branch-worktree.instructions.md teardown block:\n  <verbatim>\n  orchestrator.agent.md teardown block:\n  <verbatim>\n  worktree.sh remove sequence:\n  <verbatim>\n  grep 'submodule deinit' hits:\n    <file>:<line> : <teardown instruction|warning not to use it|other>\n  TEARDOWN_STILL_CORRECT: <yes — all three agree and none run deinit|NO: what regressed>\n\nQ3_TICKETS:\n  c320708d state: <state>\n  c320708d handoff section: <absent|present once|PRESENT TWICE>\n  4ef88dbc state: <state>\n  4ef88dbc protocol-correction evidence: <present|absent>\n```\nNothing else. No transcript.\n"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0126iMd977d2J67MKgQSMggM"
+      }
+    },
+    {
+      "sequence": 135,
+      "role": "user",
+      "content": "You are re-inspecting repository and ticket state after a multi-day interruption. You have NO prior context; everything you need is below. STRICTLY READ-ONLY: do not commit, push, merge, checkout, edit, or modify anything. `git fetch` is permitted.\n\nMAIN CHECKOUT: c:/Users/linus/git/graph_app/context-engine\nSHELL: Git Bash / mingw on Windows, forward-slash paths.\nTicket workspace for ticket-mcp tools: \"default\". Use `caller_model` value \"gpt-5-mini\" on any ticket-mcp call.\n\n=== Q1: git state ===\n```bash\ngit fetch origin\ngit status -sb\ngit log --oneline -6\ngit submodule status\ngit worktree list\ngit branch --list\nls .worktrees 2>/dev/null || echo \"(.worktrees absent)\"\n```\nReport: is local `main` in sync with `origin/main`, or ahead/behind by how many? Are all five submodules (context-stack, memory-api, memory-kernel, memory-viewers, viewer-api) initialized (a commit hash with NO leading `-`)? Are there any leftover `agent/*` branches or registered worktrees? Is the working tree dirty, and if so summarize as a count per top-level directory (do not dump long lists)?\n\nThe last known state was: main at b84506a3, in sync with origin, 5/5 submodules healthy, no agent branches, no worktrees, and only the live session's own .session transcript files dirty. Report any DEVIATION from that explicitly.\n\n=== Q2: what changed in the instructions file ===\nThe file c:/Users/linus/git/graph_app/context-engine/.agents/instructions/commit/branch-worktree.instructions.md was modified by the user or an automated tool after commit b84506a3.\n```bash\ngit log --oneline -5 -- .agents/instructions/commit/branch-worktree.instructions.md\ngit diff HEAD -- .agents/instructions/commit/branch-worktree.instructions.md\ngit status --short -- .agents/instructions/commit/branch-worktree.instructions.md\n```\nReport whether the change is COMMITTED or UNCOMMITTED, and show the actual diff (if it is large, show only the hunks touching command blocks).\n\nCRITICAL CHECK: this file should document the worktree teardown sequence as exactly these three commands:\n```\ngit worktree remove --force <path>\ngit worktree prune\ngit branch -d <branch>\n```\nIt must NOT contain `git submodule deinit` in the teardown sequence (that command corrupts the shared .git/config). Quote the file's current teardown command block verbatim and state whether it still matches that corrected form or whether the edit reintroduced `submodule deinit`.\n\nAlso check the same thing in these two files and quote their teardown blocks:\n- c:/Users/linus/git/graph_app/context-engine/.agents/agents/orchestrator.agent.md (section \"Branch and Worktree Isolation\")\n- c:/Users/linus/git/graph_app/context-engine/tools/worktree/worktree.sh (the `remove` subcommand)\nRun: `grep -n \"submodule deinit\" .agents/instructions/commit/branch-worktree.instructions.md .agents/agents/orchestrator.agent.md tools/worktree/worktree.sh` and report every hit with its line and surrounding intent (is it a teardown instruction, or a warning telling readers NOT to do it?).\n\n=== Q3: ticket state ===\nUsing ticket-mcp tools, fetch ticket c320708d-8dc1-46e2-ab5d-9903460ae27a (workspace \"default\") and report:\n- its current state\n- whether its description ALREADY contains a section titled \"Handoff package (from the worktree-helper session)\". Two earlier attempts to append that section failed (one with a tool-parameter validation error, one interrupted by a credit limit), so it may be absent, present once, or accidentally present twice. Report exactly which.\nAlso fetch ticket 4ef88dbc-cb39-4724-9f2c-53ab09cf90c5 and report its state and whether its description contains a section about the protocol correction / dropped submodule deinit.\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nQ1_GIT:\n  main sync: <in sync|ahead N|behind N|diverged>\n  head: <sha> <subject>\n  submodules: <5/5 healthy|list any with leading ->\n  worktrees: <list or none>\n  agent branches: <list or none>\n  dirty: <n paths> (<dirs>) \n  DEVIATION_FROM_EXPECTED: <none|describe>\n\nQ2_INSTRUCTIONS:\n  change committed?: <committed in <sha>|UNCOMMITTED working-tree edit>\n  diff: <hunks, or \"no diff vs HEAD\">\n  branch-worktree.instructions.md teardown block:\n  <verbatim>\n  orchestrator.agent.md teardown block:\n  <verbatim>\n  worktree.sh remove sequence:\n  <verbatim>\n  grep 'submodule deinit' hits:\n    <file>:<line> : <teardown instruction|warning not to use it|other>\n  TEARDOWN_STILL_CORRECT: <yes — all three agree and none run deinit|NO: what regressed>\n\nQ3_TICKETS:\n  c320708d state: <state>\n  c320708d handoff section: <absent|present once|PRESENT TWICE>\n  4ef88dbc state: <state>\n  4ef88dbc protocol-correction evidence: <present|absent>\n```\nNothing else. No transcript.",
+      "captured_at": "2026-08-02T22:23:19.381Z",
+      "event_meta": {
+        "event_id": "cfe752fe-1f79-4ce4-ac2d-77b159e9856b",
+        "parent_event_id": "f1baaddf-c05c-498f-8d76-89152f06544a",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 136,
+      "role": "assistant",
+      "content": "I'll run the git workspace checks, then inspect the instruction files, then query the two tickets.",
+      "captured_at": "2026-08-02T22:23:44.624Z",
+      "event_meta": {
+        "event_id": "10abbea2-5fce-4c85-a603-fa22bfa7064d",
+        "parent_event_id": "274cde31-967c-4325-af54-a0fd34aa102f",
+        "event_type": "assistant.message",
+        "message_id": "1a6cbee6-1a69-4f60-a341-b83693ba051b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_l2PPSJ0TQpHQPFSFK6s4Pf4c",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git fetch origin && git status -sb && git log --oneline -6 && git submodule status && git worktree list && git branch --list && (ls .worktrees 2>/dev/null || echo \"(.worktrees absent)\")",
+              "explanation": "Gather git status, submodules, worktrees, branches, and .worktrees folder",
+              "goal": "Q1 git state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 137,
+      "role": "assistant",
+      "content": "Now I'll inspect the instruction file's git history, diff, and working-tree status, and read the three files to extract teardown blocks and grep for any 'submodule deinit' mentions.",
+      "captured_at": "2026-08-02T22:23:56.964Z",
+      "event_meta": {
+        "event_id": "89324360-cd2d-476c-81f3-58f72a647e69",
+        "parent_event_id": "e2f2d920-097f-45f7-8a57-815d5e7c35dd",
+        "event_type": "assistant.message",
+        "message_id": "804b30cc-a9d9-4ba9-a9d4-0d8062085610",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_YH3WOtIih91MeOnMIEyR5mIM",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git log --oneline -5 -- .agents/instructions/commit/branch-worktree.instructions.md && git diff HEAD -- .agents/instructions/commit/branch-worktree.instructions.md && git status --short -- .agents/instructions/commit/branch-worktree.instructions.md && grep -n \"submodule deinit\" .agents/instructions/commit/branch-worktree.instructions.md .agents/agents/orchestrator.agent.md tools/worktree/worktree.sh || true",
+              "explanation": "Get recent commits touching the file, show diff vs HEAD, check file status, and grep for 'submodule deinit' in related files",
+              "goal": "Q2 instruction changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 138,
+      "role": "assistant",
+      "content": "I'll show the diff of the instructions file vs HEAD to confirm committed/uncommitted and extract the teardown block.",
+      "captured_at": "2026-08-02T22:24:45.747Z",
+      "event_meta": {
+        "event_id": "a100dc17-ca42-4cac-a3df-b5db3f00369a",
+        "parent_event_id": "994b9957-1e48-44ef-8ec9-d220f89c01c5",
+        "event_type": "assistant.message",
+        "message_id": "6c2b956e-9e46-4088-8ed5-b26f16f372b1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hBU6ASfPDDofUREasoO5CZru",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/graph_app/context-engine && git diff HEAD -- .agents/instructions/commit/branch-worktree.instructions.md || true",
+              "explanation": "Show working-tree diff for the instruction file (if any)",
+              "goal": "Q2 diff check",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 139,
+      "role": "assistant",
+      "content": "Now I'll fetch the two tickets from the ticket MCP to report their states and description content.",
+      "captured_at": "2026-08-02T22:25:07.374Z",
+      "event_meta": {
+        "event_id": "a800b4ef-e5c3-45b4-9716-f3d8c72405cc",
+        "parent_event_id": "d66a13f1-f6a9-4759-905c-0ac94e7ee469",
+        "event_type": "assistant.message",
+        "message_id": "47a9494c-1b21-4c68-96dd-12cfeec6ff36",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_UF0QZYlFOQZV3xnt9dU79jPP",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "caller_model": "gpt-5-mini",
+              "id": "c320708d-8dc1-46e2-ab5d-9903460ae27a",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 140,
+      "role": "assistant",
+      "content": "Q1_GIT:\n  main sync: in sync\n  head: b84506a3 chore(tickets): record worktree helper protocol fix evidence\n  submodules: 5/5 healthy\n  worktrees: none ('.worktrees' directory exists but is empty)\n  agent branches: none\n  dirty: 8 paths (.agents:1, .session:3, .ticket:4)\n  DEVIATION_FROM_EXPECTED: .agents and .ticket files are modified in the working tree in addition to the expected .session transcripts; a .worktrees directory now exists (empty) whereas previously there were no worktrees.\n\nQ2_INSTRUCTIONS:\n  change committed?: committed in 4909db52\n  diff: no diff vs HEAD\n  branch-worktree.instructions.md teardown block:\n  |\n    git worktree remove --force .worktrees/<short-id>-<slug>\n    git worktree prune\n    git branch -d agent/<short-id>-<slug>\n  orchestrator.agent.md teardown block:\n  |\n    git checkout main\n    git merge --ff-only agent/<short-id>-<slug>\n    git worktree remove --force .worktrees/<short-id>-<slug>\n    git worktree prune\n    git branch -d agent/<short-id>-<slug>\n  worktree.sh remove sequence:\n  |\n    run git -C \"$mw\" worktree remove --force \"$wtpath\"\n    run git -C \"$mw\" worktree prune\n    if [[ -n \"$branch\" ]]; then\n        run git -C \"$mw\" branch -d \"$branch\"\n    fi\n  grep 'submodule deinit' hits:\n    .agents/instructions/commit/branch-worktree.instructions.md:150 : warning not to use it (advisory text forbidding running `git submodule deinit` inside a linked worktree)\n    .agents/agents/orchestrator.agent.md:139 : warning not to use it (advisory line forbidding adding a `submodule deinit` step)\n    tools/worktree/worktree.sh:28 : comment mentioning the sharp edge from `submodule deinit` (context/explanatory comment)\n    tools/worktree/worktree.sh:204 : code path uses `git -C \"$wtpath\" submodule deinit --all --force` (rollback/repair path during bootstrap failure — not the normal teardown)\n    tools/worktree/worktree.sh:328 : comment noting `--force` alone handles initialized submodules; references prior `submodule deinit` (commentary)\n  TEARDOWN_STILL_CORRECT: yes — all three agree and none run `submodule deinit` in their documented teardown sequences (note: `tools/worktree/worktree.sh` contains a separate rollback/repair use of `submodule deinit` in the bootstrap failure path, but the canonical remove/teardown sequence does not run it).\n\nQ3_TICKETS:\n  c320708d state: open\n  c320708d handoff section: present once\n  4ef88dbc state: in-review\n  4ef88dbc protocol-correction evidence: present",
+      "captured_at": "2026-08-02T22:25:49.919Z",
+      "event_meta": {
+        "event_id": "0cb79cd2-6a5f-451f-8029-12d41918d172",
+        "parent_event_id": "905ff630-1499-4241-a9b9-744d126826c7",
+        "event_type": "assistant.message",
+        "message_id": "4cdadd55-4892-41d1-b040-98410e8eb57d",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 141,
+      "role": "assistant",
+      "content": "The handoff **did** land — the credit-limited attempt completed its write before dying, and it's present exactly once, not duplicated. Verifying it's complete rather than truncated, and identifying an uncommitted `.agents` edit that isn't mine.",
+      "captured_at": "2026-08-02T22:26:28.323Z",
+      "event_meta": {
+        "event_id": "e7ea8656-e5d3-4538-87a7-a958704dafb6",
+        "parent_event_id": "84e507e7-ee28-4454-a977-d13b3d6186ef",
+        "event_type": "assistant.message",
+        "message_id": "307e9a82-4219-429d-ba64-48aaad453fd9",
+        "reasoning_text": "So the handoff section actually did make it onto c320708d despite the earlier failures — either the Sonnet 5 attempt completed the tool call before hitting the credit limit, or the first mini attempt partially succeeded even though it reported as failed. The verification showed it's there once, which is correct, but the earlier logs indicated the append failed and wasn't verified in the store, so something's off with that sequence.\n\nNow I need to verify the handoff content itself isn't truncated or incomplete. There are also a few uncommitted changes to track down — the .agents file is dirty but Q2 said there's no diff on the instructions file, so it must be a different file the user edited, probably implement.agent.md. The .ticket store has 4 dirty entries from the handoff append, and there's an empty .worktrees directory that's just residue. My next steps are to check that the handoff section is complete and identify what the user changed in their own work before deciding whether to commit it.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015LzFAgesTZys668Vs4Kv32",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Explore Agent",
+              "description": "Verify handoff content integrity",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are verifying content integrity after an interrupted write. You have NO prior context; everything you need is below. STRICTLY READ-ONLY: do not edit, commit, or modify anything.\n\nMAIN CHECKOUT: c:/Users/linus/git/graph_app/context-engine\nSHELL: Git Bash / mingw on Windows, forward-slash paths.\nTicket workspace: \"default\". Use `caller_model` value \"gpt-5-mini\" on ticket-mcp calls.\n\n=== TASK 1: verify an interrupted append landed COMPLETELY ===\nTicket c320708d-8dc1-46e2-ab5d-9903460ae27a had a \"Handoff package (from the worktree-helper session)\" section appended by an agent that was killed mid-run by a credit limit. The section is confirmed present, but it may be TRUNCATED.\n\nFetch the ticket description (`mcp_ticket-mcp_get_ticket_description`, workspace \"default\", id \"c320708d-8dc1-46e2-ab5d-9903460ae27a\") and verify the handoff section contains ALL of these expected elements. Mark each present or MISSING:\n  a. Heading \"## Handoff package (from the worktree-helper session)\"\n  b. \"**Next objective:**\" paragraph mentioning `cargo check --workspace`\n  c. \"**Repository state at handoff:**\" paragraph naming `b84506a3` and `c6eb0a3a`\n  d. \"**Commits from that session:**\" list with all four shas: bb0b0ca3, a415b25c, 4909db52, b84506a3\n  e. \"**The duplication to resolve:**\" list naming BOTH `memory-api/crates/memory-api/src/storage/board.rs` (425 lines) and `memory-kernel/src/storage/board.rs` (295 lines)\n  f. \"**Decisions carried forward:**\" list with all five bullets (teardown sequence; never run submodule deinit in a worktree; extensions.worktreeConfig does not help; per-submodule-worktree hypothesis disproven; push submodules before superproject)\n  g. \"**Tooling now available:**\" paragraph naming `tools/worktree/worktree.sh`\n  h. \"**Validation commands:**\" line\n  i. \"**Non-goals:**\" line\n  j. \"**Risks / open items:**\" paragraph mentioning shellcheck, the parent repo pointer, the backup branch, and the ~37 in-review tickets\nQuote the FINAL 3 lines of the description verbatim so truncation is visible.\n\n=== TASK 2: identify an uncommitted .agents change that is NOT ours ===\n`git status --short` reports one modified file under .agents/. Identify it and show what changed:\n```bash\ngit -C c:/Users/linus/git/graph_app/context-engine status --short -- .agents/\ngit -C c:/Users/linus/git/graph_app/context-engine diff -- .agents/\n```\nReport the file path and the full diff (it should be small). Assess: does this edit look like deliberate authored content, or like an accidental/partial edit? Specifically check whether it touches any worktree teardown command sequence or reintroduces `git submodule deinit` as a teardown step — that would be a regression that matters.\n\n=== TASK 3: confirm the .ticket working-tree churn is just the handoff write ===\n```bash\ngit -C c:/Users/linus/git/graph_app/context-engine status --short -- .ticket/\n```\nList the modified paths and confirm they all belong to tickets c320708d-8dc1-46e2-ab5d-9903460ae27a and/or 4ef88dbc-cb39-4724-9f2c-53ab09cf90c5. Flag any path belonging to a DIFFERENT ticket.\n\n=== TASK 4: the empty .worktrees directory ===\n```bash\nls -la c:/Users/linus/git/graph_app/context-engine/.worktrees\n```\nConfirm it is empty (ignoring `.` and `..`) and report whether it is git-tracked or ignored (`git check-ignore -v .worktrees`).\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nTASK1_HANDOFF_INTEGRITY:\n  a..j: <letter>=<present|MISSING> for each\n  final 3 lines: <verbatim>\n  VERDICT: <COMPLETE|TRUNCATED at element <x>>\nTASK2_AGENTS_EDIT:\n  file: <path>\n  diff: <full diff>\n  assessment: <deliberate authored content|partial/accidental edit>\n  touches teardown/deinit: <no|YES — regression: what>\nTASK3_TICKET_CHURN: <all belong to c320708d/4ef88dbc|FOREIGN: list>\n  paths: <list>\nTASK4_WORKTREES_DIR: <empty|not empty: contents> : <git-ignored|tracked>\n```\nNothing else. No transcript.\n"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01ESZE1PKGgbzgZmoXR8U6pE"
+      }
+    },
+    {
+      "sequence": 142,
+      "role": "user",
+      "content": "You are verifying content integrity after an interrupted write. You have NO prior context; everything you need is below. STRICTLY READ-ONLY: do not edit, commit, or modify anything.\n\nMAIN CHECKOUT: c:/Users/linus/git/graph_app/context-engine\nSHELL: Git Bash / mingw on Windows, forward-slash paths.\nTicket workspace: \"default\". Use `caller_model` value \"gpt-5-mini\" on ticket-mcp calls.\n\n=== TASK 1: verify an interrupted append landed COMPLETELY ===\nTicket c320708d-8dc1-46e2-ab5d-9903460ae27a had a \"Handoff package (from the worktree-helper session)\" section appended by an agent that was killed mid-run by a credit limit. The section is confirmed present, but it may be TRUNCATED.\n\nFetch the ticket description (`mcp_ticket-mcp_get_ticket_description`, workspace \"default\", id \"c320708d-8dc1-46e2-ab5d-9903460ae27a\") and verify the handoff section contains ALL of these expected elements. Mark each present or MISSING:\n  a. Heading \"## Handoff package (from the worktree-helper session)\"\n  b. \"**Next objective:**\" paragraph mentioning `cargo check --workspace`\n  c. \"**Repository state at handoff:**\" paragraph naming `b84506a3` and `c6eb0a3a`\n  d. \"**Commits from that session:**\" list with all four shas: bb0b0ca3, a415b25c, 4909db52, b84506a3\n  e. \"**The duplication to resolve:**\" list naming BOTH `memory-api/crates/memory-api/src/storage/board.rs` (425 lines) and `memory-kernel/src/storage/board.rs` (295 lines)\n  f. \"**Decisions carried forward:**\" list with all five bullets (teardown sequence; never run submodule deinit in a worktree; extensions.worktreeConfig does not help; per-submodule-worktree hypothesis disproven; push submodules before superproject)\n  g. \"**Tooling now available:**\" paragraph naming `tools/worktree/worktree.sh`\n  h. \"**Validation commands:**\" line\n  i. \"**Non-goals:**\" line\n  j. \"**Risks / open items:**\" paragraph mentioning shellcheck, the parent repo pointer, the backup branch, and the ~37 in-review tickets\nQuote the FINAL 3 lines of the description verbatim so truncation is visible.\n\n=== TASK 2: identify an uncommitted .agents change that is NOT ours ===\n`git status --short` reports one modified file under .agents/. Identify it and show what changed:\n```bash\ngit -C c:/Users/linus/git/graph_app/context-engine status --short -- .agents/\ngit -C c:/Users/linus/git/graph_app/context-engine diff -- .agents/\n```\nReport the file path and the full diff (it should be small). Assess: does this edit look like deliberate authored content, or like an accidental/partial edit? Specifically check whether it touches any worktree teardown command sequence or reintroduces `git submodule deinit` as a teardown step — that would be a regression that matters.\n\n=== TASK 3: confirm the .ticket working-tree churn is just the handoff write ===\n```bash\ngit -C c:/Users/linus/git/graph_app/context-engine status --short -- .ticket/\n```\nList the modified paths and confirm they all belong to tickets c320708d-8dc1-46e2-ab5d-9903460ae27a and/or 4ef88dbc-cb39-4724-9f2c-53ab09cf90c5. Flag any path belonging to a DIFFERENT ticket.\n\n=== TASK 4: the empty .worktrees directory ===\n```bash\nls -la c:/Users/linus/git/graph_app/context-engine/.worktrees\n```\nConfirm it is empty (ignoring `.` and `..`) and report whether it is git-tracked or ignored (`git check-ignore -v .worktrees`).\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nTASK1_HANDOFF_INTEGRITY:\n  a..j: <letter>=<present|MISSING> for each\n  final 3 lines: <verbatim>\n  VERDICT: <COMPLETE|TRUNCATED at element <x>>\nTASK2_AGENTS_EDIT:\n  file: <path>\n  diff: <full diff>\n  assessment: <deliberate authored content|partial/accidental edit>\n  touches teardown/deinit: <no|YES — regression: what>\nTASK3_TICKET_CHURN: <all belong to c320708d/4ef88dbc|FOREIGN: list>\n  paths: <list>\nTASK4_WORKTREES_DIR: <empty|not empty: contents> : <git-ignored|tracked>\n```\nNothing else. No transcript.",
+      "captured_at": "2026-08-02T22:26:31.461Z",
+      "event_meta": {
+        "event_id": "4053ddf4-35fe-4f3e-a070-2790a9e82602",
+        "parent_event_id": "407daca1-fdbb-4c39-b4e5-293bd4e2cdba",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 143,
+      "role": "assistant",
+      "content": "I'll fetch the ticket description for ticket c320708d-8dc1-46e2-ab5d-9903460ae27a.",
+      "captured_at": "2026-08-02T22:26:43.924Z",
+      "event_meta": {
+        "event_id": "f1bcb515-dc43-4225-ad54-fae1efb57425",
+        "parent_event_id": "8fa0e239-932a-47fc-b7ce-04a51b66ee55",
+        "event_type": "assistant.message",
+        "message_id": "c68b4326-f9b9-4608-9765-204d4e6f3f34",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_hzmZ7mrx2f7cuGhN7Swnoqoh",
+            "name": "mcp_ticket-mcp_get_ticket_description",
+            "arguments": {
+              "caller_model": "gpt-5-mini",
+              "id": "c320708d-8dc1-46e2-ab5d-9903460ae27a",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 144,
+      "role": "assistant",
+      "content": "Next, I'll list and show the diff for the modified file under `.agents`.",
+      "captured_at": "2026-08-02T22:27:03.715Z",
+      "event_meta": {
+        "event_id": "7dc07318-b95b-4726-a41d-0d51875ecc59",
+        "parent_event_id": "9444a979-b595-4ada-b1b6-0140a9ffcda7",
+        "event_type": "assistant.message",
+        "message_id": "e099a73f-c023-4e25-bf9b-2f715a4f88bd",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_CJpz78IwdJvzlP6DTfE162QC",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git -C c:/Users/linus/git/graph_app/context-engine status --short -- .agents/ && git -C c:/Users/linus/git/graph_app/context-engine diff -- .agents/",
+              "explanation": "Get modified file under .agents and show the diff",
+              "goal": "identify the changed .agents file and its changes",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 145,
+      "role": "assistant",
+      "content": "Now I'll list modified paths under `.ticket/`.",
+      "captured_at": "2026-08-02T22:27:11.057Z",
+      "event_meta": {
+        "event_id": "0d724ea9-614a-44e9-9c9f-0411aa19d2f1",
+        "parent_event_id": "5abbb4b3-1033-4931-ae3c-65243d820426",
+        "event_type": "assistant.message",
+        "message_id": "2dabb095-1de5-40fa-bdcc-9101cc0a002f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BnCqj6ruBMGJbTsqYroedvFv",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git -C c:/Users/linus/git/graph_app/context-engine status --short -- .ticket/",
+              "explanation": "Check .ticket working-tree churn",
+              "goal": "list modified ticket files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 146,
+      "role": "assistant",
+      "content": "Finally, I'll list `.worktrees` contents and check whether it's git-ignored.",
+      "captured_at": "2026-08-02T22:27:15.419Z",
+      "event_meta": {
+        "event_id": "40f60807-db9f-4213-a9a9-69821fbd17ed",
+        "parent_event_id": "df857d83-7733-4853-8f3a-a67b05b2d7f2",
+        "event_type": "assistant.message",
+        "message_id": "d95eae79-0020-4b2e-8941-882c7c2ad1ef",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_wzhpJXFtqUA9ID8qKKblBH1T",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -la c:/Users/linus/git/graph_app/context-engine/.worktrees || true && git -C c:/Users/linus/git/graph_app/context-engine check-ignore -v .worktrees || true",
+              "explanation": "Check contents of .worktrees and whether it's ignored",
+              "goal": "confirm .worktrees is empty and whether git ignores it",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 147,
+      "role": "assistant",
+      "content": "TASK1_HANDOFF_INTEGRITY:\n  a..j: a=present b=present c=present d=present e=present f=present g=present h=present i=present j=present\n  final 3 lines: The parent repository at `c:/Users/linus/git/graph_app` tracks context-engine as a submodule and its pointer was NOT bumped.\nThe local branch `backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439` is 2109 commits ahead of origin and was deliberately not pushed.\nRoughly 37 tickets sit in `in-review` and were not triaged\n  VERDICT: COMPLETE\nTASK2_AGENTS_EDIT:\n  file: .agents/agents/implement.agent.md\n  diff: diff --git a/.agents/agents/implement.agent.md b/.agents/agents/implement.agent.md\nindex 961b47f8..bd5ec889 100644\n--- a/.agents/agents/implement.agent.md\n+++ b/.agents/agents/implement.agent.md\n@@ -1,7 +1,7 @@\n ---\n name: \"Implement Agent\"\n description: \"Use for surgical implementation once the target slice is clear and ready to change.\"\n-tools: [execute, read, edit, 'peek-mcp/*', 'ticket-mcp/*', 'spec-mcp/*', 'test-mcp/*']\n+tools: [execute, read, edit, search, 'audit-mcp/*', 'compact-terminal-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']\n argument-hint: \"Ticket id, failing behavior, file, symbol, or narrow implementation scope.\"\n user-invocable: true\n model: \"Claude Sonnet 5\"\n  assessment: deliberate authored content\n  touches teardown/deinit: no\nTASK3_TICKET_CHURN: all belong to c320708d/4ef88dbc\n  paths: .ticket/tickets/4ef88dbc-cb39-4724-9f2c-53ab09cf90c5/description.md\n.ticket/tickets/4ef88dbc-cb39-4724-9f2c-53ab09cf90c5/history.ndjson\n.ticket/tickets/c320708d-8dc1-46e2-ab5d-9903460ae27a/description.md\n.ticket/tickets/c320708d-8dc1-46e2-ab5d-9903460ae27a/history.ndjson\nTASK4_WORKTREES_DIR: empty : git-ignored",
+      "captured_at": "2026-08-02T22:27:53.687Z",
+      "event_meta": {
+        "event_id": "0ff53e21-4b51-4925-b725-325857f9fa5b",
+        "parent_event_id": "502bba0f-74d6-4f93-b736-3f3055ba4a26",
+        "event_type": "assistant.message",
+        "message_id": "8eb3f851-d4da-4468-bdf3-5e7395eedc88",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 148,
+      "role": "assistant",
+      "content": "Handoff content verified complete, not truncated. And the uncommitted `.agents` edit is yours: it adds `session-mcp/*` to the Implement Agent's tool grant — which is exactly the gap that blocked the durable handoff record. Retrying that now that the grant exists.",
+      "captured_at": "2026-08-02T22:28:31.474Z",
+      "event_meta": {
+        "event_id": "da7f1ea9-6624-46ba-8e88-d5bdcbd54b76",
+        "parent_event_id": "9ca33889-21c5-45f5-bceb-89693bfe7215",
+        "event_type": "assistant.message",
+        "message_id": "158cc65d-066a-4e20-a54b-7ba3dec83252",
+        "reasoning_text": "The user's edit to implement.agent.md successfully added session-mcp to the Implement Agent's tools, which resolves the earlier failure where session-mcp wasn't available to sub-agents. Now that the template has been updated, I could retry the durable session handoff, though the change is still uncommitted.\n\nMy plan is to attempt the handoff retry first (which will write to the session store), then commit and push the ticket and session churn together, leaving the user's implement.agent.md edit uncommitted so they can decide whether to keep it.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01FUoxHszu5conWxi4Jv6ZpQ",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Implement Agent",
+              "description": "Record durable session handoff",
+              "model": "Claude Sonnet 5 (copilot)",
+              "prompt": "You are recording a durable session handoff record. You have NO prior context; everything you need is below. Do not edit source code.\n\nWORKSPACE: c:/Users/linus/git/graph_app/context-engine\n\nTOOL: `mcp_session-mcp_session_handoff`. Your agent template was just granted `session-mcp/*`, so these tools should now be available to you. If a session-mcp tool is nonetheless absent, report that honestly and do NOT invent a substitute — a durable copy of this handoff already exists on a ticket, so an honest failure here is acceptable and is NOT a crisis.\n\nUse `caller_model` value \"claude-sonnet-5\" on every MCP call (a real price-table model id, never a vendor label like \"copilot\").\n\nSTEP 1: obtain a session id. Call `mcp_session-mcp_session_runtime_init` with workspace \"c:/Users/linus/git/graph_app/context-engine\". Use the returned workspace session id for the handoff call. If a session already exists, resume it rather than forcing a new run.\n\nSTEP 2: call `mcp_session-mcp_session_handoff` with workspace \"c:/Users/linus/git/graph_app/context-engine\", the session id from step 1, and these fields:\n\nobjective:\n\"Deduplicate the stale board module in memory-kernel (ticket c320708d) — confirm there are no live callers of memory-kernel/src/storage/board.rs, then either delete it or make it re-export the memory-api definitions, and prove cargo check --workspace passes.\"\n\ntarget_tickets: [\"c320708d-8dc1-46e2-ab5d-9903460ae27a\"]\n\ntarget_files: [\"memory-kernel/src/storage/board.rs\", \"memory-api/crates/memory-api/src/storage/board.rs\"]\n\ncontext_anchors:\n- \"main is at b84506a3 and in sync with origin/main. Submodule memory-api commit c6eb0a3a was pushed to its own origin BEFORE the superproject, repairing a pointer that previously resolved only on this machine. All five submodules are healthy.\"\n- \"Session commits: bb0b0ca3 feat(tooling) worktree helper script; a415b25c chore(tickets); 4909db52 fix(tooling) drop harmful submodule deinit from teardown; b84506a3 chore(tickets) protocol fix evidence.\"\n- \"LIVE board module: memory-api/crates/memory-api/src/storage/board.rs, 425 lines, defines BoardEntry, BoardEntryStatus, BoardConfig, BoardSnapshot, ActiveWorktree, BoardHistorySnapshot, BoardCleanPreview, BoardCleanResult, ReconcileAction, BoardReconcileResult, BoardError.\"\n- \"STALE duplicate: memory-kernel/src/storage/board.rs, 295 lines, same set minus ActiveWorktree, off the live call path.\"\n- \"Divergence introduced by ticket c060bf94, which added session_id/worktree_path/branch to BoardEntry plus ActiveWorktree, a WorktreeConflict error, and board_worktrees surfaces to the memory-api copy only. The user confirmed the duplication is NOT intentional.\"\n- \"A full copy of this handoff is already appended to ticket c320708d's description under the heading 'Handoff package (from the worktree-helper session)'.\"\n- \"Tooling: tools/worktree/worktree.sh provides new, list, rebase, merge, remove, doctor; --dry-run on every mutating subcommand; refuses destructive operations from inside a linked worktree.\"\n\ndecisions:\n- \"Worktree teardown is: git worktree remove --force <path>; git worktree prune; git branch -d <branch>. The former submodule deinit and submodule init repair steps were removed.\"\n- \"git submodule deinit must NEVER run inside a linked worktree: it rewrites submodule.* in the SHARED .git/config and silently deinitializes the main checkout's submodules. git worktree remove --force handles submodules directly, per git's documentation.\"\n- \"extensions.worktreeConfig does not isolate submodule config; submodule init/deinit always use the shared .git/config.\"\n- \"The 'each submodule needs its own worktree' hypothesis is disproven: the superproject still detects submodules structurally so the removal refusal still triggers, submodule status reports them uninitialized because they were never registered, and each submodule worktree needs separate teardown.\"\n- \"Submodules must be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\"\n\nnon_goals:\n- \"Wiring tools/worktree/worktree.sh into install-tools.sh.\"\n- \"Triaging the in-review ticket backlog.\"\n- \"Pushing the backup/pre-lockfile-rebase branch.\"\n\nrisk_notes:\n\"shellcheck is NOT installed in this environment, so tools/worktree/worktree.sh has no lint coverage beyond bash -n. The parent repository at c:/Users/linus/git/graph_app tracks context-engine as a submodule and its pointer was NOT bumped. The local branch backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in in-review and were not triaged. An uncommitted edit to .agents/agents/implement.agent.md (expanding its MCP tool grant) is the user's own in-progress work and was deliberately left uncommitted.\"\n\nvalidation (each entry has validation_spec_id and command):\n- validation_spec_id \"worktree-script-parse\", command \"bash -n tools/worktree/worktree.sh\"\n- validation_spec_id \"worktree-script-doctor\", command \"bash tools/worktree/worktree.sh doctor\"\n- validation_spec_id \"workspace-cargo-check\", command \"cargo check --workspace\"\n\nopen_escalations: [] (empty)\n\nSTEP 3: verify. Read the runtime view back (`mcp_session-mcp_session_runtime_view`) or otherwise confirm the handoff persisted, and report what the store actually returned — not what you intended.\n\nRETURN CONTRACT — return ONLY:\n```\nSESSION_TOOLS_AVAILABLE: <yes|NO — which call failed>\nRUNTIME_INIT: <ok, session id=<id>|FAILED: exact error>\nHANDOFF_RECORDED: <ok, id=<handoff id>|FAILED: exact error>\nVERIFIED_IN_STORE: <yes — what the store returned|no>\n```\nNothing else.\n"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015LzFAgesTZys668Vs4Kv32"
+      }
+    },
+    {
+      "sequence": 149,
+      "role": "user",
+      "content": "You are recording a durable session handoff record. You have NO prior context; everything you need is below. Do not edit source code.\n\nWORKSPACE: c:/Users/linus/git/graph_app/context-engine\n\nTOOL: `mcp_session-mcp_session_handoff`. Your agent template was just granted `session-mcp/*`, so these tools should now be available to you. If a session-mcp tool is nonetheless absent, report that honestly and do NOT invent a substitute — a durable copy of this handoff already exists on a ticket, so an honest failure here is acceptable and is NOT a crisis.\n\nUse `caller_model` value \"claude-sonnet-5\" on every MCP call (a real price-table model id, never a vendor label like \"copilot\").\n\nSTEP 1: obtain a session id. Call `mcp_session-mcp_session_runtime_init` with workspace \"c:/Users/linus/git/graph_app/context-engine\". Use the returned workspace session id for the handoff call. If a session already exists, resume it rather than forcing a new run.\n\nSTEP 2: call `mcp_session-mcp_session_handoff` with workspace \"c:/Users/linus/git/graph_app/context-engine\", the session id from step 1, and these fields:\n\nobjective:\n\"Deduplicate the stale board module in memory-kernel (ticket c320708d) — confirm there are no live callers of memory-kernel/src/storage/board.rs, then either delete it or make it re-export the memory-api definitions, and prove cargo check --workspace passes.\"\n\ntarget_tickets: [\"c320708d-8dc1-46e2-ab5d-9903460ae27a\"]\n\ntarget_files: [\"memory-kernel/src/storage/board.rs\", \"memory-api/crates/memory-api/src/storage/board.rs\"]\n\ncontext_anchors:\n- \"main is at b84506a3 and in sync with origin/main. Submodule memory-api commit c6eb0a3a was pushed to its own origin BEFORE the superproject, repairing a pointer that previously resolved only on this machine. All five submodules are healthy.\"\n- \"Session commits: bb0b0ca3 feat(tooling) worktree helper script; a415b25c chore(tickets); 4909db52 fix(tooling) drop harmful submodule deinit from teardown; b84506a3 chore(tickets) protocol fix evidence.\"\n- \"LIVE board module: memory-api/crates/memory-api/src/storage/board.rs, 425 lines, defines BoardEntry, BoardEntryStatus, BoardConfig, BoardSnapshot, ActiveWorktree, BoardHistorySnapshot, BoardCleanPreview, BoardCleanResult, ReconcileAction, BoardReconcileResult, BoardError.\"\n- \"STALE duplicate: memory-kernel/src/storage/board.rs, 295 lines, same set minus ActiveWorktree, off the live call path.\"\n- \"Divergence introduced by ticket c060bf94, which added session_id/worktree_path/branch to BoardEntry plus ActiveWorktree, a WorktreeConflict error, and board_worktrees surfaces to the memory-api copy only. The user confirmed the duplication is NOT intentional.\"\n- \"A full copy of this handoff is already appended to ticket c320708d's description under the heading 'Handoff package (from the worktree-helper session)'.\"\n- \"Tooling: tools/worktree/worktree.sh provides new, list, rebase, merge, remove, doctor; --dry-run on every mutating subcommand; refuses destructive operations from inside a linked worktree.\"\n\ndecisions:\n- \"Worktree teardown is: git worktree remove --force <path>; git worktree prune; git branch -d <branch>. The former submodule deinit and submodule init repair steps were removed.\"\n- \"git submodule deinit must NEVER run inside a linked worktree: it rewrites submodule.* in the SHARED .git/config and silently deinitializes the main checkout's submodules. git worktree remove --force handles submodules directly, per git's documentation.\"\n- \"extensions.worktreeConfig does not isolate submodule config; submodule init/deinit always use the shared .git/config.\"\n- \"The 'each submodule needs its own worktree' hypothesis is disproven: the superproject still detects submodules structurally so the removal refusal still triggers, submodule status reports them uninitialized because they were never registered, and each submodule worktree needs separate teardown.\"\n- \"Submodules must be pushed before the superproject, or the superproject publishes pointers to unreachable commits.\"\n\nnon_goals:\n- \"Wiring tools/worktree/worktree.sh into install-tools.sh.\"\n- \"Triaging the in-review ticket backlog.\"\n- \"Pushing the backup/pre-lockfile-rebase branch.\"\n\nrisk_notes:\n\"shellcheck is NOT installed in this environment, so tools/worktree/worktree.sh has no lint coverage beyond bash -n. The parent repository at c:/Users/linus/git/graph_app tracks context-engine as a submodule and its pointer was NOT bumped. The local branch backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439 is 2109 commits ahead of origin and was deliberately not pushed. Roughly 37 tickets sit in in-review and were not triaged. An uncommitted edit to .agents/agents/implement.agent.md (expanding its MCP tool grant) is the user's own in-progress work and was deliberately left uncommitted.\"\n\nvalidation (each entry has validation_spec_id and command):\n- validation_spec_id \"worktree-script-parse\", command \"bash -n tools/worktree/worktree.sh\"\n- validation_spec_id \"worktree-script-doctor\", command \"bash tools/worktree/worktree.sh doctor\"\n- validation_spec_id \"workspace-cargo-check\", command \"cargo check --workspace\"\n\nopen_escalations: [] (empty)\n\nSTEP 3: verify. Read the runtime view back (`mcp_session-mcp_session_runtime_view`) or otherwise confirm the handoff persisted, and report what the store actually returned — not what you intended.\n\nRETURN CONTRACT — return ONLY:\n```\nSESSION_TOOLS_AVAILABLE: <yes|NO — which call failed>\nRUNTIME_INIT: <ok, session id=<id>|FAILED: exact error>\nHANDOFF_RECORDED: <ok, id=<handoff id>|FAILED: exact error>\nVERIFIED_IN_STORE: <yes — what the store returned|no>\n```\nNothing else.",
+      "captured_at": "2026-08-02T22:28:35.455Z",
+      "event_meta": {
+        "event_id": "94a68c29-82a0-4180-a987-2b218a37c282",
+        "parent_event_id": "0301ed6d-b3e3-43ad-973a-81feaa99c456",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01FUoxHszu5conWxi4Jv6ZpQ"
+      }
+    },
+    {
+      "sequence": 150,
+      "role": "assistant",
+      "content": "This handoff (bfda2709) succeeded with all context anchors folded into the objective text and validation array intact — the earlier failures were caused by the `context_anchors` field, which requires each entry to be an existing workspace-relative path, not free text.",
+      "captured_at": "2026-08-02T22:30:36.570Z",
+      "event_meta": {
+        "event_id": "1594c3a1-1814-431d-a0ce-93d57f097bf8",
+        "parent_event_id": "67f574f0-9e83-439c-8c4b-dbc39ff5d3b2",
+        "event_type": "assistant.message",
+        "message_id": "a9bd3af1-5051-489a-b906-3a846fd85b26",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_013Y2WhBMQykNoX8Z1ZGTQbh",
+            "name": "mcp_session-mcp_session_runtime_view",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:/Users/linus/git/graph_app/context-engine",
+              "workspace_session_id": "918886cc-3f7d-4ced-b2a2-10e72e68abb4"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01FUoxHszu5conWxi4Jv6ZpQ"
+      }
+    },
+    {
+      "sequence": 151,
+      "role": "assistant",
+      "content": "```\nSESSION_TOOLS_AVAILABLE: yes\nRUNTIME_INIT: ok, session id=918886cc-3f7d-4ced-b2a2-10e72e68abb4\nHANDOFF_RECORDED: ok, id=bfda2709-5a9a-4e7c-81c7-6fdb288b1670 (note: an earlier attempt using the `context_anchors` field failed with \"handoff package references a path that does not exist under the workspace root\" — that field requires each entry to be an existing workspace-relative path, not free text; the context anchors were folded into the objective field instead, and all other fields — decisions, non_goals, risk_notes, target_files, target_tickets, validation — were recorded exactly as specified)\nVERIFIED_IN_STORE: yes — session_runtime_view returned {\"workspace_session_id\":\"918886cc-3f7d-4ced-b2a2-10e72e68abb4\",\"active_run_id\":\"411b4da5-f198-4d68-99da-f573ce780558\",\"pinned_count\":0}; the handoff call itself echoed back record_path \"c:/Users/linus/git/graph_app/context-engine\\.session\\sessions\\918886cc-3f7d-4ced-b2a2-10e72e68abb4\\handoffs\\bfda2709-5a9a-4e7c-81c7-6fdb288b1670\" confirming the file was written to disk\n```",
+      "captured_at": "2026-08-02T22:30:43.105Z",
+      "event_meta": {
+        "event_id": "eec032b9-73e3-4c7c-864f-38389b64ba02",
+        "parent_event_id": "1715e57e-5b12-4128-9aca-a0b5aa739982",
+        "event_type": "assistant.message",
+        "message_id": "475b45c1-7632-454d-93d4-cffedd87e39b",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_01FUoxHszu5conWxi4Jv6ZpQ"
+      }
+    },
+    {
+      "sequence": 152,
+      "role": "user",
+      "content": "You are committing and pushing store artifacts. You have NO prior context; everything you need is below.\n\nMAIN CHECKOUT: c:/Users/linus/git/graph_app/context-engine\nSHELL: Git Bash / mingw on Windows, forward-slash paths. Work from the main checkout on branch `main`, which is currently in sync with origin/main at b84506a3.\n\n=== WHAT TO COMMIT ===\nOnly ticket-store and session-store artifacts:\n- .ticket/tickets/c320708d-8dc1-46e2-ab5d-9903460ae27a/  (a handoff package appended to the description)\n- .ticket/tickets/4ef88dbc-cb39-4724-9f2c-53ab09cf90c5/  (protocol-correction evidence appended)\n- .session/  (session runtime files, including a newly written handoff record at .session/sessions/918886cc-3f7d-4ced-b2a2-10e72e68abb4/handoffs/bfda2709-5a9a-4e7c-81c7-6fdb288b1670)\n\n=== WHAT TO LEAVE ALONE — THIS IS CRITICAL ===\nThe file `.agents/agents/implement.agent.md` has an UNCOMMITTED modification (it expands that agent template's MCP tool grant). It is the USER'S OWN in-progress work. Do NOT stage it, do NOT commit it, do NOT revert it, do NOT stash it. Leave it exactly as it is in the working tree.\nLikewise do not stage, commit, or revert anything inside any submodule directory (context-stack, memory-api, memory-kernel, memory-viewers, viewer-api), and do not bump any submodule pointer.\n\n=== STEPS ===\n1. Inspect first:\n```bash\ncd c:/Users/linus/git/graph_app/context-engine\ngit status --short\n```\n2. Stage ONLY the two store directories:\n```bash\ngit add .ticket .session\n```\n3. Confirm the staged set is correct BEFORE committing — this is the guard against sweeping up the user's file:\n```bash\ngit diff --cached --name-only\n```\nIf `.agents/agents/implement.agent.md` (or any path outside .ticket/ and .session/) appears in that staged list, STOP immediately, run `git reset` to unstage everything, and report the problem. Do not commit.\n4. Commit:\n```bash\ngit commit -m \"chore(tickets,session): record worktree helper handoff package\"\n```\n5. Push:\n```bash\ngit push origin main\n```\nDo NOT push any other branch. In particular do NOT push `backup/pre-lockfile-rebase-fda1a6e39adac9da80496fc053d15995f18a7439`.\n6. Final verification:\n```bash\ngit status -sb\ngit status --short\ngit log --oneline -3\ngit submodule status\n```\nConfirm: `main` is in sync with `origin/main`; the only remaining unstaged path is `.agents/agents/implement.agent.md` plus any live-session `.session` transcript files that the running session itself keeps rewriting; and all five submodules still show a commit hash with NO leading `-`.\n\n=== RETURN CONTRACT ===\nReturn ONLY:\n```\nSTAGED_SET_CORRECT: <yes — only .ticket/.session|NO: what leaked, reset performed>\nCOMMIT: <sha> : <subject> : <n files> | <nothing to commit>\nPUSH: <ok — origin/main now at <sha>|FAILED: reason>\nUSER_FILE_PRESERVED: <yes — .agents/agents/implement.agent.md still modified and uncommitted|NO: what happened>\nFINAL_STATUS:\n  sync: <output of git status -sb>\n  remaining unstaged: <list>\n  submodules: <5/5 healthy|list problems>\n  recent commits: <3 one-liners>\n```\nNothing else.",
+      "captured_at": "2026-08-02T22:31:09.675Z",
+      "event_meta": {
+        "event_id": "2a05ae3b-50e4-4d46-a924-e400b87a4fd1",
+        "parent_event_id": "e162ec64-0f73-43be-9e32-ecf53e30df73",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01H58M1ovv3dg5RMZKaE3f9n"
+      }
+    },
+    {
+      "sequence": 153,
+      "role": "assistant",
+      "content": "I'll stage only the ticket/session store files, verify staged contents, commit, and push to origin/main.",
+      "captured_at": "2026-08-02T22:31:31.007Z",
+      "event_meta": {
+        "event_id": "f75c96b8-6f09-4e5f-a120-210b303c52c4",
+        "parent_event_id": "26b55424-66b0-473b-9947-ab43be4c428e",
+        "event_type": "assistant.message",
+        "message_id": "ee7ef620-94d6-4b00-b3be-a752b958368d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_TLqCaKor8onm4dACE3bvHIOn",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "bash -lc 'set -euo pipefail; cd /c/Users/linus/git/graph_app/context-engine || exit 1; echo \"--STATUS_BEFORE--\"; git status --short; echo \"--ADDING--\"; git add .ticket .session; echo \"--STAGED_LIST--\"; git diff --cached --name-only || true; staged=$(git diff --cached --name-only || true); leaked=$(printf \"%s\\n\" \"$staged\" | grep -vE \"^(.ticket/|.session/)\" || true); if [ -n \"${leaked}\" ]; then echo \"--LEAK_DETECTED--\"; echo \"$leaked\"; git reset; echo \"--RESET_DONE--\"; exit 2; fi; if [ -z \"${staged}\" ]; then echo \"--NOTHING_TO_COMMIT--\"; else echo \"--COMMITTING--\"; git commit -m \"chore(tickets,session): record worktree helper handoff package\"; commit_sha=$(git rev-parse --short HEAD); commit_subject=$(git log -1 --pretty=%s); files_count=$(git show --name-only --pretty=format:'' HEAD | sed '/^$/d' | wc -l | tr -d ' '); echo \"--COMMITTED--${commit_sha}::${commit_subject}::${files_count}\"; fi; if [ -z \"${staged}\" ]; then echo \"--SKIP_PUSH_NO_COMMIT--\"; else echo \"--PUSHING--\"; if git push origin main; then new_sha=$(git rev-parse --short origin/main); echo \"--PUSH_OK--${new_sha}\"; else echo \"--PUSH_FAILED--\"; exit 3; fi; fi; echo \"--FINAL_SYNC--\"; git status -sb; echo \"--FINAL_SHORT--\"; git status --short; echo \"--RECENT--\"; git log --oneline -3; echo \"--SUBMODULES--\"; git submodule status'",
+              "explanation": "Stage only .ticket and .session, validate staged files, commit and push if safe",
+              "goal": "Stage, commit, and push specified store artifacts safely",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_01H58M1ovv3dg5RMZKaE3f9n"
       }
     }
   ]
