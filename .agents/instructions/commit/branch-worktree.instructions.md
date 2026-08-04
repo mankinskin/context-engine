@@ -39,7 +39,7 @@ Run from the repository root, on `main`, before dispatching the implementation a
 bash tools/worktree/worktree.sh new <short-id> <slug>
 ```
 
-This is the canonical invocation — it is the single source of truth for the exact git sequence, so hand-typed variants cannot drift from it. Under the hood it runs: `git fetch origin`, fast-forwards `main` to `origin/main`, `git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main`, then `git -C .worktrees/<short-id>-<slug> submodule update --init --recursive`, self-repairing a submodule commit missing from the remote and rolling back a partial worktree on persistent failure. That sequence stays discoverable here as a manual fallback if the script is ever unavailable. Pass `--dry-run` to print the exact commands without running them.
+This is the canonical invocation — it is the single source of truth for the exact git sequence, so hand-typed variants cannot drift from it. Under the hood it runs: `git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main` (branching directly from LOCAL `main`, no fetch, no origin dependency), then populates every submodule OFFLINE by giving each one its own linked worktree — `git -C <main-checkout>/<submodule> worktree add --detach .worktrees/<short-id>-<slug>/<submodule> <recorded-sha>` — rolling back the partial worktree on persistent failure. Local `main` is authoritative here, not `origin/main`: this repo's local `main` and its recorded submodule commits are routinely ahead of, or entirely absent from, `origin`, so origin is never a valid source for either. That sequence stays discoverable here as a manual fallback if the script is ever unavailable. Pass `--dry-run` to print the exact commands without running them.
 
 The branch is always cut from `main`, never from another feature branch. If the branch already exists, the worktree is being re-created for an interrupted task — use `git worktree add .worktrees/<short-id>-<slug> agent/<short-id>-<slug>` without `-b`.
 
@@ -100,7 +100,7 @@ Conflicts are resolved by the feature branch, never by the integrator. Before ma
 bash tools/worktree/worktree.sh rebase <name>
 ```
 
-This fetches `origin` then rebases `<name>`'s branch onto `origin/main`; it stops on conflict and never auto-resolves or aborts, so conflict resolution still happens by hand inside the worktree:
+This rebases `<name>`'s branch onto LOCAL `main`; it never fetches `origin`, and it stops on conflict and never auto-resolves or aborts, so conflict resolution still happens by hand inside the worktree:
 
 ```bash
 git -C <worktree> status

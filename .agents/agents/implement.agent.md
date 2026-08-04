@@ -58,7 +58,7 @@ If the handoff package is incomplete or ambiguous, **escalate immediately** to t
 4. State one local hypothesis and the first cheap falsifying check.
 5. Make the smallest grounded edit that tests or implements that hypothesis.
 6. Run the first focused validation immediately after that edit.
-7. Iterate locally until the slice is correct, then rebase onto `origin/main`, resolve any conflicts here, and re-run validation.
+7. Iterate locally until the slice is correct, then rebase onto local `main` (`bash tools/worktree/worktree.sh rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here, and re-run validation.
 8. Check out of the board with a `ready-to-merge:` reason, then summarize the result and evidence with minimal extra narration. Do not merge into `main`.
 
 ## Output Format

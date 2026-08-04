@@ -64,7 +64,7 @@ Examples:
 4. Check for generated-output drift and regenerate before staging.
 5. Stage and commit each logical batch with a focused message, staging only board-claimed files.
 6. Update submodule pointers deepest-first.
-7. Rebase the feature branch onto `origin/main`, resolve any conflicts here rather than on `main`, and re-run validation.
+7. Rebase the feature branch onto local `main` (`bash tools/worktree/worktree.sh rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here rather than on `main`, and re-run validation.
 8. Check out of the board with a `ready-to-merge: <branch> @ <sha>` reason and move the ticket to `in-review`.
 9. Verify clean state: `git status --short`.
 

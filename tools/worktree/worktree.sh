@@ -14,10 +14,11 @@ usage: tools/worktree/worktree.sh <subcommand> [args] [--dry-run]
 
 subcommands:
   new <short-id> <slug>   Bootstrap a worktree + branch for agent/<short-id>-<slug>,
-                          cut from origin/main, with all submodules initialized.
+                          cut from local main, with all submodules initialized
+                          offline (no network access, no origin dependency).
   list                    List existing .worktrees/* entries: branch + submodule
                           init status for each.
-  rebase <name>           Fetch origin, then rebase <name>'s branch onto origin/main.
+  rebase <name>           Rebase <name>'s branch onto local main. No fetch.
                           Stops on conflict; never auto-resolves or aborts.
   merge <name>            Fast-forward-only merge <name>'s branch into main.
                           Fails loudly (never falls back to a real merge) if main
@@ -115,6 +116,45 @@ deinitialized_submodules() {
     git -C "$repo" submodule status 2>/dev/null | awk '/^-/{print $2}'
 }
 
+# Populates every submodule inside a linked worktree OFFLINE and without
+# disturbing the main checkout's own submodule working trees. `git submodule
+# update` in a linked worktree is unsafe here: a submodule's git directory
+# under .git/modules/<name> is shared, and `submodule update` treats it as
+# having a single core.worktree — running it from a linked worktree repoints
+# that core.worktree at the new location and empties/repoints the MAIN
+# checkout's submodule working tree. Instead, treat each submodule exactly
+# like the superproject itself: give it a proper linked worktree of its OWN
+# repo (`git -C <main>/<submodule> worktree add`), which creates a private
+# `.git/modules/<name>/worktrees/<uuid>` and never touches the main
+# checkout's existing worktree of that submodule. This also requires no
+# network access: the target commit is the gitlink already recorded in the
+# superproject tree, resolved and checked out purely from objects already
+# present in the shared .git/modules/<name> object store.
+populate_submodules_offline() {
+    local mw="$1" wtpath="$2"
+    local sm sha smdir failed=0
+    while IFS= read -r sm; do
+        [[ -n "$sm" ]] || continue
+        smdir="$mw/$sm"
+        if [[ ! -e "$smdir/.git" ]]; then
+            log "warning: submodule $sm not initialized in main checkout ($smdir) — skipping"
+            continue
+        fi
+        sha=$(git -C "$wtpath" ls-tree HEAD -- "$sm" | awk '{print $3}')
+        if [[ -z "$sha" ]]; then
+            log "warning: could not resolve recorded commit for submodule $sm — skipping"
+            failed=1
+            continue
+        fi
+        mkdir -p "$(dirname "$wtpath/$sm")"
+        if ! run git -C "$smdir" worktree add --detach "$wtpath/$sm" "$sha"; then
+            log "warning: offline worktree add failed for submodule $sm at $sha"
+            failed=1
+        fi
+    done <<<"$(submodule_paths "$mw")"
+    return "$failed"
+}
+
 # Newline-separated absolute worktree paths git itself considers registered,
 # per the main checkout's `git worktree list --porcelain`. This is the only
 # reliable membership test: a directory under .worktrees/ can exist without
@@ -169,54 +209,31 @@ cmd_new() {
         die "$wtpath already exists — refusing to bootstrap over it"
     fi
 
-    run git -C "$mw" fetch origin
-    run git -C "$mw" checkout main
-    if ! (( DRY_RUN )); then
-        # Fast-forward main to origin/main. Prefer `merge --ff-only` over
-        # `pull --ff-only`: a `pull.rebase=true` repo config routes the
-        # latter through rebase, which refuses outright on any unstaged
-        # change even when local main is already even with or ahead of
-        # origin (nothing to integrate). Skip entirely when there is
-        # genuinely nothing to fast-forward.
-        if git -C "$mw" merge-base --is-ancestor origin/main main; then
-            log "main already contains origin/main — nothing to pull"
-        elif ! git -C "$mw" merge --ff-only origin/main; then
-            die "fast-forwarding main to origin/main failed in $mw — likely unstaged/uncommitted changes in the main checkout. Commit or stash, then retry."
-        fi
-    else
-        printf '[dry-run] would run: git -C %s pull --ff-only origin main\n' "$mw"
-    fi
+    # Branch directly from LOCAL main — no fetch, no origin dependency. Local
+    # main (and the local-only submodule commits it records) is frequently
+    # ahead of, or entirely absent from, origin in this repo, so origin is
+    # never an authoritative source for either.
     run git -C "$mw" worktree add "$wtpath" -b "$branch" main
 
     if (( DRY_RUN )); then
-        printf '[dry-run] would run: git -C %s submodule update --init --recursive\n' "$wtpath"
+        printf '[dry-run] would populate submodules offline: for each submodule, git -C <main-checkout>/<submodule> worktree add --detach %s/<submodule> <recorded-sha>\n' "$wtpath"
         printf '[dry-run] resolved worktree: %s\n' "$wtpath"
         printf '[dry-run] resolved branch:   %s\n' "$branch"
         return 0
     fi
 
-    if ! git -C "$wtpath" submodule update --init --recursive; then
-        # Sharp edge: a submodule commit checked out in the worktree may
-        # exist only in the main checkout's local submodule clone (never
-        # pushed to origin). Repair by fetching each submodule directly from
-        # the main checkout's copy, then retry once before giving up.
-        log "submodule update failed — attempting repair by fetching from the main checkout's submodule clones"
+    if ! populate_submodules_offline "$mw" "$wtpath"; then
+        log "offline submodule population failed — rolling back partial worktree to avoid leaving broken state"
         local sm
         while IFS= read -r sm; do
             [[ -n "$sm" ]] || continue
-            if [[ -d "$mw/$sm/.git" || -f "$mw/$sm/.git" ]] && [[ -d "$wtpath/$sm" ]]; then
-                git -C "$wtpath/$sm" fetch "$mw/$sm" 2>/dev/null || true
-            fi
+            git -C "$mw/$sm" worktree remove --force "$wtpath/$sm" 2>/dev/null || true
+            git -C "$mw/$sm" worktree prune 2>/dev/null || true
         done <<<"$(submodule_paths "$mw")"
-
-        if ! git -C "$wtpath" submodule update --init --recursive; then
-            log "submodule init still failing after repair attempt — rolling back partial worktree to avoid leaving broken state"
-            git -C "$wtpath" submodule deinit --all --force 2>/dev/null || true
-            git -C "$mw" worktree remove --force "$wtpath" 2>/dev/null || true
-            git -C "$mw" worktree prune
-            git -C "$mw" branch -D "$branch" 2>/dev/null || true
-            die "bootstrap failed during submodule init; rolled back — no partial worktree/branch left behind"
-        fi
+        git -C "$mw" worktree remove --force "$wtpath" 2>/dev/null || true
+        git -C "$mw" worktree prune
+        git -C "$mw" branch -D "$branch" 2>/dev/null || true
+        die "bootstrap failed during submodule population; rolled back — no partial worktree/branch left behind"
     fi
 
     # Machine-consumable result line, then a human-readable echo.
@@ -272,15 +289,13 @@ cmd_rebase() {
     wtpath=$(resolve_worktree_path "$mw" "$name")
     require_worktree_exists "$wtpath"
 
-    run git -C "$mw" fetch origin
-
     if (( DRY_RUN )); then
-        printf '[dry-run] would run: git -C %s rebase origin/main\n' "$wtpath"
+        printf '[dry-run] would run: git -C %s rebase main\n' "$wtpath"
         return 0
     fi
 
-    if git -C "$wtpath" rebase origin/main; then
-        log "rebase clean: $wtpath is now on top of origin/main"
+    if git -C "$wtpath" rebase main; then
+        log "rebase clean: $wtpath is now on top of local main"
     else
         log "rebase stopped with conflicts in $wtpath"
         log "resolve them there, then run:"
@@ -329,12 +344,31 @@ cmd_remove() {
     local name="${1:-}"
     [[ -n "$name" ]] || die "usage: worktree.sh remove <name>"
     guard_main_checkout
-    local mw wtpath branch remaining
+    local mw wtpath branch remaining sm
     mw=$(main_worktree_path)
     name=$(normalize_name "$name")
     wtpath=$(resolve_worktree_path "$mw" "$name")
     require_worktree_exists "$wtpath"
     branch=$(git -C "$wtpath" branch --show-current || true)
+
+    # Tear down each submodule's own linked worktree (registered by
+    # populate_submodules_offline via `git -C <main>/<submodule> worktree add`)
+    # before removing the superproject worktree. Without this, every removal
+    # leaks a stale worktree registration under the submodule's
+    # .git/modules/<name>/worktrees/<uuid> that later blocks re-adding the
+    # same path. Tolerate submodules that were never registered this way
+    # (e.g. stubs left by the old `submodule update` bootstrap path).
+    while IFS= read -r sm; do
+        [[ -n "$sm" ]] || continue
+        [[ -e "$mw/$sm/.git" ]] || continue
+        if (( DRY_RUN )); then
+            printf '[dry-run] would run: git -C %s worktree remove --force %s\n' "$mw/$sm" "$wtpath/$sm"
+            printf '[dry-run] would run: git -C %s worktree prune\n' "$mw/$sm"
+        else
+            git -C "$mw/$sm" worktree remove --force "$wtpath/$sm" 2>/dev/null || true
+            git -C "$mw/$sm" worktree prune
+        fi
+    done <<<"$(submodule_paths "$mw")"
 
     # --force alone handles initialized submodules; a prior `submodule deinit`
     # would instead corrupt the shared .git/config (see instructions).
