@@ -13,8 +13,23 @@ fi
 # shellcheck source=tools/install/common.sh
 source "$common_install_helpers"
 
+mcp_tool_names=(
+    context-mcp
+    ticket-mcp
+    spec-mcp
+    test-mcp
+    feedback-mcp
+    session-mcp
+    peek-mcp
+    rule-mcp
+    audit-mcp
+    compact-terminal-mcp
+    fs-mcp
+    mcp-toolmon
+    log-viewer
+)
+
 tool_names=(
-    viewer-ctl
     doc-viewer
     log-viewer
     spec-viewer
@@ -40,21 +55,6 @@ tool_names=(
     mcp-toolmon
 )
 
-mcp_tool_names=(
-    context-mcp
-    ticket-mcp
-    spec-mcp
-    test-mcp
-    feedback-mcp
-    session-mcp
-    peek-mcp
-    rule-mcp
-    audit-mcp
-    compact-terminal-mcp
-    fs-mcp
-    mcp-toolmon
-    log-viewer
-)
 
 # Locate install-ctl: prefer an already-installed binary on PATH, otherwise
 # run it straight from source via cargo (no separate build step required).
