@@ -4,7 +4,7 @@ description: "Use to summarize completed/in-progress work into a clean, self-con
 tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', session-mcp/handoff, session-mcp/finish, session-mcp/lookup, session-mcp/query, session-mcp/runtime_view, session-mcp/peek_range, session-mcp/peek_skeleton, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Work scope, session state, or ticket/spec set to summarize and hand off (defaults to current session context)."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 You are a handoff coordinator for the context-engine repository.

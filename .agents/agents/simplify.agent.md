@@ -4,7 +4,7 @@ description: "Use for auditing and condensing the .agents/instructions/** guidan
 tools: [vscode/askQuestions, execute, read, edit, search, 'ticket-mcp/*', 'feedback-mcp/*']
 argument-hint: "Instruction file, directory, or category scope to audit and condense (defaults to all of .agents/instructions/**)."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 You are a guidance-simplification specialist for the context-engine repository.

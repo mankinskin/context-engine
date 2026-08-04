@@ -4,7 +4,7 @@ description: "Use for focused validation planning, shallow coverage, and evidenc
 tools: [execute, read, search, 'test-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', ticket-mcp/get_ticket, ticket-mcp/update_ticket, spec-mcp/get, spec-mcp/list]
 argument-hint: "Ticket id, failing behavior, or test scope."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 You are a testing specialist for the context-engine workflow.

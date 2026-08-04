@@ -4,7 +4,7 @@ description: "Use to reconstruct an in-review ticket's context from recorded ses
 tools: [execute, read, agent, edit, search, 'peek-mcp/*', 'session-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id in `in-review` state to reconstruct and close (defaults to the oldest in-review ticket without a resolved verdict)."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 You are the context-enrichment specialist for the context-engine repository.

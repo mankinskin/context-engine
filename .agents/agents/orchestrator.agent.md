@@ -53,7 +53,7 @@ For each unit of work, spawn a sub-agent with:
 
    | Tier | Model string | Use for |
    |---|---|---|
-   | **T2 — default** | `"Claude Sonnet 5 (copilot)"` | Every delegated implementation, review, targeted debugging, or moderate multi-file edit, unless another tier is justified |
+   | **T2 — default** | `"GPT-5.6 Terra (copilot)"` | Every delegated implementation, review, targeted debugging, or moderate multi-file edit, unless another tier is justified |
    | **T3 — floor** | `"GPT-5 mini (copilot)"` | Bulk, mechanical, read-only triage, first-pass research, judgement-free extraction — where most delegated volume belongs |
    | T3 — wide context | `"GPT-5.6 Luna (copilot)"` | Input exceeds 400k, or a cheap model must digest a huge input *and* emit non-trivial code |
    | T3 — reasoning step-up | `"GPT-5.4 mini (copilot)"` | The unit needs real reasoning over what it read |

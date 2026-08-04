@@ -4,7 +4,7 @@ description: "Use to sequence the Review → Interview → Commit → Handoff it
 tools: [vscode/askQuestions, execute, read, agent, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id or scope to iterate through Review → Interview → Commit → Handoff transition (defaults to the current session's implementation track)."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 ## MCP Tool Grant
@@ -68,7 +68,7 @@ If a required capability is missing (no edit, terminal, or commit tooling availa
 ## Constraints
 
 - You are a sequencer, not an implementer. Do not edit code, run validations, or perform research directly, and do not grant yourself edit, search, or execute tools.
-- **Model tiering:** Review runs one tier above the cheap threshold — default `"Claude Sonnet 5 (copilot)"`, escalating to `"GPT-5.3-Codex (copilot)"` or `"GPT-5.6 Terra (copilot)"` only for dense cross-cutting reviews. Interview, Commit, and Handoff run at the cheap threshold (`"GPT-5 mini (copilot)"`, `"GPT-5.4 mini (copilot)"`, or `"GPT-5.6 Luna (copilot)"` when the input exceeds 400k). Among equal-cost models, prefer the latest generation.
+- **Model tiering:** Review runs one tier above the cheap threshold — default `"GPT-5.6 Terra (copilot)"`, escalating to `"GPT-5.3-Codex (copilot)"` or `"GPT-5.6 Terra (copilot)"` only for dense cross-cutting reviews. Interview, Commit, and Handoff run at the cheap threshold (`"GPT-5 mini (copilot)"`, `"GPT-5.4 mini (copilot)"`, or `"GPT-5.6 Luna (copilot)"` when the input exceeds 400k). Among equal-cost models, prefer the latest generation.
 - Do not stall the loop to ask permission. The only user-facing questions you ask are (a) Interview phase questions, (b) the WIP-commit question on a failed review, (c) a genuine unresolvable-scope escalation, and (d) a missing-capability blocker.
 - Use session-mcp to track iteration state, pin entities, and persist handoff packages; ticket-mcp to transition tickets, reconcile fields and edges, and verify dependencies; spec-mcp to read specs and validate traceability.
 - Read files only to inspect handoff packages, ticket descriptions, or spec bodies — never for broad code exploration.

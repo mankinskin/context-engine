@@ -4,7 +4,7 @@ description: "Use for surgical implementation once the target slice is clear and
 tools: [execute, read, edit, search, 'audit-mcp/*', 'compact-terminal-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementation scope."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 You are an implementation specialist for the context-engine repository.

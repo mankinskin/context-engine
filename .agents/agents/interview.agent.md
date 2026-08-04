@@ -4,7 +4,7 @@ description: "Use for general-purpose requirement interviews: refining specs, ti
 tools: [vscode/askQuestions, execute, read, agent, edit, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', session-mcp/runtime_init, session-mcp/runtime_resume, session-mcp/runtime_pin, session-mcp/runtime_render_instructions, session-mcp/runtime_view, session-mcp/handoff, session-mcp/workflow_add_node, session-mcp/workflow_add_nodes, session-mcp/workflow_update_node, session-mcp/workflow_set_status, 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Topic, feature, or ticket scope that needs clarification."
 user-invocable: true
-model: "Claude Sonnet 5"
+model: "GPT-5.6 Terra"
 ---
 
 You are an interview specialist for requirements and workflow clarification in the context-engine repository.
