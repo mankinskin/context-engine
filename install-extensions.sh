@@ -159,6 +159,20 @@ resolve_installed_extension_dir() {
     printf '%s\n' "${matches[@]}" | sort | tail -n 1
 }
 
+# Locate install-ctl: prefer an already-installed binary on PATH, otherwise
+# run it straight from source via cargo. install-ctl performs the actual
+# `npm ci` (if needed) + `npm run install:vsix` steps; this script keeps only
+# the extension-specific pre/post hash verification that install-ctl's
+# generic artifact registry does not model.
+install_ctl_cmd=()
+resolve_install_ctl() {
+    if command -v install-ctl >/dev/null 2>&1; then
+        install_ctl_cmd=(install-ctl)
+    else
+        install_ctl_cmd=(cargo run --manifest-path "$repo_root/tools/install/install-ctl/Cargo.toml" --quiet --)
+    fi
+}
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --extension)
@@ -221,6 +235,8 @@ if [[ ${#selected_extensions[@]} -eq 0 ]]; then
     append_csv_extensions "ticket-vscode"
 fi
 
+resolve_install_ctl
+
 for extension in "${selected_extensions[@]}"; do
     extension_dir=$(extension_path "$extension")
     full_dir="$repo_root/$extension_dir"
@@ -276,31 +292,14 @@ for extension in "${selected_extensions[@]}"; do
         continue
     fi
 
-    if [[ ! -d "$full_dir/node_modules" ]]; then
-        if [[ $dry_run -eq 1 ]]; then
-            printf '    (cd %q && npm ci)\n' "$full_dir"
-        else
-            printf '    npm ci\n'
-            if ! (
-                cd "$full_dir"
-                run_filtered_command "$extension (npm ci)" npm ci
-            ); then
-                failed=1
-            fi
-        fi
-    fi
-
-    if [[ $failed -eq 0 ]]; then
-        if [[ $dry_run -eq 1 ]]; then
-            printf '    (cd %q && npm run install:vsix:dry-run)\n' "$full_dir"
-        else
-            printf '    npm run install:vsix\n'
-            if ! (
-                cd "$full_dir"
-                run_filtered_command "$extension (install)" npm run install:vsix
-            ); then
-                failed=1
-            fi
+    if [[ $dry_run -eq 1 ]]; then
+        (cd "$repo_root" && "${install_ctl_cmd[@]}" --dry-run install "$extension")
+    else
+        if ! (
+            cd "$repo_root"
+            run_filtered_command "$extension (install)" "${install_ctl_cmd[@]}" install "$extension"
+        ); then
+            failed=1
         fi
     fi
 

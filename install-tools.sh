@@ -56,70 +56,17 @@ mcp_tool_names=(
     log-viewer
 )
 
-tool_path() {
-    case "$1" in
-        viewer-ctl) printf '%s\n' "viewer-api/viewer-ctl" ;;
-        doc-viewer) printf '%s\n' "memory-viewers/doc-viewer" ;;
-        log-viewer) printf '%s\n' "memory-viewers/log-viewer" ;;
-        spec-viewer) printf '%s\n' "memory-viewers/spec-viewer" ;;
-        ticket-viewer) printf '%s\n' "memory-viewers/ticket-viewer" ;;
-        copilot-capture-hook) printf '%s\n' "memory-api/crates/session-api" ;;
-        ticket-cli) printf '%s\n' "memory-api/tools/cli/ticket-cli" ;;
-        spec-cli) printf '%s\n' "memory-api/tools/cli/spec-cli" ;;
-        audit-cli) printf '%s\n' "memory-api/tools/cli/audit-cli" ;;
-        rule-cli) printf '%s\n' "memory-api/tools/cli/rule-cli" ;;
-        session-cli) printf '%s\n' "memory-api/tools/cli/session-cli" ;;
-        feedback-cli) printf '%s\n' "memory-api/tools/cli/feedback-cli" ;;
-        context-mcp) printf '%s\n' "context-stack/tools/mcp/context-mcp" ;;
-        ticket-mcp) printf '%s\n' "memory-api/tools/mcp/ticket-mcp" ;;
-        spec-mcp) printf '%s\n' "memory-api/tools/mcp/spec-mcp" ;;
-        test-mcp) printf '%s\n' "memory-api/tools/mcp/test-mcp" ;;
-        feedback-mcp) printf '%s\n' "memory-api/tools/mcp/feedback-mcp" ;;
-        session-mcp) printf '%s\n' "memory-api/tools/mcp/session-mcp" ;;
-        peek-mcp) printf '%s\n' "memory-api/tools/mcp/peek-mcp" ;;
-        rule-mcp) printf '%s\n' "memory-api/tools/mcp/rule-mcp" ;;
-        audit-mcp) printf '%s\n' "memory-api/tools/mcp/audit-mcp" ;;
-        compact-terminal-mcp) printf '%s\n' "memory-api/tools/mcp/compact-terminal-mcp" ;;
-        fs-mcp) printf '%s\n' "memory-api/tools/mcp/fs-mcp" ;;
-        mcp-toolmon) printf '%s\n' "memory-api/tools/mcp/mcp-toolmon" ;;
-        *)
-            printf 'error: unknown tool: %s\n' "$1" >&2
-            exit 1
-            ;;
-    esac
-}
-
-tool_bin() {
-    case "$1" in
-        viewer-ctl) printf '%s\n' "viewer-ctl" ;;
-        doc-viewer) printf '%s\n' "doc-viewer" ;;
-        log-viewer) printf '%s\n' "log-viewer" ;;
-        spec-viewer) printf '%s\n' "spec-viewer" ;;
-        ticket-viewer) printf '%s\n' "ticket-viewer" ;;
-        copilot-capture-hook) printf '%s\n' "copilot-capture-hook" ;;
-        ticket-cli) printf '%s\n' "ticket" ;;
-        spec-cli) printf '%s\n' "spec" ;;
-        audit-cli) printf '%s\n' "audit" ;;
-        rule-cli) printf '%s\n' "rule" ;;
-        feedback-cli) printf '%s\n' "feedback" ;;
-        session-cli) printf '%s\n' "session" ;;
-        context-mcp) printf '%s\n' "context-mcp" ;;
-        ticket-mcp) printf '%s\n' "ticket-mcp" ;;
-        spec-mcp) printf '%s\n' "spec-mcp" ;;
-        test-mcp) printf '%s\n' "test-mcp" ;;
-        feedback-mcp) printf '%s\n' "feedback-mcp" ;;
-        session-mcp) printf '%s\n' "session-mcp" ;;
-        peek-mcp) printf '%s\n' "peek-mcp" ;;
-        rule-mcp) printf '%s\n' "rule-mcp" ;;
-        audit-mcp) printf '%s\n' "audit-mcp" ;;
-        compact-terminal-mcp) printf '%s\n' "compact-terminal-mcp" ;;
-        fs-mcp) printf '%s\n' "fs-mcp" ;;
-        mcp-toolmon) printf '%s\n' "mcp-toolmon" ;;
-        *)
-            printf 'error: unknown tool: %s\n' "$1" >&2
-            exit 1
-            ;;
-    esac
+# Locate install-ctl: prefer an already-installed binary on PATH, otherwise
+# run it straight from source via cargo (no separate build step required).
+# All tool path/bin resolution now lives in install-ctl's runtime-read
+# tools/install/artifacts.toml registry, not in this script.
+install_ctl_cmd=()
+resolve_install_ctl() {
+    if command -v install-ctl >/dev/null 2>&1; then
+        install_ctl_cmd=(install-ctl)
+    else
+        install_ctl_cmd=(cargo run --manifest-path "$repo_root/tools/install/install-ctl/Cargo.toml" --quiet --)
+    fi
 }
 
 usage() {
@@ -311,36 +258,33 @@ if [[ ${#selected_tools[@]} -eq 0 ]]; then
     done
 fi
 
+resolve_install_ctl
+
 install_one() {
     local tool=$1
-    local path
-    local bin
-    local command
     local failed=0
+    local -a subcommand_args=(install "$tool")
+    local -a full_args=("${install_ctl_cmd[@]}")
 
-    path=$(tool_path "$tool")
-    bin=$(tool_bin "$tool")
-
-    command=(cargo install --path "$path" --bin "$bin")
-
-    command+=(--quiet)
-
-    if [[ $force_install -eq 1 ]]; then
-        command+=(--force)
+    if [[ $force_install -eq 0 ]]; then
+        subcommand_args+=(--no-force)
     fi
+    if [[ $dry_run -eq 1 ]]; then
+        full_args+=(--dry-run)
+    fi
+    full_args+=("${subcommand_args[@]}")
 
     printf '==> %s\n' "$tool"
-    printf '    %s\n' "${command[*]}"
 
     if [[ $dry_run -eq 1 ]]; then
+        (cd "$repo_root" && "${full_args[@]}")
         installed_tools+=("$tool")
         return 0
     fi
 
     if ! (
         cd "$repo_root"
-        CARGO_TARGET_DIR="$repo_root/target/install-tools" \
-            run_filtered_command "$tool" "${command[@]}"
+        run_filtered_command "$tool" "${full_args[@]}"
     ); then
         failed=1
     fi

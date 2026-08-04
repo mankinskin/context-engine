@@ -141,7 +141,7 @@
     {
       "label": "doc-viewer: managed start",
       "type": "shell",
-      "command": "viewer-ctl start doc-viewer",
+      "command": "install-ctl start doc-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -194,7 +194,7 @@
     {
       "label": "log-viewer: managed start",
       "type": "shell",
-      "command": "viewer-ctl start log-viewer",
+      "command": "install-ctl start log-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -247,7 +247,7 @@
     {
       "label": "ticket-viewer: managed start",
       "type": "shell",
-      "command": "viewer-ctl start ticket-viewer",
+      "command": "install-ctl start ticket-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -300,7 +300,7 @@
     {
       "label": "spec-viewer: managed start",
       "type": "shell",
-      "command": "viewer-ctl start spec-viewer",
+      "command": "install-ctl start spec-viewer",
       "isBackground": true,
       "options": {
         "cwd": "${workspaceFolder}"
@@ -353,7 +353,7 @@
     {
       "label": "ticket-viewer: prepare frontend",
       "type": "shell",
-      "command": "viewer-ctl prepare ticket-viewer",
+      "command": "install-ctl prepare ticket-viewer",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -366,7 +366,7 @@
     {
       "label": "doc-viewer: prepare frontend",
       "type": "shell",
-      "command": "viewer-ctl prepare doc-viewer",
+      "command": "install-ctl prepare doc-viewer",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -379,7 +379,7 @@
     {
       "label": "log-viewer: prepare frontend",
       "type": "shell",
-      "command": "viewer-ctl prepare log-viewer",
+      "command": "install-ctl prepare log-viewer",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -392,7 +392,7 @@
     {
       "label": "spec-viewer: prepare frontend",
       "type": "shell",
-      "command": "viewer-ctl prepare spec-viewer",
+      "command": "install-ctl prepare spec-viewer",
       "options": {
         "cwd": "${workspaceFolder}"
       },

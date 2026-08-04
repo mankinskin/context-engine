@@ -79,26 +79,26 @@ dependencies = [
 
 [tasks.build-frontend-doc-viewer]
 description = "Build the doc-viewer Vite frontend"
-command = "viewer-ctl"
-args = ["build", "doc-viewer"]
+command = "install-ctl"
+args = ["viewer", "build", "doc-viewer"]
 
 [tasks.build-frontend-log-viewer]
 description = "Build the log-viewer Vite frontend"
-command = "viewer-ctl"
-args = ["build", "log-viewer"]
+command = "install-ctl"
+args = ["viewer", "build", "log-viewer"]
 
 [tasks.build-frontend-ticket-viewer]
 description = "Build the ticket-viewer Trunk/Dioxus frontend"
-command = "viewer-ctl"
-args = ["build", "ticket-viewer"]
+command = "install-ctl"
+args = ["viewer", "build", "ticket-viewer"]
 
 [tasks.build-frontend-spec-viewer]
 description = "Build the spec-viewer Trunk/Dioxus frontend"
-command = "viewer-ctl"
-args = ["build", "spec-viewer"]
+command = "install-ctl"
+args = ["viewer", "build", "spec-viewer"]
 
 
-# All viewer tasks use viewer-ctl as their runtime.
+# All viewer tasks use install-ctl as their runtime.
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.install-viewer-ctl]
@@ -141,7 +141,7 @@ command = "cargo"
 args = ["build", "--release", "-p", "spec-viewer"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Install — install viewer server binaries to ~/.cargo/bin via viewer-ctl.
+# Install — install viewer server binaries to ~/.cargo/bin via install-ctl.
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.install-viewers]
@@ -155,23 +155,23 @@ dependencies = [
 
 [tasks.install-doc-viewer]
 description = "Install doc-viewer to ~/.cargo/bin"
-command = "viewer-ctl"
-args = ["install", "doc-viewer"]
+command = "install-ctl"
+args = ["viewer", "install", "doc-viewer"]
 
 [tasks.install-log-viewer]
 description = "Install log-viewer to ~/.cargo/bin"
-command = "viewer-ctl"
-args = ["install", "log-viewer"]
+command = "install-ctl"
+args = ["viewer", "install", "log-viewer"]
 
 [tasks.install-ticket-viewer]
 description = "Install ticket-viewer to ~/.cargo/bin"
-command = "viewer-ctl"
-args = ["install", "ticket-viewer"]
+command = "install-ctl"
+args = ["viewer", "install", "ticket-viewer"]
 
 [tasks.install-spec-viewer]
 description = "Install spec-viewer to ~/.cargo/bin"
-command = "viewer-ctl"
-args = ["install", "spec-viewer"]
+command = "install-ctl"
+args = ["viewer", "install", "spec-viewer"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Start — build frontend artifacts, auto-install the server binary if not
@@ -182,22 +182,22 @@ args = ["install", "spec-viewer"]
 
 [tasks.start-doc-viewer]
 description = "Build frontend, auto-install if needed, start doc-viewer on port ${DOC_VIEWER_PORT}"
-command = "viewer-ctl"
+command = "install-ctl"
 args = ["start", "doc-viewer"]
 
 [tasks.start-log-viewer]
 description = "Build frontend, auto-install if needed, start log-viewer on port ${LOG_VIEWER_PORT}"
-command = "viewer-ctl"
+command = "install-ctl"
 args = ["start", "log-viewer"]
 
 [tasks.start-ticket-viewer]
 description = "Build frontend, auto-install if needed, start ticket-viewer on port ${TICKET_VIEWER_PORT}"
-command = "viewer-ctl"
+command = "install-ctl"
 args = ["start", "ticket-viewer"]
 
 [tasks.start-spec-viewer]
 description = "Build frontend, auto-install if needed, start spec-viewer on port ${SPEC_VIEWER_PORT}"
-command = "viewer-ctl"
+command = "install-ctl"
 args = ["start", "spec-viewer"]
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -207,23 +207,23 @@ args = ["start", "spec-viewer"]
 
 [tasks.stop-doc-viewer]
 description = "Stop the doc-viewer server (kills process on port ${DOC_VIEWER_PORT})"
-command = "viewer-ctl"
-args = ["stop", "doc-viewer"]
+command = "install-ctl"
+args = ["viewer", "stop", "doc-viewer"]
 
 [tasks.stop-log-viewer]
 description = "Stop the log-viewer server (kills process on port ${LOG_VIEWER_PORT})"
-command = "viewer-ctl"
-args = ["stop", "log-viewer"]
+command = "install-ctl"
+args = ["viewer", "stop", "log-viewer"]
 
 [tasks.stop-ticket-viewer]
 description = "Stop the ticket-viewer server (kills process on port ${TICKET_VIEWER_PORT})"
-command = "viewer-ctl"
-args = ["stop", "ticket-viewer"]
+command = "install-ctl"
+args = ["viewer", "stop", "ticket-viewer"]
 
 [tasks.stop-spec-viewer]
 description = "Stop the spec-viewer server (kills process on port ${SPEC_VIEWER_PORT})"
-command = "viewer-ctl"
-args = ["stop", "spec-viewer"]
+command = "install-ctl"
+args = ["viewer", "stop", "spec-viewer"]
 
 [tasks.stop-viewers]
 description = "Stop all running viewer servers"
@@ -241,8 +241,8 @@ dependencies = [
 
 [tasks.gen-types]
 description = "Generate TypeScript types from Rust ts-rs exports and build the npm package"
-command = "viewer-ctl"
-args = ["gen-types"]
+command = "install-ctl"
+args = ["viewer", "task", "gen-types"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # VS Code extension — replaces tools/ticket-vscode/build-and-install.sh
@@ -250,13 +250,13 @@ args = ["gen-types"]
 
 [tasks.build-vscode-ext]
 description = "Compile the ticket-vscode extension TypeScript (npm run compile)"
-command = "viewer-ctl"
-args = ["vscode-ext", "build"]
+command = "install-ctl"
+args = ["viewer", "build", "ticket-vscode"]
 
 [tasks.install-vscode-ext]
 description = "Compile and install ticket-vscode into the VS Code extensions directory"
-command = "viewer-ctl"
-args = ["vscode-ext", "install"]
+command = "install-ctl"
+args = ["viewer", "install", "ticket-vscode"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # E2E tests — viewer-specific Playwright entrypoints.

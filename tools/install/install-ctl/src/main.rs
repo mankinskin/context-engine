@@ -44,6 +44,9 @@ enum Command {
     Install {
         #[arg(required = true)]
         selection: Vec<String>,
+        /// Skip passing --force to `cargo install` for rust-binary artifacts.
+        #[arg(long)]
+        no_force: bool,
     },
     /// Start a viewer server (alias for `viewer start`; kept top-level so
     /// existing `install-ctl start <viewer>` invocations, e.g. from
@@ -79,7 +82,7 @@ fn main() {
     }
 
     match cli.command {
-        Some(Command::Install { selection }) => {
+        Some(Command::Install { selection, no_force }) => {
             let reg = match load_registry() {
                 Ok(reg) => reg,
                 Err(e) => fail(&e),
@@ -91,10 +94,11 @@ fn main() {
             if selected.is_empty() {
                 fail("selection matched no artifacts");
             }
+            let force = !no_force;
             if cli.dry_run {
-                print_plan(&selected);
+                print_plan(&selected, force);
             } else {
-                run_install(&selected);
+                run_install(&selected, force);
             }
         }
         Some(Command::Start { server, foreground, extra }) => run_viewer(|cfg, root| {
@@ -176,15 +180,16 @@ fn print_list(artifacts: &[Artifact]) {
     }
 }
 
-fn print_plan(selected: &[Artifact]) {
+fn print_plan(selected: &[Artifact], force: bool) {
     for artifact in selected {
         match artifact.kind {
             ArtifactKind::RustBinary => {
                 let bin = artifact.bin.as_deref().unwrap_or(&artifact.id);
+                let force_flag = if force { " --force" } else { "" };
                 println!("==> {}", artifact.id);
                 println!(
-                    "    cargo install --path \"{}\" --bin {} --force",
-                    artifact.path, bin
+                    "    cargo install --path \"{}\" --bin {}{}",
+                    artifact.path, bin, force_flag
                 );
             }
             ArtifactKind::VscodeExtension => {
@@ -196,7 +201,7 @@ fn print_plan(selected: &[Artifact]) {
     }
 }
 
-fn run_install(selected: &[Artifact]) {
+fn run_install(selected: &[Artifact], force: bool) {
     let repo_root = match registry::resolve_repo_root() {
         Ok(root) => root,
         Err(e) => fail(&e),
@@ -210,13 +215,13 @@ fn run_install(selected: &[Artifact]) {
 
     for artifact in selected {
         match artifact.kind {
-            ArtifactKind::RustBinary => install_rust_binary(artifact, &repo_root),
+            ArtifactKind::RustBinary => install_rust_binary(artifact, &repo_root, force),
             ArtifactKind::VscodeExtension => install_vscode_extension(artifact, &repo_root),
         }
     }
 }
 
-fn install_rust_binary(artifact: &Artifact, repo_root: &Path) {
+fn install_rust_binary(artifact: &Artifact, repo_root: &Path, force: bool) {
     let bin = artifact.bin.as_deref().unwrap_or(&artifact.id);
     println!("==> {}", artifact.id);
 
@@ -237,7 +242,10 @@ fn install_rust_binary(artifact: &Artifact, repo_root: &Path) {
 
     let full_path = repo_root.join(&artifact.path);
     let full_path = full_path.to_string_lossy().to_string();
-    let args = ["install", "--path", full_path.as_str(), "--bin", bin, "--force"];
+    let mut args = vec!["install", "--path", full_path.as_str(), "--bin", bin];
+    if force {
+        args.push("--force");
+    }
     if let Err(e) = shell::run_cmd_args("cargo", &args, repo_root, &artifact.id) {
         fail(&e);
     }
