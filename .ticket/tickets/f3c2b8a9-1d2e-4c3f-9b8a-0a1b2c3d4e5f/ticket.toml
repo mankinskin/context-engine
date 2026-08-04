@@ -1,0 +1,10 @@
+id = "f3c2b8a9-1d2e-4c3f-9b8a-0a1b2c3d4e5f"
+created_at = "2026-08-04T12:00:00.000000+00:00"
+title = "install-ctl: Generalize viewer-ctl into a general install/ctl for tool binaries and extensions"
+state = "open"
+component = "tooling"
+priority = "high"
+type = "task"
+
+# Short summary
+validation_summary = "Create `install-ctl` to replace `install-tools.sh` and `install-extensions.sh`, generalizing the process-kill and install logic from `viewer-ctl`."

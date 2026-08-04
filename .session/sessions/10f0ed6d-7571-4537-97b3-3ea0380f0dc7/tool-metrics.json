@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "session_id": "10f0ed6d-7571-4537-97b3-3ea0380f0dc7",
+  "captured_at": "2026-08-04T22:46:40.784Z",
+  "tools": {
+    "apply_patch": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        2780,
+        753
+      ],
+      "duration_ms_values": [
+        40,
+        19
+      ]
+    },
+    "file_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        94
+      ],
+      "duration_ms_values": [
+        88
+      ]
+    },
+    "get_errors": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        135
+      ],
+      "duration_ms_values": [
+        14
+      ]
+    },
+    "grep_search": {
+      "call_count": 2,
+      "success_count": 1,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        150,
+        133
+      ],
+      "duration_ms_values": [
+        95,
+        20006
+      ]
+    },
+    "mcp_spec-mcp_spec_create": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        1400
+      ],
+      "duration_ms_values": [
+        2573
+      ]
+    },
+    "mcp_ticket-mcp_board_check_in": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        808
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        552,
+        566
+      ],
+      "duration_ms_values": [
+        46,
+        53
+      ]
+    },
+    "mcp_ticket-mcp_board_release_lease": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        95,
+        95
+      ],
+      "output_source": [
+        "hook_payload",
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        134,
+        134,
+        134
+      ],
+      "duration_ms_values": [
+        53,
+        39,
+        58
+      ]
+    },
+    "mcp_ticket-mcp_board_show": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        1435,
+        4201
+      ],
+      "output_source": [
+        "hook_payload",
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        54,
+        82
+      ],
+      "duration_ms_values": [
+        22,
+        35
+      ]
+    },
+    "mcp_ticket-mcp_board_worktrees": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        54
+      ],
+      "duration_ms_values": [
+        63557
+      ]
+    },
+    "mcp_ticket-mcp_create_ticket": {
+      "call_count": 2,
+      "success_count": 1,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        1235,
+        1274
+      ],
+      "duration_ms_values": [
+        24,
+        111
+      ]
+    },
+    "mcp_ticket-mcp_get_ticket": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        84
+      ],
+      "duration_ms_values": [
+        63606
+      ]
+    },
+    "mcp_ticket-mcp_list_tickets": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        12
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        98
+      ],
+      "duration_ms_values": [
+        49
+      ]
+    },
+    "mcp_ticket-mcp_ticket_capabilities": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        32
+      ],
+      "duration_ms_values": [
+        10
+      ]
+    },
+    "mcp_ticket-mcp_update_ticket": {
+      "call_count": 3,
+      "success_count": 2,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        788,
+        586,
+        805
+      ],
+      "duration_ms_values": [
+        114,
+        48,
+        111
+      ]
+    },
+    "read_file": {
+      "call_count": 10,
+      "success_count": 10,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        144,
+        150,
+        155,
+        144,
+        110,
+        112,
+        148,
+        148,
+        137,
+        139
+      ],
+      "duration_ms_values": [
+        18,
+        29,
+        16,
+        18,
+        11,
+        13,
+        18,
+        15,
+        22,
+        35
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 17,
+      "success_count": 17,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        310,
+        370,
+        254,
+        691,
+        465,
+        321,
+        249,
+        681,
+        349,
+        352,
+        341,
+        373,
+        415,
+        306,
+        702,
+        455,
+        346
+      ],
+      "duration_ms_values": [
+        1419,
+        358,
+        6300,
+        952,
+        799,
+        598,
+        204,
+        1198,
+        901,
+        83,
+        280,
+        689,
+        480,
+        427,
+        949,
+        4736,
+        336
+      ]
+    },
+    "tool_search": {
+      "call_count": 7,
+      "success_count": 7,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        75,
+        92,
+        99,
+        71,
+        81,
+        63,
+        83
+      ],
+      "duration_ms_values": [
+        449,
+        351,
+        326,
+        362,
+        389,
+        337,
+        351
+      ]
+    }
+  }
+}

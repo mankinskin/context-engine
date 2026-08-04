@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "session_id": "ef5a64f6-6118-4faf-8965-235af9c970d7",
+  "captured_at": "2026-08-04T12:32:41.367Z",
+  "tools": {
+    "apply_patch": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        1765
+      ],
+      "duration_ms_values": [
+        15
+      ]
+    },
+    "create_directory": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        105
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        104
+      ],
+      "duration_ms_values": [
+        11
+      ]
+    },
+    "create_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        6732,
+        3406
+      ],
+      "duration_ms_values": [
+        18,
+        15
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        61
+      ],
+      "duration_ms_values": [
+        13
+      ]
+    },
+    "read_file": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        150,
+        149,
+        149
+      ],
+      "duration_ms_values": [
+        31,
+        14,
+        10
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        321
+      ],
+      "duration_ms_values": [
+        913
+      ]
+    }
+  }
+}
