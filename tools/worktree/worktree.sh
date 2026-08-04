@@ -115,6 +115,16 @@ deinitialized_submodules() {
     git -C "$repo" submodule status 2>/dev/null | awk '/^-/{print $2}'
 }
 
+# Newline-separated absolute worktree paths git itself considers registered,
+# per the main checkout's `git worktree list --porcelain`. This is the only
+# reliable membership test: a directory under .worktrees/ can exist without
+# being a registered worktree (stray debris), and asking git for a branch
+# from inside such a directory silently resolves to the enclosing repo.
+registered_worktree_paths() {
+    local mw="$1"
+    git -C "$mw" worktree list --porcelain | awk '/^worktree /{print $2}'
+}
+
 normalize_name() {
     local n="$1"
     n="${n#.worktrees/}"
@@ -218,21 +228,22 @@ cmd_new() {
 # list
 # ---------------------------------------------------------------------------
 cmd_list() {
-    local mw base dir name branch missing
+    local mw base dir name branch missing registered
     mw=$(main_worktree_path)
     base="$mw/.worktrees"
     if [[ ! -d "$base" ]]; then
         log "no .worktrees directory under $mw"
         return 0
     fi
+    registered=$(registered_worktree_paths "$mw")
     local found=0
     for dir in "$base"/*/; do
         [[ -d "$dir" ]] || continue
         dir="${dir%/}"
         name=$(basename "$dir")
         found=1
-        if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
-            printf '%s\tNOT-A-WORKTREE\t-\n' "$name"
+        if ! grep -Fxq "$dir" <<<"$registered"; then
+            printf '%s\tUNREGISTERED-DEBRIS\t-\n' "$name"
             continue
         fi
         branch=$(git -C "$dir" branch --show-current)
@@ -382,6 +393,25 @@ cmd_doctor() {
         run git -C "$mw" worktree prune
     else
         log "worktree registrations: none stale"
+    fi
+
+    # Debris: directories under .worktrees/ that git does not consider a
+    # registered worktree at all (not stale-registered, just never a worktree).
+    local base dir orphans registered name
+    base="$mw/.worktrees"
+    orphans=()
+    if [[ -d "$base" ]]; then
+        registered=$(registered_worktree_paths "$mw")
+        for dir in "$base"/*/; do
+            [[ -d "$dir" ]] || continue
+            dir="${dir%/}"
+            grep -Fxq "$dir" <<<"$registered" || orphans+=("$(basename "$dir")")
+        done
+    fi
+    if (( ${#orphans[@]} )); then
+        log "unregistered debris under .worktrees/ (not a git worktree, safe to inspect/remove manually): ${orphans[*]}"
+    else
+        log "unregistered debris: none"
     fi
 }
 
