@@ -184,6 +184,21 @@ require_worktree_exists() {
         || die "$wtpath exists but is not a git worktree"
 }
 
+remove_submodule_worktrees() {
+    local mw="$1" wtpath="$2" sm
+    while IFS= read -r sm; do
+        [[ -n "$sm" ]] || continue
+        [[ -e "$mw/$sm/.git" ]] || continue
+        if (( DRY_RUN )); then
+            printf '[dry-run] would run: git -C %s worktree remove --force %s\n' "$mw/$sm" "$wtpath/$sm"
+            printf '[dry-run] would run: git -C %s worktree prune\n' "$mw/$sm"
+        else
+            git -C "$mw/$sm" worktree remove --force "$wtpath/$sm" 2>/dev/null || true
+            git -C "$mw/$sm" worktree prune
+        fi
+    done <<<"$(submodule_paths "$mw")"
+}
+
 # ---------------------------------------------------------------------------
 # new <short-id> <slug>
 # ---------------------------------------------------------------------------
@@ -344,10 +359,25 @@ cmd_remove() {
     local name="${1:-}"
     [[ -n "$name" ]] || die "usage: worktree.sh remove <name>"
     guard_main_checkout
-    local mw wtpath branch remaining sm
+    local mw wtpath branch remaining registered
     mw=$(main_worktree_path)
     name=$(normalize_name "$name")
+    [[ "$name" =~ ^[A-Za-z0-9._-]+$ ]] \
+        || die "worktree name must be a plain identifier"
     wtpath=$(resolve_worktree_path "$mw" "$name")
+    [[ -d "$wtpath" ]] || die "no worktree at $wtpath"
+
+    registered=$(registered_worktree_paths "$mw")
+    if ! grep -Fxq "$wtpath" <<<"$registered"; then
+        log "removing unregistered debris at $wtpath"
+        remove_submodule_worktrees "$mw" "$wtpath"
+        if ! run rm -rf -- "$wtpath"; then
+            die "could not remove unregistered debris at $wtpath; close shells or processes using the directory and retry"
+        fi
+        run git -C "$mw" worktree prune
+        return 0
+    fi
+
     require_worktree_exists "$wtpath"
     branch=$(git -C "$wtpath" branch --show-current || true)
 
@@ -358,17 +388,7 @@ cmd_remove() {
     # .git/modules/<name>/worktrees/<uuid> that later blocks re-adding the
     # same path. Tolerate submodules that were never registered this way
     # (e.g. stubs left by the old `submodule update` bootstrap path).
-    while IFS= read -r sm; do
-        [[ -n "$sm" ]] || continue
-        [[ -e "$mw/$sm/.git" ]] || continue
-        if (( DRY_RUN )); then
-            printf '[dry-run] would run: git -C %s worktree remove --force %s\n' "$mw/$sm" "$wtpath/$sm"
-            printf '[dry-run] would run: git -C %s worktree prune\n' "$mw/$sm"
-        else
-            git -C "$mw/$sm" worktree remove --force "$wtpath/$sm" 2>/dev/null || true
-            git -C "$mw/$sm" worktree prune
-        fi
-    done <<<"$(submodule_paths "$mw")"
+    remove_submodule_worktrees "$mw" "$wtpath"
 
     # --force alone handles initialized submodules; a prior `submodule deinit`
     # would instead corrupt the shared .git/config (see instructions).
