@@ -20,7 +20,9 @@ subcommands:
                           init status for each.
   rebase <name>           Rebase <name>'s branch onto local main. No fetch.
                           Stops on conflict; never auto-resolves or aborts.
-  merge <name>            Fast-forward-only merge <name>'s branch into main.
+    merge <name>            Fast-forward nested submodule branches into their
+                                                    local main branches, then fast-forward <name>'s
+                                                    branch into the superproject main.
                           Fails loudly (never falls back to a real merge) if main
                           has moved past what <name> rebased onto.
   remove <name>           Full teardown of <name>: worktree remove --force,
@@ -199,6 +201,23 @@ remove_submodule_worktrees() {
     done <<<"$(submodule_paths "$mw")"
 }
 
+merge_submodule_worktrees() {
+    local mw="$1" wtpath="$2" sm smdir smwt branch
+    while IFS= read -r sm; do
+        [[ -n "$sm" ]] || continue
+        smdir="$mw/$sm"
+        smwt="$wtpath/$sm"
+        [[ -e "$smdir/.git" && -e "$smwt/.git" ]] || continue
+        branch=$(git -C "$smwt" branch --show-current || true)
+        if [[ -z "$branch" ]]; then
+            log "submodule $sm is detached in $smwt; no branch to merge"
+            continue
+        fi
+        run git -C "$smdir" checkout main
+        run git -C "$smdir" merge --ff-only "$branch"
+    done <<<"$(submodule_paths "$mw")"
+}
+
 # ---------------------------------------------------------------------------
 # new <short-id> <slug>
 # ---------------------------------------------------------------------------
@@ -338,6 +357,7 @@ cmd_merge() {
     branch=$(git -C "$wtpath" branch --show-current)
     [[ -n "$branch" ]] || die "$wtpath has no current branch (detached HEAD?)"
 
+    merge_submodule_worktrees "$mw" "$wtpath"
     run git -C "$mw" checkout main
 
     if (( DRY_RUN )); then

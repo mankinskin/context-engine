@@ -138,7 +138,7 @@ Because the branch already rebased onto `main`, integration is a fast-forward an
 bash tools/worktree/worktree.sh merge <name>
 ```
 
-This runs `git checkout main` then `git merge --ff-only agent/<short-id>-<slug>`, failing loudly (never falling back to a real merge) if `main` moved. If `--ff-only` fails, `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
+For every branch-bearing nested submodule worktree, `merge` first checks out the corresponding main-checkout submodule's local `main` and fast-forwards it from the nested branch. Detached nested submodule worktrees are skipped because no branch exists to integrate. The helper then runs `git checkout main` and `git merge --ff-only agent/<short-id>-<slug>` in the superproject, so the resulting gitlink records the current local submodule `main` commit. Any submodule fast-forward failure stops integration before the superproject is merged. If the superproject `--ff-only` fails, `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
 
 Tear down after a successful merge:
 
