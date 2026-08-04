@@ -37,7 +37,7 @@ dependencies = [
   "build-http-tools",
   "build-mcp-tools",
   "build-viewers",
-  "build-viewer-ctl",
+  "build-install-ctl",
   "build-misc-tools",
 ]
 
@@ -56,10 +56,10 @@ description = "Build context-mcp, spec-mcp, ticket-mcp, and audit-mcp (release)"
 command = "cargo"
 args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "audit-mcp"]
 
-[tasks.build-viewer-ctl]
-description = "Build the viewer-ctl lifecycle manager binary (release)"
+[tasks.build-install-ctl]
+description = "Build the install-ctl lifecycle manager binary (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "viewer-ctl"]
+args = ["build", "--release", "-p", "install-ctl"]
 
 [tasks.build-misc-tools]
 description = "Build tracing-analyzer (release)"
@@ -101,10 +101,10 @@ args = ["viewer", "build", "spec-viewer"]
 # All viewer tasks use install-ctl as their runtime.
 # ─────────────────────────────────────────────────────────────────────────────
 
-[tasks.install-viewer-ctl]
-description = "Install viewer-ctl to ~/.cargo/bin (lifecycle manager)"
+[tasks.install-install-ctl]
+description = "Install install-ctl to ~/.cargo/bin (lifecycle manager)"
 command = "cargo"
-args = ["install", "--path", "viewer-api/tools/viewer/viewer-ctl", "--force"]
+args = ["install", "--path", "tools/install/install-ctl", "--force"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Build — compile viewer server binaries in release mode only.

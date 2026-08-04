@@ -60,85 +60,6 @@
       }
     },
     {
-      "label": "ticket-viewer: start",
-      "type": "shell",
-      "command": "cargo run --manifest-path memory-viewers/ticket-viewer/Cargo.toml",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "ticket-viewer",
-        "pattern": {
-          "regexp": "^$"
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Ticket Viewer starting",
-          "endsPattern": "Listening on http:"
-        }
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "label": "Ticket Viewer"
-      },
-      "runOptions": {
-        "instanceLimit": 1
-      }
-    },
-    {
-      "label": "ticket-viewer: open",
-      "type": "shell",
-      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3002\"",
-      "dependsOn": "ticket-viewer: start",
-      "presentation": {
-        "reveal": "never",
-        "close": true
-      }
-    },
-    {
-      "label": "ticket-viewer",
-      "dependsOn": [
-        "ticket-viewer: start",
-        "ticket-viewer: open"
-      ],
-      "dependsOrder": "sequence",
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      },
-      "presentation": {
-        "reveal": "never"
-      }
-    },
-    {
-      "label": "ticket-vscode: compile",
-      "type": "shell",
-      "command": "npm run compile",
-      "options": {
-        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
-      },
-      "group": "build",
-      "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      },
-      "problemMatcher": "$tsc"
-    },
-    {
-      "label": "ticket-vscode: watch",
-      "type": "shell",
-      "command": "npm run watch",
-      "isBackground": true,
-      "options": {
-        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated",
-        "label": "ticket-vscode watch"
-      },
-      "problemMatcher": "$tsc-watch"
-    },
-    {
       "label": "doc-viewer: managed start",
       "type": "shell",
       "command": "install-ctl start doc-viewer",
@@ -358,7 +279,7 @@
         "cwd": "${workspaceFolder}"
       },
       "presentation": {
-        "reveal": "always",
+        "reveal": "silent",
         "panel": "shared"
       },
       "problemMatcher": []
@@ -372,7 +293,7 @@
       },
       "presentation": {
         "reveal": "silent",
-        "panel": "dedicated",
+        "panel": "shared"
       },
       "problemMatcher": []
     },
@@ -401,6 +322,97 @@
         "panel": "shared"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "ticket-viewer: start",
+      "type": "shell",
+      "command": "cargo run --manifest-path memory-viewers/ticket-viewer/Cargo.toml",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "ticket-viewer",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Ticket Viewer starting",
+          "endsPattern": "Listening on http:"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "Ticket Viewer"
+      },
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "ticket-viewer: open",
+      "type": "shell",
+      "command": "node \"${workspaceFolder}/.vscode/open-external-browser.mjs\" \"http://localhost:3002\"",
+      "dependsOn": "ticket-viewer: start",
+      "presentation": {
+        "reveal": "never",
+        "close": true
+      }
+    },
+    {
+      "label": "ticket-viewer",
+      "dependsOn": [
+        "ticket-viewer: start",
+        "ticket-viewer: open"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "never"
+      }
+    },
+    {
+      "label": "ticket-vscode: compile",
+      "type": "shell",
+      "command": "npm run compile",
+      "options": {
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "ticket-vscode: watch",
+      "type": "shell",
+      "command": "npm run watch",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "label": "ticket-vscode watch"
+      },
+      "problemMatcher": "$tsc-watch"
+    },
+    {
+      "label": "ticket-vscode: install vsix",
+      "type": "shell",
+      "command": "npm run install:vsix",
+      "options": {
+        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
     }
   ],
   "inputs": []

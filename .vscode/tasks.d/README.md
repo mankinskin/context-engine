@@ -13,8 +13,8 @@ inputs), and `.vscode/build-vscode-tasks.py` merges them into the canonical
 | `ticket-viewer.jsonc`         | direct cargo-run ticket-viewer tasks                 |
 | `ticket-vscode.jsonc`         | ticket-vscode extension compile/watch                |
 | `context-editor.jsonc`        | context-editor sandbox-app (trunk serve)             |
-| `viewer-ctl-managed.jsonc`    | viewer-ctl `start` + external-browser compounds (4 viewers) |
-| `viewer-ctl-prepare.jsonc`    | viewer-ctl `prepare` preLaunchTasks for lldb         |
+| `install-ctl-managed.jsonc`   | install-ctl `start` + external-browser compounds (4 viewers) |
+| `install-ctl-prepare.jsonc`   | install-ctl `prepare` preLaunchTasks for lldb         |
 
 Each file contains a JSON object with optional `tasks` and/or `inputs`
 arrays. Comments (`//` and `/* */`) and trailing commas are allowed

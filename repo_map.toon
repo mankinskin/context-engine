@@ -3,8 +3,8 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/graph_app/context-engine"
-top_level_dirs[12]: config,"context-stack","memory-api","memory-kernel","memory-viewers",packages,"rule-targets",tmp,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
+  root: "//?/C:/Users/linus/git/context-engine/.worktrees/f3c2b8a9-install-ctl"
+top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
   kind: dir
@@ -74,10 +74,12 @@ crates:
         - name: crates
           kind: dir
           path: "crates/memory-api/crates"
-          children[15]{name,kind,path,note}:
+          children[17]{name,kind,path,note}:
             "audit-api",dir,"crates/memory-api/crates/audit-api","crate=audit-api"
+            "compact-terminal-api",dir,"crates/memory-api/crates/compact-terminal-api","crate=compact-terminal-api"
             "doc-api",dir,"crates/memory-api/crates/doc-api","crate=doc-api"
             "feedback-api",dir,"crates/memory-api/crates/feedback-api","crate=feedback-api"
+            "fs-api",dir,"crates/memory-api/crates/fs-api","crate=fs-api"
             "log-api",dir,"crates/memory-api/crates/log-api","crate=log-api"
             "memory-api",dir,"crates/memory-api/crates/memory-api","crate=memory-api"
             "memory-fixtures",dir,"crates/memory-api/crates/memory-fixtures","crate=memory-fixtures"
@@ -97,9 +99,11 @@ crates:
             - name: cli
               kind: dir
               path: "crates/memory-api/tools/cli"
-              children[8]{name,kind,path,note}:
+              children[10]{name,kind,path,note}:
                 "audit-cli",dir,"crates/memory-api/tools/cli/audit-cli","crate=audit-cli"
+                "compact-terminal-cli",dir,"crates/memory-api/tools/cli/compact-terminal-cli","crate=compact-terminal-cli"
                 "feedback-cli",dir,"crates/memory-api/tools/cli/feedback-cli","crate=feedback-cli"
+                "fs-cli",dir,"crates/memory-api/tools/cli/fs-cli","crate=fs-cli"
                 "peek-cli",dir,"crates/memory-api/tools/cli/peek-cli","crate=peek-cli"
                 "rule-cli",dir,"crates/memory-api/tools/cli/rule-cli","crate=rule-cli"
                 "session-cli",dir,"crates/memory-api/tools/cli/session-cli","crate=session-cli"
@@ -117,17 +121,20 @@ crates:
             - name: mcp
               kind: dir
               path: "crates/memory-api/tools/mcp"
-              children[10]{name,kind,path,note}:
+              children[13]{name,kind,path,note}:
                 "audit-mcp",dir,"crates/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
                 "compact-terminal-mcp",dir,"crates/memory-api/tools/mcp/compact-terminal-mcp","crate=compact-terminal-mcp"
                 "feedback-mcp",dir,"crates/memory-api/tools/mcp/feedback-mcp","crate=feedback-mcp"
-                "mcp-cost-gate",dir,"crates/memory-api/tools/mcp/mcp-cost-gate","crate=mcp-cost-gate"
+                "fs-mcp",dir,"crates/memory-api/tools/mcp/fs-mcp","crate=fs-mcp"
+                "mcp-toolmon",dir,"crates/memory-api/tools/mcp/mcp-toolmon","crate=mcp-toolmon"
                 "peek-mcp",dir,"crates/memory-api/tools/mcp/peek-mcp","crate=peek-mcp"
                 "rule-mcp",dir,"crates/memory-api/tools/mcp/rule-mcp","crate=rule-mcp"
                 "session-mcp",dir,"crates/memory-api/tools/mcp/session-mcp","crate=session-mcp"
                 "spec-mcp",dir,"crates/memory-api/tools/mcp/spec-mcp","crate=spec-mcp"
                 "test-mcp",dir,"crates/memory-api/tools/mcp/test-mcp","crate=test-mcp"
                 "ticket-mcp",dir,"crates/memory-api/tools/mcp/ticket-mcp","crate=ticket-mcp"
+                "toolmon-costgate",dir,"crates/memory-api/tools/mcp/toolmon-costgate","crate=toolmon-costgate"
+                "toolmon-policy-api",dir,"crates/memory-api/tools/mcp/toolmon-policy-api","crate=toolmon-policy-api"
     - name: "memory-viewers"
       kind: dir
       path: "crates/memory-viewers"
@@ -169,7 +176,7 @@ crates:
     - name: tools
       kind: dir
       path: crates/tools
-      children[4]:
+      children[5]:
         - name: cli
           kind: dir
           path: crates/tools/cli
@@ -179,6 +186,11 @@ crates:
           kind: dir
           path: "crates/tools/dungeon-crawler"
           note: "crate=dungeon-crawler"
+        - name: install
+          kind: dir
+          path: crates/tools/install
+          children[1]{name,kind,path,note}:
+            "install-ctl",dir,"crates/tools/install/install-ctl","crate=install-ctl"
         - name: "migrate-edges"
           kind: dir
           path: "crates/tools/migrate-edges"
@@ -190,7 +202,7 @@ crates:
     - name: "viewer-api"
       kind: dir
       path: "crates/viewer-api"
-      children[2]:
+      children[1]:
         - name: "viewer-api"
           kind: dir
           path: "crates/viewer-api/viewer-api"
@@ -201,10 +213,6 @@ crates:
               path: "crates/viewer-api/viewer-api/frontend"
               children[1]{name,kind,path,note}:
                 dioxus,dir,"crates/viewer-api/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
-        - name: "viewer-ctl"
-          kind: dir
-          path: "crates/viewer-api/viewer-ctl"
-          note: "crate=viewer-ctl"
 agent_guidance:
   name: "agent-guidance"
   kind: dir
@@ -223,7 +231,8 @@ agent_files:
         - name: instructions
           kind: dir
           path: "agent-files/.agents/instructions"
-          children[1]{name,kind,path}:
+          children[2]{name,kind,path}:
+            INDEX.md,file,"agent-files/.agents/instructions/INDEX.md"
             README.md,file,"agent-files/.agents/instructions/README.md"
         - name: prompts
           kind: dir
@@ -237,18 +246,18 @@ agent_files:
             handoff.prompt.md,file,"agent-files/.agents/prompts/handoff.prompt.md"
             implement.prompt.md,file,"agent-files/.agents/prompts/implement.prompt.md"
             interview.prompt.md,file,"agent-files/.agents/prompts/interview.prompt.md"
+            iteration.prompt.md,file,"agent-files/.agents/prompts/iteration.prompt.md"
             "memory-setup.prompt.md",file,"agent-files/.agents/prompts/memory-setup.prompt.md"
             next.prompt.md,file,"agent-files/.agents/prompts/next.prompt.md"
             research.prompt.md,file,"agent-files/.agents/prompts/research.prompt.md"
             reviews.prompt.md,file,"agent-files/.agents/prompts/reviews.prompt.md"
-            "rule-target.prompt.md",file,"agent-files/.agents/prompts/rule-target.prompt.md"
-            rule.prompt.md,file,"agent-files/.agents/prompts/rule.prompt.md"
             spec.prompt.md,file,"agent-files/.agents/prompts/spec.prompt.md"
-            "swarm-worker.prompt.md",file,"agent-files/.agents/prompts/swarm-worker.prompt.md"
+            "sync-model-prices.prompt.md",file,"agent-files/.agents/prompts/sync-model-prices.prompt.md"
             tdd.prompt.md,file,"agent-files/.agents/prompts/tdd.prompt.md"
             "ticket-next.prompt.md",file,"agent-files/.agents/prompts/ticket-next.prompt.md"
             ticket.prompt.md,file,"agent-files/.agents/prompts/ticket.prompt.md"
             tickets.prompt.md,file,"agent-files/.agents/prompts/tickets.prompt.md"
+            "tool-grant-regression-probe.prompt.md",file,"agent-files/.agents/prompts/tool-grant-regression-probe.prompt.md"
             "transform-transcript.prompt.md",file,"agent-files/.agents/prompts/transform-transcript.prompt.md"
             "user-training.prompt.md",file,"agent-files/.agents/prompts/user-training.prompt.md"
         - name: skills

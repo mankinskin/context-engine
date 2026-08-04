@@ -35,7 +35,7 @@
       "name": "Run: ticket-viewer",
       "type": "lldb",
       "request": "launch",
-      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "program": "${userHome}/.cargo/bin/install-ctl.exe",
       "args": [
         "start",
         "ticket-viewer"
@@ -81,7 +81,7 @@
       "name": "Run: doc-viewer",
       "type": "lldb",
       "request": "launch",
-      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "program": "${userHome}/.cargo/bin/install-ctl.exe",
       "args": [
         "start",
         "doc-viewer"
@@ -127,7 +127,7 @@
       "name": "Run: log-viewer",
       "type": "lldb",
       "request": "launch",
-      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "program": "${userHome}/.cargo/bin/install-ctl.exe",
       "args": [
         "start",
         "log-viewer"
@@ -175,7 +175,7 @@
       "name": "Run: spec-viewer",
       "type": "lldb",
       "request": "launch",
-      "program": "${userHome}/.cargo/bin/viewer-ctl.exe",
+      "program": "${userHome}/.cargo/bin/install-ctl.exe",
       "args": [
         "start",
         "spec-viewer"

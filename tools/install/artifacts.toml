@@ -16,13 +16,6 @@ path = "memory-api/crates/session-api"
 bin = "copilot-capture-hook"
 
 [[artifact]]
-id = "viewer-ctl"
-category = "viewer"
-kind = "rust-binary"
-path = "viewer-api/viewer-ctl"
-bin = "viewer-ctl"
-
-[[artifact]]
 id = "ticket-cli"
 category = "cli"
 kind = "rust-binary"

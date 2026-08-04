@@ -3,12 +3,12 @@
 // ──────────────────────────────────────────────────────────────────────────
 // Runs `cargo run --manifest-path memory-viewers/ticket-viewer/Cargo.toml`
 // against the extracted submodule without going through
-// viewer-ctl. Useful when iterating on the server source and you don't
+// install-ctl. Useful when iterating on the server source and you don't
 // need a freshly installed frontend bundle.
 //
 // For the production / managed path that builds + installs the frontend
 // and reuses ~/.cargo/bin/ticket-viewer.exe, see
-// `viewer-ctl-managed.jsonc`.
+// `install-ctl-managed.jsonc`.
 {
   "tasks": [
     // Start the ticket-viewer HTTP server in the background.

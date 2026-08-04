@@ -55,7 +55,7 @@ The companion installer in [install-extensions.sh](install-extensions.sh) packag
 - [memory-api/tools/ticket-vscode/package.json](memory-api/tools/ticket-vscode/package.json) exposes the `ticket-vscode` extension package and the repo-local VSIX install workflow.
 
 - [memory-viewers/README.md](memory-viewers/README.md) covers the top-level viewer workflows and the `spec-viewer` and `ticket-viewer` binaries.
-- [viewer-api/README.md](viewer-api/README.md) covers the `viewer-ctl` binary and the `trunk`-backed frontend toolchain.
+- [viewer-api/README.md](viewer-api/README.md) covers the `install-ctl` binary and the `trunk`-backed frontend toolchain.
 - [memory-api/README.md](memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs, the `cargo llvm-cov` coverage collector used by `audit`, and the MCP and HTTP surfaces behind them.
 - [memory-viewers/doc-viewer/README.md](memory-viewers/doc-viewer/README.md) covers the `doc-viewer` binary.
 - [memory-viewers/log-viewer/README.md](memory-viewers/log-viewer/README.md) covers the `log-viewer` binary.

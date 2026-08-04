@@ -10970,19 +10970,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "viewer-ctl"
-version = "0.1.0"
-dependencies = [
- "clap",
- "dirs",
- "serde",
- "serde_json",
- "sysinfo",
- "toml 0.8.23",
- "windows-sys 0.59.0",
-]
-
-[[package]]
 name = "wait-timeout"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

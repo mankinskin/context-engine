@@ -14,7 +14,7 @@ change.
 Install the lifecycle manager if not already present:
 
 ```bash
-cargo make install-viewer-ctl
+cargo make install-install-ctl
 ```
 
 ## Step 1 — Build everything
@@ -27,7 +27,7 @@ cargo make build-all
 
 | Sub-target | What it builds |
 |---|---|
-| `build-native-tools` | All Rust binaries: CLI tools, HTTP servers, MCP servers, viewer servers, viewer-ctl, misc utilities |
+| `build-native-tools` | All Rust binaries: CLI tools, HTTP servers, MCP servers, viewer servers, install-ctl, misc utilities |
 | `build-all-frontends` | All viewer frontend bundles: Vite (doc-viewer, log-viewer) and Trunk/WASM (ticket-viewer, spec-viewer) |
 
 > **Partial rebuilds**: run `cargo make build-cli-tools`, `build-http-tools`,
@@ -74,29 +74,29 @@ These servers start up and listen on a port. Do a quick bind-and-exit check:
 
 ## Step 4 — Validate viewer apps in the browser
 
-Use `viewer-ctl` to start each viewer, verify it returns HTTP 200, then stop it.
+Use `install-ctl` to start each viewer, verify it returns HTTP 200, then stop it.
 Run them one at a time (each blocks until killed).
 
 ```bash
 # doc-viewer  — http://localhost:3001
-viewer-ctl start doc-viewer --no-build &
+install-ctl start doc-viewer --no-build &
 sleep 2 && curl -sf http://localhost:3001/ -o /dev/null && echo "doc-viewer OK"
-viewer-ctl stop doc-viewer
+install-ctl viewer stop doc-viewer
 
 # log-viewer  — http://localhost:3000
-viewer-ctl start log-viewer --no-build &
+install-ctl start log-viewer --no-build &
 sleep 2 && curl -sf http://localhost:3000/ -o /dev/null && echo "log-viewer OK"
-viewer-ctl stop log-viewer
+install-ctl viewer stop log-viewer
 
 # ticket-viewer — http://localhost:3002
-viewer-ctl start ticket-viewer --no-build &
+install-ctl start ticket-viewer --no-build &
 sleep 2 && curl -sf http://localhost:3002/ -o /dev/null && echo "ticket-viewer OK"
-viewer-ctl stop ticket-viewer
+install-ctl viewer stop ticket-viewer
 
 # spec-viewer — http://localhost:4002
-viewer-ctl start spec-viewer --no-build &
+install-ctl start spec-viewer --no-build &
 sleep 2 && curl -sf http://localhost:4002/ -o /dev/null && echo "spec-viewer OK"
-viewer-ctl stop spec-viewer
+install-ctl viewer stop spec-viewer
 ```
 
 For a manual in-browser check open each URL while the viewer is running.
@@ -133,7 +133,7 @@ no console errors, no missing assets, and the UI renders after hydration.
 Shared managed-viewer suites now live under
 `viewer-api/viewer-api/frontend/dioxus/e2e/shared`.
 The spec/doc/log entrypoints start their own managed viewer servers through
-`viewer-ctl`; ticket-viewer release coverage remains separate.
+`install-ctl`; ticket-viewer release coverage remains separate.
 
 ```bash
 # Install npm deps for spec/doc/log viewer suites (first time only)
@@ -220,10 +220,10 @@ Any ❌ item must be fixed before considering the change safe to merge.
 | Manual command | cargo make shortcut |
 |---|---|
 | `cargo build --release` (all native) | `cargo make build-native-tools` |
-| `viewer-ctl build <viewer>` (all) | `cargo make build-all-frontends` |
+| `install-ctl viewer build <viewer>` (all) | `cargo make build-all-frontends` |
 | Both | `cargo make build-all` |
-| `viewer-ctl start <viewer>` | `cargo make start-<viewer>` |
-| `viewer-ctl stop <viewer>` | `cargo make stop-<viewer>` |
+| `install-ctl start <viewer>` | `cargo make start-<viewer>` |
+| `install-ctl viewer stop <viewer>` | `cargo make stop-<viewer>` |
 | TypeScript type generation | `cargo make gen-types` |
 | VS Code extension install | `cargo make install-vscode-ext` |
 | `npm install` in e2e dir | `cargo make e2e-install` |
