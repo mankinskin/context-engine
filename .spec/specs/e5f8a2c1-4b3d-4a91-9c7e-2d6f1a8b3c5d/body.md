@@ -67,6 +67,101 @@ Source interview: `transcripts/04-08-2026_context-enrichment-workflow/input.clea
   today.
 - Bare transcript-text matching as a relation signal is explicitly rejected, not deferred.
 
+## Invariant: the three tiers each read a different stored field
+
+The `strict ⊆ linked ⊆ mentioned` cumulative relationship (decision 2) is not just a widening
+predicate — each tier reads a **different** stored field, populated by a **different**
+mechanism. This was implicit in the original locked decisions and cost real rework in the
+follow-up session that added linkage capture and backfill; it is recorded here explicitly so it
+is not re-derived:
+
+| tier | reads | populated by |
+|---|---|---|
+| `strict` | `SessionMetadata.ticket_id` | `check_in_worktree`, and (as of this spec's follow-up) capture-time inference |
+| `linked` | `SessionLinks.ticket_ids` | backfill from handoff `target_tickets` |
+| `mentioned` | handoff package `target_tickets` | already present on disk at capture time |
+
+## Follow-up decisions: linkage capture and historical backfill
+
+Ticket `bba9b313` shipped `sessions_for_ticket` correctly, but a dogfood run against the real
+`.session` store (ticket `2b75bac2`) found the query effectively inert: almost no session had
+`SessionMetadata.ticket_id` populated. The following decisions extend this spec to cover capture
+and backfill, without changing the tier semantics above.
+
+1. **Backfill signal precedence ("split by signal strength")**. Evaluated per session, first
+   match wins among the strict-tier signals:
+   1. `branch` matching `agent/<short-id>-<slug>` (short-id = 8 hex chars) → written to
+      `SessionMetadata.ticket_id` (**strict** tier).
+   2. `worktree_path` encoding the same `<short-id>-<slug>` pattern under `.worktrees/` →
+      **strict** tier.
+   3. handoff package `target_tickets` (a list, so multi-valued) → written to
+      `SessionLinks.ticket_ids` (**linked** tier).
+
+   Rationale: `branch` and `worktree_path` are single-valued and high-confidence, so they earn
+   the strict tier; handoff targets are multi-valued and weaker evidence, so they earn the
+   lower `linked` tier rather than `strict`.
+
+2. **No provenance marker — and the risk this carries.** The user explicitly declined a marker
+   distinguishing inferred linkage from linkage declared at check-in time. Consequence: an
+   incorrectly inferred link is **permanently indistinguishable** from ground truth once
+   written — there is no field to later say "this was a guess." This is judged acceptable only
+   because of two mitigations, both of which are normative invariants, not implementation
+   details:
+   - The tier split in decision 1 above already reflects each signal's confidence, so an
+     inference lands at the tier its evidence actually supports.
+   - **An unresolvable short id is never written.** Linkage is only persisted after the parsed
+     short id resolves to a real ticket in the ticket store. A branch or worktree path that
+     merely looks like the pattern but does not resolve produces no write, at any tier.
+   - An explicit `check_in_worktree` always outranks inference, and inference never overwrites
+     an existing worktree assignment.
+
+3. **Correction: forward capture was never broken.** Earlier analysis in this workflow assumed
+   `check_in_worktree` failed to persist linkage. That assumption was wrong: `check_in_worktree`
+   and the `strict`-tier lookup have always agreed on `SessionMetadata.ticket_id`, proven by a
+   test predating the follow-up session. This correction is recorded so the false hypothesis is
+   not re-derived by a later reader.
+
+4. **Resolution: capture-time inference.** The Copilot capture hook
+   (`memory-api/crates/session-api/src/bin/copilot-capture-hook.rs`) now records `branch` and
+   `worktree_path` at capture time and populates `ticket_id` when the branch matches
+   `agent/<short-id>-<slug>` and resolves to a live ticket. **Capture must never fail because
+   linkage resolution failed** — `main`, detached HEAD, and non-git directories all yield no
+   `ticket_id` quietly. This is a normative durability guarantee about session capture, not an
+   implementation choice, because capture is on the critical path for every agent turn.
+
+5. **Reaffirmed prohibition.** Scanning session transcript text for linkage remains forbidden at
+   every tier, per the original non-goals above. Every mechanism in this follow-up derives
+   linkage from structured fields only (`branch`, `worktree_path`, handoff `target_tickets`).
+   This constrained every decision in the follow-up session and is restated here because it is
+   easy to erode incrementally under pressure to "just check the transcript."
+
+## Measured evidence: backfill dry-run against the real store
+
+A dry-run of the backfill (decision 1 above) against the real `.session` store, 231 sessions
+total:
+
+| signal | yield |
+|---|---|
+| `branch` | 0 / 231 |
+| `worktree_path` | 0 / 231 |
+| handoff `target_tickets` | 37 associations across 4 sessions |
+| corrupt entries skipped | 2 |
+| projected coverage | 0.0% → ~1.7% |
+
+Root cause: no session in the store had a worktree assignment at all, because the Copilot
+capture hook created sessions passively and never called `check_in_worktree` — see decision 4
+above and ticket `40349f3f`.
+
+An earlier sampled estimate had claimed roughly 18/30 branch coverage; the real-store dry-run
+above refuted it. The dry-run measurement is authoritative, not the sample — this correction is
+recorded here as exactly the kind of finding this spec exists to preserve, per decision 3 above.
+
+## Open items
+
+- The backfill has been implemented and dry-run **only**. It has not been executed in write mode
+  against the real `.session` store, and the user has not authorized that write. No later reader
+  should assume historical session-ticket linkage has actually been repaired in the live store.
+
 ## Related tickets
 
 - `.ticket/tickets/bba9b313-ff13-4fd1-91d4-6485a6c2f4de/ticket.toml` — Session API
@@ -77,3 +172,9 @@ Source interview: `transcripts/04-08-2026_context-enrichment-workflow/input.clea
   `context-enrichment.agent.md` template.
 - `.ticket/tickets/1ff57502-ad4e-4c40-a852-18752c18f44c/ticket.toml` — deferred Ticket API
   inverse query (backlog).
+- `.ticket/tickets/2b75bac2-ff14-43c3-8e87-1e801772f309/ticket.toml` — `sessions_for_ticket` was
+  inert against the real store; capture linkage + backfill decision (in-review).
+- `.ticket/tickets/e4d4c667-6d51-41c2-bd73-098911def78e/ticket.toml` — `sessions_for_ticket`
+  aborted the whole scan on a corrupt store entry (in-review).
+- `.ticket/tickets/40349f3f-8d04-4bf6-9241-b79425c10a97/ticket.toml` — capture hook did not
+  record worktree assignment, root cause of `2b75bac2` (in-review).
