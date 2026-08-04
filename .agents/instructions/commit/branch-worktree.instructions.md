@@ -36,12 +36,10 @@ Steps 1 and 7 belong to the root orchestrator session. Steps 2 through 6 belong 
 Run from the repository root, on `main`, before dispatching the implementation agent:
 
 ```bash
-git fetch origin
-git checkout main
-git pull --ff-only origin main
-git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main
-git -C .worktrees/<short-id>-<slug> submodule update --init --recursive
+bash tools/worktree/worktree.sh new <short-id> <slug>
 ```
+
+This is the canonical invocation — it is the single source of truth for the exact git sequence, so hand-typed variants cannot drift from it. Under the hood it runs: `git fetch origin`, fast-forwards `main` to `origin/main`, `git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main`, then `git -C .worktrees/<short-id>-<slug> submodule update --init --recursive`, self-repairing a submodule commit missing from the remote and rolling back a partial worktree on persistent failure. That sequence stays discoverable here as a manual fallback if the script is ever unavailable. Pass `--dry-run` to print the exact commands without running them.
 
 The branch is always cut from `main`, never from another feature branch. If the branch already exists, the worktree is being re-created for an interrupted task — use `git worktree add .worktrees/<short-id>-<slug> agent/<short-id>-<slug>` without `-b`.
 
@@ -99,9 +97,15 @@ Commits land on the feature branch inside the worktree. [workflow.instructions.m
 Conflicts are resolved by the feature branch, never by the integrator. Before marking ready:
 
 ```bash
-git fetch origin
-git -C <worktree> rebase origin/main
-# resolve every conflict inside the worktree, then:
+bash tools/worktree/worktree.sh rebase <name>
+```
+
+This fetches `origin` then rebases `<name>`'s branch onto `origin/main`; it stops on conflict and never auto-resolves or aborts, so conflict resolution still happens by hand inside the worktree:
+
+```bash
+git -C <worktree> status
+# fix conflicts, then:
+git -C <worktree> add <resolved files>
 git -C <worktree> rebase --continue
 ```
 
@@ -131,23 +135,22 @@ Then move the ticket to `in-review`. The `ready-to-merge:` prefix is the marker 
 Because the branch already rebased onto `main`, integration is a fast-forward and must be asserted as one:
 
 ```bash
-git checkout main
-git merge --ff-only agent/<short-id>-<slug>
+bash tools/worktree/worktree.sh merge <name>
 ```
 
-If `--ff-only` fails, `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
+This runs `git checkout main` then `git merge --ff-only agent/<short-id>-<slug>`, failing loudly (never falling back to a real merge) if `main` moved. If `--ff-only` fails, `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
 
 Tear down after a successful merge:
 
 ```bash
-git worktree remove --force .worktrees/<short-id>-<slug>
-git worktree prune
-git branch -d agent/<short-id>-<slug>
+bash tools/worktree/worktree.sh remove <name>
 ```
+
+This runs `git worktree remove --force .worktrees/<short-id>-<slug>`, `git worktree prune`, then `git branch -d agent/<short-id>-<slug>`.
 
 `git worktree remove` refuses outright with `fatal: working trees containing submodules cannot be moved or removed` while the worktree's submodules are still initialized — `--force` alone bypasses that refusal, is safe once the branch is confirmed merged (the fast-forward above already proves it), and needs no prior deinit step. Use `-d`, never `-D`, so git refuses to delete a branch that was not actually merged.
 
-One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration.
+One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration. `bash tools/worktree/worktree.sh doctor` diagnoses and repairs exactly this state. Every mutating subcommand of `worktree.sh` (`new`, `rebase`, `merge`, `remove`, `doctor`) must be run from the main checkout, never from inside a linked worktree.
 
 ## Submodules
 
