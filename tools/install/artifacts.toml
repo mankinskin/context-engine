@@ -1,0 +1,178 @@
+# Runtime-read artifact registry for install-ctl. No Rust recompile needed to
+# add/remove an entry here — install-ctl reads this file at process start.
+
+[[artifact]]
+id = "mcp-toolmon"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/mcp-toolmon"
+bin = "mcp-toolmon"
+
+[[artifact]]
+id = "copilot-capture-hook"
+category = "misc"
+kind = "rust-binary"
+path = "memory-api/crates/session-api"
+bin = "copilot-capture-hook"
+
+[[artifact]]
+id = "viewer-ctl"
+category = "viewer"
+kind = "rust-binary"
+path = "viewer-api/viewer-ctl"
+bin = "viewer-ctl"
+
+[[artifact]]
+id = "ticket-cli"
+category = "cli"
+kind = "rust-binary"
+path = "memory-api/tools/cli/ticket-cli"
+bin = "ticket"
+
+[[artifact]]
+id = "spec-cli"
+category = "cli"
+kind = "rust-binary"
+path = "memory-api/tools/cli/spec-cli"
+bin = "spec"
+
+[[artifact]]
+id = "audit-cli"
+category = "cli"
+kind = "rust-binary"
+path = "memory-api/tools/cli/audit-cli"
+bin = "audit"
+
+[[artifact]]
+id = "rule-cli"
+category = "cli"
+kind = "rust-binary"
+path = "memory-api/tools/cli/rule-cli"
+bin = "rule"
+
+[[artifact]]
+id = "feedback-cli"
+category = "cli"
+kind = "rust-binary"
+path = "memory-api/tools/cli/feedback-cli"
+bin = "feedback"
+
+[[artifact]]
+id = "session-cli"
+category = "cli"
+kind = "rust-binary"
+path = "memory-api/tools/cli/session-cli"
+bin = "session"
+
+[[artifact]]
+id = "context-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "context-stack/tools/mcp/context-mcp"
+bin = "context-mcp"
+
+[[artifact]]
+id = "ticket-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/ticket-mcp"
+bin = "ticket-mcp"
+
+[[artifact]]
+id = "spec-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/spec-mcp"
+bin = "spec-mcp"
+
+[[artifact]]
+id = "test-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/test-mcp"
+bin = "test-mcp"
+
+[[artifact]]
+id = "feedback-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/feedback-mcp"
+bin = "feedback-mcp"
+
+[[artifact]]
+id = "session-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/session-mcp"
+bin = "session-mcp"
+
+[[artifact]]
+id = "peek-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/peek-mcp"
+bin = "peek-mcp"
+
+[[artifact]]
+id = "rule-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/rule-mcp"
+bin = "rule-mcp"
+
+[[artifact]]
+id = "audit-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/audit-mcp"
+bin = "audit-mcp"
+
+[[artifact]]
+id = "fs-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/fs-mcp"
+bin = "fs-mcp"
+
+[[artifact]]
+id = "compact-terminal-mcp"
+category = "mcp"
+kind = "rust-binary"
+path = "memory-api/tools/mcp/compact-terminal-mcp"
+bin = "compact-terminal-mcp"
+
+[[artifact]]
+id = "doc-viewer"
+category = "viewer"
+kind = "rust-binary"
+path = "memory-viewers/doc-viewer"
+bin = "doc-viewer"
+
+[[artifact]]
+id = "log-viewer"
+category = "viewer"
+kind = "rust-binary"
+path = "memory-viewers/log-viewer"
+bin = "log-viewer"
+
+[[artifact]]
+id = "spec-viewer"
+category = "viewer"
+kind = "rust-binary"
+path = "memory-viewers/spec-viewer"
+bin = "spec-viewer"
+
+[[artifact]]
+id = "ticket-viewer"
+category = "viewer"
+kind = "rust-binary"
+path = "memory-viewers/ticket-viewer"
+bin = "ticket-viewer"
+
+[[artifact]]
+id = "ticket-vscode"
+category = "vscode-extension"
+kind = "vscode-extension"
+path = "memory-api/tools/ticket-vscode"
+npm_script = "install:vsix"
+extension_id = "context-engine.ticket-viewer"
