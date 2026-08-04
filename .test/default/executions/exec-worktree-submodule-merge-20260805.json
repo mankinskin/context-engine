@@ -1,0 +1,23 @@
+{
+  "id": "exec-worktree-submodule-merge-20260805",
+  "validation_spec_id": "worktree-submodule-merge",
+  "outcome": "passed",
+  "executed_at": "2026-08-04T22:59:45.586597900Z",
+  "detail": "Passed disposable nested-repository fixture: nested feature commit fast-forwarded the main-checkout submodule to main; superproject main recorded the same gitlink. bash -n, git diff --check, and merge --dry-run also passed; detached nested submodules were skipped.",
+  "links": {
+    "spec_ids": [
+      "2a710b29-13e9-40b8-8a53-c0ea366bd0bf"
+    ],
+    "ticket_ids": [
+      "4ef88dbc-cb39-4724-9f2c-53ab09cf90c5"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/worktree/worktree.sh",
+    "test_id": "merge_submodule_worktrees",
+    "domain": "tooling",
+    "operation": "worktree merge",
+    "transport": "cli",
+    "run_id": "copilot-910b25a7-worktree-submodule-merge"
+  }
+}

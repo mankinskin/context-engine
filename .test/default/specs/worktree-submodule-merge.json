@@ -1,0 +1,14 @@
+{
+  "id": "worktree-submodule-merge",
+  "title": "Worktree submodule main-branch merge fixture",
+  "command": "Disposable nested Git fixture: bootstrap a worktree, commit a nested submodule feature branch and superproject gitlink, then run `tools/worktree/worktree.sh merge <name>`",
+  "detail": "Verifies the submodule main checkout is on main and equals the feature commit, and the superproject main gitlink equals that same commit. Also run bash -n and merge --dry-run.",
+  "links": {
+    "spec_ids": [
+      "2a710b29-13e9-40b8-8a53-c0ea366bd0bf"
+    ],
+    "ticket_ids": [
+      "4ef88dbc-cb39-4724-9f2c-53ab09cf90c5"
+    ]
+  }
+}

@@ -126,3 +126,13 @@ checkout's 5 submodules and all 5 `[submodule]` config sections verified intact 
 Evidence commit b84506a3 (chore(tickets): record worktree helper protocol fix evidence) recorded
 this in the ticket store. Superproject commit c6eb0a3a (memory-api submodule) was pushed to its
 own origin before the superproject push, per the "submodules pushed before superproject" rule.
+
+
+## Follow-up: submodule main-branch integration
+
+`merge <name>` must process every initialized submodule worktree nested below `.worktrees/<name>` before fast-forwarding the superproject. For a nested submodule worktree with a branch, the helper must fast-forward the corresponding main-checkout submodule's local `main` from that branch, then ensure the main-checkout submodule is on `main`. Detached nested submodule worktrees have no branch to integrate and must be ignored. The superproject merge runs only after all required submodule integrations succeed, so the superproject pointer records the resulting submodule `main` commits.
+
+Validation: use an isolated two-repository fixture with a committed submodule feature branch; assert `merge <name>` advances the submodule `main`, leaves the main submodule checkout on `main`, and then fast-forwards the superproject. Confirm a detached nested submodule is skipped and dry-run performs no mutation.
+
+
+Validation evidence: `.test/default/` validation spec `worktree-submodule-merge` and passing execution `exec-worktree-submodule-merge-20260805`. Reproduce by querying executions for ticket `4ef88dbc-cb39-4724-9f2c-53ab09cf90c5` and validation spec `worktree-submodule-merge`.
