@@ -1,0 +1,20 @@
+id = "e5f8a2c1-4b3d-4a91-9c7e-2d6f1a8b3c5d"
+created_at = "2026-08-04T13:25:00.000000000+00:00"
+title = "Context-enrichment workflow for review tickets: session-ticket relation query"
+state = "draft"
+code_refs = [
+  { description = "Existing SessionQuery filters (no ticket filter today).", file = "memory-api/crates/session-api/src/store.rs", kind = "module", line_start = 92, line_end = 104, symbol = "SessionQuery" },
+  { description = "SessionLinks.ticket_ids already models the relation; unqueried today.", file = "memory-api/crates/session-api/src/model/links.rs", kind = "module", line_start = 7, line_end = 15, symbol = "SessionLinks" },
+  { description = "SessionMetadata.ticket_id, the formal check-in relation.", file = "memory-api/crates/session-api/src/model.rs", kind = "module", line_start = 292, line_end = 306, symbol = "SessionMetadata" },
+  { description = "Filter evaluation that must be extended with a separate sessions_for_ticket entry point rather than a new SessionQuery field.", file = "memory-api/crates/session-api/src/store/helpers/storage.rs", kind = "module", line_start = 438, line_end = 480, symbol = "session_matches_query" },
+]
+component = "context-enrichment"
+related_tickets = [
+  ".ticket/tickets/bba9b313-ff13-4fd1-91d4-6485a6c2f4de/ticket.toml",
+  ".ticket/tickets/33463861-ffba-4ead-905e-5d867b707936/ticket.toml",
+  ".ticket/tickets/7c74f2fe-2bfd-477c-847e-bc02200a4819/ticket.toml",
+  ".ticket/tickets/1ff57502-ad4e-4c40-a852-18752c18f44c/ticket.toml",
+]
+scope = "internal"
+slug = "context-enrichment/session-ticket-relation-query"
+type = "specification"
