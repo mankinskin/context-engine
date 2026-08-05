@@ -124,9 +124,8 @@ and backfill, without changing the tier semantics above.
 4. **Resolution: capture-time inference.** The Copilot capture hook
    (`memory-api/crates/session-api/src/bin/copilot-capture-hook.rs`) now records `branch` and
    `worktree_path` at capture time and populates `ticket_id` when the branch matches
-   `agent/<short-id>-<slug>` and resolves to a live ticket. **Capture must never fail because
-   linkage resolution failed** — `main`, detached HEAD, and non-git directories all yield no
-   `ticket_id` quietly. This is a normative durability guarantee about session capture, not an
+  `agent/<short-id>-<slug>` and resolves to a live ticket. **When no ticket link resolves, capture MUST persist the session with zero ticket links and exit successfully; transcript parse, schema, and durable-write failures remain errors.** `main`, detached HEAD, and non-git directories all yield no
+  `ticket_id` quietly. This is a normative durability guarantee about session capture, not an
    implementation choice, because capture is on the critical path for every agent turn.
 
 5. **Reaffirmed prohibition.** Scanning session transcript text for linkage remains forbidden at

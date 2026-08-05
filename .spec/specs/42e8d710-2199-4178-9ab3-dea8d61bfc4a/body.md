@@ -53,7 +53,7 @@ The ticket graph is queryable, but operators still have to mentally reconstruct 
 ### Output formats
 - Mermaid is the canonical portable graph output because it survives embedding in specs, tickets, and generated documentation.
 - ASCII remains supported for terminal-first inspection and quick human review.
-- Machine-readable graph output should preserve node ids, labels, edge kinds, and any derived status annotations so renderers can be swapped without re-querying the graph.
+- JSON and TOON graph output MUST include `id`, `label`, and `edge_kind`; `derived_status` MUST be either a documented enum value or null.
 
 ### Flow and parallel-track overlays
 - A later flow-graph mode may decorate the same graph with derived metadata from `ticket-api`, including dependency-convergence pressure, blocked-vs-ready state, and parallel-ready track grouping.

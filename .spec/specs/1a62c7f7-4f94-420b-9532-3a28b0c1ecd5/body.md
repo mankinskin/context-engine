@@ -7,7 +7,7 @@ Agent prompts need direct access to the repository's MCP capabilities under stab
 ## Dependent expectation
 If this spec is implemented, dependents can rely on every configured local MCP server returning its package name and version in the MCP initialize `serverInfo`, advertising the tools capability, and enumerating its tools over stdio. In particular, `context-mcp`, `ticket-mcp`, `spec-mcp`, `test-mcp`, and `log-viewer` must never identify as `rmcp`.
 
-`.vscode/mcp.json` and `.github/mcp.json` contain the same supported top-level `servers` object. Each configured server launches its installed executable directly, rather than using `cargo run`. `./install-tools.sh --mcp` installs the complete configured MCP binary set into Cargo's binary directory, using an isolated `target/install-tools` build directory so Windows locks held by running development servers cannot block installation. Cargo's binary directory must be on VS Code's inherited `PATH`.
+After parsing both files as JSON, their top-level `servers` values MUST be structurally equal; object-key order is ignored and no other top-level field participates. Each configured server launches its installed executable directly, rather than using `cargo run`. `./install-tools.sh --mcp` installs the complete configured MCP binary set into Cargo's binary directory, using an isolated `target/install-tools` build directory so Windows locks held by running development servers cannot block installation. Cargo's binary directory must be on VS Code's inherited `PATH`.
 
 ## Guards
 - `val-vscode-copilot-mcp-registration`: requires schema validation, matching direct-binary configuration copies, complete MCP installation, unique package server identities, and successful installed-binary protocol checks.

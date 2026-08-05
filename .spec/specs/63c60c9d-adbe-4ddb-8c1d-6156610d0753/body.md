@@ -78,11 +78,8 @@ configurations. A regression test (`server_advertises_tools_capability` in
    spill-reading behavior, with transport-independent request and response types.
 2. `compact-terminal-mcp` delegates to that crate and keeps its current `run`
    and `read_spill` tool names and response shapes.
-3. A `compact-terminal-cli` transport exposes the same operations for use when
-   MCP is unavailable, per the repository's documented MCP fallback rule.
-4. Output at or below `inline_limit` is returned inline; output above it is
-   spilled, and the spilled response always carries a usable `spill_file`
-   handle plus `total_bytes` and `total_lines`.
+3. The CLI MUST expose `run` and `read-spill`, with request fields, response fields, exit status, and error code equivalent to the API/MCP operation of the same name.
+4. Output at or below `inline_limit` is returned inline; output above it is spilled. When a response is spilled, `spill_file` MUST name an existing readable file whose bytes equal the omitted stdout and stderr payload until the documented cleanup TTL expires.
 5. `read_spill` supports both explicit line ranges and pattern matching, and
    returns bounded results in both modes.
 6. Non-zero exit codes, timeouts, and missing or expired spill handles produce
