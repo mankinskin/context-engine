@@ -5,7 +5,9 @@ Define the **handoff package**: the required fields that make the next implement
 ## Required fields
 
 - **objective** — the single goal of the next implementation unit.
-- **target_tickets** — ticket ids with current state and acceptance criteria inlined (not referenced-by-lookup).
+- **higher_level_objective** — required prose explaining why the current implementation unit matters now; it captures rationale that no graph edge can express.
+- **upward_context** — a required ordered ancestor chain from the higher-level program context to the current leaf work. Each entry MUST carry an entity URN, a human-readable title, and a role such as epic, phase, or parent.
+- **target_tickets** — structured ticket entries carrying at least the ticket id and the author's why this ticket belongs in the handoff. Each entry MUST retain the ticket's current state and acceptance criteria inlined (not referenced-by-lookup).
 - **target_files** — explicit workspace-relative paths expected to be touched.
 - **decisions** — resolved design choices, so implementation does not re-decide.
 - **non_goals** — explicit out-of-scope boundaries.
@@ -24,11 +26,13 @@ Define the **handoff package**: the required fields that make the next implement
 ## Enforcement
 
 - `session_handoff` produces / validates a record that carries every required package field plus required handoff-record parameters. A package missing a required package field (or with a non-empty `open_escalations`) is rejected or flagged as not implementation-ready.
+- When `objective` is non-empty and `open_escalations` is empty, absence of `higher_level_objective` or `upward_context` MUST reject handoff creation; when either derived-readiness condition is false, the same absence MUST produce a warning and the handoff MUST persist.
+- Existing persisted `handoff.json` records that encode `target_tickets` as plain ticket-id strings MUST remain deserializable after structured ticket entries are introduced.
 - The Implement Agent treats the package as its sole input. If a required field is missing at consume time, it escalates rather than searching or asking the user.
 
 ## Readiness rule
 
-A handoff package is **implementation-ready** only when all required package fields are present and `open_escalations` is empty.
+A handoff package's derived **implementation-ready** status is true only when `objective` is non-empty and `open_escalations` is empty. For a package with derived implementation-ready status, `higher_level_objective` and `upward_context` are mandatory creation-time requirements; their absence rejects creation. For a package without derived implementation-ready status, their absence emits warnings and does not prevent persistence.
 
 ## Storage / durable home
 
@@ -36,6 +40,12 @@ The `session_handoff` record is the **source of truth** for a produced package a
 
 ## Rendered markdown
 
+- The rendered handoff markdown document (`handoff.md`) MUST open with the package's `higher_level_objective`, stated before the implementation-unit details.
+- The rendered handoff markdown document (`handoff.md`) MUST include an upward-context breadcrumb that presents the ordered ancestor chain from epic to phase to leaf work, including each ancestor's role, human-readable title, and clickable entity reference.
+- The rendered handoff markdown document (`handoff.md`) MUST include a per-ticket table. Each row MUST contain a clickable ticket reference with a real title, ticket-store-resolved what-it-does narrative, and the author-supplied why the ticket belongs in the handoff.
+- Ticket titles and what-it-does narratives in the per-ticket table are resolved from the ticket store at render time; the why text is authored in the handoff record.
+- Every ticket reference in the rendered form MUST follow the repository Clickable Reference Policy: a forward-slash repo-root-relative markdown link with link text `{short-id} {title}`, never a backtick-wrapped bare ticket id. When a ticket cannot be resolved, rendering MUST degrade gracefully to its id and any cached title without panicking or failing handoff creation.
+- The high-level goal, upward-context breadcrumb, and ticket table are rendered from the handoff record's own package data and ticket-store resolution, not hand-authored, so they stay consistent with `handoff.json` and survive regeneration.
 - The rendered handoff markdown document (`handoff.md`) MUST include, in its `## Workflow` section, a fenced ```mermaid block containing a `flowchart TD` diagram of the handoff's workflow graph (nodes + edges from the workflow snapshot), in addition to the existing node/edge/not-done counts.
 - The diagram is omitted only when the workflow graph has no nodes.
 - The diagram is rendered from the handoff record's own workflow snapshot, not hand-authored, so it stays consistent with `handoff.json`.
@@ -53,3 +63,6 @@ The `session_handoff` record is the **source of truth** for a produced package a
 - [fb14754e Carry verified physical repo paths in handoff packages](.ticket/tickets/fb14754e-2be8-40a5-a995-488842ba6367/ticket.toml)
 - [d28afbc0 [session-api] Session merge and pickup: handoff-edge provenance graph and first-class tracks](.ticket/tickets/d28afbc0-9d16-4494-8ca5-4154f3ace9be/ticket.toml) — epic that removes `predecessor_handoff` per the superseded note above.
 - [e4f84414 Render workflow mermaid graph in handoff markdown](memory-api/.ticket/tickets/e4f84414-ef2e-4012-9cfe-da08fe2c077c/ticket.toml) — adds the rendered mermaid workflow-graph requirement above.
+- [25b5f3e7 [session-api][handoff] Make upward context and ticket narrative reproducible in handoff markdown](.ticket/tickets/25b5f3e7-cace-4822-a955-bc2e3202be77/ticket.toml)
+- [742dbc65 [session-api][handoff] Model and enforce upward context for implementation-ready handoffs](.ticket/tickets/742dbc65-a100-4278-9274-7d99a3e2afc4/ticket.toml)
+- [ba8f5528 [session-api][handoff] Render resolved ticket narrative and upward context in handoff markdown](.ticket/tickets/ba8f5528-5af3-4de2-8904-442a4691854a/ticket.toml)

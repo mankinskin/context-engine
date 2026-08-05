@@ -1,0 +1,23 @@
+## Problem
+`SessionHandoffPackage` has no durable higher-level objective or structured upward-context data. `create_handoff_record` therefore cannot distinguish an implementation-ready handoff with missing program context from a well-formed handoff.
+
+## Goal
+Add durable, backward-compatible package data and conditional creation-time validation for the already-decided upward-context contract.
+
+## Authoritative Spec
+`5e52039d` (`agent-workflow/handoff-package-schema`, Handoff Package Schema). A separate agent owns the spec update; this task must remain compatible with that update.
+
+## Target Paths
+- `memory-api/crates/session-api/src/model/handoff.rs`
+- `memory-api/crates/session-api/src/store/config/handoff_finish.rs`
+- `memory-api/crates/session-api/tests/handoff_folder_storage.rs`
+- `memory-api/crates/session-api/tests/handoff_roundtrip.rs`
+
+## Acceptance Criteria
+1. `SessionHandoffPackage` persists a structured upward-context ancestor chain whose entries contain an entity URN, a human title, and a role (for example epic, phase, or parent), plus a prose `higher_level_objective` field that explains why the current phase exists now. Round-trip tests prove the fields survive JSON persistence.
+2. Creation determines “claims implementation-ready” from the existing derived readiness rule: objective is non-empty and `open_escalations` is empty. When that condition is true, absent or empty `higher_level_objective` or ancestor chain rejects creation with `SessionError::HandoffPackageIncomplete` before handoff artifacts are written.
+3. When the derived readiness condition is false, absent upward-context fields emit warnings but creation persists the exploratory handoff. Tests prove the warning path does not change the existing readiness derivation.
+4. Existing on-disk `handoff.json` data that lacks the new optional-on-wire fields remains deserializable. The task does not change the existing path existence validation for `target_files` or path-shaped `context_anchors`.
+
+## Related Work
+`7bb007e9` is an adjacent generic conformance-gate effort that may later share mechanism but is not a blocking dependency. `f77e35d8`, `a6f17580`, `6431985e`, and `0d3fdba6` are adjacent handoff work with different field sets or scope. `e4f84414` is a markdown-renderer precedent, not scope for this task.
