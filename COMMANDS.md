@@ -14,12 +14,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 ## copilot-capture-hook
 
-- Category: Misc
-- Kind: RustBinary
-- Source: `memory-api/crates/session-api`
-- Owner: tooling
-- Safety: ApprovalRequired
-- Bin: `copilot-capture-hook`
+- Source: `memory-api/crates/session-capture-hook`
 - Lifecycle: Install, Inspect
 
 ## ticket-cli
