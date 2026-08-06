@@ -1,5 +1,5 @@
 ---
-name: "Terminal Command Agent"
+name: "Command Agent"
 description: "Run one straightforward terminal command and return its result. Ask for confirmation before executing a complex or broad command."
 tools: [execute, vscode/askQuestions]
 argument-hint: "A simple terminal task, including the target path or working directory when relevant."
