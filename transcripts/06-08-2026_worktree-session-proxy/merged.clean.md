@@ -26,6 +26,16 @@ This is also relevant for the capture hook that Copilot runs for us and for sess
 
 A new hook may be useful: one that runs at the start of a session, before any tool calls, and initializes the session with a work tree mechanically. The capture hook would then write the session into that work tree.
 
+One additional problem is that if a new session creates its work tree automatically from the main branch, any currently unstaged changes in the main work tree could be lost. The work-tree creation flow therefore needs a way to preserve unstaged changes when the new work tree is created. One possible approach is to create a stash first, using `stash push --keep-index` instead of a normal stash, so the main work tree is copied into the new work tree without changing the main work tree and without losing unstaged changes.
+
+That preservation behavior should remain available as an option even if the default flow does not use a stash. It may be useful when an agent notices that changes are missing, because the mechanism would still exist as a fallback. At the same time, the design should be careful about working actively in main, because uncommitted changes there may later still change.
+
+Another issue is what happens when the topic changes during a session or the work tree needs to change. Creating a brand-new work tree for every request would be expensive and would produce too many work trees, so that should not be the default approach. Reusing the same work tree for the session is the simpler default.
+
+If the work tree name or identity needs to change, the system should allow renaming the work tree instead of creating a new one. That could use the existing `worktree move` mechanism, and the associated branch would also need to be renamed. In that model, the session keeps using the same work tree, and the hooks continue to use that same work tree for the whole session.
+
+Between turns, and before a user request is answered or processed, nothing special needs to happen beyond the normal session initialization. Agents can still rename the work tree when they are working on a different topic, and the session can keep moving forward while overriding previous state as needed.
+
 ## Recommended behavior
 
 Each session should start automatically in its own work tree. A session should not be able to operate outside a work tree.
@@ -52,6 +62,9 @@ The plan should cover the following:
 - Let the capture hook write the session into that work tree.
 - Have the proxy, the capture hook, and all tools resolve the work tree through the session ID.
 - Require an explicit session ID for every tool call and prohibit a default workspace selection that is not tied to a session ID.
+- Preserve unstaged changes when a new session work tree is created from main, either by default or as an explicit option, so information is not lost during the copy.
+- Reuse one work tree per session by default instead of creating a new work tree for every request.
+- Allow the work tree and its branch to be renamed when the session topic changes, rather than forcing a new work tree each time.
 
 The anchor for every tool call should be the session ID. That session ID should carry the information about the working directory, and the proxy, the capture hook, and all tools should use it.
 
