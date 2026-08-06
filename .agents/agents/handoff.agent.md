@@ -52,12 +52,50 @@ Explicit `session-mcp` tools only (persist/resolve the handoff record and sessio
 
 ## Output Format
 
-Return:
-- **Scope:** the work scope or session being handed off
-- **Done:** completed units with changed files (full workspace-relative paths), ticket/spec ids, and validation outcomes
-- **Decisions:** key architecture or implementation choices made
-- **Blockers:** unresolved issues, failing validations, or required escalations (with concrete evidence: log paths, error snippets, ticket ids)
-- **Workflow graph:** the rendered handoff's `## Workflow` section as a fenced ```mermaid `flowchart TD` diagram of the workflow nodes/edges (omitted only when the workflow graph has no nodes)
-- **Remaining:** leftover tasks broken into actionable units
-- **Delegated:** per-unit summary (agent template, model used, objective, compact return contract, key result if already returned)
-- **Next action:** single recommended step for the user or next session
+After `session_handoff` succeeds, return the following format. Do not report a handoff as complete if no persisted handoff record exists.
+
+1. Start with this standalone line, using the `record_path` returned by `session_handoff` and the workspace-relative `handoff.md` path:
+
+	**Persistent handoff:** [Open handoff markdown](.session/sessions/<workspace-session-id>/handoffs/<handoff-id>/handoff.md)
+
+	The markdown link is mandatory. Do not use an absolute path, a `file://` URI, a session id alone, or a link to the handoff directory.
+
+2. Follow with a brief reader-oriented summary:
+	- **Scope:** the work scope or session being handed off
+	- **Status:** one sentence that identifies the next actionable unit and whether implementation is ready
+	- **Blockers:** unresolved issues, failing validations, or required escalations; say `None` when no blocker exists
+	- **Next action:** one recommended command or work unit
+
+3. End with `**Copy-ready handoff**` and one fenced `markdown` block. The block must be self-contained and compact enough to paste into a new chat or issue. Include these exact headings, omitting only empty optional sections:
+
+	````markdown
+	# Handoff: <scope>
+
+	Persistent record: [handoff.md](.session/sessions/<workspace-session-id>/handoffs/<handoff-id>/handoff.md)
+	Resume: `<resume-command>`
+
+	## Ready Next
+	- <ticket id and title>: <single actionable objective>
+
+	## Done
+	- <completed work with verified paths, ticket/spec ids, and validation outcomes>
+
+	## Decisions
+	- <decision>
+
+	## Risks And Blockers
+	- <concrete risk or blocker>
+
+	## Validation
+	- `<command>`: <passed, failed, not run, or required>
+
+	## Workflow
+	```mermaid
+	flowchart TD
+	  ...rendered handoff workflow...
+	```
+	````
+
+	Render the Mermaid graph from the handoff record's workflow snapshot. The copy-ready block must not include commentary outside the listed sections, raw tool output, delegated-agent transcripts, or unresolved placeholders.
+
+4. Keep detailed material in the persisted markdown record. In the chat response, include only the short summary and the copy-ready block; do not repeat the workflow graph outside the copy-ready block.
