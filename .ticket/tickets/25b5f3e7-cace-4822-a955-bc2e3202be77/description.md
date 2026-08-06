@@ -23,3 +23,13 @@ Target implementation paths:
 
 ## Related Work
 `f77e35d8`, `7bb007e9`, `a6f17580`, `6431985e`, and `0d3fdba6` are adjacent handoff work, not blocking dependencies. `e4f84414` is the renderer-change precedent. No dependency edge to adjacent tickets is intended.
+
+
+## Validation Evidence
+- Merge commit: `26c7ce7c`
+- Validation spec: `session-api-tests` (`cargo test -p session-api`)
+- Validation execution: `exec-session-api-handoff-upward-context-20260806` (`passed`)
+- Supporting checks: `cargo build --workspace`, `cargo check -p session-mcp`, `cargo check -p session-cli`
+- Coverage: schema persistence and conditional enforcement in the schema/enforcement leaf, markdown rendering and fallback behavior in the rendering leaf, and the regenerated exemplar proof with four quality checks passing.
+- Reviewed deviation: the exemplar at `.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2/handoffs/a9519525-4f52-48df-a884-cff638f6d0db/handoff.md` was regenerated and diffed for proof, but the stored file was not overwritten in the isolated worktree because that path was untracked there.
+- Acceptance verdicts: AC1 met; AC2 met; AC3 met; AC4 met with reviewed deviation.

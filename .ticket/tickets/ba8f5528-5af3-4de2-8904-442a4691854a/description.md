@@ -24,3 +24,13 @@ Generate legible, reproducible handoff markdown from durable package data, resol
 
 ## Related Work
 `e4f84414` is the closest markdown-renderer precedent. `f77e35d8` changes the terminal renderer for different narrative fields; no dependency is intended. `7bb007e9`, `a6f17580`, `6431985e`, and `0d3fdba6` are adjacent but non-blocking work.
+
+
+## Validation Evidence
+- Merge commit: `26c7ce7c`
+- Validation spec: `session-api-tests` (`cargo test -p session-api`)
+- Validation execution: `exec-session-api-handoff-upward-context-20260806` (`passed`)
+- Supporting checks: `cargo build --workspace`, `cargo check -p session-mcp`, `cargo check -p session-cli`
+- Coverage: structured `target_tickets`, resolver-backed title/what-it-does rendering, upward-context breadcrumb rendering, fallback row behavior for unresolved tickets, no double-linking in existing links or code spans, and regenerated exemplar proof with all four quality checks passing.
+- Reviewed deviation: the exemplar at `.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2/handoffs/a9519525-4f52-48df-a884-cff638f6d0db/handoff.md` was regenerated and diffed for proof, but the stored file was not overwritten in the isolated worktree because that path was untracked there.
+- Acceptance verdicts: AC1 met; AC2 met; AC3 met; AC4 met; AC5 met with reviewed deviation.

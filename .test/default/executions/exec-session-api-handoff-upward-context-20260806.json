@@ -1,0 +1,20 @@
+{
+  "id": "exec-session-api-handoff-upward-context-20260806",
+  "validation_spec_id": "session-api-tests",
+  "outcome": "passed",
+  "executed_at": "2026-08-05T23:49:58.715109100Z",
+  "detail": "cargo test -p session-api passed: 262 passed / 0 failed / 1 ignored. Supporting checks also passed: cargo build --workspace, cargo check -p session-mcp, and cargo check -p session-cli. Covered behavior includes legacy target_tickets deserialization, readiness-gated upward-context enforcement, warning path persistence, breadcrumb/table rendering, fallback rendering for unresolved tickets, and regeneration-vs-exemplar proof with reviewed deviation recorded.",
+  "links": {
+    "ticket_ids": [
+      "742dbc65-a100-4278-9274-7d99a3e2afc4",
+      "ba8f5528-5af3-4de2-8904-442a4691854a",
+      "25b5f3e7-cace-4822-a955-bc2e3202be77"
+    ]
+  },
+  "provenance": {
+    "domain": "session",
+    "operation": "test",
+    "transport": "mcp",
+    "run_id": "t4-validation-20260806-session-api-handoff"
+  }
+}

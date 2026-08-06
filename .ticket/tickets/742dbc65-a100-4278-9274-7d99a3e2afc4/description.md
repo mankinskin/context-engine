@@ -21,3 +21,12 @@ Add durable, backward-compatible package data and conditional creation-time vali
 
 ## Related Work
 `7bb007e9` is an adjacent generic conformance-gate effort that may later share mechanism but is not a blocking dependency. `f77e35d8`, `a6f17580`, `6431985e`, and `0d3fdba6` are adjacent handoff work with different field sets or scope. `e4f84414` is a markdown-renderer precedent, not scope for this task.
+
+
+## Validation Evidence
+- Merge commit: `26c7ce7c`
+- Validation spec: `session-api-tests` (`cargo test -p session-api`)
+- Validation execution: `exec-session-api-handoff-upward-context-20260806` (`passed`)
+- Supporting checks: `cargo build --workspace`, `cargo check -p session-mcp`, `cargo check -p session-cli`
+- Coverage: legacy `target_tickets` deserialization, readiness-gated upward-context enforcement, warning-path persistence, breadcrumb/table rendering, fallback rendering for unresolved tickets, and regeneration-vs-exemplar proof with no manual hand edit required for the proof run.
+- Acceptance verdicts: AC1 met; AC2 met; AC3 met; AC4 met.
