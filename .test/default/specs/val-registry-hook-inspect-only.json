@@ -1,0 +1,14 @@
+{
+  "id": "val-registry-hook-inspect-only",
+  "title": "Registry hooks remain inspect-only",
+  "command": "cargo test -p install-ctl registry_hook -- --nocapture",
+  "detail": "Covers hook category constraints and rejects install, enable, and disable capabilities.",
+  "links": {
+    "spec_ids": [
+      "97322185-2bda-4f25-85f7-f975a0b3fbad"
+    ],
+    "ticket_ids": [
+      "f52cc8e5-9faf-4a41-9c5b-ad7c2a381dd9"
+    ]
+  }
+}

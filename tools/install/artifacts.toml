@@ -1,171 +1,308 @@
-# Runtime-read artifact registry for install-ctl. No Rust recompile needed to
+# Runtime-read artifact/hook/command registry for install-ctl (schema v1, see
+# spec 97322185-2bda-4f25-85f7-f975a0b3fbad). No Rust recompile needed to
 # add/remove an entry here — install-ctl reads this file at process start.
+#
+# The committed root COMMANDS.md is the deterministic `render_catalog`
+# projection of this file; regenerate it whenever this file changes.
+
+version = 1
 
 [[artifact]]
 id = "mcp-toolmon"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/mcp-toolmon"
+source_path = "memory-api/tools/mcp/mcp-toolmon"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "mcp-toolmon"
 
 [[artifact]]
 id = "copilot-capture-hook"
 category = "misc"
 kind = "rust-binary"
-path = "memory-api/crates/session-api"
+source_path = "memory-api/crates/session-api"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "copilot-capture-hook"
 
 [[artifact]]
 id = "ticket-cli"
 category = "cli"
 kind = "rust-binary"
-path = "memory-api/tools/cli/ticket-cli"
+source_path = "memory-api/tools/cli/ticket-cli"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "ticket"
 
 [[artifact]]
 id = "spec-cli"
 category = "cli"
 kind = "rust-binary"
-path = "memory-api/tools/cli/spec-cli"
+source_path = "memory-api/tools/cli/spec-cli"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "spec"
 
 [[artifact]]
 id = "audit-cli"
 category = "cli"
 kind = "rust-binary"
-path = "memory-api/tools/cli/audit-cli"
+source_path = "memory-api/tools/cli/audit-cli"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "audit"
 
 [[artifact]]
 id = "rule-cli"
 category = "cli"
 kind = "rust-binary"
-path = "memory-api/tools/cli/rule-cli"
+source_path = "memory-api/tools/cli/rule-cli"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "rule"
 
 [[artifact]]
 id = "feedback-cli"
 category = "cli"
 kind = "rust-binary"
-path = "memory-api/tools/cli/feedback-cli"
+source_path = "memory-api/tools/cli/feedback-cli"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "feedback"
 
 [[artifact]]
 id = "session-cli"
 category = "cli"
 kind = "rust-binary"
-path = "memory-api/tools/cli/session-cli"
+source_path = "memory-api/tools/cli/session-cli"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "session"
 
 [[artifact]]
 id = "context-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "context-stack/tools/mcp/context-mcp"
+source_path = "context-stack/tools/mcp/context-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "context-mcp"
 
 [[artifact]]
 id = "ticket-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/ticket-mcp"
+source_path = "memory-api/tools/mcp/ticket-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "ticket-mcp"
 
 [[artifact]]
 id = "spec-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/spec-mcp"
+source_path = "memory-api/tools/mcp/spec-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "spec-mcp"
 
 [[artifact]]
 id = "test-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/test-mcp"
+source_path = "memory-api/tools/mcp/test-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "test-mcp"
 
 [[artifact]]
 id = "feedback-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/feedback-mcp"
+source_path = "memory-api/tools/mcp/feedback-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "feedback-mcp"
 
 [[artifact]]
 id = "session-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/session-mcp"
+source_path = "memory-api/tools/mcp/session-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "session-mcp"
 
 [[artifact]]
 id = "peek-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/peek-mcp"
+source_path = "memory-api/tools/mcp/peek-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "peek-mcp"
 
 [[artifact]]
 id = "rule-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/rule-mcp"
+source_path = "memory-api/tools/mcp/rule-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "rule-mcp"
 
 [[artifact]]
 id = "audit-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/audit-mcp"
+source_path = "memory-api/tools/mcp/audit-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "audit-mcp"
 
 [[artifact]]
 id = "fs-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/fs-mcp"
+source_path = "memory-api/tools/mcp/fs-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "fs-mcp"
 
 [[artifact]]
 id = "compact-terminal-mcp"
 category = "mcp"
 kind = "rust-binary"
-path = "memory-api/tools/mcp/compact-terminal-mcp"
+source_path = "memory-api/tools/mcp/compact-terminal-mcp"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 bin = "compact-terminal-mcp"
 
 [[artifact]]
 id = "doc-viewer"
-category = "viewer"
+category = "service"
 kind = "rust-binary"
-path = "memory-viewers/doc-viewer"
+source_path = "memory-viewers/doc-viewer"
+owner = "tooling"
+lifecycle = ["install", "start", "stop", "restart", "uninstall", "inspect"]
+safety = "approval-required"
 bin = "doc-viewer"
 
 [[artifact]]
 id = "log-viewer"
-category = "viewer"
+category = "service"
 kind = "rust-binary"
-path = "memory-viewers/log-viewer"
+source_path = "memory-viewers/log-viewer"
+owner = "tooling"
+lifecycle = ["install", "start", "stop", "restart", "uninstall", "inspect"]
+safety = "approval-required"
 bin = "log-viewer"
 
 [[artifact]]
 id = "spec-viewer"
-category = "viewer"
+category = "service"
 kind = "rust-binary"
-path = "memory-viewers/spec-viewer"
+source_path = "memory-viewers/spec-viewer"
+owner = "tooling"
+lifecycle = ["install", "start", "stop", "restart", "uninstall", "inspect"]
+safety = "approval-required"
 bin = "spec-viewer"
 
 [[artifact]]
 id = "ticket-viewer"
-category = "viewer"
+category = "service"
 kind = "rust-binary"
-path = "memory-viewers/ticket-viewer"
+source_path = "memory-viewers/ticket-viewer"
+owner = "tooling"
+lifecycle = ["install", "start", "stop", "restart", "uninstall", "inspect"]
+safety = "approval-required"
 bin = "ticket-viewer"
 
 [[artifact]]
 id = "ticket-vscode"
 category = "vscode-extension"
 kind = "vscode-extension"
-path = "memory-api/tools/ticket-vscode"
+source_path = "memory-api/tools/ticket-vscode"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
 npm_script = "install:vsix"
-extension_id = "context-engine.ticket-viewer"
+
+[[artifact]]
+id = "worktree-script"
+category = "misc"
+kind = "script"
+source_path = "tools/worktree/worktree.sh"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "bash tools/worktree/worktree.sh"
+
+[[artifact]]
+id = "hook-copilot-capture"
+category = "hook"
+kind = "hook"
+source_path = "memory-api/crates/session-api"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "copilot-capture-hook --from-hook-stdin"
+
+[[artifact]]
+id = "hook-rtk-hook-copilot"
+category = "hook"
+kind = "hook"
+source_path = "tools/agent-hooks/rtk-hook-copilot.sh"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "bash tools/agent-hooks/rtk-hook-copilot.sh"
+
+[[artifact]]
+id = "hook-preflight-write"
+category = "hook"
+kind = "hook"
+source_path = "tools/agent-hooks/preflight-write.sh"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "bash tools/agent-hooks/preflight-write.sh"
+
+[[artifact]]
+id = "hook-validate-docs"
+category = "hook"
+kind = "hook"
+source_path = "tools/agent-hooks/validate-docs.sh"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "bash tools/agent-hooks/validate-docs.sh"
+
+[[artifact]]
+id = "hook-terminal-pwd"
+category = "hook"
+kind = "hook"
+source_path = "tools/agent-hooks/terminal-pwd.sh"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "bash tools/agent-hooks/terminal-pwd.sh"

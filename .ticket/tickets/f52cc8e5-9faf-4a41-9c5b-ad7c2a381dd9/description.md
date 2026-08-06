@@ -1,0 +1,1 @@
+Design and implement the versioned registry schema, repository inventory, Markdown catalog generator, and freshness validation. The registry covers Cargo binaries, executable scripts, services, extensions, and hooks. External tool discovery is excluded.

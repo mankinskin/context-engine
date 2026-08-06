@@ -1,0 +1,14 @@
+{
+  "id": "val-registry-safety-bound",
+  "title": "Registry safety classification bounds lifecycle actions",
+  "command": "cargo test -p install-ctl registry_safety -- --nocapture",
+  "detail": "Covers safe read-only boundary and approval-required state-changing actions.",
+  "links": {
+    "spec_ids": [
+      "97322185-2bda-4f25-85f7-f975a0b3fbad"
+    ],
+    "ticket_ids": [
+      "f52cc8e5-9faf-4a41-9c5b-ad7c2a381dd9"
+    ]
+  }
+}
