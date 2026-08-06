@@ -34,3 +34,11 @@ Generate legible, reproducible handoff markdown from durable package data, resol
 - Coverage: structured `target_tickets`, resolver-backed title/what-it-does rendering, upward-context breadcrumb rendering, fallback row behavior for unresolved tickets, no double-linking in existing links or code spans, and regenerated exemplar proof with all four quality checks passing.
 - Reviewed deviation: the exemplar at `.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2/handoffs/a9519525-4f52-48df-a884-cff638f6d0db/handoff.md` was regenerated and diffed for proof, but the stored file was not overwritten in the isolated worktree because that path was untracked there.
 - Acceptance verdicts: AC1 met; AC2 met; AC3 met; AC4 met; AC5 met with reviewed deviation.
+## Review Verdict (2026-08-06)
+Validation: `cargo test -p session-api` passed, 262 tests.
+- AC1 met — `SessionHandoffTargetTicket` with a custom deserializer that still accepts legacy string arrays.
+- AC2 met — `render_handoff_record_markdown` emits the higher-level objective and an epic-to-phase-to-leaf upward-context breadcrumb.
+- AC3 met — `resolve_handoff_ticket_display` populates the per-ticket table with resolved title and "what it does", preserving the authored "why".
+- AC4 met — `handoff_markdown_degrades_when_target_ticket_is_unresolvable` covers the fallback row.
+- AC5 met with reviewed deviation — regenerate-and-diff proof accepted; the historical exemplar a9519525 was correctly left untouched per the recorded immutability decision.
+Verdict: all acceptance criteria satisfied. Cannot transition to done yet — the ticket store blocks it while dependency 742dbc65 remains at in-review.
