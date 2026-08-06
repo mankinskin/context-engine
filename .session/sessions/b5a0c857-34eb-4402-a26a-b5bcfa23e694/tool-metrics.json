@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "session_id": "b5a0c857-34eb-4402-a26a-b5bcfa23e694",
+  "captured_at": "2026-08-04T23:34:30.578Z",
+  "tools": {
+    "file_search": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        38,
+        38
+      ],
+      "duration_ms_values": [
+        115,
+        342
+      ]
+    },
+    "read_file": {
+      "call_count": 15,
+      "success_count": 15,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        142,
+        155,
+        139,
+        103,
+        144,
+        151,
+        95,
+        142,
+        155,
+        138,
+        135,
+        144,
+        128,
+        139,
+        152
+      ],
+      "duration_ms_values": [
+        16,
+        18,
+        18,
+        14,
+        16,
+        21,
+        18,
+        13,
+        18,
+        18,
+        16,
+        48,
+        59,
+        20,
+        66
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        238,
+        251,
+        229
+      ],
+      "duration_ms_values": [
+        1966,
+        272,
+        288
+      ]
+    },
+    "tool_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        120
+      ],
+      "duration_ms_values": [
+        361
+      ]
+    }
+  }
+}

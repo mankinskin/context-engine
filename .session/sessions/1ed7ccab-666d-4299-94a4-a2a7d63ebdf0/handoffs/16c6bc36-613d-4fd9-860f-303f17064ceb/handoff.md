@@ -1,0 +1,50 @@
+# Handoff: 16c6bc36-613d-4fd9-860f-303f17064ceb
+
+## Summary
+- **Workspace Session**: `1ed7ccab-666d-4299-94a4-a2a7d63ebdf0`
+- **Outgoing Run**: `33389a76-566f-429e-a743-273af0d97871`
+- **Created**: 2026-08-05T23:02:05.076694400+00:00
+- **Objective**: Implement ticket 7ef3f8db: the shared directed inherited schema lifecycle engine, including the recovered full-interview requirements assigned to Track 1.
+- **Implementation Ready**: true
+
+## Resume Command
+```bash
+session-cli resume --workspace-session-id 1ed7ccab-666d-4299-94a4-a2a7d63ebdf0 --predecessor-run-id 33389a76-566f-429e-a743-273af0d97871
+```
+
+## Target Tickets
+- `7ef3f8db-d4a9-4135-99eb-3c006070a328`
+
+## Target Files
+- `memory-api/crates/memory-api/src/model/schema.rs`
+- `memory-api/crates/ticket-api/src/model/schema_registry.rs`
+- `memory-api/crates/ticket-api/src/model/default_schema.rs`
+
+## Decisions
+- Strict runtime schema inheritance permits zero or one parent; missing parents and parent cycles reject the complete load/reload.
+- Lifecycle graphs are directed and use universal plan, act, and verify categories. Derived schemas refine inherited nodes only through category-contained subgraphs/tunnels and exactly one plan-category root starts creation.
+- Lifecycle edges may remain within a category or cross only plan-to-act, act-to-verify, verify-to-act rework, and act-to-plan replanning; no normal category skips are permitted.
+- Cancelled is a derived verify terminal leaf with no outgoing edges and is the sole exception that may be entered directly from any lifecycle category.
+- Lifecycle graphs and relation graphs are independent. Relation edges validate declared relation-kind rules and endpoint existence but never lifecycle category or direction rules.
+- Ticket, spec, and existing rule schemas reuse shared lifecycle primitives while retaining separate local graphs and type-ID namespaces.
+- Explicit reload atomically validates and swaps registry generation, affected resolved caches, manifests/catalog indexes, and client cache version; failed reload retains the prior valid generation.
+- Create or link the governing policy rule that introduces spec e9c38d24 and its validation guards; validate that the rule resolves and preserves separate local graphs/namespaces.
+
+## Non-Goals
+- Do not implement TOML/JSON dual loading or shipped JSON built-in conversion; those belong to 1f8e6e6d and abd3f280.
+- Do not implement catalog-driven clients, classifier research, live migration, or release repair; those are downstream tracks.
+- Do not change ticket relation graph semantics beyond the shared model/validation boundary required by the engine.
+
+## Context Anchors
+- Authoritative full interview: transcripts/05-08-2026_ticketschema-state-machines/interview.md. Superseded answers are non-binding.
+- Owning spec: e9c38d24-42cc-4044-8b2c-6811b918530f; its Full Interview Decision Register and Decision Record and Track Map passed independent review.
+- Epic: 8fdfe135-e3b1-4876-b638-24154edcd78d. Full dependency chain is engine -> loader -> catalog -> clients -> classifier research -> migration -> release validation.
+- A fresh Review Agent audited every binding interview decision and returned pass with no findings. Scoped ticket health reports zero findings.
+
+## Risk Notes
+The engine changes shared schema and registry boundaries. Preserve the accepted declared rework/replan loops rather than treating every cycle as invalid; retain compatibility concerns for downstream loader, catalog, migration, and clients as explicit non-goals of this slice.
+
+## Workflow
+- **Nodes**: 0
+- **Edges**: 0
+- **Not Done**: 0

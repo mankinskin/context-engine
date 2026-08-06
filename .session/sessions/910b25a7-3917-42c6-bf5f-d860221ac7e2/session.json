@@ -3,15 +3,18 @@
   "session_id": "910b25a7-3917-42c6-bf5f-d860221ac7e2",
   "source": "copilot-hook",
   "started_at": "2026-08-04T22:55:51.813Z",
-  "captured_at": "2026-08-04T23:25:41.164Z",
+  "captured_at": "2026-08-04T23:25:55.569Z",
   "metadata": {
     "workspace_slug": "default",
     "agent_id": "copilot-agent",
-    "trigger": "PostToolUse",
+    "trigger": "Stop",
     "producer": "copilot-agent",
     "copilot_version": "0.59.0",
     "vscode_version": "1.131.0",
     "protocol_version": 1
   },
-  "links": {}
+  "links": {},
+  "emitted_handoff_ids": [
+    "a9519525-4f52-48df-a884-cff638f6d0db"
+  ]
 }

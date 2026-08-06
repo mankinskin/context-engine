@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "session_id": "a59f80fe-7467-4593-b3a5-f6c0138b202c",
+  "captured_at": "2026-08-05T16:46:13.899Z",
+  "tools": {
+    "apply_patch": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        2365,
+        843
+      ],
+      "duration_ms_values": [
+        28,
+        43
+      ]
+    },
+    "create_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        5874,
+        3299
+      ],
+      "duration_ms_values": [
+        51,
+        32
+      ]
+    },
+    "get_changed_files": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        92
+      ],
+      "duration_ms_values": [
+        807
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        61
+      ],
+      "duration_ms_values": [
+        23
+      ]
+    },
+    "read_file": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        150,
+        149,
+        149
+      ],
+      "duration_ms_values": [
+        54,
+        22,
+        24
+      ]
+    }
+  }
+}
