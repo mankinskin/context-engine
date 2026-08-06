@@ -5,6 +5,7 @@ state = "in-review"
 component = "session-api"
 depends_on = ["742dbc65-a100-4278-9274-7d99a3e2afc4"]
 effort = "2.5k tokens"
+linked = ["25b5f3e7-cace-4822-a955-bc2e3202be77", "742dbc65-a100-4278-9274-7d99a3e2afc4"]
 risk_level = "medium"
 scope = "handoff"
 type = "task"
