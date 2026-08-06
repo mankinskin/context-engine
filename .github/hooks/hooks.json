@@ -52,6 +52,7 @@
     ],
     "SessionEnd": [
       {
+        "type": "command",
         "command": "copilot-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
