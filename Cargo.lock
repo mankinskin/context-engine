@@ -6046,6 +6046,8 @@ dependencies = [
  "chrono",
  "serde",
  "serde_json",
+ "session-api",
+ "session-workspace-resolver",
  "tempfile",
  "tokio",
  "toolmon-costgate",
@@ -8752,6 +8754,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "session-capture-hook"
+version = "0.1.0"
+dependencies = [
+ "memory-api",
+ "serde_json",
+ "session-api",
+ "session-workspace-resolver",
+ "tempfile",
+ "ticket-api",
+]
+
+[[package]]
 name = "session-cli"
 version = "0.1.0"
 dependencies = [
@@ -8785,6 +8799,20 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "session-workspace-resolver"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "fs2",
+ "memory-api",
+ "serde",
+ "serde_json",
+ "session-api",
+ "tempfile",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

@@ -11,6 +11,8 @@ members = [
   "memory-api/crates/test-api",
   "memory-api/crates/log-api",
   "memory-api/crates/session-api",
+    "memory-api/crates/session-capture-hook",
+    "memory-api/crates/session-workspace-resolver",
   "memory-api/crates/feedback-api",
   "memory-api/crates/memory-fixtures",
   "memory-api/crates/memory-matrix",
