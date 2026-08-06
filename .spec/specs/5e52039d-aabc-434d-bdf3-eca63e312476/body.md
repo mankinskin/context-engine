@@ -32,7 +32,26 @@ Define the **handoff package**: the required fields that make the next implement
 
 ## Readiness rule
 
-A handoff package's derived **implementation-ready** status is true only when `objective` is non-empty and `open_escalations` is empty. For a package with derived implementation-ready status, `higher_level_objective` and `upward_context` are mandatory creation-time requirements; their absence rejects creation. For a package without derived implementation-ready status, their absence emits warnings and does not prevent persistence.
+A handoff package's derived **implementation-ready** status is true only when `objective.trim()` is non-empty, `open_escalations` is empty, and each of `target_tickets`, `target_files`, `decisions`, `non_goals`, and `context_anchors` is non-empty. The derived predicate does not read `higher_level_objective` or `upward_context`.
+
+At creation time, `create_handoff_record` separately defines its upward-context gate as a non-empty trimmed `objective` with empty `open_escalations`; it does not call the derived predicate. When that gate holds, missing `higher_level_objective` or `upward_context` rejects creation. When that gate does not hold, their absence emits a warning and the handoff persists. Missing required list fields also emit warnings; an empty trimmed `objective` rejects creation.
+
+### Examples and testable checklist
+
+- A package with a non-whitespace `objective`, empty `open_escalations`, and non-empty `target_tickets`, `target_files`, `decisions`, `non_goals`, and `context_anchors` has derived implementation-ready status, regardless of the values of `higher_level_objective` and `upward_context`.
+- A package with a non-whitespace `objective` and empty `open_escalations`, but an empty `target_files` list, does not have derived implementation-ready status.
+- A package with a whitespace-only `objective` does not have derived implementation-ready status, even when all lists are non-empty and `open_escalations` is empty.
+
+- [ ] A predicate test with non-empty values for every required list and an empty `open_escalations` list returns `true`.
+- [ ] A predicate test with a whitespace-only `objective` returns `false`.
+- [ ] A predicate test with a non-empty `open_escalations` list returns `false`.
+- [ ] A predicate test with each one of `target_tickets`, `target_files`, `decisions`, `non_goals`, and `context_anchors` empty in turn returns `false`.
+- [ ] A predicate test confirms that changing only `higher_level_objective` or `upward_context` does not change the derived result.
+- [ ] A creation test confirms that missing `higher_level_objective` or `upward_context` rejects only when the creation-time objective-and-escalations gate holds.
+
+### Migration plan
+
+Locate existing specs and documentation fragments that say implementation-ready requires only a non-empty `objective` and empty `open_escalations`. Replace that wording with the seven-condition derived predicate above, retain the separate creation-time upward-context gate, and remove any statement that `higher_level_objective` or `upward_context` is a predicate input. Verify each updated fragment against a predicate test covering the checklist cases.
 
 ## Storage / durable home
 
@@ -49,6 +68,14 @@ The `session_handoff` record is the **source of truth** for a produced package a
 - The rendered handoff markdown document (`handoff.md`) MUST include, in its `## Workflow` section, a fenced ```mermaid block containing a `flowchart TD` diagram of the handoff's workflow graph (nodes + edges from the workflow snapshot), in addition to the existing node/edge/not-done counts.
 - The diagram is omitted only when the workflow graph has no nodes.
 - The diagram is rendered from the handoff record's own workflow snapshot, not hand-authored, so it stays consistent with `handoff.json`.
+
+## Traceability
+
+- [25b5f3e7 [session-api][handoff] Make upward context and ticket narrative reproducible in handoff markdown](.ticket/tickets/25b5f3e7-cace-4822-a955-bc2e3202be77/ticket.toml)
+- [742dbc65 [session-api][handoff] Model and enforce upward context for implementation-ready handoffs](.ticket/tickets/742dbc65-a100-4278-9274-7d99a3e2afc4/ticket.toml)
+- [ba8f5528 [session-api][handoff] Render resolved ticket narrative and upward context in handoff markdown](.ticket/tickets/ba8f5528-5af3-4de2-8904-442a4691854a/ticket.toml)
+- [59abe2da D — Spec cleanup for 5e52039d: manifest traceability and readiness wording](.ticket/tickets/59abe2da-d7fe-4acb-b154-7186336fcd4c/ticket.toml)
+- [276acf70 Handoff artifact example](.session/sessions/470fb360-8426-4f79-bdda-8ba89a81cf4b/handoffs/276acf70-5af5-45de-8154-5ef9b58357f7/handoff.md)
 
 ## Concise summaries and validation (amendment)
 
