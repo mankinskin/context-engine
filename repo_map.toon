@@ -3,8 +3,8 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/context-engine/.worktrees/3ca6f36f-command-agent"
-top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
+  root: "//?/C:/Users/linus/git/context-engine"
+top_level_dirs[10]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tmp,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
   kind: dir
