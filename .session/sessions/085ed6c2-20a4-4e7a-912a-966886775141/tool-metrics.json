@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "session_id": "085ed6c2-20a4-4e7a-912a-966886775141",
+  "captured_at": "2026-08-06T14:15:23.094Z",
+  "tools": {
+    "apply_patch": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        477,
+        662
+      ],
+      "duration_ms_values": [
+        2639,
+        13
+      ]
+    },
+    "create_directory": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        101
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        100
+      ],
+      "duration_ms_values": [
+        12
+      ]
+    },
+    "create_file": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        2346,
+        1686
+      ],
+      "duration_ms_values": [
+        18,
+        15
+      ]
+    },
+    "file_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        60
+      ],
+      "duration_ms_values": [
+        74
+      ]
+    },
+    "grep_search": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        206
+      ],
+      "duration_ms_values": [
+        167
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        61
+      ],
+      "duration_ms_values": [
+        12
+      ]
+    },
+    "read_file": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        150,
+        145,
+        145
+      ],
+      "duration_ms_values": [
+        15,
+        12,
+        14
+      ]
+    }
+  }
+}

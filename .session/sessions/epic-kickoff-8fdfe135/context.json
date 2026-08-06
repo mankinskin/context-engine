@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "workspace_session_id": "epic-kickoff-8fdfe135",
+  "workspace_slug": "default",
+  "created_at": "2026-08-06T13:43:32.649405700Z",
+  "updated_at": "2026-08-06T15:09:07.422681500Z",
+  "active_run_id": "a2659767-3224-48e2-a9a9-72c9582c8515",
+  "runs": [
+    {
+      "run_id": "a2659767-3224-48e2-a9a9-72c9582c8515",
+      "captured_session_id": "epic-kickoff-8fdfe135",
+      "started_at": "2026-08-06T13:43:32.649405700Z"
+    }
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "node_id": "bootstrap-3d535b2c",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Bootstrap the session worktree from a chat lifecycle hook",
+        "created_at": "2026-08-06T15:08:33.186232400Z",
+        "updated_at": "2026-08-06T15:08:33.186232400Z",
+        "ticket_urn": "ce://default/ticket/3d535b2c-7361-4f08-bfb4-63b0b3174afc"
+      },
+      {
+        "node_id": "bug-35a60203",
+        "kind": "ticket",
+        "requirement": "optional",
+        "status": "pending",
+        "title": "Fix ticket-mcp external-write index reconciliation",
+        "created_at": "2026-08-06T13:43:39.952111800Z",
+        "updated_at": "2026-08-06T13:43:39.952111800Z",
+        "ticket_urn": "ce://default/ticket/35a60203-0a2c-4dbc-b33d-b645848871f2",
+        "cached_ticket_title": "ticket-mcp index goes stale against external store writes"
+      },
+      {
+        "node_id": "bug-fa2ba34b",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Session-anchored MCP workspace resolution (proxy contract)",
+        "created_at": "2026-08-06T13:43:39.952111800Z",
+        "updated_at": "2026-08-06T15:09:03.439365500Z",
+        "ticket_urn": "ce://default/ticket/fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3",
+        "cached_ticket_title": "ticket-mcp default workspace resolves to server cwd"
+      },
+      {
+        "node_id": "capture-40349f3f",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Anchor Copilot capture hook on the session worktree",
+        "created_at": "2026-08-06T15:08:33.186232400Z",
+        "updated_at": "2026-08-06T15:08:33.186232400Z",
+        "ticket_urn": "ce://default/ticket/40349f3f-8d04-4bf6-9241-b79425c10a97",
+        "cached_ticket_title": "Copilot capture hook session sync"
+      },
+      {
+        "node_id": "implement-7ef3f8db",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Implement directed inherited schema lifecycle engine",
+        "created_at": "2026-08-06T13:43:39.952111800Z",
+        "updated_at": "2026-08-06T13:43:39.952111800Z",
+        "ticket_urn": "ce://default/ticket/7ef3f8db-d4a9-4135-99eb-3c006070a328",
+        "cached_ticket_title": "Implement directed inherited schema lifecycle engine"
+      },
+      {
+        "node_id": "lifecycle-ff83caf7",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Managed session-worktree lifecycle: preserve, reuse, rename, finish",
+        "created_at": "2026-08-06T15:08:33.186232400Z",
+        "updated_at": "2026-08-06T15:08:33.186232400Z",
+        "ticket_urn": "ce://default/ticket/ff83caf7-059b-4f2e-a0fb-eaa7757096a8",
+        "cached_ticket_title": "[session-api][tooling] Managed session-worktree lifecycle"
+      },
+      {
+        "node_id": "listing-c060bf94",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Session activity listing projection",
+        "created_at": "2026-08-06T15:08:33.186232400Z",
+        "updated_at": "2026-08-06T15:08:33.186232400Z",
+        "ticket_urn": "ce://default/ticket/c060bf94-2435-4cc5-8016-ca1d2c8264f5"
+      },
+      {
+        "node_id": "plan-9e450826",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Plan lifecycle engine implementation",
+        "created_at": "2026-08-06T13:43:39.952111800Z",
+        "updated_at": "2026-08-06T13:43:45.205050200Z",
+        "ticket_urn": "ce://default/ticket/9e450826-60e1-437f-b236-2c8839e4ab9e",
+        "cached_ticket_title": "Plan lifecycle engine implementation"
+      },
+      {
+        "node_id": "refine-worktree-epic",
+        "kind": "spec",
+        "requirement": "required",
+        "status": "done",
+        "title": "Refine session-anchored worktree epic into specs and tickets",
+        "created_at": "2026-08-06T15:08:33.186232400Z",
+        "updated_at": "2026-08-06T15:09:07.422681500Z",
+        "spec_urn": "ce://default/spec/aff42efb-422b-4abc-8a6c-cd176a3d0d5d",
+        "category": "refinement"
+      },
+      {
+        "node_id": "research-85012858",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Research lifecycle engine design surfaces",
+        "created_at": "2026-08-06T13:43:39.952111800Z",
+        "updated_at": "2026-08-06T13:43:49.841415900Z",
+        "ticket_urn": "ce://default/ticket/85012858-cbf3-40df-b55e-b82e89f72434",
+        "cached_ticket_title": "Research lifecycle engine design surfaces"
+      },
+      {
+        "node_id": "submodule-503b9711",
+        "kind": "ticket",
+        "requirement": "optional",
+        "status": "pending",
+        "title": "Worktree submodule clone and move defects",
+        "created_at": "2026-08-06T15:08:33.186232400Z",
+        "updated_at": "2026-08-06T15:08:33.186232400Z",
+        "ticket_urn": "ce://default/ticket/503b9711-3f69-4765-88f9-83779b71c8f8"
+      }
+    ],
+    "edges": [
+      {
+        "from": "bootstrap-3d535b2c",
+        "to": "lifecycle-ff83caf7",
+        "kind": "depends-on"
+      },
+      {
+        "from": "bug-fa2ba34b",
+        "to": "bootstrap-3d535b2c",
+        "kind": "depends-on"
+      },
+      {
+        "from": "bug-fa2ba34b",
+        "to": "capture-40349f3f",
+        "kind": "depends-on"
+      },
+      {
+        "from": "capture-40349f3f",
+        "to": "lifecycle-ff83caf7",
+        "kind": "depends-on"
+      },
+      {
+        "from": "lifecycle-ff83caf7",
+        "to": "listing-c060bf94",
+        "kind": "depends-on"
+      },
+      {
+        "from": "plan-9e450826",
+        "to": "implement-7ef3f8db",
+        "kind": "depends-on"
+      },
+      {
+        "from": "refine-worktree-epic",
+        "to": "bug-fa2ba34b",
+        "kind": "depends-on"
+      },
+      {
+        "from": "research-85012858",
+        "to": "plan-9e450826",
+        "kind": "depends-on"
+      }
+    ]
+  }
+}

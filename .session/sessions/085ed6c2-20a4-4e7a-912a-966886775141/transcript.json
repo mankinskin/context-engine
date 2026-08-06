@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "session_id": "085ed6c2-20a4-4e7a-912a-966886775141",
+  "captured_at": "2026-08-06T14:15:23.094Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "/transform-transcript Ich finde wir bräuchten ein System das aktive Bugs Für Agenten sichtbar macht und ihnen Workarounds bereitstellt Das sollte einerseits in unserer Anleitung verankert sein als ein essenzieller Schritt bevor man anfängt tools zu benutzen Also wir sollten dafür sorgen dass wir auch wissen wie wir aktive Buggtickets finden für bestimmte Tools die wir eben benutzen wollen um dort eben selektiv zu sein Wir möchten sozusagen inkrementelle Inspektion der Buggtickets ermöglichen dass wir also erstmal gucken können ok Gibt es überhaupt Backtickets für dieses Tool Wie viele gibt es Wie heißen diese Bugs also die was ist die einfachste Beschreibung Was genau beinhalten diese Buggt Tickets Wir können außerdem eben verlangen dass ein Buggticket ein Workaround bereitstellt also das wäre sozusagen ein helfeinding dass wir dann eben auch Wenn wir Buggtickets anlegen immer möglichst Überprüfen sollten das ob ob wir ein Workaround haben und insgesamt auch welche welche Buggtickets Workarounds haben Eben indem wir ein Heftcheck machen also wahrscheinlich sollte man immer wenn man buggtickets anfässt einfach einmal ein Health Check machen oder insgehma Tickets anfällst sollte man einmal ein Health Check machen und einmal gucken Welche was wir eigentlich so allgemein der Stand ist und im Zweifel halt versuchen Relevante Tickets eben zu verbessern Und offensichtlich einfache Probleme schnell zu beheben So aber es geht jetzt auch erstmal um dieses Kernfeature von Praktikiert Workarounds und halt dem expliziten Bugboard sozusagen oder durchsuchbaren also den den den Anleitungen wie wir das Durchsuchen Um eben zum Beispiel um jetzt ein Beispiel zu geben Es gibt ein Work ein Buggticket zu Work trees aktuell und das verhindert dass wir Work Trees mit den MCP Tools korrekt vereinbaren können also wir können jetzt keine Tickets in dem korrekten Work Tree anlegen beispielsweise Wenn wir die MCP Tools benutzen der Workaround ist die CLI Tools zu benutzen so bis dieser Bug gefixt ist Sollten Agenten eben nicht Die MCP Tools benutzen Um in einem Work Tweet zu arbeiten so und das müssen die eben wissen und das muss relativ weit oben in ihrem Kontext sein Damit solche Fehler halt weniger passieren",
+      "captured_at": "2026-08-06T14:11:00.409Z",
+      "event_meta": {
+        "event_id": "f3df289a-3709-40ab-91dc-9c98d0f26ab9",
+        "parent_event_id": "0fc0fac9-3cd0-4cb0-8eaa-b6ea2d4ea959",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "Ich richte zuerst den Transkript-Workflow ein: Ich lese die maßgebliche Transformationsanleitung, prüfe die vorhandene Transkript-Ordnerkonvention und lege dann den neuen Roh-/Clean-Pair-Pfad an.",
+      "captured_at": "2026-08-06T14:11:06.009Z",
+      "event_meta": {
+        "event_id": "b67fa3ba-60f7-41f1-888a-72f9189c5d41",
+        "parent_event_id": "e9251992-68ef-4316-b4e2-3b2fc9c2fc43",
+        "event_type": "assistant.message",
+        "message_id": "9cd4de37-44cb-4f20-acfa-75c046c9ccf7",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_NPopFVH4HhOyHKdT2jxhENkE",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\context-engine\\.agents\\instructions\\transcripts\\audio-transcript.instructions.md",
+              "startLine": 1,
+              "endLine": 260
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5xTuXA5M4NLiUTgV93ylbxAf",
+            "name": "list_dir",
+            "arguments": {
+              "path": "c:\\Users\\linus\\git\\context-engine\\transcripts"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Ich habe die Richtlinie gelesen und die Rohtranskript-Ordnerstruktur bestätigt. Als Nächstes schreibe ich das Original wortgetreu in einen neuen Transcript-Ordner und formuliere daraus die denoised English clean version.",
+      "captured_at": "2026-08-06T14:11:15.628Z",
+      "event_meta": {
+        "event_id": "2c1a5415-0871-421b-8de7-3fea5f09dd48",
+        "parent_event_id": "f510fa0a-5772-4585-af85-28eed5e62bca",
+        "event_type": "assistant.message",
+        "message_id": "b931a154-bccf-4564-bc36-0079668c4e49",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_11LjpZOAfwtZktDUKMtYBLzv",
+            "name": "create_directory",
+            "arguments": {
+              "dirPath": "c:\\Users\\linus\\git\\context-engine\\transcripts\\06-08-2026_active-bugs-workarounds"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_iAn7QroeOgUFfTLkegJHfRcU",
+            "name": "create_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\context-engine\\transcripts\\06-08-2026_active-bugs-workarounds\\input.md",
+              "content": "Ich finde wir bräuchten ein System das aktive Bugs Für Agenten sichtbar macht und ihnen Workarounds bereitstellt Das sollte einerseits in unserer Anleitung verankert sein als ein essenzieller Schritt bevor man anfängt tools zu benutzen Also wir sollten dafür sorgen dass wir auch wissen wie wir aktive Buggtickets finden für bestimmte Tools die wir eben benutzen wollen um dort eben selektiv zu sein Wir möchten sozusagen inkrementelle Inspektion der Buggtickets ermöglichen dass wir also erstmal gucken können ok Gibt es überhaupt Backtickets für dieses Tool Wie viele gibt es Wie heißen diese Bugs also die was ist die einfachste Beschreibung Was genau beinhalten diese Buggt Tickets Wir können außerdem eben verlangen dass ein Buggticket ein Workaround bereitstellt also das wäre sozusagen ein helfeinding dass wir dann eben auch Wenn wir Buggtickets anlegen immer möglichst Überprüfen sollten das ob ob wir ein Workaround haben und insgesamt auch welche welche Buggtickets Workarounds haben Eben indem wir ein Heftcheck machen also wahrscheinlich sollte man immer wenn man buggtickets anfässt einfach einmal ein Health Check machen oder insgehma Tickets anfällst sollte man einmal ein Health Check machen und einmal gucken Welche was wir eigentlich so allgemein der Stand ist und im Zweifel halt versuchen Relevante Tickets eben zu verbessern Und offensichtlich einfache Probleme schnell zu beheben So aber es geht jetzt auch erstmal um dieses Kernfeature von Praktikiert Workarounds und halt dem expliziten Bugboard sozusagen oder durchsuchbaren also den den den Anleitungen wie wir das Durchsuchen Um eben zum Beispiel um jetzt ein Beispiel zu geben Es gibt ein Work ein Buggticket zu Work trees aktuell und das verhindert dass wir Work Trees mit den MCP Tools korrekt vereinbaren können also wir können jetzt keine Tickets in dem korrekten Work Tree anlegen beispielsweise Wenn wir die MCP Tools benutzen der Workaround ist die CLI Tools zu benutzen so bis dieser Bug gefixt ist Sollten Agenten eben nicht Die MCP Tools benutzen Um in einem Work Tweet zu arbeiten so und das müssen die eben wissen und das muss relativ weit oben in ihrem Kontext sein Damit solche Fehler halt weniger passieren"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "Der Clean-Text steht jetzt in der englischen Zielstruktur an. Ich speichere ihn als `input.clean.md` im neuen Transcript-Ordner und prüfe anschließend kurz den finalen Inhalt.",
+      "captured_at": "2026-08-06T14:11:27.323Z",
+      "event_meta": {
+        "event_id": "8ae9f9ad-0a71-4dc7-a669-56321ccb07a3",
+        "parent_event_id": "fb873a20-e887-44c6-9bad-b2cc3902e6d8",
+        "event_type": "assistant.message",
+        "message_id": "f2fcb164-af7c-4da4-b512-98c0e48241d4",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_4feii5laKQFrXxvch5wKL31Q",
+            "name": "create_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\context-engine\\transcripts\\06-08-2026_active-bugs-workarounds\\input.clean.md",
+              "content": "# Active Bugs and Workarounds\n\nWe need a system that makes active bugs visible to agents and provides them with workarounds.\n\nThis should be embedded in our guidance as an essential step before using tools.\n\nWe should also be able to find active bug tickets for specific tools so we can be selective about what we use.\n\nThe system should support incremental inspection of bug tickets:\n\n- Check whether there are any bug tickets for a given tool.\n- See how many there are.\n- Read the simplest short description of each bug.\n- Understand what each bug ticket contains.\n\nBug tickets should be able to provide a workaround. When we create bug tickets, we should also check whether a workaround exists and, more generally, which bug tickets have workarounds.\n\nThat suggests a health check: whenever we touch bug tickets, we should do a health check, look at the overall state, and in doubt improve relevant tickets and quickly fix obvious simple problems.\n\nThe core feature here is practical workarounds and an explicit, searchable bug board or guidance for how to search it.\n\nExample: there is currently a bug ticket for worktrees, and that prevents us from reconciling worktrees correctly with the MCP tools. For example, we cannot create tickets in the correct worktree when using the MCP tools. The workaround is to use the CLI tools. Until that bug is fixed, agents should not use the MCP tools to work in a worktree.\n\nAgents need to know this, and it needs to be relatively high in their context so these mistakes happen less often."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Ich habe einen offensichtlichen Restfehler im Clean-Text gefunden und behebe ihn jetzt direkt. Danach prüfe ich den gespeicherten Text einmal gegen den Zielinhalt.",
+      "captured_at": "2026-08-06T14:11:33.231Z",
+      "event_meta": {
+        "event_id": "c6aac2c0-08dc-451b-9423-281dfdc3c875",
+        "parent_event_id": "23fca539-66dd-41b2-b1f3-c24b12473273",
+        "event_type": "assistant.message",
+        "message_id": "0b09d59c-4161-48a8-a681-22586692c733",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_Se24TtdAsC5tnV9BqT1OLHC8",
+            "name": "apply_patch",
+            "arguments": {
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\context-engine\\transcripts\\06-08-2026_active-bugs-workarounds\\input.clean.md\n@@\n-Agents need to know this, and it needs to be relatively high in their context so these mistakes happen less often.\"\n+Agents need to know this, and it needs to be relatively high in their context so these mistakes happen less often.\n*** End Patch",
+              "explanation": "Remove a stray closing quote from the cleaned transcript."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Ich glätte noch eine Stelle, die im Clean-Text zu wörtlich klang, ohne den Inhalt zu verändern. Danach mache ich die abschließende Inhaltsprüfung noch einmal.",
+      "captured_at": "2026-08-06T14:11:46.358Z",
+      "event_meta": {
+        "event_id": "b910831b-a30a-405c-a77c-08d889f5cb38",
+        "parent_event_id": "f509ecd3-28da-4ff7-aa37-e075e3296e3d",
+        "event_type": "assistant.message",
+        "message_id": "51422a0f-8460-40e6-a7d2-a2e8ce1dd131",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_OUJ5OUhl3dOsqmjwflVgrDOT",
+            "name": "apply_patch",
+            "arguments": {
+              "input": "*** Begin Patch\n*** Update File: c:\\Users\\linus\\git\\context-engine\\transcripts\\06-08-2026_active-bugs-workarounds\\input.clean.md\n@@\n-That suggests a health check: whenever we touch bug tickets, we should do a health check, look at the overall state, and in doubt improve relevant tickets and quickly fix obvious simple problems.\n+That suggests a health check: whenever we touch bug tickets, we should do a health check, look at the overall state, and, when in doubt, improve relevant tickets and quickly fix obvious simple problems.\n*** End Patch",
+              "explanation": "Polish a literal phrase in the cleaned transcript without changing meaning."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Input mode: raw pasted transcript. I created the new transcript folder at [transcripts/06-08-2026_active-bugs-workarounds](transcripts/06-08-2026_active-bugs-workarounds) and wrote the verbatim source to [input.md](transcripts/06-08-2026_active-bugs-workarounds/input.md). The cleaned English artifact is in [input.clean.md](transcripts/06-08-2026_active-bugs-workarounds/input.clean.md).\n\nWhat I removed was transcript noise: filler, repetitions, false starts, and garbled phrasing. What I preserved was the actual intent: an agent-facing system for visible active bug tickets, incremental inspection by tool, required workaround visibility, health checks when touching bug tickets, and the concrete worktree/MCP example where CLI should be used until the bug is fixed. Source language was German; the final output is fully English. No unresolved ambiguities remained.",
+      "captured_at": "2026-08-06T14:11:54.515Z",
+      "event_meta": {
+        "event_id": "580fd97e-8739-4b2a-aba9-f48cd4911f18",
+        "parent_event_id": "1170d07a-bf52-4fce-b6bc-83b1bd6f6b28",
+        "event_type": "assistant.message",
+        "message_id": "566a24bc-3638-4cc5-b92d-1d10eefe2a0d",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "user",
+      "content": "Jetzt überarbeite das Transkript In ein Ticket-Airpig Plane die Schritte Von hier an Orchestriere eine Research Session Und schreibe die Tickets solltest du ein Word Tree verwenden Nutze die CI Tools Um die Tickets im richtigen Work Tree anzulegen",
+      "captured_at": "2026-08-06T14:13:40.131Z",
+      "event_meta": {
+        "event_id": "47c28fcb-d09e-4afe-99cf-d218e430c44f",
+        "parent_event_id": "24fe7c7e-0f6d-4fee-9fe6-2ad181a60882",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "user",
+      "content": "Jetzt überarbeite das Transkript In ein Ticket-Epic Plane die Schritte Von hier an Orchestriere eine Research Session Und schreibe die Tickets solltest du ein Work Tree verwenden Nutze die CI Tools Um die Tickets im richtigen Work Tree anzulegen",
+      "captured_at": "2026-08-06T14:14:03.616Z",
+      "event_meta": {
+        "event_id": "812be05c-80f5-4e91-bb4c-4ac0b2e60c12",
+        "parent_event_id": "c9be329d-8bc7-4129-8f3a-188f4776e617",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Ich orchestriere das in drei Phasen: parallele Research-Probes (read-only), dann Worktree-Bootstrap, dann Ticket-Erstellung per CLI im Worktree. Zuerst die beiden unabhängigen Research-Units.",
+      "captured_at": "2026-08-06T14:15:03.179Z",
+      "event_meta": {
+        "event_id": "360cb9ee-d6bb-4aa2-b221-ee030740355b",
+        "parent_event_id": "3235bd4d-dfd8-46c2-a1af-bd52974be261",
+        "event_type": "assistant.message",
+        "message_id": "83b31dfd-7826-4cb3-815e-0129d08a1065",
+        "reasoning_text": "I'm the Orchestrator Agent, so I need to dispatch subagents to handle this work. Let me break down what needs to happen: first, a Research Agent will investigate the existing ticket-api capabilities and workarounds, then I'll coordinate turning the transcript into an epic, planning the implementation steps, and having agents write out the actual tickets—potentially using CLI tools if we're working with a worktree.\n\nBefore dispatching, I should check my gates, but since research is read-only and foundational, I can dispatch those probes in parallel without preconditions. I'm setting up two parallel research units: one to explore how bug tickets are represented in the system and what CLI commands exist, and another to find the existing worktree/MCP bug ticket and any guidance files that document checking for active bugs before using tools. I'll give each research probe the full context and transcript inline so they're self-contained.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01Y3ZhksChGsHAKQ7qVq4PGU",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Research Agent",
+              "description": "Research ticket bug/workaround capabilities",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are a read-only Research Agent in the repository at `c:/Users/linus/git/context-engine` (repo root; use forward-slash unix paths, Git Bash shell). You have NO prior conversation context — everything you need is below.\n\n## Goal (research only — do NOT edit any file, do NOT create tickets)\n\nWe are about to design a feature: \"make active bugs visible to agents and give them workarounds\". Before we write tickets, I need to know exactly what the existing ticket system already supports, so the tickets we write target real gaps rather than reinventing existing capability.\n\n## Background (the feature request, already cleaned; provided so you understand the target — this is NOT a task list for you)\n\n- A system that makes active bugs visible to agents and provides workarounds.\n- Anchored in agent guidance as an essential step BEFORE using tools.\n- Ability to find active bug tickets for a SPECIFIC tool, to be selective about which tools to use.\n- Incremental inspection of bug tickets: (1) are there any bug tickets for this tool at all, (2) how many, (3) the simplest short description of each, (4) full contents.\n- A bug ticket should be able to provide a workaround; when creating bug tickets we should check whether a workaround exists, and which bug tickets have workarounds.\n- A health check whenever bug tickets (or tickets generally) are touched.\n- An explicit, searchable \"bug board\", or documented guidance for how to search it.\n\n## What to investigate (answer each numbered question with evidence)\n\n1. **Ticket type/kind model.** Does the ticket schema have a ticket `type` (or `kind`) field, and is there a `bug` value? Where is it defined? Start from `memory-api/crates/ticket-api/` (find the actual schema/model source; likely under `memory-api/crates/ticket-api/src/`). Report the exact enum/field name, the legal values, and the file path + line range.\n\n2. **Ticket content parts.** The ticket system has \"content parts\" (there is an MCP tool `list_parts` and `get_part`, and ticket reads have `--view` profiles `summary`/`plan`/`review`/`full` and a `--parts` selector with kinds like `objective`, `acceptance_criteria`). Enumerate the FULL list of legal part kinds and where that list is defined (file path + line range). Critically: **is there any existing part kind that could hold a workaround, or would a new `workaround` part kind have to be added?**\n\n3. **View profiles.** Find where the `--view` profiles (`summary`, `plan`, `review`, `full`) are defined and which part kinds each one projects. File path + line range. This tells us whether \"incremental inspection\" (short description → full contents) is already expressible.\n\n4. **Filtering/search.** What filtering does `list_tickets` support (there is a `type` filter and a `query` filter and a `state` filter)? Can you filter tickets by an arbitrary field, e.g. by component or by a tool name? Look at the CLI at `memory-api/tools/` or wherever the `ticket` CLI binary source lives — find it and report its path. Report the exact CLI subcommands and flags relevant to: listing bug tickets, filtering by type, searching by text, and selecting views/parts.\n\n5. **Health check.** There is an MCP tool `health_check` and presumably a `ticket health-check` CLI command. Find its implementation (file path + line range) and report EXACTLY which checks it currently runs. The request wants a new check: \"does this bug ticket have a workaround\". Report whether the check set is extensible and where a new check would be added.\n\n6. **Tool ↔ ticket association.** Is there any existing mechanism that associates a ticket with a specific TOOL (as opposed to a component)? Look at the ticket schema fields (component, labels, tags, etc.). Report what exists and what would need to be added so an agent can ask \"are there open bug tickets for tool X\".\n\n## Method constraints\n\n- Prefer bounded inspection: use `peek_skeleton` / `peek_grep` / `peek_read` (peek-mcp) and `mcp_compact-termi_run` with `rg`/`grep`. Do NOT dump whole large files.\n- Use `mcp_ticket-mcp_ticket_capabilities` and `mcp_ticket-mcp_help` to enumerate the real tool surface rather than guessing.\n- Verify every claim against an actual file or command output. If something does not exist, say \"does not exist\" explicitly rather than describing what it would look like.\n\n## Return contract (compact — this exact shape, nothing else)\n\nFor each of the 6 questions:\n```\nQ<n>: <one-line answer>\n  evidence: <repo-root-relative/path.rs#L10-L40>\n  detail: <2-5 lines max of the specific names/values found>\n  gap: <what does NOT exist today, one line>\n```\nThen a final section:\n```\nCLI: <exact path to the ticket CLI binary source> | <exact built binary path if you find one under target/debug>\nNEW_CAPABILITIES_NEEDED: <bulleted list, max 8 items, of concrete things that do not exist today and would have to be built>\n```\nNo transcript, no narration, no file dumps."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_015NaziSZg8MAT8qNARjYy9u",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Research Agent",
+              "description": "Find worktree bug ticket and guidance anchors",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are a read-only Research Agent in the repository at `c:/Users/linus/git/context-engine` (repo root; use forward-slash unix paths, Git Bash shell). You have NO prior conversation context — everything you need is below.\n\n## Goal (research only — do NOT edit any file, do NOT create tickets)\n\nWe are about to write tickets for a feature that makes active bugs visible to agents with workarounds, anchored in agent guidance. I need two things: (a) the REAL existing bug ticket about worktrees + MCP tools that motivated this request, and (b) the exact guidance files where a \"check active bugs before using tools\" step would have to be anchored.\n\n## Part A — Find the worktree/MCP bug ticket\n\nThe user states: \"there is currently a bug ticket for worktrees, and that prevents us from reconciling worktrees correctly with the MCP tools. For example, we cannot create tickets in the correct worktree when using the MCP tools. The workaround is to use the CLI tools.\"\n\nFind that ticket. Method:\n- Use `mcp_ticket-mcp_list_tickets` with `{\"workspace\": \"default\"}` and a `query` such as `worktree`, and also try `type: \"bug\"`.\n- Also grep the on-disk ticket store: `rg -l -i \"worktree\" c:/Users/linus/git/context-engine/.ticket/tickets --glob \"*.md\" --glob \"*.toml\"` (bound the output; use `rg -l` first, then read only the promising ones with `peek_read`).\n- Ticket manifests live at `.ticket/tickets/<uuid>/ticket.toml` with descriptions at `.ticket/tickets/<uuid>/description.md`.\n\nReport for EVERY matching worktree-related bug ticket you find:\n- the full UUID and the 8-char short id\n- the exact title\n- the current state\n- the ticket `type` field value\n- whether its description already documents a WORKAROUND (quote the workaround sentence verbatim if present, or say \"no workaround documented\")\n- the repo-root-relative path to its `ticket.toml`\n\n## Part B — Locate the guidance anchor points\n\nRead these files and report where a mandatory \"check active bug tickets for the tool you are about to use\" step would belong. These paths are exact and verified to exist:\n\n1. `c:/Users/linus/git/context-engine/AGENTS.md` — specifically its \"Discovery Protocol (Before Editing)\" section. Report the exact current numbered steps of that section (verbatim list, it is short) and the line range.\n2. `c:/Users/linus/git/context-engine/.agents/instructions/ticket/workflow.instructions.md` — report its section headings only (use `peek_grep` for `^## `) plus total line count.\n3. `c:/Users/linus/git/context-engine/.agents/instructions/ticket/lifecycle.instructions.md` — section headings only + line count.\n4. `c:/Users/linus/git/context-engine/.agents/instructions/ticket/board.instructions.md` — section headings only + line count. IMPORTANT: determine whether \"board\" here means the multi-agent WIP draftboard (agent check-in/check-out) or a \"bug board\". We need to know if the name \"bug board\" would collide with the existing draftboard concept.\n5. `c:/Users/linus/git/context-engine/.agents/instructions/commit/branch-worktree.instructions.md` — report its section headings + line count, and specifically whether it ALREADY mentions the MCP-vs-CLI worktree limitation (grep for `MCP` and for `CLI`). Quote any such line verbatim with its line number.\n\nAlso list every file under `c:/Users/linus/git/context-engine/.agents/instructions/` (use `list_dir` with depth 2) so we know the full guidance corpus layout — just the paths, no contents.\n\n## Part C — Worktree tooling\n\nRead `c:/Users/linus/git/context-engine/tools/worktree/worktree.sh` and report ONLY: the subcommands it supports and the exact usage line for creating a new worktree. Bounded read, do not dump the whole script.\n\n## Method constraints\n\n- Prefer bounded inspection: `peek_grep`, `peek_read`, `peek_skeleton`, `mcp_fs-mcp_fs_list_dir`, or `mcp_compact-termi_run` with `rg`. Never dump a whole large file.\n- Verify every claim against actual output. If something does not exist, say \"does not exist\" explicitly.\n\n## Return contract (compact — this exact shape, nothing else)\n\n```\nPART_A_TICKETS:\n  - id: <uuid> (<short8>)\n    title: <title>\n    state: <state>\n    type: <type>\n    workaround: <verbatim quote | \"no workaround documented\">\n    path: .ticket/tickets/<uuid>/ticket.toml\nPART_B:\n  AGENTS.md#Discovery Protocol: <line range> | steps: <verbatim numbered list>\n  ticket/workflow.instructions.md: <N lines> | headings: <list>\n  ticket/lifecycle.instructions.md: <N lines> | headings: <list>\n  ticket/board.instructions.md: <N lines> | headings: <list> | board_means: <draftboard|bugboard>\n  commit/branch-worktree.instructions.md: <N lines> | headings: <list> | mentions_mcp_cli_limitation: <yes+quote+line | no>\n  INSTRUCTION_CORPUS: <bulleted list of all files under .agents/instructions/>\nPART_C:\n  worktree.sh subcommands: <list>\n  new-worktree usage: <exact line>\n```\nNo transcript, no narration, no file dumps."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "user",
+      "content": "You are a read-only Research Agent in the repository at `c:/Users/linus/git/context-engine` (repo root; use forward-slash unix paths, Git Bash shell). You have NO prior conversation context — everything you need is below.\n\n## Goal (research only — do NOT edit any file, do NOT create tickets)\n\nWe are about to design a feature: \"make active bugs visible to agents and give them workarounds\". Before we write tickets, I need to know exactly what the existing ticket system already supports, so the tickets we write target real gaps rather than reinventing existing capability.\n\n## Background (the feature request, already cleaned; provided so you understand the target — this is NOT a task list for you)\n\n- A system that makes active bugs visible to agents and provides workarounds.\n- Anchored in agent guidance as an essential step BEFORE using tools.\n- Ability to find active bug tickets for a SPECIFIC tool, to be selective about which tools to use.\n- Incremental inspection of bug tickets: (1) are there any bug tickets for this tool at all, (2) how many, (3) the simplest short description of each, (4) full contents.\n- A bug ticket should be able to provide a workaround; when creating bug tickets we should check whether a workaround exists, and which bug tickets have workarounds.\n- A health check whenever bug tickets (or tickets generally) are touched.\n- An explicit, searchable \"bug board\", or documented guidance for how to search it.\n\n## What to investigate (answer each numbered question with evidence)\n\n1. **Ticket type/kind model.** Does the ticket schema have a ticket `type` (or `kind`) field, and is there a `bug` value? Where is it defined? Start from `memory-api/crates/ticket-api/` (find the actual schema/model source; likely under `memory-api/crates/ticket-api/src/`). Report the exact enum/field name, the legal values, and the file path + line range.\n\n2. **Ticket content parts.** The ticket system has \"content parts\" (there is an MCP tool `list_parts` and `get_part`, and ticket reads have `--view` profiles `summary`/`plan`/`review`/`full` and a `--parts` selector with kinds like `objective`, `acceptance_criteria`). Enumerate the FULL list of legal part kinds and where that list is defined (file path + line range). Critically: **is there any existing part kind that could hold a workaround, or would a new `workaround` part kind have to be added?**\n\n3. **View profiles.** Find where the `--view` profiles (`summary`, `plan`, `review`, `full`) are defined and which part kinds each one projects. File path + line range. This tells us whether \"incremental inspection\" (short description → full contents) is already expressible.\n\n4. **Filtering/search.** What filtering does `list_tickets` support (there is a `type` filter and a `query` filter and a `state` filter)? Can you filter tickets by an arbitrary field, e.g. by component or by a tool name? Look at the CLI at `memory-api/tools/` or wherever the `ticket` CLI binary source lives — find it and report its path. Report the exact CLI subcommands and flags relevant to: listing bug tickets, filtering by type, searching by text, and selecting views/parts.\n\n5. **Health check.** There is an MCP tool `health_check` and presumably a `ticket health-check` CLI command. Find its implementation (file path + line range) and report EXACTLY which checks it currently runs. The request wants a new check: \"does this bug ticket have a workaround\". Report whether the check set is extensible and where a new check would be added.\n\n6. **Tool ↔ ticket association.** Is there any existing mechanism that associates a ticket with a specific TOOL (as opposed to a component)? Look at the ticket schema fields (component, labels, tags, etc.). Report what exists and what would need to be added so an agent can ask \"are there open bug tickets for tool X\".\n\n## Method constraints\n\n- Prefer bounded inspection: use `peek_skeleton` / `peek_grep` / `peek_read` (peek-mcp) and `mcp_compact-termi_run` with `rg`/`grep`. Do NOT dump whole large files.\n- Use `mcp_ticket-mcp_ticket_capabilities` and `mcp_ticket-mcp_help` to enumerate the real tool surface rather than guessing.\n- Verify every claim against an actual file or command output. If something does not exist, say \"does not exist\" explicitly rather than describing what it would look like.\n\n## Return contract (compact — this exact shape, nothing else)\n\nFor each of the 6 questions:\n```\nQ<n>: <one-line answer>\n  evidence: <repo-root-relative/path.rs#L10-L40>\n  detail: <2-5 lines max of the specific names/values found>\n  gap: <what does NOT exist today, one line>\n```\nThen a final section:\n```\nCLI: <exact path to the ticket CLI binary source> | <exact built binary path if you find one under target/debug>\nNEW_CAPABILITIES_NEEDED: <bulleted list, max 8 items, of concrete things that do not exist today and would have to be built>\n```\nNo transcript, no narration, no file dumps.",
+      "captured_at": "2026-08-06T14:15:06.217Z",
+      "event_meta": {
+        "event_id": "c0638f3e-ceec-4510-bcdc-24f261ecf2ca",
+        "parent_event_id": "af75eb9d-6334-4fa4-8f01-81581d4165c4",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01Y3ZhksChGsHAKQ7qVq4PGU"
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "user",
+      "content": "You are a read-only Research Agent in the repository at `c:/Users/linus/git/context-engine` (repo root; use forward-slash unix paths, Git Bash shell). You have NO prior conversation context — everything you need is below.\n\n## Goal (research only — do NOT edit any file, do NOT create tickets)\n\nWe are about to write tickets for a feature that makes active bugs visible to agents with workarounds, anchored in agent guidance. I need two things: (a) the REAL existing bug ticket about worktrees + MCP tools that motivated this request, and (b) the exact guidance files where a \"check active bugs before using tools\" step would have to be anchored.\n\n## Part A — Find the worktree/MCP bug ticket\n\nThe user states: \"there is currently a bug ticket for worktrees, and that prevents us from reconciling worktrees correctly with the MCP tools. For example, we cannot create tickets in the correct worktree when using the MCP tools. The workaround is to use the CLI tools.\"\n\nFind that ticket. Method:\n- Use `mcp_ticket-mcp_list_tickets` with `{\"workspace\": \"default\"}` and a `query` such as `worktree`, and also try `type: \"bug\"`.\n- Also grep the on-disk ticket store: `rg -l -i \"worktree\" c:/Users/linus/git/context-engine/.ticket/tickets --glob \"*.md\" --glob \"*.toml\"` (bound the output; use `rg -l` first, then read only the promising ones with `peek_read`).\n- Ticket manifests live at `.ticket/tickets/<uuid>/ticket.toml` with descriptions at `.ticket/tickets/<uuid>/description.md`.\n\nReport for EVERY matching worktree-related bug ticket you find:\n- the full UUID and the 8-char short id\n- the exact title\n- the current state\n- the ticket `type` field value\n- whether its description already documents a WORKAROUND (quote the workaround sentence verbatim if present, or say \"no workaround documented\")\n- the repo-root-relative path to its `ticket.toml`\n\n## Part B — Locate the guidance anchor points\n\nRead these files and report where a mandatory \"check active bug tickets for the tool you are about to use\" step would belong. These paths are exact and verified to exist:\n\n1. `c:/Users/linus/git/context-engine/AGENTS.md` — specifically its \"Discovery Protocol (Before Editing)\" section. Report the exact current numbered steps of that section (verbatim list, it is short) and the line range.\n2. `c:/Users/linus/git/context-engine/.agents/instructions/ticket/workflow.instructions.md` — report its section headings only (use `peek_grep` for `^## `) plus total line count.\n3. `c:/Users/linus/git/context-engine/.agents/instructions/ticket/lifecycle.instructions.md` — section headings only + line count.\n4. `c:/Users/linus/git/context-engine/.agents/instructions/ticket/board.instructions.md` — section headings only + line count. IMPORTANT: determine whether \"board\" here means the multi-agent WIP draftboard (agent check-in/check-out) or a \"bug board\". We need to know if the name \"bug board\" would collide with the existing draftboard concept.\n5. `c:/Users/linus/git/context-engine/.agents/instructions/commit/branch-worktree.instructions.md` — report its section headings + line count, and specifically whether it ALREADY mentions the MCP-vs-CLI worktree limitation (grep for `MCP` and for `CLI`). Quote any such line verbatim with its line number.\n\nAlso list every file under `c:/Users/linus/git/context-engine/.agents/instructions/` (use `list_dir` with depth 2) so we know the full guidance corpus layout — just the paths, no contents.\n\n## Part C — Worktree tooling\n\nRead `c:/Users/linus/git/context-engine/tools/worktree/worktree.sh` and report ONLY: the subcommands it supports and the exact usage line for creating a new worktree. Bounded read, do not dump the whole script.\n\n## Method constraints\n\n- Prefer bounded inspection: `peek_grep`, `peek_read`, `peek_skeleton`, `mcp_fs-mcp_fs_list_dir`, or `mcp_compact-termi_run` with `rg`. Never dump a whole large file.\n- Verify every claim against actual output. If something does not exist, say \"does not exist\" explicitly.\n\n## Return contract (compact — this exact shape, nothing else)\n\n```\nPART_A_TICKETS:\n  - id: <uuid> (<short8>)\n    title: <title>\n    state: <state>\n    type: <type>\n    workaround: <verbatim quote | \"no workaround documented\">\n    path: .ticket/tickets/<uuid>/ticket.toml\nPART_B:\n  AGENTS.md#Discovery Protocol: <line range> | steps: <verbatim numbered list>\n  ticket/workflow.instructions.md: <N lines> | headings: <list>\n  ticket/lifecycle.instructions.md: <N lines> | headings: <list>\n  ticket/board.instructions.md: <N lines> | headings: <list> | board_means: <draftboard|bugboard>\n  commit/branch-worktree.instructions.md: <N lines> | headings: <list> | mentions_mcp_cli_limitation: <yes+quote+line | no>\n  INSTRUCTION_CORPUS: <bulleted list of all files under .agents/instructions/>\nPART_C:\n  worktree.sh subcommands: <list>\n  new-worktree usage: <exact line>\n```\nNo transcript, no narration, no file dumps.",
+      "captured_at": "2026-08-06T14:15:06.266Z",
+      "event_meta": {
+        "event_id": "4bff9b73-86ad-4024-bc61-6ff436b5f385",
+        "parent_event_id": "a6c72405-ee88-45b9-b649-b7fc4517c2ee",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_015NaziSZg8MAT8qNARjYy9u"
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "I'll search the repo for ticket schema, parts, views, CLI and health-check implementations. I'll run targeted code searches.",
+      "captured_at": "2026-08-06T14:15:16.063Z",
+      "event_meta": {
+        "event_id": "512fbc31-9cac-4e14-8bb8-c69246a168cb",
+        "parent_event_id": "cc38b24b-260f-4c41-a7af-ca642f746c2c",
+        "event_type": "assistant.message",
+        "message_id": "5be918f6-c32a-4007-a119-cbee165a5490",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_a4nk3MbgKfKlSZhXO90bEaHh",
+            "name": "grep_search",
+            "arguments": {
+              "query": "ticket.*type|enum .*Ticket|struct .*Ticket|part_kind|part_kind|part_kind|list_parts|--view|health_check\\(|ticket health|fn health_check|ticket::",
+              "isRegexp": true,
+              "includePattern": "memory-api/**"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015NaziSZg8MAT8qNARjYy9u"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "Next I'll list relevant files under `memory-api/crates/ticket-api` to open the schema, model, parts, views, CLI, and health-check implementations.",
+      "captured_at": "2026-08-06T14:15:19.613Z",
+      "event_meta": {
+        "event_id": "f3e31609-a363-4ac5-9eed-40eba1ef23ed",
+        "parent_event_id": "c3261e20-62e0-4879-84e7-e952e42ba7a0",
+        "event_type": "assistant.message",
+        "message_id": "d2c75b98-8f73-4858-a8a7-266399d8745e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_YMtXmT66h9PFHGQ9NkK3iUqI",
+            "name": "file_search",
+            "arguments": {
+              "query": "memory-api/crates/ticket-api/**",
+              "maxResults": 100
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015NaziSZg8MAT8qNARjYy9u"
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "Now I'll open the ticket model and schema files to find the ticket type/enum definitions.",
+      "captured_at": "2026-08-06T14:15:23.094Z",
+      "event_meta": {
+        "event_id": "f98b631f-8ff5-4c90-b402-693f4ce4c6c9",
+        "parent_event_id": "be931ccc-ad14-4e41-97c4-bcc483625a29",
+        "event_type": "assistant.message",
+        "message_id": "8682c272-d935-4016-abfd-be18632e668c",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ZDAsJ13VpaghdofYdOVGtvRZ",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:/Users/linus/git/context-engine/memory-api/crates/ticket-api/src/model/ticket.rs",
+              "startLine": 1,
+              "endLine": 400
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015NaziSZg8MAT8qNARjYy9u"
+      }
+    }
+  ]
+}

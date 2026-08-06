@@ -1,0 +1,158 @@
+{
+  "handoff_id": "f1521b1e-e3fe-4a04-a444-2421fe345b7a",
+  "workspace_session_id": "epic-kickoff-8fdfe135",
+  "outgoing_run_id": "a2659767-3224-48e2-a9a9-72c9582c8515",
+  "created_at": "2026-08-06T13:44:08.438112700Z",
+  "resume_command": "session-cli resume --workspace-session-id epic-kickoff-8fdfe135 --predecessor-run-id a2659767-3224-48e2-a9a9-72c9582c8515",
+  "workflow": {
+    "workflow": {
+      "nodes": [
+        {
+          "node_id": "bug-35a60203",
+          "kind": "ticket",
+          "requirement": "optional",
+          "status": "pending",
+          "title": "Fix ticket-mcp external-write index reconciliation",
+          "created_at": "2026-08-06T13:43:39.952111800Z",
+          "updated_at": "2026-08-06T13:43:39.952111800Z",
+          "ticket_urn": "ce://default/ticket/35a60203-0a2c-4dbc-b33d-b645848871f2",
+          "cached_ticket_title": "ticket-mcp index goes stale against external store writes"
+        },
+        {
+          "node_id": "bug-fa2ba34b",
+          "kind": "ticket",
+          "requirement": "optional",
+          "status": "pending",
+          "title": "Fix ticket-mcp worktree store resolution",
+          "created_at": "2026-08-06T13:43:39.952111800Z",
+          "updated_at": "2026-08-06T13:43:39.952111800Z",
+          "ticket_urn": "ce://default/ticket/fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3",
+          "cached_ticket_title": "ticket-mcp default workspace resolves to server cwd"
+        },
+        {
+          "node_id": "implement-7ef3f8db",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Implement directed inherited schema lifecycle engine",
+          "created_at": "2026-08-06T13:43:39.952111800Z",
+          "updated_at": "2026-08-06T13:43:39.952111800Z",
+          "ticket_urn": "ce://default/ticket/7ef3f8db-d4a9-4135-99eb-3c006070a328",
+          "cached_ticket_title": "Implement directed inherited schema lifecycle engine"
+        },
+        {
+          "node_id": "plan-9e450826",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "done",
+          "title": "Plan lifecycle engine implementation",
+          "created_at": "2026-08-06T13:43:39.952111800Z",
+          "updated_at": "2026-08-06T13:43:45.205050200Z",
+          "ticket_urn": "ce://default/ticket/9e450826-60e1-437f-b236-2c8839e4ab9e",
+          "cached_ticket_title": "Plan lifecycle engine implementation"
+        },
+        {
+          "node_id": "research-85012858",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "done",
+          "title": "Research lifecycle engine design surfaces",
+          "created_at": "2026-08-06T13:43:39.952111800Z",
+          "updated_at": "2026-08-06T13:43:49.841415900Z",
+          "ticket_urn": "ce://default/ticket/85012858-cbf3-40df-b55e-b82e89f72434",
+          "cached_ticket_title": "Research lifecycle engine design surfaces"
+        }
+      ],
+      "edges": [
+        {
+          "from": "plan-9e450826",
+          "to": "implement-7ef3f8db",
+          "kind": "depends-on"
+        },
+        {
+          "from": "research-85012858",
+          "to": "plan-9e450826",
+          "kind": "depends-on"
+        }
+      ]
+    },
+    "resolutions": [
+      {
+        "node_id": "bug-35a60203",
+        "live_ticket_state": "open"
+      },
+      {
+        "node_id": "bug-fa2ba34b",
+        "live_ticket_state": "open"
+      },
+      {
+        "node_id": "implement-7ef3f8db",
+        "live_ticket_state": "open"
+      },
+      {
+        "node_id": "plan-9e450826",
+        "live_ticket_state": "open"
+      },
+      {
+        "node_id": "research-85012858",
+        "live_ticket_state": "open"
+      }
+    ]
+  },
+  "validation": [
+    {
+      "validation_spec_id": "track-1-memory-api-tests",
+      "required": true,
+      "command": "cargo test -p memory-api"
+    },
+    {
+      "validation_spec_id": "track-1-ticket-api-tests",
+      "required": true,
+      "command": "cargo test -p ticket-api"
+    }
+  ],
+  "objective": "Implement Track 1's directed inherited schema lifecycle engine for the Schema modernization implementation track.",
+  "target_tickets": [
+    {
+      "id": "7ef3f8db-d4a9-4135-99eb-3c006070a328",
+      "why": "Track 1 is refined and is the next required workflow node.",
+      "state": "open"
+    }
+  ],
+  "higher_level_objective": "Deliver the first executable track of schema modernization while preserving shared EntityTypeSchema and SchemaRegistry behavior used across ticket, spec, and rule stores.",
+  "upward_context": [
+    {
+      "entity_urn": "ce://default/ticket/8fdfe135-e3b1-4876-b638-24154edcd78d",
+      "title": "Schema modernization implementation track",
+      "role": "epic"
+    },
+    {
+      "entity_urn": "ce://default/spec/e9c38d24-42cc-4044-8b2c-6811b918530f",
+      "title": "Schema modernization lifecycle and migration",
+      "role": "parent"
+    }
+  ],
+  "target_files": [
+    "memory-api/crates/memory-api/src/model/schema.rs",
+    "memory-api/crates/ticket-api/src/model/schema_registry.rs",
+    "memory-api/crates/ticket-api/src/model/default_schema.rs"
+  ],
+  "decisions": [
+    "Track 1 is the next implementation unit; Track 2, Track 3, Track 4, and Track 6 research stubs remain intentionally gate-deferred.",
+    "Preserve the shared EntityTypeSchema and SchemaRegistry contract across ticket-api, spec-api, and rule-api rather than implementing a ticket-only lifecycle.",
+    "The three divergent Additional Acceptance Criteria sections in ticket 7ef3f8db were merged without loss; byte-identical duplicates in ticket 3eae33fb were reduced to one copy.",
+    "Treat ticket-mcp worktree store resolution and external-write index reconciliation as independent bugs linked for discovery context, not as dependencies of Track 1."
+  ],
+  "non_goals": [
+    "Do not implement Track 2, Track 3, Track 4, or Track 6.",
+    "Do not treat ticket-mcp bug tickets fa2ba34b or 35a60203 as part of the Track 1 code change.",
+    "Do not use ticket-mcp reads as evidence for the currently uncommitted ticket-store repairs; use on-disk files until the reconciliation defect is fixed."
+  ],
+  "context_anchors": [
+    "memory-api/crates/memory-api/src/model/schema.rs",
+    "memory-api/crates/ticket-api/src/model/schema_registry.rs",
+    "memory-api/crates/ticket-api/src/model/default_schema.rs",
+    "transcripts/05-08-2026_ticketschema-state-machines/interview.md"
+  ],
+  "risk_notes": "The working tree has uncommitted changes in .ticket/tickets/7ef3f8db-d4a9-4135-99eb-3c006070a328/description.md and .ticket/tickets/3eae33fb-7289-48fe-8151-7b2077fa810e/description.md plus new manifests for fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3 and 35a60203-0a2c-4dbc-b33d-b645848871f2. Commit or otherwise preserve those ticket-store changes before moving worktrees. ticket-mcp default workspace can resolve to the server cwd rather than an agent worktree, and its index can be stale after file or CLI writes."
+}
