@@ -50,6 +50,33 @@ The `session_handoff` record is the **source of truth** for a produced package a
 - The diagram is omitted only when the workflow graph has no nodes.
 - The diagram is rendered from the handoff record's own workflow snapshot, not hand-authored, so it stays consistent with `handoff.json`.
 
+## Concise summaries and validation (amendment)
+
+The following clarifications and requirements are added to the Handoff Package Schema to support implementation-ready handoffs that carry durable, rendered, concise summaries for target tickets and sessions:
+
+1. Target-ticket and session summaries MAY be author-supplied and MUST have generated defaults. An author can override the generated defaults at creation time.
+
+2. The schema enforces no arbitrary character limits on these summaries; authoring guidance requires concision in intent but not by enforced truncation.
+
+3. The `target_ticket.summary` and `session_summary` fields are REQUIRED only when the handoff's derived `implementation-ready` status is true. For exploratory/non-implementation handoffs the existing permissive behavior remains: summaries are optional and may be empty.
+
+4. Each `target_ticket` entry in the package MUST include, inline, the ticket's durable `current_state` and `acceptance_criteria` (copied at creation time), plus the concise `summary`, the `title/reference` (short-id + title), and an author-provided `why` explaining why the ticket is in-scope.
+
+5. A `session_summary` field is durable and persisted on the handoff record and MUST be rendered in the produced `handoff.md`. The session summary covers completed work, validation results, and remaining risks/blockers.
+
+6. Rendered markdown MUST render the persisted concise `target_ticket.summary` and `session_summary` as-is; rendering MUST NOT fetch or inline a full ticket objective/body text. Ticket-store lookups at render time are limited to resolving `title`/`reference` for the clickable links only.
+
+7. Legacy stored handoff formats and legacy `target_tickets` encodings (for example a plain list of ticket ids) MUST remain readable and deserializable by the schema migration paths.
+
+8. Validation requirements are updated to include checks that cover:
+	- JSON round-trip serialization/deserialization for the record and package fields,
+	- legacy compatibility (old encodings still parse),
+	- presence and rendering of the concise summaries when required,
+	- absence of full objective/body text in rendered summary areas,
+	- rejection of creation when implementation-ready flags are set but required summary fields are missing,
+	- permissive exploratory behavior when not implementation-ready,
+	- rendering the `session_summary` in `handoff.md` and ensuring it reflects persisted content and validation results.
+
 ## Related
 
 - Iteration loop workflow spec (phases, ordering, gates).
