@@ -263,7 +263,9 @@ pub fn parse_registry_v2(text: &str) -> Result<RegistryV2, Vec<RegistryValidatio
                     action: *action,
                 });
             }
-            if entry.category == EntryCategory::Hook && *action != LifecycleAction::Inspect {
+            if (entry.kind == EntryKind::Hook || entry.category == EntryCategory::Hook)
+                && *action != LifecycleAction::Inspect
+            {
                 errors.push(RegistryValidationError::HookEntryHasNonInspectAction {
                     id: entry.id.clone(),
                     action: *action,
@@ -633,6 +635,26 @@ safety = "approval-required"
             e,
             RegistryValidationError::HookEntryHasNonInspectAction { id, action }
                 if id == "example-hook" && *action == LifecycleAction::Install
+        )));
+    }
+
+    #[test]
+    fn registry_hook_kind_with_non_hook_category_rejects_mutating_action() {
+        let text = valid_registry_toml() + r#"
+[[artifact]]
+id = "hook-kind-misc-category"
+category = "misc"
+kind = "hook"
+source_path = "tools/hooks/hook-kind-misc-category"
+owner = "tooling"
+lifecycle = ["install"]
+safety = "approval-required"
+"#;
+        let errors = parse_registry_v2(&text).expect_err("hook kinds may not declare install");
+        assert!(errors.iter().any(|e| matches!(
+            e,
+            RegistryValidationError::HookEntryHasNonInspectAction { id, action }
+                if id == "hook-kind-misc-category" && *action == LifecycleAction::Install
         )));
     }
 
