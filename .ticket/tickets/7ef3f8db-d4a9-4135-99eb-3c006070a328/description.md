@@ -23,6 +23,8 @@ Focused tests prove directionality, inheritance resolution, category containment
 
 ## Additional Acceptance Criteria
 Focused tests cover entry/terminal boundaries, all-node reachability, contained refinement tunnels, allowed and disallowed loops, illegal escape rejection, and five-way concept separation.
+Focused tests prove cancellation direct-entry/terminal behavior, separate ticket/spec/rule local graphs and namespaces, and relation-edge validation independence from lifecycle rules.
+Rule validation proves the governing rule resolves, links the owning spec and validation guards, and preserves separate ticket/spec/rule local graphs and type-ID namespaces.
 
 
 ## Recovered Interview Requirements
@@ -30,15 +32,9 @@ Focused tests cover entry/terminal boundaries, all-node reachability, contained 
 - Reuse directed-lifecycle primitives for ticket, spec, and existing rule schemas while keeping independent local graphs and per-kind type-ID namespaces.
 - Relation-edge validation checks declared relation-kind rules and endpoint existence, but never applies lifecycle categories or lifecycle directionality.
 
-## Additional Acceptance Criteria
-Focused tests prove cancellation direct-entry/terminal behavior, separate ticket/spec/rule local graphs and namespaces, and relation-edge validation independence from lifecycle rules.
-
 
 ## Governing Policy Rule
 Create or link the governing policy rule that introduces [e9c38d24 Schema modernization lifecycle and migration](.spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml) and its lifecycle-validation guards. The rule must apply the shared directed-lifecycle primitives to existing rule schemas without creating a new rule entity.
-
-## Additional Acceptance Criteria
-Rule validation proves the governing rule resolves, links the owning spec and validation guards, and preserves separate ticket/spec/rule local graphs and type-ID namespaces.
 
 
 ## Acceptance Criteria (from planning ticket 9e450826, 2026-08-06)
