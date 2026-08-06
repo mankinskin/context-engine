@@ -29,3 +29,38 @@ Docs updated to match: `.agents/instructions/commit/branch-worktree.instructions
 ## Residual risk (for a follow-up unit)
 
 Repairing the existing broken worktree at `.worktrees/f3c2b8a9-install-ctl` (currently has unpopulated `memory-viewers`, `viewer-api`, `memory-kernel`) is explicitly a SEPARATE unit. The new offline per-submodule-worktree mechanism has not yet been exercised against a real worktree creation in this session (dry-run only, per hard safety constraints) — the next unit that creates or repairs a real worktree should verify empirically that populate_submodules_offline succeeds and does not disturb the main checkout's submodule state.
+
+## Field evidence (2026-08-06): residual risk exercised against a real worktree
+
+The "Residual risk" section above notes that `populate_submodules_offline` had only ever been dry-run, and that a real worktree creation should verify it empirically. A worktree was created and repaired by hand this session (using PLAIN `git worktree add`, NOT `worktree.sh`), which confirms the rationale for the offline per-submodule-worktree mechanism and adds two concrete findings.
+
+### Finding 1 — a linked worktree gets a SEPARATE submodule clone, not the shared one
+
+The submodule git dir for the new worktree resolved to:
+
+- `.git/worktrees/fa2ba34b-worktree-session-proxy/modules/memory-api`
+
+NOT the shared `.git/modules/memory-api`. Because that separate clone is populated from the submodule's own remote, local-only commits are simply absent. The recreated worktree's `memory-api` was missing BOTH:
+
+- `6eb978fb26a73193da96f810211c406f8c0a91a7` — the gitlink the superproject records
+- `67556a49c04c68b74d259f1c7f9702efa0ca9ed0` — `feat(ticket): add linked parts to ticket history`, a local commit ahead of the gitlink
+
+Repair required fetching by local path from the main checkout's clone (`git fetch c:/Users/linus/git/context-engine/memory-api`), then explicitly checking out the target commit. Note that `git submodule update --init` reset the pointer back to the recorded gitlink and the ahead-of-gitlink commit had to be re-checked-out afterwards.
+
+This is direct evidence for required behavior 3: resolving submodule commits from the network cannot work, and the offline mechanism is not merely a performance choice.
+
+### Finding 2 — `git worktree move` is unusable on this repository
+
+Renaming a worktree directory with `git worktree move` fails outright:
+
+```
+fatal: working trees containing submodules cannot be moved or removed
+```
+
+There is no flag that relaxes this. Any rename or relocation of a worktree in this repo must be implemented as remove + recreate on the same branch, followed by the local submodule-object fetch described in Finding 1. This constrains the worktree rename path and is tracked as an acceptance criterion on the managed session-worktree lifecycle ticket.
+
+## Additional Acceptance Criteria
+
+- AC6: Bootstrapping a worktree populates every submodule at the superproject's recorded gitlink with NO network access, and additionally resolves submodule commits that exist only in the main checkout's clone.
+- AC7: A worktree created by `worktree.sh new` resolves the recorded gitlink for all 5 submodules immediately after creation, verified by `git -C <worktree>/<submodule> cat-file -e <recorded-sha>` for each, with networking unavailable or unused.
+- AC8: The script does not depend on `git worktree move` anywhere, and any rename/relocate path it offers is implemented as remove + recreate + local submodule-object fetch.

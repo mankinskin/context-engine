@@ -95,3 +95,36 @@ Persist VS Code Copilot session state through `session-api` using periodic captu
 
 # Remaining Work
 - Optional follow-up: rename `session-capture-stop.sh` script filename to a sync/capture-specific name and keep a compatibility alias for external callers.
+
+# Worktree-Anchored Capture (2026-08-06 refinement)
+
+## Problem
+
+`memory-api/crates/session-api/src/bin/copilot-capture-hook.rs#L66` resolves the session store root from the current working directory. For a long-lived process started by the editor, that cwd is the main checkout and never changes, regardless of where the agent is actually working. Capture therefore writes the session record into the MAIN checkout's `.session` store while the agent's work happens in an assigned worktree.
+
+## Required behavior
+
+The session record lives in the SAME worktree as the work it describes. All active stores — `.session`, `.ticket`, `.spec` — are worktree-local. The main checkout holds no active store; it is a merge target, and its copies become current only when a branch merges.
+
+This is possible because worktree creation is the FIRST thing that happens in a chat session. A chat lifecycle hook initializes the session's worktree before any other tool runs, so by the time capture fires there is always an assigned worktree to write into. There is no window in which a session exists without a worktree, and therefore no bootstrap case requiring a main-checkout fallback.
+
+## Contract
+
+- Store-root resolution is anchored on the session's active worktree assignment, never on `std::env::current_dir()`. The two coincide only by accident, and not at all for a long-lived server process.
+- Capture invoked while the agent works in `.worktrees/<name>` creates or updates the session record inside THAT worktree's `.session` store, and writes nothing into the main checkout.
+- A capture that cannot resolve an assigned worktree does not fall back to the main checkout. Consistent with the existing best-effort contract it warns and degrades, but it must not silently write to a store the agent is not working in.
+- The ordering guarantee is a real dependency, not an assumption: this contract holds only because worktree initialization precedes tool startup. If that ordering is broken, capture degrades rather than choosing a store.
+
+## Relationship to rotation
+
+`SessionWorktreeAssignment.allocation_mode = Rotated` lets a session move between worktrees. Under worktree-local stores, rotation carries the session record with it — the record is written to whichever worktree is currently assigned, and history for a rotated session is reassembled across worktrees rather than read from one central store. Capture is not responsible for that reassembly; it writes to the current assignment.
+
+## Validation
+
+A test invokes the hook with the process working directory set to the main checkout while the session's assignment points at a linked worktree, and asserts the write lands in the worktree store and the main checkout `.session` is untouched.
+
+## Traceability
+
+- Ticket `40349f3f-8d04-4bf6-9241-b79425c10a97` — implementation ticket for this refinement.
+- Ticket `fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3` — the session-anchored resolution protocol that applies the same anchoring at the MCP boundary.
+- Spec `context-engine/mcp/session-anchored-workspace-resolution` (`aff42efb-422b-4abc-8a6c-cd176a3d0d5d`) — the cross-server protocol.

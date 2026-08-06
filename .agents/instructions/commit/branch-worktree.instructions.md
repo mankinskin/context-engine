@@ -85,6 +85,21 @@ If `session_check_in` reports a worktree conflict, or the board shows the ticket
 - Keep the claimed file list current with `board_update_files` when scope shifts.
 - Refresh `board_heartbeat` before the TTL elapses on long tasks.
 
+### Entity stores are worktree-local
+
+`.session`, `.ticket`, and `.spec` are version-controlled, so every worktree carries its own copy. The active copy is the one **inside the session's worktree**. The main checkout's copies are a merge target: they become current only when a branch merges, never by direct edit.
+
+- A session writes entity records only into its own worktree's stores. Writing an active store in the main checkout from an implementation session is forbidden — it forks authority between the store the agent can see and the store it actually wrote.
+- Pass the worktree explicitly on every entity CLI call, e.g. `ticket.exe --workspace <worktree> …`. Omitting it falls back to process working directory, which for a long-lived server or a shell started at the repository root is the main checkout.
+- The MCP servers are started once by the editor and keep the main checkout as their working directory for the whole session. Until session-anchored resolution lands (ticket `fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3`), a bare `workspace: "default"` MCP write resolves to the **main** store and is therefore unsafe from a worktree. Prefer the CLI with an explicit `--workspace`, and never verify a worktree write by reading it back through MCP — that read resolves to the other store and will confirm the wrong file.
+- After any batch of entity writes, confirm the main checkout stayed clean:
+
+```bash
+git -C <repo-root> status --porcelain -- .ticket .spec .session
+```
+
+  Non-empty output means the write went to the wrong store. Stop and relocate it before continuing.
+
 ## 4. Commit
 
 Commits land on the feature branch inside the worktree. [workflow.instructions.md](workflow.instructions.md) still governs staging batches, generated outputs, and message conventions, and [submodule.instructions.md](submodule.instructions.md) still governs deepest-first submodule ordering. Two additions:

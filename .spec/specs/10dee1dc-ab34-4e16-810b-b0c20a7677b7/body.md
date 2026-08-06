@@ -49,3 +49,32 @@ Board entries persisted before these fields existed do not have `session_id`, `w
 - Ticket `e38c258e-4502-4a92-95c7-1dac38fd24b7` — landed the branch-and-worktree isolation protocol this spec makes enforceable/observable.
 - Spec `2a710b29-13e9-40b8-8a53-c0ea366bd0bf` — the branch-and-worktree isolation protocol spec this spec depends on and complements.
 - Instruction file `.agents/instructions/commit/branch-worktree.instructions.md` — the guidance this spec's tooling makes queryable.
+
+## Session Activity Listing Projection (2026-08-06 refinement)
+
+The Discovery section above defines a listing keyed by `worktree_path`. Session-anchored MCP workspace resolution (spec `context-engine/mcp/session-anchored-workspace-resolution`, ticket `fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3`) requires the complementary projection keyed by SESSION, so an agent or human can answer "which sessions exist, what is each working on, and which are still live" without reading the raw store.
+
+### Projection fields
+
+Per session, the listing reports: session id, assigned worktree path, branch, the ticket track (ticket ids associated with the session), an active/inactive flag, and a last-activity timestamp.
+
+### Derived active flag
+
+The active flag MUST be derived, never stored as a second source of truth. It is computed from the worktree assignment `status` (`Active` versus `Superseded`/`Invalidated`) combined with activity recency. Storing it independently would let it drift from the assignment record, which is the authority the resolution protocol resolves against.
+
+### Parameters
+
+- **Filter**: active-only (default) and include-completed. A completed, superseded, or invalidated session is excluded by default and appears only on explicit request.
+- **Detail**: a compact form (id, worktree, active, last activity) is the default so routine listing stays token-cheap; a full form adds the ticket track and branch.
+
+### Absent assignments
+
+Consistent with the Backward Compatibility section, a session with no worktree assignment appears in the listing with those fields explicitly absent — never omitted from the listing, and never defaulted to a misleading value.
+
+### Surface
+
+Exposed on both the CLI and the MCP surface, matching the existing active-worktree discovery surface.
+
+### Validation
+
+Tests cover the derived active flag for each assignment status, default exclusion of completed sessions, both detail levels, and a session lacking a worktree assignment.

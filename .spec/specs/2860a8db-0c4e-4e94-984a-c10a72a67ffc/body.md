@@ -80,3 +80,61 @@ Make dedicated git worktrees the default workflow for new agent sessions in this
 - Related completed work: [e663f9e9 Wire VS Code Copilot stop-hook session capture](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/e663f9e9-ac52-4c0e-8e07-d17c8a15b48d/ticket.toml)
 - Related research: [09b68366 Multi-agent coordination and cross-agent communication protocols](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/09b68366-486e-4e39-a610-1d14676368aa/ticket.toml)
 - Superseded implementation context: [51471c3e Sandbox Manager -- per-assignment worktree and branch isolation](C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/graph_app/context-engine/.ticket/tickets/51471c3e-a088-47d4-9922-ba49d914af17/ticket.toml)
+
+# Session Anchoring and Managed Lifecycle (2026-08-06 refinement)
+
+The Workflow Contract above establishes that worktree assignment is authoritative in `session-api`. Two gaps became visible when that contract met a real multi-worktree session: nothing makes tooling USE the assignment, and nothing manages the assigned worktree over time.
+
+## Session is the only anchor
+
+Workflow Contract item 2 says other tools "must not derive or replace" the assigned path independently. That prohibition has no enforcement point today, so every tool that resolves a workspace from its own process working directory violates it silently.
+
+- The session id is the ONLY legitimate anchor for resolving a workspace. Process working directory is never an acceptable fallback, because a long-lived server process has a cwd unrelated to where the agent is working.
+- A workspace selection that cannot be resolved through a session anchor is REJECTED, not defaulted. Silently choosing a store is the failure mode this rule exists to prevent.
+- Because the resolved scope must be able to distinguish a worktree from the main checkout, it is a typed value rather than a bare path, sufficient to express a policy that BLOCKS mutating work resolved to the main checkout.
+
+The cross-cutting protocol that enforces this at the MCP boundary is specified separately in `context-engine/mcp/session-anchored-workspace-resolution` and implemented by ticket `fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3`.
+
+## Managed lifecycle
+
+The Ownership and Lifecycle and Reuse vs Rotation sections define the STATES an assignment can be in. This section defines the OPERATIONS that move between them.
+
+### Preservation on creation
+
+Creating a session worktree while the main checkout carries uncommitted changes must preserve those changes. Preservation is available as an explicit option (a recorded, restorable save); when it is not requested, the operation reports what it found and requires explicit acknowledgement. Silently stranding uncommitted work in a checkout the agent has just navigated away from is prohibited.
+
+### Reuse by default
+
+A session holds ONE worktree. A creation request for a session that already holds an `Active` assignment returns the existing worktree; allocating an additional worktree for the same session requires an explicit override. This makes Ownership item 1 ("one active session owns exactly one active worktree assignment") operational rather than merely descriptive.
+
+### Rename on topic change
+
+When the subject of the work changes, the worktree and its branch are RENAMED, not replaced. Creating a fresh worktree and abandoning the old one leaves an orphan whose name no longer describes its contents.
+
+Rename is constrained by a hard git limitation in this repository: `git worktree move` fails with `fatal: working trees containing submodules cannot be moved or removed`, and no flag relaxes it. Rename is therefore specified as remove, recreate at the new path on the renamed branch, then fetch submodule objects from the main checkout's clones by local path. The local fetch is mandatory because a linked worktree receives a SEPARATE submodule clone under `.git/worktrees/<name>/modules/<submodule>` that lacks commits existing only in the main checkout.
+
+A rename updates the `SessionWorktreeAssignment` path and branch in place, so the session anchor keeps resolving across the rename instead of pointing at a removed directory. Rename is distinct from rotation: rotation starts a new assignment lineage, rename preserves the existing one.
+
+### Finish
+
+A finish operation takes a session's worktree from work-complete to released: rebase onto the updated `main`, mark the branch ready to merge, remove the worktree. Consistent with repository policy, finish never merges into `main` and never commits to `main`. Removing a worktree with uncommitted or unpushed work is refused unless explicitly forced, and the refusal names what would be lost.
+
+## Additional Acceptance Criteria
+
+8. This spec defines the session id as the sole workspace anchor and prohibits process-working-directory fallback, with unresolvable selections rejected rather than defaulted.
+9. This spec defines the resolved scope as typed, sufficient to distinguish repository root, worktree, and main checkout, and to support blocking mutating work in the main checkout.
+10. This spec defines preservation of uncommitted main-checkout changes on worktree creation, with no silent-stranding path.
+11. This spec defines one-worktree-per-session reuse as the default, with explicit override required for additional allocation.
+12. This spec defines rename-on-topic-change as remove plus recreate plus local submodule-object fetch, updates the assignment in place, and distinguishes rename from rotation.
+13. This spec defines a finish operation that rebases, marks ready to merge, and removes, without merging or committing to `main`, and refuses to discard uncommitted work unless forced.
+
+## Additional Traceability
+
+- Lifecycle implementation: ticket `ff83caf7-059b-4f2e-a0fb-eaa7757096a8` — Managed session-worktree lifecycle: preserve, reuse, rename, and finish.
+- Resolution protocol: ticket `fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3` — session-anchored MCP workspace resolution.
+- Bootstrap defect: ticket `503b9711-3f69-4765-88f9-83779b71c8f8` — offline submodule population, which carries the field evidence for the rename constraint.
+- Design source: `transcripts/06-08-2026_worktree-session-proxy/merged.clean.md`.
+
+## Known defect in this spec
+
+The Traceability links above use absolute paths under `C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/...`, which do not resolve in this repository and violate the repository's repo-root-relative reference policy. They are left unmodified here to keep this refinement scoped; correcting them is follow-up work.
