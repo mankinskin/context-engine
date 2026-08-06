@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "workspace_session_id": "470fb360-8426-4f79-bdda-8ba89a81cf4b",
+  "workspace_slug": "default",
+  "created_at": "2026-08-06T00:49:43.154019300Z",
+  "updated_at": "2026-08-06T01:49:52.042543500Z",
+  "active_run_id": "6d3289cf-26b6-4899-afe8-a69c848f1860",
+  "runs": [
+    {
+      "run_id": "8552a51e-5188-4a78-b4d6-fff4e995d76c",
+      "captured_session_id": "470fb360-8426-4f79-bdda-8ba89a81cf4b",
+      "started_at": "2026-08-06T00:49:43.154019300Z"
+    },
+    {
+      "run_id": "6d3289cf-26b6-4899-afe8-a69c848f1860",
+      "predecessor_run_id": "8552a51e-5188-4a78-b4d6-fff4e995d76c",
+      "captured_session_id": "470fb360-8426-4f79-bdda-8ba89a81cf4b",
+      "started_at": "2026-08-06T01:49:52.042543500Z"
+    }
+  ],
+  "pinned_entities": [
+    {
+      "urn": "ce://default/ticket/742dbc65-a100-4278-9274-7d99a3e2afc4",
+      "kind": "ticket",
+      "relation": "reviewed",
+      "reason": "Acceptance criteria reviewed; durable review part records evidence and done recommendation.",
+      "pinned_at": "2026-08-06T01:46:56.648873300Z",
+      "last_used_at": "2026-08-06T01:46:56.648873300Z"
+    },
+    {
+      "urn": "ce://default/ticket/ba8f5528-5af3-4de2-8904-442a4691854a",
+      "kind": "ticket",
+      "relation": "reviewed",
+      "reason": "Acceptance criteria reviewed; durable review part records evidence and done recommendation.",
+      "pinned_at": "2026-08-06T01:46:56.674669600Z",
+      "last_used_at": "2026-08-06T01:46:56.674669600Z"
+    }
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "node_id": "review-742dbc65",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Review upward-context handoff package acceptance criteria",
+        "created_at": "2026-08-06T01:47:01.602750900Z",
+        "updated_at": "2026-08-06T01:47:11.992930900Z",
+        "ticket_urn": "ce://default/ticket/742dbc65-a100-4278-9274-7d99a3e2afc4",
+        "cached_ticket_title": "[session-api][handoff] Model and enforce upward context for implementation-ready handoffs"
+      },
+      {
+        "node_id": "review-ba8f5528",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Review rendered handoff narrative acceptance criteria",
+        "created_at": "2026-08-06T01:47:01.602750900Z",
+        "updated_at": "2026-08-06T01:47:08.505958300Z",
+        "ticket_urn": "ce://default/ticket/ba8f5528-5af3-4de2-8904-442a4691854a",
+        "cached_ticket_title": "[session-api][handoff] Render resolved ticket narrative and upward context in handoff markdown"
+      }
+    ]
+  }
+}

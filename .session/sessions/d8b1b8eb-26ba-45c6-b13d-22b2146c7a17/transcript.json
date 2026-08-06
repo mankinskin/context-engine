@@ -1,0 +1,790 @@
+{
+  "schema_version": 1,
+  "session_id": "d8b1b8eb-26ba-45c6-b13d-22b2146c7a17",
+  "captured_at": "2026-08-06T09:19:45.229Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "## Last Session Outcome\r\n\r\nThe handoff turned out to describe work that was **already merged**. Its two target tickets sat `in-review` awaiting verification, not implementation — so \"picking it up\" meant closing the review loop, which surfaced one genuine gap.\r\n\r\n### Delegation summary\r\n\r\n| Unit | Model | Result |\r\n|---|---|---|\r\n| Gate: resolve ticket state | GPT-5 mini | Both target tickets `in-review`; 4 unstarted siblings found |\r\n| Probe: tree + merge evidence | GPT-5 mini | `26c7ce7c`/`8512dd35` on `main`; validation passed; 52 dirty files all store artifacts |\r\n| Probe: read A/B/C/D tickets | GPT-5 mini | Four independent tickets, decision-ready briefs |\r\n| Review 2 in-review tickets | GPT-5.6 Terra | `ba8f5528` all 5 ACs met; `742dbc65` **AC1 unmet** |\r\n| Worktree bootstrap (+recovery) | GPT-5 mini | Timed out at 600s, recovered; worktree ready |\r\n| Implement AC1 fix | GPT-5.6 Terra | +21/-0 test-only; 262 tests pass |\r\n| Commit on branch | GPT-5 mini | Submodule `5802526`, outer `9505b147` |\r\n| Guarded ff-only merge | GPT-5.6 Terra | **Aborted** on precondition violation |\r\n| Record verdicts | GPT-5 mini | Appended to both tickets |\r\n\r\n### What changed\r\n\r\n`742dbc65`'s AC1 required round-trip tests proving `higher_level_objective` and `upward_context` survive JSON persistence. The production fields existed, but no test ever asserted them. handoff_folder_storage.rs now asserts the prose objective plus the full **ordered** ancestor chain, with explicit `entity_urn`/`title`/`role` checks. 262 tests pass.\r\n\r\n`ba8f5528` passed all five ACs; its AC5 deviation (historical exemplar `a9519525` regenerated-and-diffed but not overwritten) is correct — a recorded decision declares that artifact immutable.\r\n\r\n## Blockers — needs your decision\r\n\r\n**1. Merge is deliberately deferred.** The guard aborted rather than fast-forwarding, and it was right to: `main`'s memory-api submodule holds **another agent's uncommitted tracked source changes** (submodule HEAD `ff67db64`, not my commit), and the dirty count grew 52 → 62 *during* this session — .feedback appeared, .ticket went 45 → 50. A concurrent agent is actively writing. Merging would have clobbered their work.\r\n\r\nMy work is safe on `agent/742dbc65-handoff-roundtrip-assertions` (worktree intact). It merges cleanly once that agent lands. Tickets stay `in-review` — and note the store *enforces* this: `ba8f5528` cannot close while `742dbc65` is open.\r\n\r\n**2. Direction needed on the four remaining tickets.** All independent, none started:\r\n\r\n- **D `59abe2da`** — spec cleanup for `5e52039d` (traceability links, `is_implementation_ready` wording). Small, directly in-scope. **My recommendation: do this next.**\r\n- **C `ba602b61`** — coordination/reconciliation doc. Small, non-blocking.\r\n- **B `c321dc52`** — ticket-mirror failure retry + metrics + Slack/email alerting. This is **materially outside \"handoff improvements\"** — it's observability infrastructure. Worth confirming you want it in this epic.\r\n- **A `30347ae7`** — opt-in legacy handoff migration. This **partly contradicts** the handoff's own recorded non-goals (\"Legacy handoff migration or backfill\", \"Historical handoff a9519525 remains immutable\"). It reconciles the tension by running sandboxed with zero live-store mutation — but that reconciliation was never explicitly approved. Confirm or cancel.\r\n\r\nProceed with D, and retry the merge once the concurrent agent's memory-api changes land.",
+      "captured_at": "2026-08-06T08:52:53.244Z",
+      "event_meta": {
+        "event_id": "3b785923-2b80-486b-92fa-8266c2c28930",
+        "parent_event_id": "cca97ed1-6f0f-4239-951b-1537fe3f7ca7",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "Proceeding with D. Two independent read-only probes first — the pre-dispatch gate for `59abe2da`, and a fresh merge-precondition check on the concurrent agent's state.",
+      "captured_at": "2026-08-06T08:53:52.504Z",
+      "event_meta": {
+        "event_id": "1332f5b2-594e-4bbd-a795-38df88a7b634",
+        "parent_event_id": "79809e8a-33f8-49b2-a209-1c93501bd1e7",
+        "event_type": "assistant.message",
+        "message_id": "c4fb00d6-8772-45dd-a92d-134d6927feea",
+        "reasoning_text": "I need to orchestrate ticket D and handle the merge retry once the concurrent agent's memory-api changes are ready. First, I'll set up a gate check using the Explore Agent to verify ticket 59abe2da is in a dispatchable state, confirm the spec 5e52039d content, and assess whether the merge preconditions are met.\n\nI can run the gate check and the merge-precondition probe in parallel since they're independent read-only operations. Once the gate passes, I'll bootstrap the worktree, dispatch the implementation work (which involves editing the spec store), validate the changes, and commit them. Then I'll retry the merge check. The existing branch worktree is still available, so I'm ready to kick off both probes now.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_015zkcCoBAWk64QXJfmCv8dB",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Explore Agent",
+              "model": "GPT-5 mini (copilot)",
+              "description": "Gate ticket 59abe2da",
+              "prompt": "You are acting as the PRE-DISPATCH GATE for an Implement delegation. You are context-isolated: you inherit nothing. Everything you need is below.\n\nRepository root: c:/Users/linus/git/context-engine (Windows, use Git Bash / unix-style forward-slash paths).\n\nHARD CEILING: at most 5 turns and at most 10 tool calls. If you cannot reach a verdict within that, return {pass: false, blocker: \"gate exceeded its 5-turn/10-tool-call ceiling before reaching a verdict\"}.\n\n## Target of the gate\n\nTicket id: 59abe2da (8-char prefix; full UUID starts with 59abe2da). Ticket workspace: \"default\".\nIt is described to me as: \"spec cleanup for spec 5e52039d — traceability links, and wording around `is_implementation_ready`\".\n\nSpec id: 5e52039d (full UUID 5e52039d-aabc-434d-bdf3-eca63e312476), slug `agent-workflow/handoff-package-schema`, title \"Handoff Package Schema\". Its store files live under `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/` (expect `spec.toml` and `body.md`).\n\n## Gates to run (Implement delegation gate set) — ALL must pass\n\n1. **Ticket exists and is dispatchable.** Use `mcp_ticket-mcp_get_ticket` with `{\"workspace\":\"default\",\"id\":\"59abe2da\",\"view\":\"plan\"}`. BLOCK if the ticket does not resolve, or if its state is not one of {new, ready, open, in-implementation}. Report the exact state string you observe.\n2. **Spec coverage exists.** Confirm spec 5e52039d resolves via `mcp_spec-mcp_spec_get` with `{\"id\":\"5e52039d\",\"full\":true}`. BLOCK if it does not resolve.\n3. **Target paths exist.** Confirm the on-disk spec files exist under `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/` (use `mcp_fs-mcp_fs_list_dir` on that directory). BLOCK if the directory or its `spec.toml` is missing. Report every filename found.\n4. **Validation commands are present and non-empty.** From the ticket's acceptance criteria, determine what would validate this work. Because this is a spec-store edit rather than a Rust code change, an acceptable validation set is a spec-store health/read-back check plus any repo command the ticket itself names. BLOCK only if the ticket names NO way to verify its own acceptance criteria at all.\n\n## What to return — EXACTLY this shape, nothing else\n\nIf all gates pass:\n{\n  pass: true,\n  ticket: { id: <full uuid>, short_id: \"59abe2da\", state: \"<exact state>\", title: \"<title>\", manifest_path: \"<repo-root-relative forward-slash path to ticket.toml>\" },\n  acceptance_criteria: [ \"<AC1 verbatim>\", \"<AC2 verbatim>\", ... ],\n  ticket_description: \"<the FULL markdown description body, verbatim — do not summarize it>\",\n  spec: { id: \"5e52039d-aabc-434d-bdf3-eca63e312476\", slug: \"...\", title: \"...\", files: [\"<each filename found in the spec dir>\"] },\n  spec_body_excerpt: \"<the sections of body.md that mention traceability, related tickets/specs, or `is_implementation_ready` — quote them verbatim with their surrounding headings; if body.md is large, quote only those regions plus a list of ALL top-level headings>\",\n  spec_toml_excerpt: \"<the fields of spec.toml relevant to traceability: ticket_ids, related specs, status, and any link arrays — verbatim>\",\n  paths: [ \"<confirmed repo-root-relative forward-slash paths that this work will touch>\" ],\n  validation_cmds: [ \"<exact commands>\" ]\n}\n\nIf ANY gate fails:\n{ pass: false, blocker: \"<one concrete, actionable reason — not a list, not a hedge>\" }\n\nDo not implement anything. Do not edit any file. Read-only."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01M6eMQpfXeJUx8raVx26kqT",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Explore Agent",
+              "model": "GPT-5 mini (copilot)",
+              "description": "Check merge preconditions",
+              "prompt": "You are a read-only probe. You are context-isolated: you inherit nothing. Everything you need is below. Do NOT edit, stage, commit, merge, reset, or checkout anything. Read-only git inspection only.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; use Git Bash, unix-style forward-slash paths).\n\n## Background you need\n\nThis repository has a git submodule at `memory-api/`. A previous session created a feature branch `agent/742dbc65-handoff-roundtrip-assertions` in a linked worktree under `.worktrees/`. That branch is finished and committed (submodule commit `5802526`, outer commit `9505b147`), but its fast-forward merge into `main` was deliberately ABORTED because a *concurrent agent* had uncommitted tracked source changes inside the `memory-api/` submodule on `main` (submodule HEAD was observed at `ff67db64`, and the repo-wide dirty file count grew from 52 to 62 during that session).\n\nI need to know whether that concurrent agent has since landed their work, i.e. whether it is now safe to retry the guarded fast-forward merge.\n\n## What to determine\n\nRun bounded, read-only commands (prefer `mcp_compact-termi_run`, and prefix with `rtk` where it helps compactness, e.g. `rtk git status --short`). Answer these questions:\n\n1. **Outer repo state on main.** What branch is the main checkout at `c:/Users/linus/git/context-engine` currently on? Run `git status --short` and report the TOTAL count of dirty entries, plus a breakdown by top-level directory (e.g. `.ticket/`, `.spec/`, `.session/`, `.feedback/`, `memory-api/`, everything else).\n2. **Submodule working-tree cleanliness.** Inside `memory-api/`, run `git status --short` and report: the current HEAD commit short sha, the current branch (or detached), and whether there are any dirty entries. CRITICALLY: classify the dirty entries into (a) tracked SOURCE files (`.rs`, `.toml`, `.ts`, `.md` under `crates/`/`src`/`tools/`) versus (b) store artifacts (anything under `.ticket/`, `.spec/`, `.session/`, `.test/`, `.feedback/`, `target/`). List the actual paths for category (a) — those are the blocking ones.\n3. **Is the concurrent agent's work landed?** Report `git -C memory-api log --oneline -5` and state whether the submodule HEAD has moved past `ff67db64`.\n4. **Does my branch still exist and is it still a fast-forward?** Run `git worktree list`, `git branch --list 'agent/*'`, and `git merge-base --is-ff-only`-equivalent check WITHOUT merging: specifically run `git merge-base --is-ancestor main agent/742dbc65-handoff-roundtrip-assertions` and report the exit code (0 = main is an ancestor of the branch = fast-forward still possible; non-zero = main has diverged). Also report `git log --oneline main..agent/742dbc65-handoff-roundtrip-assertions` and `git log --oneline agent/742dbc65-handoff-roundtrip-assertions..main`.\n5. **Worktree path.** Report the exact filesystem path of the worktree hosting `agent/742dbc65-handoff-roundtrip-assertions`, if it still exists.\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `outer_branch`: <name>\n- `outer_dirty_total`: <n>\n- `outer_dirty_by_dir`: <dir: count, ...>\n- `submodule_head`: <short sha> (<branch or \"detached\">)\n- `submodule_dirty_total`: <n>\n- `submodule_blocking_source_files`: [<paths>] or \"none\"\n- `submodule_recent_log`: <5 lines>\n- `concurrent_work_landed`: yes | no | unclear — plus ONE sentence of evidence\n- `branch_exists`: yes | no\n- `ff_possible`: yes | no (from the --is-ancestor exit code, state the code)\n- `commits_ahead`: <oneline list of main..branch>\n- `commits_behind`: <oneline list of branch..main>\n- `worktree_path`: <path or \"missing\">\n- `verdict`: SAFE_TO_MERGE | STILL_BLOCKED | DIVERGED — one sentence of justification\n\nNothing else. No narration."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "user",
+      "content": "You are a read-only probe. You are context-isolated: you inherit nothing. Everything you need is below. Do NOT edit, stage, commit, merge, reset, or checkout anything. Read-only git inspection only.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; use Git Bash, unix-style forward-slash paths).\n\n## Background you need\n\nThis repository has a git submodule at `memory-api/`. A previous session created a feature branch `agent/742dbc65-handoff-roundtrip-assertions` in a linked worktree under `.worktrees/`. That branch is finished and committed (submodule commit `5802526`, outer commit `9505b147`), but its fast-forward merge into `main` was deliberately ABORTED because a *concurrent agent* had uncommitted tracked source changes inside the `memory-api/` submodule on `main` (submodule HEAD was observed at `ff67db64`, and the repo-wide dirty file count grew from 52 to 62 during that session).\n\nI need to know whether that concurrent agent has since landed their work, i.e. whether it is now safe to retry the guarded fast-forward merge.\n\n## What to determine\n\nRun bounded, read-only commands (prefer `mcp_compact-termi_run`, and prefix with `rtk` where it helps compactness, e.g. `rtk git status --short`). Answer these questions:\n\n1. **Outer repo state on main.** What branch is the main checkout at `c:/Users/linus/git/context-engine` currently on? Run `git status --short` and report the TOTAL count of dirty entries, plus a breakdown by top-level directory (e.g. `.ticket/`, `.spec/`, `.session/`, `.feedback/`, `memory-api/`, everything else).\n2. **Submodule working-tree cleanliness.** Inside `memory-api/`, run `git status --short` and report: the current HEAD commit short sha, the current branch (or detached), and whether there are any dirty entries. CRITICALLY: classify the dirty entries into (a) tracked SOURCE files (`.rs`, `.toml`, `.ts`, `.md` under `crates/`/`src`/`tools/`) versus (b) store artifacts (anything under `.ticket/`, `.spec/`, `.session/`, `.test/`, `.feedback/`, `target/`). List the actual paths for category (a) — those are the blocking ones.\n3. **Is the concurrent agent's work landed?** Report `git -C memory-api log --oneline -5` and state whether the submodule HEAD has moved past `ff67db64`.\n4. **Does my branch still exist and is it still a fast-forward?** Run `git worktree list`, `git branch --list 'agent/*'`, and `git merge-base --is-ff-only`-equivalent check WITHOUT merging: specifically run `git merge-base --is-ancestor main agent/742dbc65-handoff-roundtrip-assertions` and report the exit code (0 = main is an ancestor of the branch = fast-forward still possible; non-zero = main has diverged). Also report `git log --oneline main..agent/742dbc65-handoff-roundtrip-assertions` and `git log --oneline agent/742dbc65-handoff-roundtrip-assertions..main`.\n5. **Worktree path.** Report the exact filesystem path of the worktree hosting `agent/742dbc65-handoff-roundtrip-assertions`, if it still exists.\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `outer_branch`: <name>\n- `outer_dirty_total`: <n>\n- `outer_dirty_by_dir`: <dir: count, ...>\n- `submodule_head`: <short sha> (<branch or \"detached\">)\n- `submodule_dirty_total`: <n>\n- `submodule_blocking_source_files`: [<paths>] or \"none\"\n- `submodule_recent_log`: <5 lines>\n- `concurrent_work_landed`: yes | no | unclear — plus ONE sentence of evidence\n- `branch_exists`: yes | no\n- `ff_possible`: yes | no (from the --is-ancestor exit code, state the code)\n- `commits_ahead`: <oneline list of main..branch>\n- `commits_behind`: <oneline list of branch..main>\n- `worktree_path`: <path or \"missing\">\n- `verdict`: SAFE_TO_MERGE | STILL_BLOCKED | DIVERGED — one sentence of justification\n\nNothing else. No narration.",
+      "captured_at": "2026-08-06T08:53:57.378Z",
+      "event_meta": {
+        "event_id": "16881e83-9508-4539-9dd4-ad28a4a8dd36",
+        "parent_event_id": "7b03234a-a189-40af-ac6f-8a5db056102b",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_015zkcCoBAWk64QXJfmCv8dB"
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "user",
+      "content": "You are acting as the PRE-DISPATCH GATE for an Implement delegation. You are context-isolated: you inherit nothing. Everything you need is below.\n\nRepository root: c:/Users/linus/git/context-engine (Windows, use Git Bash / unix-style forward-slash paths).\n\nHARD CEILING: at most 5 turns and at most 10 tool calls. If you cannot reach a verdict within that, return {pass: false, blocker: \"gate exceeded its 5-turn/10-tool-call ceiling before reaching a verdict\"}.\n\n## Target of the gate\n\nTicket id: 59abe2da (8-char prefix; full UUID starts with 59abe2da). Ticket workspace: \"default\".\nIt is described to me as: \"spec cleanup for spec 5e52039d — traceability links, and wording around `is_implementation_ready`\".\n\nSpec id: 5e52039d (full UUID 5e52039d-aabc-434d-bdf3-eca63e312476), slug `agent-workflow/handoff-package-schema`, title \"Handoff Package Schema\". Its store files live under `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/` (expect `spec.toml` and `body.md`).\n\n## Gates to run (Implement delegation gate set) — ALL must pass\n\n1. **Ticket exists and is dispatchable.** Use `mcp_ticket-mcp_get_ticket` with `{\"workspace\":\"default\",\"id\":\"59abe2da\",\"view\":\"plan\"}`. BLOCK if the ticket does not resolve, or if its state is not one of {new, ready, open, in-implementation}. Report the exact state string you observe.\n2. **Spec coverage exists.** Confirm spec 5e52039d resolves via `mcp_spec-mcp_spec_get` with `{\"id\":\"5e52039d\",\"full\":true}`. BLOCK if it does not resolve.\n3. **Target paths exist.** Confirm the on-disk spec files exist under `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/` (use `mcp_fs-mcp_fs_list_dir` on that directory). BLOCK if the directory or its `spec.toml` is missing. Report every filename found.\n4. **Validation commands are present and non-empty.** From the ticket's acceptance criteria, determine what would validate this work. Because this is a spec-store edit rather than a Rust code change, an acceptable validation set is a spec-store health/read-back check plus any repo command the ticket itself names. BLOCK only if the ticket names NO way to verify its own acceptance criteria at all.\n\n## What to return — EXACTLY this shape, nothing else\n\nIf all gates pass:\n{\n  pass: true,\n  ticket: { id: <full uuid>, short_id: \"59abe2da\", state: \"<exact state>\", title: \"<title>\", manifest_path: \"<repo-root-relative forward-slash path to ticket.toml>\" },\n  acceptance_criteria: [ \"<AC1 verbatim>\", \"<AC2 verbatim>\", ... ],\n  ticket_description: \"<the FULL markdown description body, verbatim — do not summarize it>\",\n  spec: { id: \"5e52039d-aabc-434d-bdf3-eca63e312476\", slug: \"...\", title: \"...\", files: [\"<each filename found in the spec dir>\"] },\n  spec_body_excerpt: \"<the sections of body.md that mention traceability, related tickets/specs, or `is_implementation_ready` — quote them verbatim with their surrounding headings; if body.md is large, quote only those regions plus a list of ALL top-level headings>\",\n  spec_toml_excerpt: \"<the fields of spec.toml relevant to traceability: ticket_ids, related specs, status, and any link arrays — verbatim>\",\n  paths: [ \"<confirmed repo-root-relative forward-slash paths that this work will touch>\" ],\n  validation_cmds: [ \"<exact commands>\" ]\n}\n\nIf ANY gate fails:\n{ pass: false, blocker: \"<one concrete, actionable reason — not a list, not a hedge>\" }\n\nDo not implement anything. Do not edit any file. Read-only.",
+      "captured_at": "2026-08-06T08:53:57.384Z",
+      "event_meta": {
+        "event_id": "5915b760-df67-495a-90db-6f15f13aa7b9",
+        "parent_event_id": "16881e83-9508-4539-9dd4-ad28a4a8dd36",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_015zkcCoBAWk64QXJfmCv8dB"
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "I'll check the ticket, try the spec lookup, list the spec directory, and read the spec files.",
+      "captured_at": "2026-08-06T08:54:16.513Z",
+      "event_meta": {
+        "event_id": "282d511e-cd24-4195-be71-b04b3c3fcdb3",
+        "parent_event_id": "eae6bf2e-1182-4df8-89c4-29d4e9a72bf4",
+        "event_type": "assistant.message",
+        "message_id": "2db4cb03-908b-4c1b-88b6-c080e3e9585d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_yfUn5V0FdE8Nrjjt4ozq245j",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "caller_model": "gpt-5-mini",
+              "id": "59abe2da",
+              "parts": null,
+              "view": "plan",
+              "workspace": "default"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015zkcCoBAWk64QXJfmCv8dB"
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "I'll run read-only git and status checks in the repo and the `memory-api` submodule to gather the requested facts.",
+      "captured_at": "2026-08-06T08:54:40.179Z",
+      "event_meta": {
+        "event_id": "f4f9e273-d569-49b3-adba-fa1494e2f7fd",
+        "parent_event_id": "b0d585cf-1126-4432-9369-723e44984575",
+        "event_type": "assistant.message",
+        "message_id": "2c5afdc1-db17-42e1-a88f-5c5a99f564b0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_aHTaZbaR9jsrioGMKvfu7P2a",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/context-engine || cd c:/Users/linus/git/context-engine || exit 1\nset -o pipefail\necho '===OUTER_BRANCH==='\ngit rev-parse --abbrev-ref HEAD\n\necho '===OUTER_STATUS_LINES==='\ngit status --short | sed -n '1,200p'\n\necho '===OUTER_STATUS_COUNT==='\ngit status --short | wc -l\n\necho '===OUTER_DIR_BREAKDOWN==='\n# print top-level path for each status entry\ngit status --short | sed -E 's/^.{2} *//' | awk -F'/' '{print $1}' | sort | uniq -c | sed 's/^ *//'\n\necho '===SUBMODULE_HEAD==='\n(cd memory-api && git rev-parse --short HEAD)\n\necho '===SUBMODULE_BRANCH==='\n(cd memory-api && (git symbolic-ref --short -q HEAD || echo \"(detached)\"))\n\necho '===SUBMODULE_STATUS_LINES==='\n(cd memory-api && git status --short | sed -n '1,200p')\n\necho '===SUBMODULE_STATUS_COUNT==='\n(cd memory-api && git status --short | wc -l)\n\necho '===SUBMODULE_DIRTY_PATHS==='\n(cd memory-api && git status --short | sed -E 's/^.{2} *//' | sed -n '1,500p')\n\necho '===SUBMODULE_RECENT_LOG==='\n(cd memory-api && git log --oneline -5)\n\necho '===SUBMODULE_FF_CHECK_FF67==='\n# is ff67db64 ancestor of current HEAD?\n(cd memory-api && git merge-base --is-ancestor ff67db64 HEAD; echo exit:$?)\n\necho '===WORKTREE_LIST==='\ngit worktree list --porcelain\n\necho '===BRANCH_LIST_AGENT==='\ngit branch --list 'agent/*' --format='%(refname:short)'\n\necho '===MERGEBASE_IS_ANCESTOR==='\n# check if main is ancestor of the agent branch\ngit merge-base --is-ancestor main refs/heads/agent/742dbc65-handoff-roundtrip-assertions; echo exit:$?\n\necho '===COMMITS_AHEAD_MAIN_TO_BRANCH==='\ngit log --oneline main..agent/742dbc65-handoff-roundtrip-assertions | sed -n '1,200p'\n\necho '===COMMITS_BEHIND_BRANCH_TO_MAIN==='\ngit log --oneline agent/742dbc65-handoff-roundtrip-assertions..main | sed -n '1,200p'\n\n# find worktree path for the agent branch\necho '===WORKTREE_PATH_FOR_AGENT==='\n# parse porcelain worktree list\ngit worktree list --porcelain | awk '/worktree /{p=$2} /branch refs\\/heads\\/agent\\/742dbc65-handoff-roundtrip-assertions/{print p}' || echo 'missing'\n\n",
+              "explanation": "gather git status, submodule status, logs, and worktree info for analysis"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015zkcCoBAWk64QXJfmCv8dB"
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "- `outer_branch`: main\n- `outer_dirty_total`: 66\n- `outer_dirty_by_dir`: .spec: 1, .feedback: 1, .session: 11, .ticket: 52, memory-api: 1\n- `submodule_head`: ff67db64 (main)\n- `submodule_dirty_total`: 2\n- `submodule_blocking_source_files`: none\n- `submodule_recent_log`: ff67db64 (HEAD -> main, agent/25b5f3e7-handoff-upward-context) fix(session-api): link handoff context\n78d77f19 feat(session-api): render structured handoff context\n07b45d4d feat(session-api): require upward context on implementation-ready handoffs\nc4411dcf feat(session-api): backfill transcript ticket signals\n086ac5b4 (origin/main, origin/HEAD) fix(rule-cli): retarget install_contract_sync doc source from deleted .rule store\n- `concurrent_work_landed`: no — memory-api HEAD remains ff67db64 and the submodule shows only two dirty `.ticket` artifact files, no tracked source commits landed.\n- `branch_exists`: yes\n- `ff_possible`: yes (exit:0)\n- `commits_ahead`: 9505b147 chore(memory-api): bump submodule pointer for handoff round-trip assertions\n- `commits_behind`: \n- `worktree_path`: /mnt/c/Users/linus/git/context-engine/.worktrees/742dbc65-handoff-roundtrip-assertions\n- `verdict`: SAFE_TO_MERGE — `main` is an ancestor of `agent/742dbc65-handoff-roundtrip-assertions` (exit 0) and the `memory-api` working tree has no tracked source-file modifications (only store `.ticket` files).",
+      "captured_at": "2026-08-06T08:55:27.498Z",
+      "event_meta": {
+        "event_id": "00100728-bd3d-404c-94ab-3c91291767b3",
+        "parent_event_id": "b6d0831f-979f-4874-bd03-1fee86af780b",
+        "event_type": "assistant.message",
+        "message_id": "1e84495a-6181-4afd-9341-432c71eda0a6",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_015zkcCoBAWk64QXJfmCv8dB"
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Gate passed for D. The merge probe says SAFE, but it left one thing unverified that decides whether merging is safe or destructive: whether my submodule commit `5802526` is a *descendant* of the concurrent agent's `ff67db64`. If it is not, fast-forwarding the outer repo would silently regress `memory-api` past their work. Probing that before touching `main`, and bootstrapping D's worktree in parallel.",
+      "captured_at": "2026-08-06T08:58:03.139Z",
+      "event_meta": {
+        "event_id": "7643a772-924b-4a51-a3a0-1aedfba3bf0a",
+        "parent_event_id": "ea89f3d2-6694-4462-90eb-282b4cb69e8f",
+        "event_type": "assistant.message",
+        "message_id": "36b18ccc-d1cb-4632-b70b-a5c7faef51ce",
+        "reasoning_text": "The merge probe is now showing SAFE_TO_MERGE with only .ticket artifacts in the dirty submodule state, which is a change from the earlier report about uncommitted tracked source changes. However, I need to be careful here—the submodule HEAD is at ff67db64, which isn't my commit 5802526. When I fast-forward main to my outer branch commit 9505b147, it will update the recorded submodule pointer to point to 5802526.\n\nThe real question is whether 5802526 is actually reachable from ff67db64, or if it's on a separate branch that hasn't been merged into memory-api's main. Looking at the submodule log, ff67db64 is the current HEAD on main, but 5802526 doesn't appear in the recent history—it might be sitting on a different branch entirely. That would mean fast-forwarding the outer repo would point the submodule at a commit that's not on memory-api's main branch, which is risky even though submodule pointers can technically point to any reachable commit. The linked worktree submodule shares the object store through gitdir linkage, so the commit should be accessible, but the pointer would be detached from the main branch.\n\nThe concurrent agent has already committed to memory-api's main (ff67db64 is HEAD->main), and if 5802526 isn't a descendant of ff67db64, merging would silently revert their work—exactly the destructive outcome we're trying to avoid. I need to run a targeted, read-only probe to check submodule ancestry before proceeding with the merge.\n\nFor Ticket D, I'm planning two parallel units: first, the ancestry probe on the submodule; second, bootstrapping a worktree for D to implement the spec cleanup. Since spec edits live in `.spec/` at the repo root, worktree isolation applies to the outer repo. The wrinkle is that `.spec/` is shared mutable state with 66 dirty files already on main, but editing specs in a worktree should be fine—though the MCP server's workspace root might be pinned to the main checkout, which could complicate how spec-mcp tools resolve the workspace path.\n\nThe spec-mcp tools available are read-only, so direct file edits are necessary. Rather than manually editing `.spec/specs/<id>/body.md` and `spec.toml` (which risks breaking invariants like the history.ndjson that the CLI maintains), I should use the spec CLI with an explicit store root pointing at the worktree.\n\nFor ticket D's migration plan, I need to add the linked commits (25b5f3e7, 742dbc65) plus ba8f5528 and 59abe2da to the spec_toml ticket_ids list to improve traceability. I'll run the submodule ancestry probe and worktree bootstrap in parallel since the bootstrap has no dependencies, then move into implementation.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0133PbLQPUfV2vtxNAiP9N6K",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Explore Agent",
+              "description": "Submodule ancestry check",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are a read-only probe answering ONE decisive question. You are context-isolated: everything you need is below. Do NOT edit, stage, commit, merge, checkout, reset, or fetch. Read-only git inspection only.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; use Git Bash / unix-style forward-slash paths). Prefer `mcp_compact-termi_run`.\n\n## Background\n\n`memory-api/` is a git submodule of the repository above.\n\n- The main checkout's submodule `memory-api/` currently has HEAD at commit `ff67db64` (on submodule branch `main`). That commit and its ancestors (`78d77f19`, `07b45d4d`, `c4411dcf`) are ANOTHER agent's work.\n- A previous session produced submodule commit `5802526` on some branch, and an OUTER-repo commit `9505b147` (\"chore(memory-api): bump submodule pointer for handoff round-trip assertions\") on outer branch `agent/742dbc65-handoff-roundtrip-assertions`. That outer commit records `5802526` as the submodule pointer.\n- There is a linked worktree at `.worktrees/742dbc65-handoff-roundtrip-assertions` (absolute: `c:/Users/linus/git/context-engine/.worktrees/742dbc65-handoff-roundtrip-assertions`) which has its own `memory-api/` submodule checkout.\n\n## The decisive question\n\nIf the outer repo fast-forwards `main` to `9505b147`, the recorded submodule pointer becomes `5802526`. **Would that move the submodule BACKWARD, dropping the other agent's commits?**\n\nDetermine: is `ff67db64` an ancestor of `5802526`?\n\n## How to check\n\nRun these from the MAIN checkout's submodule directory `c:/Users/linus/git/context-engine/memory-api` (and, if the object is not found there, retry from the worktree's submodule directory `c:/Users/linus/git/context-engine/.worktrees/742dbc65-handoff-roundtrip-assertions/memory-api`):\n\n1. `git cat-file -t 5802526` — does the object even exist in this clone? Report which clone(s) it exists in.\n2. `git merge-base --is-ancestor ff67db64 5802526; echo \"exit=$?\"` — exit 0 means the other agent's work IS contained in my commit (safe). Non-zero means it is NOT (DANGEROUS).\n3. `git merge-base --is-ancestor 5802526 ff67db64; echo \"exit=$?\"` — exit 0 would mean my commit is already contained in theirs (my submodule change would be redundant/already landed).\n4. `git log --oneline -8 5802526` — show my commit's ancestry.\n5. `git merge-base ff67db64 5802526` — the common ancestor short sha.\n6. `git log --oneline ff67db64..5802526` and `git log --oneline 5802526..ff67db64` — the two divergence sets.\n7. In the MAIN checkout root, run `git ls-tree HEAD memory-api` and report the recorded submodule pointer sha on current `main`.\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `object_5802526_exists_in`: main-clone | worktree-clone | both | neither\n- `main_recorded_pointer`: <sha from git ls-tree HEAD memory-api>\n- `ff67db64_is_ancestor_of_5802526`: yes | no (state the exit code)\n- `5802526_is_ancestor_of_ff67db64`: yes | no (state the exit code)\n- `merge_base`: <short sha>\n- `commits_in_5802526_not_in_ff67db64`: <oneline list>\n- `commits_in_ff67db64_not_in_5802526`: <oneline list>\n- `verdict`: SAFE_LINEAR (my commit contains theirs — pointer moves forward) | WOULD_REGRESS (their commits would be dropped) | ALREADY_LANDED (mine is already in theirs) | DIVERGED (both have unique commits) | INDETERMINATE (object missing)\n- `one_sentence_justification`\n\nNothing else. No narration, no recommendations."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01YZWGYnYQMcvbt3mbnRFdsK",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Implement Agent",
+              "description": "Bootstrap worktree for D",
+              "model": "GPT-5 mini (copilot)",
+              "prompt": "You are context-isolated: everything you need is below. Your ONLY job is to bootstrap a git worktree. Do not implement anything, do not edit source files, do not commit.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; use Git Bash / unix-style forward-slash paths). Use `mcp_compact-termi_run` with `cwd` set to the repository root.\n\n## Task\n\nRun the repository's canonical worktree bootstrap helper:\n\n```bash\nbash tools/worktree/worktree.sh new 59abe2da spec-cleanup\n```\n\nThis creates worktree `.worktrees/59abe2da-spec-cleanup` on new branch `agent/59abe2da-spec-cleanup`, branched from LOCAL `main` (no fetch, no origin dependency), then populates every submodule as an offline linked worktree.\n\n## Important operational notes\n\n- **This command has previously taken a long time and timed out at 600s in an earlier session, yet still completed its work.** Pass a generous timeout (`timeout_secs: 900`). If it times out, DO NOT re-run it blindly — first inspect whether it already succeeded (see verification below), and only re-run if the worktree is genuinely absent.\n- The main checkout has ~66 dirty files that are store artifacts under `.ticket/`, `.spec/`, `.session/`, `.feedback/`. These belong to other agents. **Do not stage, commit, revert, stash, or clean any of them.** They are expected background activity.\n- Do not run `git submodule deinit` under any circumstances — it rewrites the shared `.git/config` and breaks the main checkout.\n- Do not touch the existing worktree `.worktrees/742dbc65-handoff-roundtrip-assertions` or its branch.\n\n## Verification (always run these, whether or not the command timed out)\n\n1. `git worktree list` — confirm `.worktrees/59abe2da-spec-cleanup` is listed.\n2. `git branch --list 'agent/59abe2da-spec-cleanup'` — confirm the branch exists.\n3. Confirm the worktree actually contains the spec store: check that `.worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml` and `body.md` both exist.\n4. Confirm the submodule populated: check that `.worktrees/59abe2da-spec-cleanup/memory-api/Cargo.toml` exists and is non-empty.\n5. From inside the worktree, run `git status --short` and report the dirty count (a freshly-cut worktree should be clean or near-clean).\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `bootstrap_command_outcome`: completed | timed-out-but-succeeded | failed\n- `worktree_path_absolute`: <absolute forward-slash path>\n- `worktree_path_relative`: <repo-root-relative forward-slash path>\n- `branch`: <branch name>\n- `spec_files_present`: yes | no (list the files you confirmed)\n- `submodule_populated`: yes | no\n- `worktree_dirty_count`: <n>\n- `blocker`: \"none\" | \"<one concrete reason bootstrap is unusable>\"\n\nNothing else. No narration."
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_015zkcCoBAWk64QXJfmCv8dB"
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "user",
+      "content": "You are context-isolated: everything you need is below. Your ONLY job is to bootstrap a git worktree. Do not implement anything, do not edit source files, do not commit.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; use Git Bash / unix-style forward-slash paths). Use `mcp_compact-termi_run` with `cwd` set to the repository root.\n\n## Task\n\nRun the repository's canonical worktree bootstrap helper:\n\n```bash\nbash tools/worktree/worktree.sh new 59abe2da spec-cleanup\n```\n\nThis creates worktree `.worktrees/59abe2da-spec-cleanup` on new branch `agent/59abe2da-spec-cleanup`, branched from LOCAL `main` (no fetch, no origin dependency), then populates every submodule as an offline linked worktree.\n\n## Important operational notes\n\n- **This command has previously taken a long time and timed out at 600s in an earlier session, yet still completed its work.** Pass a generous timeout (`timeout_secs: 900`). If it times out, DO NOT re-run it blindly — first inspect whether it already succeeded (see verification below), and only re-run if the worktree is genuinely absent.\n- The main checkout has ~66 dirty files that are store artifacts under `.ticket/`, `.spec/`, `.session/`, `.feedback/`. These belong to other agents. **Do not stage, commit, revert, stash, or clean any of them.** They are expected background activity.\n- Do not run `git submodule deinit` under any circumstances — it rewrites the shared `.git/config` and breaks the main checkout.\n- Do not touch the existing worktree `.worktrees/742dbc65-handoff-roundtrip-assertions` or its branch.\n\n## Verification (always run these, whether or not the command timed out)\n\n1. `git worktree list` — confirm `.worktrees/59abe2da-spec-cleanup` is listed.\n2. `git branch --list 'agent/59abe2da-spec-cleanup'` — confirm the branch exists.\n3. Confirm the worktree actually contains the spec store: check that `.worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml` and `body.md` both exist.\n4. Confirm the submodule populated: check that `.worktrees/59abe2da-spec-cleanup/memory-api/Cargo.toml` exists and is non-empty.\n5. From inside the worktree, run `git status --short` and report the dirty count (a freshly-cut worktree should be clean or near-clean).\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `bootstrap_command_outcome`: completed | timed-out-but-succeeded | failed\n- `worktree_path_absolute`: <absolute forward-slash path>\n- `worktree_path_relative`: <repo-root-relative forward-slash path>\n- `branch`: <branch name>\n- `spec_files_present`: yes | no (list the files you confirmed)\n- `submodule_populated`: yes | no\n- `worktree_dirty_count`: <n>\n- `blocker`: \"none\" | \"<one concrete reason bootstrap is unusable>\"\n\nNothing else. No narration.",
+      "captured_at": "2026-08-06T08:58:06.058Z",
+      "event_meta": {
+        "event_id": "617788a5-4717-421d-a17c-ed576cf62751",
+        "parent_event_id": "1213646e-d404-4506-a370-367b8c74b449",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01YZWGYnYQMcvbt3mbnRFdsK"
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "user",
+      "content": "You are a read-only probe answering ONE decisive question. You are context-isolated: everything you need is below. Do NOT edit, stage, commit, merge, checkout, reset, or fetch. Read-only git inspection only.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; use Git Bash / unix-style forward-slash paths). Prefer `mcp_compact-termi_run`.\n\n## Background\n\n`memory-api/` is a git submodule of the repository above.\n\n- The main checkout's submodule `memory-api/` currently has HEAD at commit `ff67db64` (on submodule branch `main`). That commit and its ancestors (`78d77f19`, `07b45d4d`, `c4411dcf`) are ANOTHER agent's work.\n- A previous session produced submodule commit `5802526` on some branch, and an OUTER-repo commit `9505b147` (\"chore(memory-api): bump submodule pointer for handoff round-trip assertions\") on outer branch `agent/742dbc65-handoff-roundtrip-assertions`. That outer commit records `5802526` as the submodule pointer.\n- There is a linked worktree at `.worktrees/742dbc65-handoff-roundtrip-assertions` (absolute: `c:/Users/linus/git/context-engine/.worktrees/742dbc65-handoff-roundtrip-assertions`) which has its own `memory-api/` submodule checkout.\n\n## The decisive question\n\nIf the outer repo fast-forwards `main` to `9505b147`, the recorded submodule pointer becomes `5802526`. **Would that move the submodule BACKWARD, dropping the other agent's commits?**\n\nDetermine: is `ff67db64` an ancestor of `5802526`?\n\n## How to check\n\nRun these from the MAIN checkout's submodule directory `c:/Users/linus/git/context-engine/memory-api` (and, if the object is not found there, retry from the worktree's submodule directory `c:/Users/linus/git/context-engine/.worktrees/742dbc65-handoff-roundtrip-assertions/memory-api`):\n\n1. `git cat-file -t 5802526` — does the object even exist in this clone? Report which clone(s) it exists in.\n2. `git merge-base --is-ancestor ff67db64 5802526; echo \"exit=$?\"` — exit 0 means the other agent's work IS contained in my commit (safe). Non-zero means it is NOT (DANGEROUS).\n3. `git merge-base --is-ancestor 5802526 ff67db64; echo \"exit=$?\"` — exit 0 would mean my commit is already contained in theirs (my submodule change would be redundant/already landed).\n4. `git log --oneline -8 5802526` — show my commit's ancestry.\n5. `git merge-base ff67db64 5802526` — the common ancestor short sha.\n6. `git log --oneline ff67db64..5802526` and `git log --oneline 5802526..ff67db64` — the two divergence sets.\n7. In the MAIN checkout root, run `git ls-tree HEAD memory-api` and report the recorded submodule pointer sha on current `main`.\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `object_5802526_exists_in`: main-clone | worktree-clone | both | neither\n- `main_recorded_pointer`: <sha from git ls-tree HEAD memory-api>\n- `ff67db64_is_ancestor_of_5802526`: yes | no (state the exit code)\n- `5802526_is_ancestor_of_ff67db64`: yes | no (state the exit code)\n- `merge_base`: <short sha>\n- `commits_in_5802526_not_in_ff67db64`: <oneline list>\n- `commits_in_ff67db64_not_in_5802526`: <oneline list>\n- `verdict`: SAFE_LINEAR (my commit contains theirs — pointer moves forward) | WOULD_REGRESS (their commits would be dropped) | ALREADY_LANDED (mine is already in theirs) | DIVERGED (both have unique commits) | INDETERMINATE (object missing)\n- `one_sentence_justification`\n\nNothing else. No narration, no recommendations.",
+      "captured_at": "2026-08-06T08:58:06.078Z",
+      "event_meta": {
+        "event_id": "7b6fc436-e4b8-44d0-b688-2fab01603bae",
+        "parent_event_id": "4b91a49d-3589-4ba7-8cae-34784b9f59a7",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "I'll inspect the `memory-api` submodule in both the main clone and the worktree, then report git ancestry and recorded pointer.",
+      "captured_at": "2026-08-06T08:58:21.179Z",
+      "event_meta": {
+        "event_id": "0925da84-23c4-4334-961d-3b5263ba1ee1",
+        "parent_event_id": "222124fb-d085-4a5a-84c4-8230af86fa18",
+        "event_type": "assistant.message",
+        "message_id": "c5f70eeb-d661-4726-b5d4-8560b96d6349",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XY4DoLB09hqprpQzhFhtRHKu",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/context-engine/memory-api && if git cat-file -t 5802526 >/dev/null 2>&1; then echo \"object=exists\"; git merge-base --is-ancestor ff67db64 5802526; echo \"ff67_to_580_exit=$?\"; git merge-base --is-ancestor 5802526 ff67db64; echo \"580_to_ff67_exit=$?\"; echo \"log_580:\"; git log --oneline -8 5802526 || true; echo \"merge_base:\"; git merge-base ff67db64 5802526 || true; echo \"log_ff67..580:\"; git log --oneline ff67db64..5802526 || true; echo \"log_580..ff67:\"; git log --oneline 5802526..ff67db64 || true; else echo \"object=missing\"; fi",
+              "explanation": "Check for object and ancestry in main clone",
+              "goal": "Gather git facts from main clone",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "I'll run the worktree bootstrap helper, then verify the created worktree and files.",
+      "captured_at": "2026-08-06T08:58:24.499Z",
+      "event_meta": {
+        "event_id": "c2715fe6-d077-4d47-a791-80774ad1432a",
+        "parent_event_id": "cd110f80-c8c8-4dfb-ae23-1658b2addee9",
+        "event_type": "assistant.message",
+        "message_id": "2cf5c4ff-9ec7-4412-ae90-1fffe655d659",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_aB28zSFijMCGsm3XOB7BnytF",
+            "name": "mcp_compact-termi_run",
+            "arguments": {
+              "caller_model": "gpt-5-mini",
+              "command": "bash tools/worktree/worktree.sh new 59abe2da spec-cleanup",
+              "cwd": "c:/Users/linus/git/context-engine",
+              "timeout_secs": 900
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Now checking the worktree's `memory-api` clone for the same objects and ancestry.",
+      "captured_at": "2026-08-06T08:58:29.200Z",
+      "event_meta": {
+        "event_id": "fbf567d2-911d-468a-a4b3-5df580e0bd90",
+        "parent_event_id": "197e987a-8b67-47d6-abc3-86b035206151",
+        "event_type": "assistant.message",
+        "message_id": "c75c1764-7e9a-4916-9ade-c474bce1b3f5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ExXxriyyy1anm7164EhnCuQF",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/context-engine/.worktrees/742dbc65-handoff-roundtrip-assertions/memory-api && if git cat-file -t 5802526 >/dev/null 2>&1; then echo \"object=exists\"; git merge-base --is-ancestor ff67db64 5802526; echo \"ff67_to_580_exit=$?\"; git merge-base --is-ancestor 5802526 ff67db64; echo \"580_to_ff67_exit=$?\"; echo \"log_580:\"; git log --oneline -8 5802526 || true; echo \"merge_base:\"; git merge-base ff67db64 5802526 || true; echo \"log_ff67..580:\"; git log --oneline ff67db64..5802526 || true; echo \"log_580..ff67:\"; git log --oneline 5802526..ff67db64 || true; else echo \"object=missing\"; fi",
+              "explanation": "Check for object and ancestry in worktree clone",
+              "goal": "Gather git facts from worktree clone",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "Finally, I'll read the recorded submodule pointer in the main checkout's HEAD.",
+      "captured_at": "2026-08-06T08:58:33.233Z",
+      "event_meta": {
+        "event_id": "afe47c17-ce81-4320-bd16-25564c9e55f3",
+        "parent_event_id": "8d21d10c-faea-4395-8e15-4ef649710617",
+        "event_type": "assistant.message",
+        "message_id": "af611be4-ee38-467e-b250-4fb55d376e44",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_IR0PIcj5OKTjONWKdqV53r1E",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "cd /c/Users/linus/git/context-engine && git ls-tree HEAD memory-api",
+              "explanation": "Get recorded submodule pointer in main checkout HEAD",
+              "goal": "Report recorded submodule SHA",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "object_5802526_exists_in: main-clone\nmain_recorded_pointer: ff67db647f92006b7e5730eb63be730a4c5fcf27\nff67db64_is_ancestor_of_5802526: yes (exit=0)\n5802526_is_ancestor_of_ff67db64: no (exit=1)\nmerge_base: ff67db64\ncommits_in_5802526_not_in_ff67db64: 58025265 test(session-api): assert upward-context fields survive handoff JSON round-trip\ncommits_in_ff67db64_not_in_5802526: \nverdict: SAFE_LINEAR\none_sentence_justification: `ff67db64` is an ancestor of `5802526` (merge-base `ff67db64`, ff67→580 exit=0), so updating the submodule pointer to `5802526` advances it and does not drop those commits.",
+      "captured_at": "2026-08-06T08:58:48.298Z",
+      "event_meta": {
+        "event_id": "7acd2d07-0609-4a29-a17c-7889b99d696e",
+        "parent_event_id": "ba4b1cb8-ee97-48ed-bb31-87025a95f8fd",
+        "event_type": "assistant.message",
+        "message_id": "b78cf507-930f-4fa9-ab34-4c07e801f883",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "Now verifying worktree presence, branch, spec files, submodule, and worktree status.",
+      "captured_at": "2026-08-06T09:13:37.905Z",
+      "event_meta": {
+        "event_id": "e5dcf7ba-de59-4e65-9ba9-6c5e674f71f2",
+        "parent_event_id": "40367165-5555-4cc2-9430-a2747b9b63c5",
+        "event_type": "assistant.message",
+        "message_id": "d4ad21ab-08ca-4046-b53c-4a5ad8b67eb0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_6ggoGs0ydDpaE6nVKP4IZ8k6",
+            "name": "mcp_compact-termi_run",
+            "arguments": {
+              "caller_model": "gpt-5-mini",
+              "command": "printf '===worktree_list===\\n'; git worktree list; printf '\\n===branch_list===\\n'; git branch --list 'agent/59abe2da-spec-cleanup'; printf '\\n===spec_checks===\\n'; if [ -f .worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml ]; then echo spec.toml:yes; else echo spec.toml:no; fi; if [ -f .worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/body.md ]; then echo body.md:yes; else echo body.md:no; fi; printf '\\n===submodule_check===\\n'; if [ -s .worktrees/59abe2da-spec-cleanup/memory-api/Cargo.toml ]; then echo memory-api-Cargo.toml:yes; else if [ -f .worktrees/59abe2da-spec-cleanup/memory-api/Cargo.toml ]; then echo memory-api-Cargo.toml:empty; else echo memory-api-Cargo.toml:no; fi; fi; printf '\\n===git_status_count===\\n'; if [ -d .worktrees/59abe2da-spec-cleanup ]; then git -C .worktrees/59abe2da-spec-cleanup status --short | wc -l || true; else echo 'worktree-missing'; fi;",
+              "cwd": "c:/Users/linus/git/context-engine",
+              "timeout_secs": 120
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "assistant",
+      "content": "Running a quick `git worktree list` to see created worktrees.",
+      "captured_at": "2026-08-06T09:15:42.068Z",
+      "event_meta": {
+        "event_id": "e2a6b848-752a-4ae4-90c9-0dede6f7d033",
+        "parent_event_id": "da73dfc9-3bc1-4323-9346-5dca1ec651bc",
+        "event_type": "assistant.message",
+        "message_id": "328fb409-959a-405a-860b-3915c1aa7bb5",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_zjgtbQPuT8FPLCMH3FGif4Xt",
+            "name": "mcp_compact-termi_run",
+            "arguments": {
+              "caller_model": "gpt-5-mini",
+              "command": "git worktree list",
+              "cwd": "c:/Users/linus/git/context-engine",
+              "timeout_secs": 30
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "I'll run `git worktree list` in the terminal to check worktrees.",
+      "captured_at": "2026-08-06T09:16:18.715Z",
+      "event_meta": {
+        "event_id": "dad402f3-b3bf-4be4-b10d-18e2678c20f3",
+        "parent_event_id": "226c01b7-fb1b-4049-8f03-5e46f6c4c63a",
+        "event_type": "assistant.message",
+        "message_id": "1f010689-dcc1-4199-ae5e-bd9c33bb2bef",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_HqThrWWbLuEaZR5N7aEjJtSy",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git worktree list",
+              "explanation": "Check for the new worktree",
+              "goal": "verify worktree created",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "Now checking the branch `agent/59abe2da-spec-cleanup`.",
+      "captured_at": "2026-08-06T09:16:23.122Z",
+      "event_meta": {
+        "event_id": "b79c2baf-d42d-4678-b5ed-e6946003015a",
+        "parent_event_id": "29b27faa-dfeb-4970-bbb7-c9dfa0a5ea84",
+        "event_type": "assistant.message",
+        "message_id": "aedf9100-26f1-477f-a6d4-85034c507e66",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ygDWVH2Eem5v4gvoDvbRwk3S",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git branch --list 'agent/59abe2da-spec-cleanup'",
+              "explanation": "Confirm branch exists",
+              "goal": "branch existence",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "assistant",
+      "content": "Checking for spec files under the new worktree.",
+      "captured_at": "2026-08-06T09:16:31.024Z",
+      "event_meta": {
+        "event_id": "0d3d9d6a-dc57-4ee1-a47a-1391ef917516",
+        "parent_event_id": "d77d1a87-8297-4010-bbfa-c9764c2d3f8c",
+        "event_type": "assistant.message",
+        "message_id": "43db3c4b-5daa-4711-8526-667ecf8af161",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_dFR4sft1iUUkJYmSKipuPRPK",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -l .worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476 || true",
+              "explanation": "List spec directory",
+              "goal": "confirm spec files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Checking that `memory-api/Cargo.toml` exists inside the worktree.",
+      "captured_at": "2026-08-06T09:16:36.132Z",
+      "event_meta": {
+        "event_id": "e52a86ab-6d46-4218-b0ff-26f5c153b94e",
+        "parent_event_id": "f6f96f22-f78b-4b33-80f8-414e2f7fb851",
+        "event_type": "assistant.message",
+        "message_id": "60682a3d-3a59-40c9-aef7-75d28f4f0cf0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ALQq3vWto2OQVKsX633O2WFD",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -l .worktrees/59abe2da-spec-cleanup/memory-api/Cargo.toml || true",
+              "explanation": "Show memory-api Cargo.toml",
+              "goal": "confirm submodule populated",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "Listing top-level entries in the new worktree to find `memory-api`.",
+      "captured_at": "2026-08-06T09:16:40.498Z",
+      "event_meta": {
+        "event_id": "895255a0-8b38-4108-bd18-e502813e72f2",
+        "parent_event_id": "5107f4af-e2f6-4c87-8b25-69d8c65dd60b",
+        "event_type": "assistant.message",
+        "message_id": "ed9ffa87-6edf-43e8-a200-ba98728811be",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_NJhCFd7p1TuynFJEzwfT05sz",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -la .worktrees/59abe2da-spec-cleanup || true",
+              "explanation": "Show worktree top-level entries",
+              "goal": "locate memory-api",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "Listing `memory-api/Cargo.toml` inside the worktree to confirm it's populated.",
+      "captured_at": "2026-08-06T09:16:45.564Z",
+      "event_meta": {
+        "event_id": "023e8b96-a88e-4cee-b3cf-6ae7dd775ef6",
+        "parent_event_id": "0b8d91db-380b-4756-9053-538ddc996f23",
+        "event_type": "assistant.message",
+        "message_id": "83b9a0a9-f484-4690-8c2b-6862ac11d688",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_2oOUWpJnWgQUesKoqZ8MhodA",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -l .worktrees/59abe2da-spec-cleanup/memory-api/Cargo.toml || true",
+              "explanation": "Check memory-api Cargo.toml exists and size",
+              "goal": "confirm submodule populated",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "Listing `.worktrees/59abe2da-spec-cleanup/memory-api` contents.",
+      "captured_at": "2026-08-06T09:16:49.382Z",
+      "event_meta": {
+        "event_id": "3fbfaf95-adb4-4e12-b5dc-f04e85ade693",
+        "parent_event_id": "1280f4d1-23d7-4042-a4be-9042032c2823",
+        "event_type": "assistant.message",
+        "message_id": "104b0d7c-9d92-437d-81b2-edec5af45b67",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_DY7rP9f9OIZZ3vxCEgWwk0jP",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -la .worktrees/59abe2da-spec-cleanup/memory-api || true",
+              "explanation": "Show memory-api directory contents",
+              "goal": "see if Cargo.toml present elsewhere",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "assistant",
+      "content": "Searching for Cargo.toml under `memory-api` directory.",
+      "captured_at": "2026-08-06T09:16:57.164Z",
+      "event_meta": {
+        "event_id": "31907ecf-9540-4b1b-87c1-8468dd1e8b94",
+        "parent_event_id": "369e67ea-1f28-418a-8448-9860c5fec14e",
+        "event_type": "assistant.message",
+        "message_id": "b93c143b-ef10-4060-8588-2342a8d0b2e2",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BW5ko3eYoAEZsCn5vhADM7W5",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "find .worktrees/59abe2da-spec-cleanup/memory-api -maxdepth 2 -name 'Cargo.toml' -print || true",
+              "explanation": "Locate Cargo.toml in memory-api sub-tree",
+              "goal": "confirm submodule Cargo.toml location",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "Counting dirty files inside the new worktree with `git status --short`.",
+      "captured_at": "2026-08-06T09:17:03.547Z",
+      "event_meta": {
+        "event_id": "05ac15d5-fcdd-47bb-9c3c-5ecf24fb421b",
+        "parent_event_id": "0ace0c61-9896-40e5-9a63-8622ef509d60",
+        "event_type": "assistant.message",
+        "message_id": "a4470fb5-551a-4e0e-a30d-09b16ba3bc67",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_tIqGUxQIu7T1uMDg1DuQAfCw",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git -C .worktrees/59abe2da-spec-cleanup status --short | wc -l",
+              "explanation": "Count dirty files in the new worktree",
+              "goal": "report worktree dirty count",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "Running `git status --short` from inside the worktree directory.",
+      "captured_at": "2026-08-06T09:17:06.840Z",
+      "event_meta": {
+        "event_id": "80b46c02-1703-4d7a-a7f1-61f4ca48e17a",
+        "parent_event_id": "ac054a11-1f05-46d5-96fa-e19de0689acd",
+        "event_type": "assistant.message",
+        "message_id": "b7a2b33e-44b1-45c9-89fa-8371eb736520",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_gP2pX6tgVe6S01DWAeZTZagE",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "bash -lc \"cd .worktrees/59abe2da-spec-cleanup && git status --short | wc -l\"",
+              "explanation": "Count dirty files from within worktree dir",
+              "goal": "get dirty count",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 27,
+      "role": "assistant",
+      "content": "Showing `.worktrees/59abe2da-spec-cleanup/.git` to inspect gitdir link.",
+      "captured_at": "2026-08-06T09:17:14.027Z",
+      "event_meta": {
+        "event_id": "170ce19a-4157-4b14-914b-39add559c563",
+        "parent_event_id": "9b23f7c7-78be-46cc-ba82-fad73d3a695e",
+        "event_type": "assistant.message",
+        "message_id": "87a14d77-7793-4000-bbd5-17e185d43512",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_J3KlLBq1X9RcwFucNQ5xp1Ln",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "sed -n '1,120p' .worktrees/59abe2da-spec-cleanup/.git || true",
+              "explanation": "Inspect .git file content",
+              "goal": "see gitdir reference",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 28,
+      "role": "assistant",
+      "content": "Listing the git worktree gitdir at `.git/worktrees/59abe2da-spec-cleanup`.",
+      "captured_at": "2026-08-06T09:17:17.365Z",
+      "event_meta": {
+        "event_id": "63add872-63d8-4192-b824-248510c34e50",
+        "parent_event_id": "87cc1b88-adc6-434e-9a5a-23684256754a",
+        "event_type": "assistant.message",
+        "message_id": "b7fc6b05-d466-4f66-8eb6-a9b34771779e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_nxr1MOBWChR7eZZBJe51hs9u",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "ls -la .git/worktrees/59abe2da-spec-cleanup || true",
+              "explanation": "Inspect worktree gitdir",
+              "goal": "verify gitdir files",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 29,
+      "role": "assistant",
+      "content": "Counting dirty files via explicit `--git-dir`/`--work-tree` to avoid gitdir resolution issues.",
+      "captured_at": "2026-08-06T09:17:22.097Z",
+      "event_meta": {
+        "event_id": "76975d08-49eb-416c-b63a-424600bda984",
+        "parent_event_id": "d0f5339b-0b33-457d-a87f-56f6bd97fc98",
+        "event_type": "assistant.message",
+        "message_id": "f40e79b2-c1aa-42f0-952a-490f5041cd1f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_BAA4XkbaTFRqSGtkEz9fJjur",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "git --git-dir=.git/worktrees/59abe2da-spec-cleanup --work-tree=.worktrees/59abe2da-spec-cleanup status --short | wc -l",
+              "explanation": "Count dirty files using explicit git-dir and work-tree",
+              "goal": "get dirty count",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 30,
+      "role": "assistant",
+      "content": "bootstrap_command_outcome: timed-out-but-succeeded\nworktree_path_absolute: C:/Users/linus/git/context-engine/.worktrees/59abe2da-spec-cleanup\nworktree_path_relative: .worktrees/59abe2da-spec-cleanup\nbranch: agent/59abe2da-spec-cleanup\nspec_files_present: yes (.worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml, .worktrees/59abe2da-spec-cleanup/.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/body.md)\nsubmodule_populated: no\nworktree_dirty_count: 0\nblocker: memory-api/Cargo.toml missing in worktree (submodule not populated)",
+      "captured_at": "2026-08-06T09:17:45.735Z",
+      "event_meta": {
+        "event_id": "38b6d2e0-3aaa-44f7-85af-402bba39b9d1",
+        "parent_event_id": "05bfba28-2fc6-49af-b94b-9cc6161f2316",
+        "event_type": "assistant.message",
+        "message_id": "12fff1b0-e4fe-4374-970d-04648059e201",
+        "tool_requests_json": [],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 31,
+      "role": "assistant",
+      "content": "Ancestry resolves the merge question decisively: `ff67db64` is an ancestor of `5802526`, so the pointer bump advances `memory-api` rather than regressing it. The earlier abort was correct then and the block has now cleared. Merging, and implementing D, in parallel — they touch disjoint paths.\n\nD's worktree came up without the submodule, but D only edits `.spec/` in the outer repo, so I'm not spending a second bootstrap on it.",
+      "captured_at": "2026-08-06T09:19:40.841Z",
+      "event_meta": {
+        "event_id": "c3aacef2-e2b3-4e80-8b14-410913bda6d0",
+        "parent_event_id": "df4ef6f3-5856-47bd-9b28-65a765c84f6b",
+        "event_type": "assistant.message",
+        "message_id": "c88187f4-c2f5-4458-857f-918c9c54806b",
+        "reasoning_text": "The ancestry check confirms my submodule commit safely advances past the previous one, so the merge is clear to proceed. For ticket D's worktree, the submodule isn't needed since the changes only touch spec files in the outer repo—the validation just requires reading back through the spec CLI. But I'm realizing there's a dependency on spec C that I need to think through.\n\nActually, I can use the spec-mcp read tools pointing at the worktree's `.spec` store path for verification without building anything or populating the submodule. So the missing submodule isn't blocking D at all.\n\nThe plan is to merge the 742dbc65 branch first (it's fast-forward only and safe), then remove that worktree, and handle D's implementation separately. D's branch will end up behind main after the merge, but that just means it'll need a rebase before its own merge later—that's expected and a small cost.\n\nI can run these in parallel since they touch different files (the submodule pointer vs. the `.spec/` directory), but the merge itself is my responsibility as orchestrator—I can't delegate the decision to merge, only dispatch a sub-agent to execute the exact commands I specify. I'll script the merge as a tightly-controlled execution unit with explicit abort conditions, and run D's implementation work in parallel.\n\nFor the merge, I need to verify the ancestor relationship and check that memory-api has no tracked changes, then invoke the worktree helper with the exact branch name format (`742dbc65-handoff-roundtrip-assertions`), followed by cleanup. The tricky part is handling the submodule state after the fast-forward merge completes—the pointer will move but the submodule working tree might have dirty `.ticket` artifacts that block the update, so I need to either run a submodule-specific fast-forward merge or use `git submodule update --checkout` to safely move it to the new commit. I need to gather the full context for the dispatch implementation — the ticket description, acceptance criteria, and spec excerpts. For AC1 specifically, I'm updating the manifest's traceability links in spec.toml by adding the missing ticket IDs to the existing list, though I need to resolve the full UUIDs for a couple of them.\n\nFor AC2, I'm checking the readiness rule alignment between the spec's definition (objective non-empty AND open_escalations empty) and the actual implementation in the SessionHandoffPackage code. Since the worktree doesn't have the submodule, I'll read from the main checkout to verify the predicate logic. AC3 requires concrete examples and a testable checklist, and I should also plan for migrating any docs that reference older wording while linking back to the relevant tickets.\n\nI'm settling on T2 as \"GPT-5.6 Terra (copilot)\" since this is a prose and spec edit that needs careful judgment about matching wording to code semantics. Before writing the dispatches, I need to instruct the agent to avoid touching memory-api, skip cargo builds, use the spec-mcp read tools pointed at the worktree store, and preserve the history.ndjson format. I should also check whether the spec CLI binary is available in the main checkout's target directory to streamline verification.\n\nI'll tell the agent to use the prebuilt CLI if it exists, otherwise mirror the existing history.ndjson format with direct file edits, and escalate if anything's ambiguous. Now I'm ready to dispatch both tasks in parallel.",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01GaK2APwXnMQdnQAvkahYS4",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Commit Agent",
+              "description": "Guarded ff-only merge",
+              "model": "GPT-5.6 Terra (copilot)",
+              "prompt": "You are context-isolated: everything you need is below. Execute a tightly-scripted, guarded merge. You have NO discretion to improvise around a failed precondition — if any guard fails, ABORT and report. Do not \"fix\" a guard failure.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; Git Bash, unix-style forward-slash paths). Use `mcp_compact-termi_run` with `cwd` at the repository root.\n\n## Situation (already verified by prior probes — do not re-derive, but DO re-confirm the guards below)\n\n- Outer repo is on branch `main`.\n- Feature branch `agent/742dbc65-handoff-roundtrip-assertions` is finished and committed. It is exactly ONE commit ahead of `main`: `9505b147 chore(memory-api): bump submodule pointer for handoff round-trip assertions`. It is ZERO commits behind.\n- `main` is an ancestor of that branch (fast-forward is possible).\n- `memory-api/` is a git submodule. Main checkout's submodule HEAD is `ff67db64` on submodule branch `main`. The outer commit `9505b147` records submodule pointer `58025265`.\n- **Verified**: `ff67db64` IS an ancestor of `58025265` (merge-base is `ff67db64`). So advancing the submodule to `58025265` moves it FORWARD by exactly one commit — `58025265 test(session-api): assert upward-context fields survive handoff JSON round-trip` — and drops nothing.\n- The main checkout has ~66 dirty files. They are store artifacts under `.ticket/`, `.spec/`, `.session/`, `.feedback/` belonging to other agents. The submodule has 2 dirty `.ticket` artifact files.\n\n## ABSOLUTE PROHIBITIONS\n\n- Do NOT stage, commit, revert, stash, `git clean`, or otherwise touch ANY of the dirty store artifacts in the outer repo or the submodule. They are other agents' in-progress work. They must remain exactly as they are, dirty, when you finish.\n- Do NOT run `git submodule deinit` — it rewrites shared `.git/config` and breaks the main checkout.\n- Do NOT run `git reset --hard`, `git push`, or `git fetch`.\n- Do NOT convert a failed `--ff-only` into a real merge.\n- Do NOT touch the worktree `.worktrees/59abe2da-spec-cleanup` or branch `agent/59abe2da-spec-cleanup` — another unit is actively working there right now.\n\n## Step 1 — Re-confirm guards (ABORT if any fails)\n\nFrom the repository root:\n\n```bash\ngit rev-parse --abbrev-ref HEAD\ngit merge-base --is-ancestor main agent/742dbc65-handoff-roundtrip-assertions; echo \"ff_exit=$?\"\ngit log --oneline main..agent/742dbc65-handoff-roundtrip-assertions\ngit -C memory-api status --short\n```\n\nGuards:\n- current branch MUST be `main`\n- `ff_exit` MUST be 0\n- `main..branch` MUST contain exactly the single commit `9505b147`\n- `git -C memory-api status --short` MUST show NO modified tracked SOURCE files (`.rs`, `.toml`, `.ts` under `crates/`, `src/`, `tools/`). Store artifacts under `.ticket/`/`.spec/`/`.session/`/`.test/`/`.feedback/` are expected and fine.\n\nIf any guard fails → ABORT immediately, report `merge_outcome: aborted` and the exact failing guard. Change nothing.\n\n## Step 2 — Fast-forward the outer repo\n\n```bash\nbash tools/worktree/worktree.sh merge 742dbc65-handoff-roundtrip-assertions\n```\n\nThis helper runs `git checkout main` then `git merge --ff-only agent/742dbc65-handoff-roundtrip-assertions`, and fails loudly rather than falling back to a real merge. If it fails, ABORT — do not merge by hand.\n\nThen confirm: `git log --oneline -1` should show `9505b147`, and `git ls-tree HEAD memory-api` should now record `58025265...`.\n\n## Step 3 — Advance the submodule working tree to match the new pointer\n\nThe submodule working tree is still at `ff67db64` while the recorded pointer is now `58025265`. Because `58025265` is a direct descendant, advance the submodule branch by fast-forward, preserving its 2 dirty artifact files:\n\n```bash\ngit -C memory-api rev-parse --abbrev-ref HEAD\ngit -C memory-api merge --ff-only 58025265\ngit -C memory-api log --oneline -2\n```\n\nIf the submodule is NOT on branch `main`, or the `--ff-only` fails, ABORT and report — do not force anything. Report the resulting submodule HEAD.\n\nAfter this, `git status --short` in the outer repo should NOT list `memory-api` as modified (pointer and working tree now agree). Report whether it does.\n\n## Step 4 — Remove the now-merged worktree\n\nOnly if Steps 2 and 3 both succeeded:\n\n```bash\nbash tools/worktree/worktree.sh remove 742dbc65-handoff-roundtrip-assertions\n```\n\nThis runs `git worktree remove --force`, `git worktree prune`, then `git branch -d`. `--force` alone correctly handles the worktree's initialized submodules. Never add a deinit step.\n\nConfirm with `git worktree list` and `git branch --list 'agent/*'`.\n\n## Step 5 — Final state check\n\nRun `git status --short` in the outer repo. Report the total dirty count and confirm it is still store-artifact-only (no source files staged or modified by you).\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `guards`: passed | failed (if failed, name the exact guard and stop here)\n- `merge_outcome`: fast-forwarded | aborted | failed\n- `main_head_after`: <short sha + subject>\n- `recorded_submodule_pointer_after`: <short sha>\n- `submodule_head_after`: <short sha + branch>\n- `submodule_ff_outcome`: succeeded | aborted | failed\n- `memory_api_listed_as_modified`: yes | no\n- `worktree_removed`: yes | no\n- `branch_deleted`: yes | no\n- `remaining_agent_branches`: <list from git branch --list 'agent/*'>\n- `outer_dirty_total_after`: <n>\n- `dirty_are_store_artifacts_only`: yes | no\n- `blocker`: \"none\" | \"<one concrete reason>\"\n\nNothing else. No narration."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "toolu_01FRtuqw81nbjghWL5ezsKbF",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Implement Agent",
+              "description": "Implement ticket D spec cleanup",
+              "model": "GPT-5.6 Terra (copilot)",
+              "prompt": "You are context-isolated: you inherit nothing. Everything you need is inlined below. Implement ONE ticket, then stop.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; Git Bash, unix-style forward-slash paths).\n\n## YOUR WORKTREE — all edits go here, nowhere else\n\n**Work exclusively inside: `c:/Users/linus/git/context-engine/.worktrees/59abe2da-spec-cleanup`**\nBranch: `agent/59abe2da-spec-cleanup` (already created, cut from `main`, currently clean).\n\nFiles you will edit (worktree-relative):\n- `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml`\n- `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/body.md`\n\n**Absolute prohibitions:**\n- Do NOT edit anything in the main checkout `c:/Users/linus/git/context-engine/` — it has ~66 dirty store-artifact files belonging to other agents, and another unit is merging a branch into `main` concurrently. Reading from the main checkout is fine; writing to it is not.\n- Do NOT touch `.worktrees/742dbc65-handoff-roundtrip-assertions`.\n- The `memory-api/` submodule is NOT populated in your worktree. Do not try to populate it, do not run `git submodule` anything, and do not run `cargo build`/`cargo test` — the workspace cannot load without submodules and this ticket needs no compilation.\n\n## The ticket\n\n**[59abe2da D — Spec cleanup for 5e52039d: manifest traceability and readiness wording](.ticket/tickets/59abe2da-d7fe-4acb-b154-7186336fcd4c/ticket.toml)**\nFull id: `59abe2da-d7fe-4acb-b154-7186336fcd4c`. State: `new`. Workspace: `default`.\n\nVerbatim description:\n\n> Goal: Clean up spec `5e52039d` to ensure manifest traceability links and reconcile spec wording with `SessionHandoffPackage::is_implementation_ready` package-list predicates.\n>\n> Acceptance Criteria:\n> - Add or verify manifest traceability links from the spec to related tickets and handoff artifacts.\n> - Update spec wording so `is_implementation_ready` predicate aligns precisely with the spec's readiness checklist semantics.\n> - Provide concrete examples and testable checklist items that map to the predicate's expected inputs.\n>\n> Notes:\n> - Provide a migration plan for updating existing specs or doc fragments that reference older wording.\n> - Link to related tickets `25b5f3e7` and `742dbc65` for verification and reconciliation.\n\n## The spec you are cleaning up\n\n`5e52039d-aabc-434d-bdf3-eca63e312476` — slug `agent-workflow/handoff-package-schema`, title \"Handoff Package Schema\", state `reviewed`, epic `1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f`.\n\nCurrent `spec.toml` traceability field, verbatim:\n```toml\nstate = \"reviewed\"\nepic_id = \"1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f\"\nslug = \"agent-workflow/handoff-package-schema\"\nticket_ids = [\"d3af78d7-9486-43c0-aae7-ddd5681d9807\", \"e4f84414-ef2e-4012-9cfe-da08fe2c077c\"]\n```\n\nRelevant existing `body.md` content, verbatim (there are other sections — read the full file first):\n\n```markdown\n## Required fields\n\n- **context_anchors** — prior findings, links, and ids needed so no search is required. Each anchor MUST carry store-qualified physical paths when referencing entities in nested stores (e.g., `memory-api/.ticket/tickets/<uuid>`, not just the root `.ticket/`). This ensures the next session can resolve cross-store references without discovery or guessing.\n\n## Readiness rule\n\nA handoff package's derived **implementation-ready** status is true only when `objective` is non-empty and `open_escalations` is empty. For a package with derived implementation-ready status, `higher_level_objective` and `upward_context` are mandatory creation-time requirements; their absence rejects creation. For a package without derived implementation-ready status, their absence emits warnings and does not prevent persistence.\n\n## Storage / durable home\n\nThe `session_handoff` record is the **source of truth** for a produced package and its required companion parameters. It is additionally **mirrored onto the target ticket** as a field/artifact so the next implementation session can load the package cold from the ticket store without a live session. The ticket mirror and the `session_handoff` record must stay consistent; the mirror carries at least `objective`, `target_tickets`, `target_files`, `validation`, and `open_escalations`. Whether this mirror becomes authoritative once handoffs are provenance edges is an open question tracked in spec c737328d, not decided here.\n\n## Rendered markdown\n\n- The rendered handoff markdown document (`handoff.md`) MUST open with the package's `higher_level_objective`, stated before the implementation-unit details.\n- The rendered handoff markdown document (`handoff.md`) MUST include an upward-context breadcrumb that presents the ordered ancestor chain from epic to phase to leaf work, including each ancestor's role, human-readable title, and clickable entity reference.\n- The rendered handoff markdown document (`handoff.md`) MUST include a per-ticket table. Each row MUST contain a clickable ticket reference with a real title, ticket-store-resolved what-it-does narrative, and the author-supplied why the ticket belongs in the handoff.\n- Every ticket reference in the rendered form MUST follow the repository Clickable Reference Policy: a forward-slash repo-root-relative markdown link with link text `{short-id} {title}`, never a backtick-wrapped bare ticket id. When a ticket cannot be resolved, rendering MUST degrade gracefully to its id and any cached title without panicking or failing handoff creation.\n```\n\n## Related entities you must link (full UUIDs, already resolved for you)\n\n- `25b5f3e7-cace-4822-a955-bc2e3202be77` — \"[session-api][handoff] Make upward context and ticket narrative reproducible in handoff markdown\" (parent ticket of this phase)\n- `742dbc65-a100-4278-9274-7d99a3e2afc4` — \"[session-api][handoff] Model and enforce upward context for implementation-ready handoffs\" (state `in-review`; implemented the readiness-gated enforcement)\n- `ba8f5528-5af3-4de2-8904-442a4691854a` — \"[session-api][handoff] Render resolved ticket narrative and upward context in handoff markdown\" (state `in-review`; implemented the rendering rules)\n- `59abe2da-d7fe-4acb-b154-7186336fcd4c` — this ticket\n- Already present: `d3af78d7-9486-43c0-aae7-ddd5681d9807`, `e4f84414-ef2e-4012-9cfe-da08fe2c077c`\n\nHandoff artifact produced under this spec (a concrete example you may cite):\n`.session/sessions/470fb360-8426-4f79-bdda-8ba89a81cf4b/handoffs/276acf70-5af5-45de-8154-5ef9b58357f7/handoff.md`\n\n## CRITICAL — ground AC2 in the real code, do not guess\n\nAC2 requires the spec's readiness wording to align **precisely** with the actual predicate. The implementation lives in the main checkout (read-only for you):\n\n`c:/Users/linus/git/context-engine/memory-api/crates/session-api/src/model/handoff.rs`\n\nUse bounded reads (`mcp_peek-mcp_peek_grep` for `is_implementation_ready`, then `mcp_peek-mcp_peek_read` on a tight window around it). Determine EXACTLY:\n- what fields the predicate actually reads,\n- the exact emptiness/non-emptiness conditions it applies,\n- whether `higher_level_objective` and `upward_context` participate in the predicate itself or only in the creation-time gate that consults it.\n\nThen make the spec's \"Readiness rule\" section state precisely that — no more, no less. **If the code and the current spec wording disagree, the CODE is the ground truth for what the predicate does**; correct the spec to match, and note the correction explicitly. If you find a genuine contradiction you cannot resolve from the code alone, stop and report it as a blocker rather than inventing wording.\n\n## What to write\n\n1. **AC1 — traceability.** Extend `spec.toml`'s `ticket_ids` to include the related tickets above. Preserve existing entries and existing TOML formatting/ordering conventions exactly. Additionally, add a traceability section to `body.md` that links the related tickets and the handoff artifact, using the repository Clickable Reference Policy: forward-slash repo-root-relative markdown links with link text `{short-id} {title}`, never a backtick-wrapped bare id.\n2. **AC2 — readiness wording.** Rewrite the \"Readiness rule\" section so it matches the verified predicate semantics exactly, and clearly separates (a) what the derived predicate itself computes from (b) what the creation-time gate does with that result.\n3. **AC3 — examples and testable checklist.** Add concrete examples mapping to the predicate's expected inputs, and a checklist of testable items. Each checklist item must be verifiable — state the observable condition, not a vague aspiration.\n4. **Notes — migration plan.** Add a short migration-plan subsection covering how existing specs or doc fragments referencing the older readiness wording get updated.\n\nKeep the edits surgical and in the existing voice of the document. Use `replace_string_in_file`-style targeted edits, not a full-file rewrite. Do not restructure unrelated sections.\n\n## Store-integrity requirement\n\nThe spec directory also contains `history.ndjson`. If the repository provides a prebuilt `spec` CLI binary (look for `target/debug/spec.exe` or `spec` on PATH) that can write to an explicit store root, PREFER using it against your worktree's store so history stays consistent. If no such binary exists, edit the files directly and inspect the existing `history.ndjson` format to decide whether an entry is warranted — if the format is ambiguous, leave `history.ndjson` untouched and say so in your report rather than fabricating an entry.\n\n## Validation\n\nDo NOT run cargo. Validate by read-back:\n- Re-read both edited files and confirm the changes landed as intended.\n- Confirm `spec.toml` is still valid TOML (parse it, e.g. via a Python one-liner, or use a spec CLI read).\n- Optionally verify via `mcp_spec-mcp_spec_get` with `{\"id\":\"5e52039d\",\"full\":true,\"workspace\":\"<absolute path to your worktree>\"}` — pass the WORKTREE path as the workspace selector so you read your edited copy, not the main checkout's.\n- Run `git status --short` inside the worktree and confirm ONLY the two intended spec files (plus possibly `history.ndjson`) are modified.\n\n**Do not commit.** Leave the changes uncommitted in the worktree; a separate unit will commit them.\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `predicate_ground_truth`: <the exact conditions `is_implementation_ready` evaluates, quoted from the code, with the file line range you read>\n- `spec_wording_was_accurate`: yes | no — if no, state precisely what was wrong\n- `ac1_traceability`: <what you added to spec.toml ticket_ids + what body.md traceability section now contains>\n- `ac2_readiness_wording`: <the new \"Readiness rule\" text, verbatim>\n- `ac3_examples_checklist`: <summary of examples + the checklist items added>\n- `migration_plan`: <summary of the subsection added>\n- `files_modified`: <worktree-relative paths + line counts changed>\n- `history_ndjson_handling`: written-via-cli | left-untouched-with-reason | edited-directly\n- `toml_valid`: yes | no\n- `worktree_git_status`: <verbatim git status --short output>\n- `blocker`: \"none\" | \"<one concrete reason>\"\n\nNothing else. No narration."
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "toolu_0133PbLQPUfV2vtxNAiP9N6K"
+      }
+    },
+    {
+      "sequence": 32,
+      "role": "user",
+      "content": "You are context-isolated: everything you need is below. Execute a tightly-scripted, guarded merge. You have NO discretion to improvise around a failed precondition — if any guard fails, ABORT and report. Do not \"fix\" a guard failure.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; Git Bash, unix-style forward-slash paths). Use `mcp_compact-termi_run` with `cwd` at the repository root.\n\n## Situation (already verified by prior probes — do not re-derive, but DO re-confirm the guards below)\n\n- Outer repo is on branch `main`.\n- Feature branch `agent/742dbc65-handoff-roundtrip-assertions` is finished and committed. It is exactly ONE commit ahead of `main`: `9505b147 chore(memory-api): bump submodule pointer for handoff round-trip assertions`. It is ZERO commits behind.\n- `main` is an ancestor of that branch (fast-forward is possible).\n- `memory-api/` is a git submodule. Main checkout's submodule HEAD is `ff67db64` on submodule branch `main`. The outer commit `9505b147` records submodule pointer `58025265`.\n- **Verified**: `ff67db64` IS an ancestor of `58025265` (merge-base is `ff67db64`). So advancing the submodule to `58025265` moves it FORWARD by exactly one commit — `58025265 test(session-api): assert upward-context fields survive handoff JSON round-trip` — and drops nothing.\n- The main checkout has ~66 dirty files. They are store artifacts under `.ticket/`, `.spec/`, `.session/`, `.feedback/` belonging to other agents. The submodule has 2 dirty `.ticket` artifact files.\n\n## ABSOLUTE PROHIBITIONS\n\n- Do NOT stage, commit, revert, stash, `git clean`, or otherwise touch ANY of the dirty store artifacts in the outer repo or the submodule. They are other agents' in-progress work. They must remain exactly as they are, dirty, when you finish.\n- Do NOT run `git submodule deinit` — it rewrites shared `.git/config` and breaks the main checkout.\n- Do NOT run `git reset --hard`, `git push`, or `git fetch`.\n- Do NOT convert a failed `--ff-only` into a real merge.\n- Do NOT touch the worktree `.worktrees/59abe2da-spec-cleanup` or branch `agent/59abe2da-spec-cleanup` — another unit is actively working there right now.\n\n## Step 1 — Re-confirm guards (ABORT if any fails)\n\nFrom the repository root:\n\n```bash\ngit rev-parse --abbrev-ref HEAD\ngit merge-base --is-ancestor main agent/742dbc65-handoff-roundtrip-assertions; echo \"ff_exit=$?\"\ngit log --oneline main..agent/742dbc65-handoff-roundtrip-assertions\ngit -C memory-api status --short\n```\n\nGuards:\n- current branch MUST be `main`\n- `ff_exit` MUST be 0\n- `main..branch` MUST contain exactly the single commit `9505b147`\n- `git -C memory-api status --short` MUST show NO modified tracked SOURCE files (`.rs`, `.toml`, `.ts` under `crates/`, `src/`, `tools/`). Store artifacts under `.ticket/`/`.spec/`/`.session/`/`.test/`/`.feedback/` are expected and fine.\n\nIf any guard fails → ABORT immediately, report `merge_outcome: aborted` and the exact failing guard. Change nothing.\n\n## Step 2 — Fast-forward the outer repo\n\n```bash\nbash tools/worktree/worktree.sh merge 742dbc65-handoff-roundtrip-assertions\n```\n\nThis helper runs `git checkout main` then `git merge --ff-only agent/742dbc65-handoff-roundtrip-assertions`, and fails loudly rather than falling back to a real merge. If it fails, ABORT — do not merge by hand.\n\nThen confirm: `git log --oneline -1` should show `9505b147`, and `git ls-tree HEAD memory-api` should now record `58025265...`.\n\n## Step 3 — Advance the submodule working tree to match the new pointer\n\nThe submodule working tree is still at `ff67db64` while the recorded pointer is now `58025265`. Because `58025265` is a direct descendant, advance the submodule branch by fast-forward, preserving its 2 dirty artifact files:\n\n```bash\ngit -C memory-api rev-parse --abbrev-ref HEAD\ngit -C memory-api merge --ff-only 58025265\ngit -C memory-api log --oneline -2\n```\n\nIf the submodule is NOT on branch `main`, or the `--ff-only` fails, ABORT and report — do not force anything. Report the resulting submodule HEAD.\n\nAfter this, `git status --short` in the outer repo should NOT list `memory-api` as modified (pointer and working tree now agree). Report whether it does.\n\n## Step 4 — Remove the now-merged worktree\n\nOnly if Steps 2 and 3 both succeeded:\n\n```bash\nbash tools/worktree/worktree.sh remove 742dbc65-handoff-roundtrip-assertions\n```\n\nThis runs `git worktree remove --force`, `git worktree prune`, then `git branch -d`. `--force` alone correctly handles the worktree's initialized submodules. Never add a deinit step.\n\nConfirm with `git worktree list` and `git branch --list 'agent/*'`.\n\n## Step 5 — Final state check\n\nRun `git status --short` in the outer repo. Report the total dirty count and confirm it is still store-artifact-only (no source files staged or modified by you).\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `guards`: passed | failed (if failed, name the exact guard and stop here)\n- `merge_outcome`: fast-forwarded | aborted | failed\n- `main_head_after`: <short sha + subject>\n- `recorded_submodule_pointer_after`: <short sha>\n- `submodule_head_after`: <short sha + branch>\n- `submodule_ff_outcome`: succeeded | aborted | failed\n- `memory_api_listed_as_modified`: yes | no\n- `worktree_removed`: yes | no\n- `branch_deleted`: yes | no\n- `remaining_agent_branches`: <list from git branch --list 'agent/*'>\n- `outer_dirty_total_after`: <n>\n- `dirty_are_store_artifacts_only`: yes | no\n- `blocker`: \"none\" | \"<one concrete reason>\"\n\nNothing else. No narration.",
+      "captured_at": "2026-08-06T09:19:45.211Z",
+      "event_meta": {
+        "event_id": "f2f31d82-ab90-4d48-a2dc-7468b7ec9131",
+        "parent_event_id": "d36acb5d-cf22-4076-9718-0fde5eda7567",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01GaK2APwXnMQdnQAvkahYS4"
+      }
+    },
+    {
+      "sequence": 33,
+      "role": "user",
+      "content": "You are context-isolated: you inherit nothing. Everything you need is inlined below. Implement ONE ticket, then stop.\n\nRepository root: c:/Users/linus/git/context-engine (Windows; Git Bash, unix-style forward-slash paths).\n\n## YOUR WORKTREE — all edits go here, nowhere else\n\n**Work exclusively inside: `c:/Users/linus/git/context-engine/.worktrees/59abe2da-spec-cleanup`**\nBranch: `agent/59abe2da-spec-cleanup` (already created, cut from `main`, currently clean).\n\nFiles you will edit (worktree-relative):\n- `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/spec.toml`\n- `.spec/specs/5e52039d-aabc-434d-bdf3-eca63e312476/body.md`\n\n**Absolute prohibitions:**\n- Do NOT edit anything in the main checkout `c:/Users/linus/git/context-engine/` — it has ~66 dirty store-artifact files belonging to other agents, and another unit is merging a branch into `main` concurrently. Reading from the main checkout is fine; writing to it is not.\n- Do NOT touch `.worktrees/742dbc65-handoff-roundtrip-assertions`.\n- The `memory-api/` submodule is NOT populated in your worktree. Do not try to populate it, do not run `git submodule` anything, and do not run `cargo build`/`cargo test` — the workspace cannot load without submodules and this ticket needs no compilation.\n\n## The ticket\n\n**[59abe2da D — Spec cleanup for 5e52039d: manifest traceability and readiness wording](.ticket/tickets/59abe2da-d7fe-4acb-b154-7186336fcd4c/ticket.toml)**\nFull id: `59abe2da-d7fe-4acb-b154-7186336fcd4c`. State: `new`. Workspace: `default`.\n\nVerbatim description:\n\n> Goal: Clean up spec `5e52039d` to ensure manifest traceability links and reconcile spec wording with `SessionHandoffPackage::is_implementation_ready` package-list predicates.\n>\n> Acceptance Criteria:\n> - Add or verify manifest traceability links from the spec to related tickets and handoff artifacts.\n> - Update spec wording so `is_implementation_ready` predicate aligns precisely with the spec's readiness checklist semantics.\n> - Provide concrete examples and testable checklist items that map to the predicate's expected inputs.\n>\n> Notes:\n> - Provide a migration plan for updating existing specs or doc fragments that reference older wording.\n> - Link to related tickets `25b5f3e7` and `742dbc65` for verification and reconciliation.\n\n## The spec you are cleaning up\n\n`5e52039d-aabc-434d-bdf3-eca63e312476` — slug `agent-workflow/handoff-package-schema`, title \"Handoff Package Schema\", state `reviewed`, epic `1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f`.\n\nCurrent `spec.toml` traceability field, verbatim:\n```toml\nstate = \"reviewed\"\nepic_id = \"1fbf2d84-4a6b-4d8e-a69e-45aec87ff95f\"\nslug = \"agent-workflow/handoff-package-schema\"\nticket_ids = [\"d3af78d7-9486-43c0-aae7-ddd5681d9807\", \"e4f84414-ef2e-4012-9cfe-da08fe2c077c\"]\n```\n\nRelevant existing `body.md` content, verbatim (there are other sections — read the full file first):\n\n```markdown\n## Required fields\n\n- **context_anchors** — prior findings, links, and ids needed so no search is required. Each anchor MUST carry store-qualified physical paths when referencing entities in nested stores (e.g., `memory-api/.ticket/tickets/<uuid>`, not just the root `.ticket/`). This ensures the next session can resolve cross-store references without discovery or guessing.\n\n## Readiness rule\n\nA handoff package's derived **implementation-ready** status is true only when `objective` is non-empty and `open_escalations` is empty. For a package with derived implementation-ready status, `higher_level_objective` and `upward_context` are mandatory creation-time requirements; their absence rejects creation. For a package without derived implementation-ready status, their absence emits warnings and does not prevent persistence.\n\n## Storage / durable home\n\nThe `session_handoff` record is the **source of truth** for a produced package and its required companion parameters. It is additionally **mirrored onto the target ticket** as a field/artifact so the next implementation session can load the package cold from the ticket store without a live session. The ticket mirror and the `session_handoff` record must stay consistent; the mirror carries at least `objective`, `target_tickets`, `target_files`, `validation`, and `open_escalations`. Whether this mirror becomes authoritative once handoffs are provenance edges is an open question tracked in spec c737328d, not decided here.\n\n## Rendered markdown\n\n- The rendered handoff markdown document (`handoff.md`) MUST open with the package's `higher_level_objective`, stated before the implementation-unit details.\n- The rendered handoff markdown document (`handoff.md`) MUST include an upward-context breadcrumb that presents the ordered ancestor chain from epic to phase to leaf work, including each ancestor's role, human-readable title, and clickable entity reference.\n- The rendered handoff markdown document (`handoff.md`) MUST include a per-ticket table. Each row MUST contain a clickable ticket reference with a real title, ticket-store-resolved what-it-does narrative, and the author-supplied why the ticket belongs in the handoff.\n- Every ticket reference in the rendered form MUST follow the repository Clickable Reference Policy: a forward-slash repo-root-relative markdown link with link text `{short-id} {title}`, never a backtick-wrapped bare ticket id. When a ticket cannot be resolved, rendering MUST degrade gracefully to its id and any cached title without panicking or failing handoff creation.\n```\n\n## Related entities you must link (full UUIDs, already resolved for you)\n\n- `25b5f3e7-cace-4822-a955-bc2e3202be77` — \"[session-api][handoff] Make upward context and ticket narrative reproducible in handoff markdown\" (parent ticket of this phase)\n- `742dbc65-a100-4278-9274-7d99a3e2afc4` — \"[session-api][handoff] Model and enforce upward context for implementation-ready handoffs\" (state `in-review`; implemented the readiness-gated enforcement)\n- `ba8f5528-5af3-4de2-8904-442a4691854a` — \"[session-api][handoff] Render resolved ticket narrative and upward context in handoff markdown\" (state `in-review`; implemented the rendering rules)\n- `59abe2da-d7fe-4acb-b154-7186336fcd4c` — this ticket\n- Already present: `d3af78d7-9486-43c0-aae7-ddd5681d9807`, `e4f84414-ef2e-4012-9cfe-da08fe2c077c`\n\nHandoff artifact produced under this spec (a concrete example you may cite):\n`.session/sessions/470fb360-8426-4f79-bdda-8ba89a81cf4b/handoffs/276acf70-5af5-45de-8154-5ef9b58357f7/handoff.md`\n\n## CRITICAL — ground AC2 in the real code, do not guess\n\nAC2 requires the spec's readiness wording to align **precisely** with the actual predicate. The implementation lives in the main checkout (read-only for you):\n\n`c:/Users/linus/git/context-engine/memory-api/crates/session-api/src/model/handoff.rs`\n\nUse bounded reads (`mcp_peek-mcp_peek_grep` for `is_implementation_ready`, then `mcp_peek-mcp_peek_read` on a tight window around it). Determine EXACTLY:\n- what fields the predicate actually reads,\n- the exact emptiness/non-emptiness conditions it applies,\n- whether `higher_level_objective` and `upward_context` participate in the predicate itself or only in the creation-time gate that consults it.\n\nThen make the spec's \"Readiness rule\" section state precisely that — no more, no less. **If the code and the current spec wording disagree, the CODE is the ground truth for what the predicate does**; correct the spec to match, and note the correction explicitly. If you find a genuine contradiction you cannot resolve from the code alone, stop and report it as a blocker rather than inventing wording.\n\n## What to write\n\n1. **AC1 — traceability.** Extend `spec.toml`'s `ticket_ids` to include the related tickets above. Preserve existing entries and existing TOML formatting/ordering conventions exactly. Additionally, add a traceability section to `body.md` that links the related tickets and the handoff artifact, using the repository Clickable Reference Policy: forward-slash repo-root-relative markdown links with link text `{short-id} {title}`, never a backtick-wrapped bare id.\n2. **AC2 — readiness wording.** Rewrite the \"Readiness rule\" section so it matches the verified predicate semantics exactly, and clearly separates (a) what the derived predicate itself computes from (b) what the creation-time gate does with that result.\n3. **AC3 — examples and testable checklist.** Add concrete examples mapping to the predicate's expected inputs, and a checklist of testable items. Each checklist item must be verifiable — state the observable condition, not a vague aspiration.\n4. **Notes — migration plan.** Add a short migration-plan subsection covering how existing specs or doc fragments referencing the older readiness wording get updated.\n\nKeep the edits surgical and in the existing voice of the document. Use `replace_string_in_file`-style targeted edits, not a full-file rewrite. Do not restructure unrelated sections.\n\n## Store-integrity requirement\n\nThe spec directory also contains `history.ndjson`. If the repository provides a prebuilt `spec` CLI binary (look for `target/debug/spec.exe` or `spec` on PATH) that can write to an explicit store root, PREFER using it against your worktree's store so history stays consistent. If no such binary exists, edit the files directly and inspect the existing `history.ndjson` format to decide whether an entry is warranted — if the format is ambiguous, leave `history.ndjson` untouched and say so in your report rather than fabricating an entry.\n\n## Validation\n\nDo NOT run cargo. Validate by read-back:\n- Re-read both edited files and confirm the changes landed as intended.\n- Confirm `spec.toml` is still valid TOML (parse it, e.g. via a Python one-liner, or use a spec CLI read).\n- Optionally verify via `mcp_spec-mcp_spec_get` with `{\"id\":\"5e52039d\",\"full\":true,\"workspace\":\"<absolute path to your worktree>\"}` — pass the WORKTREE path as the workspace selector so you read your edited copy, not the main checkout's.\n- Run `git status --short` inside the worktree and confirm ONLY the two intended spec files (plus possibly `history.ndjson`) are modified.\n\n**Do not commit.** Leave the changes uncommitted in the worktree; a separate unit will commit them.\n\n## Return contract — return EXACTLY this, compactly, nothing else\n\n- `predicate_ground_truth`: <the exact conditions `is_implementation_ready` evaluates, quoted from the code, with the file line range you read>\n- `spec_wording_was_accurate`: yes | no — if no, state precisely what was wrong\n- `ac1_traceability`: <what you added to spec.toml ticket_ids + what body.md traceability section now contains>\n- `ac2_readiness_wording`: <the new \"Readiness rule\" text, verbatim>\n- `ac3_examples_checklist`: <summary of examples + the checklist items added>\n- `migration_plan`: <summary of the subsection added>\n- `files_modified`: <worktree-relative paths + line counts changed>\n- `history_ndjson_handling`: written-via-cli | left-untouched-with-reason | edited-directly\n- `toml_valid`: yes | no\n- `worktree_git_status`: <verbatim git status --short output>\n- `blocker`: \"none\" | \"<one concrete reason>\"\n\nNothing else. No narration.",
+      "captured_at": "2026-08-06T09:19:45.229Z",
+      "event_meta": {
+        "event_id": "23282929-37fc-4818-8158-cf97240126eb",
+        "parent_event_id": "e809e4dc-71f2-4115-9b1f-77dd09a286b4",
+        "event_type": "user.message",
+        "subagent_run_id": "toolu_01FRtuqw81nbjghWL5ezsKbF"
+      }
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "session_id": "d8b1b8eb-26ba-45c6-b13d-22b2146c7a17",
+  "captured_at": "2026-08-06T09:19:45.229Z",
+  "tools": {
+    "grep_search": {
+      "call_count": 4,
+      "success_count": 3,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        105,
+        86,
+        77,
+        77
+      ],
+      "duration_ms_values": [
+        20008,
+        117,
+        51,
+        185
+      ]
+    },
+    "list_dir": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        94
+      ],
+      "duration_ms_values": [
+        15
+      ]
+    },
+    "mcp_compact-termi_run": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        77
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        160,
+        1066,
+        119
+      ],
+      "duration_ms_values": [
+        900262,
+        120009,
+        30009
+      ]
+    },
+    "mcp_context-mcp_execute": {
+      "call_count": 1,
+      "success_count": 0,
+      "fail_count": 1,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        60
+      ],
+      "duration_ms_values": [
+        288
+      ]
+    },
+    "mcp_ticket-mcp_get_ticket": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        94
+      ],
+      "duration_ms_values": [
+        40717
+      ]
+    },
+    "mcp_ticket-mcp_get_ticket_description": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        92
+      ],
+      "duration_ms_values": [
+        1221
+      ]
+    },
+    "mcp_ticket-mcp_list_tickets": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        62
+      ],
+      "duration_ms_values": [
+        9
+      ]
+    },
+    "read_file": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        135,
+        133,
+        141
+      ],
+      "duration_ms_values": [
+        50,
+        28,
+        16
+      ]
+    },
+    "runSubagent": {
+      "call_count": 4,
+      "success_count": 4,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        3908,
+        3623,
+        3572,
+        2949
+      ],
+      "duration_ms_values": [
+        90168,
+        178801,
+        42253,
+        1179829
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 17,
+      "success_count": 17,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        927
+      ],
+      "output_source": [
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        2193,
+        700,
+        757,
+        203,
+        121,
+        139,
+        187,
+        176,
+        150,
+        193,
+        182,
+        226,
+        181,
+        190,
+        161,
+        148,
+        242
+      ],
+      "duration_ms_values": [
+        2257,
+        341,
+        149,
+        73,
+        78,
+        84,
+        88,
+        85,
+        91,
+        114,
+        72,
+        72,
+        74,
+        176,
+        61,
+        63,
+        803
+      ]
+    }
+  }
+}

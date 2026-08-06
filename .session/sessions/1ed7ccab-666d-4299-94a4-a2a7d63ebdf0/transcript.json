@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "1ed7ccab-666d-4299-94a4-a2a7d63ebdf0",
-  "captured_at": "2026-08-05T23:02:15.109Z",
+  "captured_at": "2026-08-06T01:04:38.494Z",
   "turns": [
     {
       "sequence": 0,
@@ -9270,6 +9270,1587 @@
         "message_id": "0f470250-c801-4b72-a709-f72490d542b3",
         "tool_requests_json": [],
         "subagent_run_id": "call_U8mMgVdQdys7Ma8Tc2FyJ2cG"
+      }
+    },
+    {
+      "sequence": 287,
+      "role": "user",
+      "content": "regenerate the handoff and refine the ticket track for the implementation using the target schema to define the individual tickets. use the old schema types now but make them map to the new schema types as much as possible. plan the implementation of all features and capture decision records in the specs. add research and planning tickets to design the details of the implementation tickets before implementing them, as intended in the workflow.",
+      "captured_at": "2026-08-06T00:20:29.067Z",
+      "event_meta": {
+        "event_id": "84b68ad2-2b28-400e-8da7-5093c2e4ccc2",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 288,
+      "role": "assistant",
+      "content": "I’ll restructure the track around the target workflow roles while retaining the currently registered legacy ticket types. First I’m reading the current epic, implementation tickets, and decision register so the new research/planning gates can be attached without losing the approved contract.",
+      "captured_at": "2026-08-06T00:20:40.774Z",
+      "event_meta": {
+        "event_id": "cbf8b747-6695-491a-97da-bd50dc8e13c1",
+        "parent_event_id": "b841c665-43f3-438a-8140-712c0f3f1170",
+        "event_type": "assistant.message",
+        "message_id": "b385c721-a823-4184-8865-72ef5207c257",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_uftOvAwQ9H6jszi3aKWDB6pZ",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_04AIwJL6zEFwylHskuoEz0mL",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "7ef3f8db-d4a9-4135-99eb-3c006070a328",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_5OFhpOUy2P03t2g5TL8yr1Y1",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "1f8e6e6d-c8ea-461d-83c9-c26daf0e3cd3",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_i3cHbwRDY5nthtHtDKz7W0c8",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "abd3f280-9bd1-48cf-8503-17dd820afb30",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ymfHbE7OSIPUB0fxntc9RIaA",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "9e7a5f1a-a2ce-43ce-9c8f-bdce7cf712d2",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_z9MbTqCrVD0iChl4TsAs7bAs",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "7df984eb-c96c-4501-98fa-4e88dd28ec4e",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_nhipZ1ZSC2L65GQtvqlHnZKI",
+            "name": "mcp_ticket-mcp_list_parts",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "3bb41fb2-9907-4b54-83b1-c62a0ce96756",
+              "with_content": true
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_D7Dur2esSX6CwrmQRR8WvX4m",
+            "name": "mcp_spec-mcp_spec_section_get",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "e9c38d24-42cc-4044-8b2c-6811b918530f",
+              "name": "Full Interview Decision Register"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 289,
+      "role": "assistant",
+      "content": "The current track has six implementation-sized tickets plus a classifier research gate, but it lacks the target workflow’s explicit research and planning stages. I’m adding legacy-compatible tickets with `target_schema_type` mappings and making each implementation slice wait for its design package.",
+      "captured_at": "2026-08-06T00:21:04.591Z",
+      "event_meta": {
+        "event_id": "99dba04a-748c-4d6e-bb51-8d213dfeb26d",
+        "parent_event_id": "1d39f971-bbdb-42e1-ad14-2cb0fc09bc2e",
+        "event_type": "assistant.message",
+        "message_id": "f3e94b6e-059a-4add-9e17-d8bfa57ddd6b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XDWtD59JdcvyZ2MYfV5rYGpM",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "fields": [
+                "target_schema_type=epic",
+                "workflow_role=epic"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ffZWyeiNZmMVOnwf4ZWcsttq",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "7ef3f8db-d4a9-4135-99eb-3c006070a328",
+              "fields": [
+                "target_schema_type=implementation",
+                "workflow_role=implementation"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rNaeKlh6JR62W185of5AaQQ0",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "1f8e6e6d-c8ea-461d-83c9-c26daf0e3cd3",
+              "fields": [
+                "target_schema_type=implementation",
+                "workflow_role=implementation"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VWIfh8ornOf1Yv85tDyIvz7w",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "abd3f280-9bd1-48cf-8503-17dd820afb30",
+              "fields": [
+                "target_schema_type=implementation",
+                "workflow_role=implementation"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_l7tlu1LRCeWvU7rGeXnYSbvW",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "9e7a5f1a-a2ce-43ce-9c8f-bdce7cf712d2",
+              "fields": [
+                "target_schema_type=implementation",
+                "workflow_role=implementation"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NvKx1ck5NLCu3KWo8AgXDJEB",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "7df984eb-c96c-4501-98fa-4e88dd28ec4e",
+              "fields": [
+                "target_schema_type=implementation",
+                "workflow_role=implementation"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Br7Ti0en2EKrZNMWulvG2M2z",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "3bb41fb2-9907-4b54-83b1-c62a0ce96756",
+              "fields": [
+                "target_schema_type=testing",
+                "workflow_role=testing"
+              ]
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pqHgXavTsr68HKnV0ILSwVsg",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "d8bd4c53-898e-4984-97e5-6ef605569f91",
+              "fields": [
+                "target_schema_type=research",
+                "workflow_role=research"
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 290,
+      "role": "assistant",
+      "content": "The existing epic and work items now carry explicit target-role mappings: `epic`, `implementation`, `research`, and `testing`. Next I’m creating the missing role-specific discovery and design tickets, with their detail boundaries tied to the established implementation slices.",
+      "captured_at": "2026-08-06T00:21:26.020Z",
+      "event_meta": {
+        "event_id": "97fb9d08-f085-422b-a76b-b42f4b8a4224",
+        "parent_event_id": "44865ba2-a1b1-4968-9113-921dde881baf",
+        "event_type": "assistant.message",
+        "message_id": "d22f2f92-f4bc-49d7-b125-5729bba62f45",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_cDC0je7v0TEfZ367Nwp202Kl",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Research lifecycle engine design surfaces",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=2k",
+                "target_schema_type=research",
+                "workflow_role=research"
+              ],
+              "description": "## Objective\nResearch the existing shared schema, ticket registry, spec registry, and rule-schema surfaces needed for Track 1.\n\n## Questions to Resolve\n- Identify the smallest compatible representation for parent chains, typed lifecycle nodes/edges, refinement tunnels, terminal/cancellation semantics, and atomic reload generations.\n- Map existing directed/undirected transition call sites and rule-schema integration points.\n- Identify focused test modules and compatibility constraints.\n\n## Done\nProduce a cited implementation brief for the Track 1 planning ticket. No production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PFBNHVXJoqTkTgxDyZ1fjOvX",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Plan lifecycle engine implementation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=2k",
+                "target_schema_type=planning",
+                "workflow_role=planning"
+              ],
+              "description": "## Objective\nTurn the Track 1 research brief into an implementation-ready design for 7ef3f8db.\n\n## Required Plan\nDefine model/API changes, migration-compatible representations, validation algorithm order, atomic reload/cache invalidation boundary, governing-rule artifact, focused tests, and exact target files. Preserve declared rework/replan loops and cancellation exception.\n\n## Done\nA reviewed implementation plan resolves all Track 1 decisions without performing production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Hx53i9TVRAhu1EhNLmQJKKCd",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Research dual-format schema loader design",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=research",
+                "workflow_role=research"
+              ],
+              "description": "## Objective\nResearch loader paths, parser boundaries, diagnostics, and fixture conventions for Track 2 after the lifecycle engine contract is available.\n\n## Done\nA brief identifies combined TOML/JSON path discovery, shared parsing, atomic diagnostics, collision reporting, and fixture locations for the Track 2 planning ticket. No production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_Od4V6D1o1mJRKH2p7C5xPbAy",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Plan dual-format schema loader implementation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=planning",
+                "workflow_role=planning"
+              ],
+              "description": "## Objective\nProduce the implementation design for 1f8e6e6d from its research brief.\n\n## Required Plan\nSpecify shared TOML/JSON model parsing, lexical combined ordering, all-collision diagnostics, prior-generation retention, permanent custom-format support, fixtures, and exact validation commands.\n\n## Done\nA bounded implementation plan exists before Track 2 production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_gs3fpABFXvPDUrJEoieK8oYF",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Research resolved catalog and JSON built-ins design",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=research",
+                "workflow_role=research"
+              ],
+              "description": "## Objective\nResearch manifest generation, built-in schema sources, reproducibility, and catalog-consumer boundaries needed for Track 3.\n\n## Done\nA brief identifies current built-ins, manifest output ownership, generation inputs, JSON conversion sequence, and test/artifact conventions. No production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_2mwFVbHbfgEB276pfoD1Zo1u",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Plan resolved catalog and JSON built-ins implementation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=planning",
+                "workflow_role=planning"
+              ],
+              "description": "## Objective\nProduce the Track 3 implementation design for abd3f280.\n\n## Required Plan\nSpecify manifest records, generated concrete schema catalog, reproducibility validation, JSON built-in conversion order, deletion guard for shipped TOML, and downstream client contract.\n\n## Done\nA reviewed implementation plan exists before Track 3 production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_W6SDq0ziT4YL4obThkwcjgCB",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Research catalog-driven client integration",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=research",
+                "workflow_role=research"
+              ],
+              "description": "## Objective\nResearch CLI, MCP, HTTP, VS Code, and affected viewer/search consumers that currently assume legacy type lists or transitions.\n\n## Done\nA surface inventory identifies each hard-coded call site, compatibility adapter need, browser/E2E obligation, and non-applicable consumers for Track 4 planning. No production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_PmpKg5fbrDSFCKlOmDsfMaJ7",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Plan catalog-driven client implementation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=planning",
+                "workflow_role=planning"
+              ],
+              "description": "## Objective\nProduce the Track 4 implementation design for 9e7a5f1a.\n\n## Required Plan\nSpecify catalog retrieval/version behavior, CLI defaults, VS Code picker/commands, removal or adapters for legacy lists, transport parity, viewer/search applicability, and Playwright checks.\n\n## Done\nA reviewed implementation plan exists before Track 4 production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_lnkjoqK2IYoa5H4qPvjT9nrK",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Plan legacy migration implementation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=2k",
+                "target_schema_type=planning",
+                "workflow_role=planning"
+              ],
+              "description": "## Objective\nUse the completed classifier-research design to plan 7df984eb live migration work.\n\n## Required Plan\nDefine inventory/preflight sequencing, exemption/cutover rules, bug/epic proof handling, classifier-review flow, feature conversion, transactional batches, immutable evidence, migration completion, rollback boundaries, and focused tests.\n\n## Done\nA reviewed implementation plan exists before Track 5 production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_pOXgNh8P7lHhnhV1nf811Sv9",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Research schema modernization release validation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=research",
+                "workflow_role=research"
+              ],
+              "description": "## Objective\nResearch the release-gate evidence surfaces for Track 6 after migration design is available.\n\n## Done\nAn interface-matrix and validation-artifact brief identifies CLI, MCP, HTTP, VS Code, affected viewers, search/indexing, migration evidence, and justified exclusions. No production edits."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jUZTqa3Z2kbEUqMBIxyfv3Up",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Plan schema modernization release validation",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=planning",
+                "workflow_role=planning"
+              ],
+              "description": "## Objective\nProduce the Track 6 implementation design for 3bb41fb2.\n\n## Required Plan\nSpecify the executable all-pass matrix, Track 5 completion entry gate, corrective retry counter, latest-approved supersedes resolution, rejected-review closure/new-review rule, release-blocking behavior, and evidence persistence.\n\n## Done\nA reviewed implementation plan exists before Track 6 testing/release work."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HGZ323g6V9yirRRlNQ2soJeB",
+            "name": "mcp_ticket-mcp_create_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "type": "tracker-improvement",
+              "title": "Review schema modernization completion evidence",
+              "state": "open",
+              "fields": [
+                "priority=high",
+                "effort=1500",
+                "target_schema_type=review",
+                "workflow_role=review"
+              ],
+              "description": "## Objective\nReview final Track 6 evidence against the full decision register before the epic closes.\n\n## Acceptance Criteria\nVerify every final interview decision has recorded evidence, the all-pass matrix is present, migration completion and corrective-review rules are satisfied, and no release-blocking finding remains.\n\n## Done\nRecord a clear approve/return verdict; do not implement production changes."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 291,
+      "role": "assistant",
+      "content": "The workflow now has explicit legacy-compatible research, planning, testing, and review roles. I’m encoding the execution gates so each implementation ticket can start only after its corresponding research and planning package, while keeping the original feature order intact.",
+      "captured_at": "2026-08-06T00:21:43.199Z",
+      "event_meta": {
+        "event_id": "6922f4bd-50e4-4cc4-b954-e9cbd998ee85",
+        "parent_event_id": "2ae6834f-1f4a-461d-8da7-71b77ed91a43",
+        "event_type": "assistant.message",
+        "message_id": "d456a6dd-9307-4c80-98ba-0aaef45ef269",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FsDpfgmyDd4lhPxffG1uo0fS",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "9e450826-60e1-437f-b236-2c8839e4ab9e",
+              "to": "85012858-cbf3-40df-b55e-b82e89f72434",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_rsEUAOiNg8A6DNXvkGTx557k",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "7ef3f8db-d4a9-4135-99eb-3c006070a328",
+              "to": "9e450826-60e1-437f-b236-2c8839e4ab9e",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_G8UcLNK7YDiPbdLPzLKLCToT",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "047dffaf-21e6-4bc2-a634-d858d10d214b",
+              "to": "7ef3f8db-d4a9-4135-99eb-3c006070a328",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_zWYpTN0tZ6u3aRltzoB2YMei",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "d4233399-b986-401d-aed1-67c96dec84cf",
+              "to": "047dffaf-21e6-4bc2-a634-d858d10d214b",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_VPvMB4UIaPgEtkXRbIjbJybq",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "1f8e6e6d-c8ea-461d-83c9-c26daf0e3cd3",
+              "to": "d4233399-b986-401d-aed1-67c96dec84cf",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_eufpjQk3iFb9M2b2ER3uv6uG",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "0887b8d6-8c2a-46ee-9550-90b55720a757",
+              "to": "1f8e6e6d-c8ea-461d-83c9-c26daf0e3cd3",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_sTSLPLr3g7srxeJeqyBgpC1a",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "9019477b-586d-4f42-ad57-04e0ff6b9b53",
+              "to": "0887b8d6-8c2a-46ee-9550-90b55720a757",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_h10yBqG8GY1tXogaMtCn8ryX",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "abd3f280-9bd1-48cf-8503-17dd820afb30",
+              "to": "9019477b-586d-4f42-ad57-04e0ff6b9b53",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_T2oRcI3tRur3QAOUG5y0cOlT",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "5e1e799e-860c-43f3-ac1a-598d29780b23",
+              "to": "abd3f280-9bd1-48cf-8503-17dd820afb30",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NmMnoqPmkKF80CH03owVbZRS",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "9e2c1f17-5710-4dff-bd45-ac5cb0b4a02c",
+              "to": "5e1e799e-860c-43f3-ac1a-598d29780b23",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_QBtOVfKfOZpEbiDILuL6cGOr",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "9e7a5f1a-a2ce-43ce-9c8f-bdce7cf712d2",
+              "to": "9e2c1f17-5710-4dff-bd45-ac5cb0b4a02c",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_IeDgzJGCX0V8LmxyO4NEhcTV",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "d8bd4c53-898e-4984-97e5-6ef605569f91",
+              "to": "9e7a5f1a-a2ce-43ce-9c8f-bdce7cf712d2",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_3U0pJq2NCDJRi88vQCFnbUZo",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "9242e574-d3b5-4340-8daa-a00d8bfad155",
+              "to": "d8bd4c53-898e-4984-97e5-6ef605569f91",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_F4JJIHFDH2GKUF4rpxNVGWN9",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "7df984eb-c96c-4501-98fa-4e88dd28ec4e",
+              "to": "9242e574-d3b5-4340-8daa-a00d8bfad155",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_of4ZrqGnHtGYZm4dFtGPJply",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "2def6b85-63f6-4e00-a9c0-ae05e3369f48",
+              "to": "7df984eb-c96c-4501-98fa-4e88dd28ec4e",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1QukFvMROWFAlKGdLGVVWK8t",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "3eae33fb-7289-48fe-8151-7b2077fa810e",
+              "to": "2def6b85-63f6-4e00-a9c0-ae05e3369f48",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_TvPCHw1KsHumB5ZoaHesGJPD",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "3bb41fb2-9907-4b54-83b1-c62a0ce96756",
+              "to": "3eae33fb-7289-48fe-8151-7b2077fa810e",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_EmtlqhS6LLNY4yoC2MOsp637",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "e03eb731-877a-4498-832f-d1e41526423a",
+              "to": "3bb41fb2-9907-4b54-83b1-c62a0ce96756",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 292,
+      "role": "assistant",
+      "content": "The feature chain is now gated by research and planning all the way through final review. I’m attaching every new workflow role to the epic and recording the legacy-to-target type mapping plus the mandatory research→planning→implementation/testing/review sequence in the owning spec.",
+      "captured_at": "2026-08-06T00:21:57.125Z",
+      "event_meta": {
+        "event_id": "fd5e3055-acab-4f3c-b37f-e8e5427bc42f",
+        "parent_event_id": "4f3203ee-07b5-482b-8280-24347e7ede4c",
+        "event_type": "assistant.message",
+        "message_id": "f537cefa-30cd-4182-9661-4eae944f8b1e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_FAIiwLwt7Wj8J8qnNX90isbN",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "85012858-cbf3-40df-b55e-b82e89f72434",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1uQOUIrNTEIATNfKAmlJlOJf",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "9e450826-60e1-437f-b236-2c8839e4ab9e",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_hODL23917AxKjPcQv8SER71Z",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "047dffaf-21e6-4bc2-a634-d858d10d214b",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_thyTSNqif9bd8yI0OU6VTfmS",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "d4233399-b986-401d-aed1-67c96dec84cf",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_tEwXdB7wVDebdqpQtzGRJrEm",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "0887b8d6-8c2a-46ee-9550-90b55720a757",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_HrHY5eZBFJ1Ws2xcFdz08NeY",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "9019477b-586d-4f42-ad57-04e0ff6b9b53",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_oWlPzu7gy97X9gBVckTDid5P",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "5e1e799e-860c-43f3-ac1a-598d29780b23",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_xbYg45d5ugJrnFNV51Ayg0Cd",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "9e2c1f17-5710-4dff-bd45-ac5cb0b4a02c",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_ZtX1FnQBv1NyK6c4ncN74AE2",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "9242e574-d3b5-4340-8daa-a00d8bfad155",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_2VmjQpkd2XXqbNvyKqVtx7Tm",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "2def6b85-63f6-4e00-a9c0-ae05e3369f48",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_kkhx6fsY9h0K5sZWWVA8Bwy6",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "3eae33fb-7289-48fe-8151-7b2077fa810e",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_zkjAkvT6HwSZSvk1ZWhbtITY",
+            "name": "mcp_ticket-mcp_add_edge",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "from": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "to": "e03eb731-877a-4498-832f-d1e41526423a",
+              "kind": "depends_on"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 293,
+      "role": "assistant",
+      "content": "Every workflow-role ticket now contributes to epic completion. I’m recording the compatibility mapping and design-gate rule in the spec and epic so future agents do not mistake the temporary legacy ticket types for the target schema model.",
+      "captured_at": "2026-08-06T00:22:08.686Z",
+      "event_meta": {
+        "event_id": "30d76e35-5149-48a4-b9c6-2357c0c14f76",
+        "parent_event_id": "d331e2f9-6851-4a10-a739-b52fefc4fd99",
+        "event_type": "assistant.message",
+        "message_id": "28750209-e341-459b-b6a2-08c1d0e644e1",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fICWAVYhMnvzR5AMRjonolaP",
+            "name": "mcp_spec-mcp_spec_section_add",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "e9c38d24-42cc-4044-8b2c-6811b918530f",
+              "name": "Implementation Workflow and Role Mapping",
+              "content": "## Decision Record\n\nThe currently registered ticket schemas are legacy (`epic`, `bug`, `feature`, `task`, `tracker-improvement`). Until Track 3 installs the target schema catalog, workflow-role tickets use legacy `tracker-improvement` storage with explicit `target_schema_type` and `workflow_role` fields. This is a compatibility representation, not a semantic change.\n\n- Epic [8fdfe135 Schema modernization implementation track](.ticket/tickets/8fdfe135-e3b1-4876-b638-24154edcd78d/ticket.toml) maps to target `epic`.\n- Existing feature slices [7ef3f8db Implement directed inherited schema lifecycle engine](.ticket/tickets/7ef3f8db-d4a9-4135-99eb-3c006070a328/ticket.toml), [1f8e6e6d Add deterministic dual-format schema loading](.ticket/tickets/1f8e6e6d-c8a1-461d-83c9-c26daf0e3cd3/ticket.toml), [abd3f280 Generate resolved schema catalog and JSON built-ins](.ticket/tickets/abd3f280-9bd1-48cf-8503-17dd820afb30/ticket.toml), [9e7a5f1a Integrate schema catalog into CLI and VS Code](.ticket/tickets/9e7a5f1a-a2ce-43ce-9c8f-bdce7cf712d2/ticket.toml), and [7df984eb Inventory and migrate legacy ticket schemas](.ticket/tickets/7df984eb-c96c-4501-98fa-4e88dd28ec4e/ticket.toml) map to target `implementation`.\n- [3bb41fb2 Validate schema modernization release and repair flow](.ticket/tickets/3bb41fb2-9907-4b54-83b1-c62a0ce96756/ticket.toml) maps to target `testing`; [e03eb731 Review schema modernization completion evidence](.ticket/tickets/e03eb731-877a-4498-832f-d1e41526423a/ticket.toml) maps to target `review`.\n- Every implementation/testing slice is preceded by a role-mapped `research` ticket and a role-mapped `planning` ticket. Research produces a cited brief; planning converts the brief and binding decision register into target files, acceptance criteria, validation commands, and scope boundaries. No implementation/testing ticket begins before its planning dependency is done.\n- The complete execution chain is lifecycle-engine research -> lifecycle-engine planning -> engine implementation -> loader research -> loader planning -> loader implementation -> catalog research -> catalog planning -> catalog implementation -> client research -> client planning -> client implementation -> classifier research -> migration planning -> migration implementation -> release research -> release planning -> release testing -> completion review.\n- Research, planning, implementation, testing, and review are distinct target roles. Their current shared legacy storage type must be replaced by their target schema types only through the Track 3 catalog and Track 5 migration contracts.\n\n## Acceptance Record\nThe epic closes only after each role-mapped ticket is complete, every implementation handoff cites its preceding research/planning records, Track 6 validation passes, and the review ticket approves the final evidence."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_CmA2XBQT4q07uHMM1KOelUNA",
+            "name": "mcp_ticket-mcp_update_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "description_mode": "append",
+              "description": "\n\n## Workflow Role Contract\nUntil Track 3 introduces target schema types, legacy storage types map through `target_schema_type` and `workflow_role`. Each implementation/testing slice must have completed target-role `research` and `planning` prerequisites; final completion also requires target-role `review`. The full sequence is recorded in spec e9c38d24's Implementation Workflow and Role Mapping section."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 294,
+      "role": "assistant",
+      "content": "The workflow decision record is in place, and I caught one malformed ticket link in that new spec section before validation. I’m correcting the link, then I’ll ask a fresh reviewer to verify the role mappings, all gates, and the revised handoff target.",
+      "captured_at": "2026-08-06T00:22:18.334Z",
+      "event_meta": {
+        "event_id": "bd75a2f8-7b04-4061-b3b8-715c55de30b8",
+        "parent_event_id": "81e55da2-659d-4978-9f9a-63738112f817",
+        "event_type": "assistant.message",
+        "message_id": "e5b836d0-7b86-4237-bc4c-3543cf87d176",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_fTe8AfrYkf4LvxIR3Z1SfoCk",
+            "name": "mcp_spec-mcp_spec_section_delete",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "e9c38d24-42cc-4044-8b2c-6811b918530f",
+              "name": "Implementation Workflow and Role Mapping"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_AJGObyy520hQqiieHetIZsHL",
+            "name": "mcp_ticket-mcp_health_check",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "root": "8fdfe135-e3b1-4876-b638-24154edcd78d",
+              "depth": 6,
+              "direction": "outgoing"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 295,
+      "role": "assistant",
+      "content": "The storage health check is temporarily cost-gated for the current model, so I’ll rely on the fresh delegated review for graph validation and rerun store health through a cheaper worker afterward. I’m restoring the corrected role-mapping section now.",
+      "captured_at": "2026-08-06T00:22:33.241Z",
+      "event_meta": {
+        "event_id": "a8625948-55e6-4361-ae98-b96c5339dd0f",
+        "parent_event_id": "cfee970c-1919-4015-b18b-e50fbe001391",
+        "event_type": "assistant.message",
+        "message_id": "8356a460-2df1-4774-9337-07b76f6e4324",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_eqY9CkpzvubRsapHCkw9jWHC",
+            "name": "mcp_spec-mcp_spec_section_add",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "e9c38d24-42cc-4044-8b2c-6811b918530f",
+              "name": "Implementation Workflow and Role Mapping",
+              "content": "## Decision Record\n\nThe currently registered ticket schemas are legacy (`epic`, `bug`, `feature`, `task`, `tracker-improvement`). Until Track 3 installs the target schema catalog, workflow-role tickets use legacy `tracker-improvement` storage with explicit `target_schema_type` and `workflow_role` fields. This is a compatibility representation, not a semantic change.\n\n- Epic [8fdfe135 Schema modernization implementation track](.ticket/tickets/8fdfe135-e3b1-4876-b638-24154edcd78d/ticket.toml) maps to target `epic`.\n- Existing feature slices [7ef3f8db Implement directed inherited schema lifecycle engine](.ticket/tickets/7ef3f8db-d4a9-4135-99eb-3c006070a328/ticket.toml), [1f8e6e6d Add deterministic dual-format schema loading](.ticket/tickets/1f8e6e6d-c8ea-461d-83c9-c26daf0e3cd3/ticket.toml), [abd3f280 Generate resolved schema catalog and JSON built-ins](.ticket/tickets/abd3f280-9bd1-48cf-8503-17dd820afb30/ticket.toml), [9e7a5f1a Integrate schema catalog into CLI and VS Code](.ticket/tickets/9e7a5f1a-a2ce-43ce-9c8f-bdce7cf712d2/ticket.toml), and [7df984eb Inventory and migrate legacy ticket schemas](.ticket/tickets/7df984eb-c96c-4501-98fa-4e88dd28ec4e/ticket.toml) map to target `implementation`.\n- [3bb41fb2 Validate schema modernization release and repair flow](.ticket/tickets/3bb41fb2-9907-4b54-83b1-c62a0ce96756/ticket.toml) maps to target `testing`; [e03eb731 Review schema modernization completion evidence](.ticket/tickets/e03eb731-877a-4498-832f-d1e41526423a/ticket.toml) maps to target `review`.\n- Every implementation/testing slice is preceded by a role-mapped `research` ticket and a role-mapped `planning` ticket. Research produces a cited brief; planning converts the brief and binding decision register into target files, acceptance criteria, validation commands, and scope boundaries. No implementation/testing ticket begins before its planning dependency is done.\n- The complete execution chain is lifecycle-engine research -> lifecycle-engine planning -> engine implementation -> loader research -> loader planning -> loader implementation -> catalog research -> catalog planning -> catalog implementation -> client research -> client planning -> client implementation -> classifier research -> migration planning -> migration implementation -> release research -> release planning -> release testing -> completion review.\n- Research, planning, implementation, testing, and review are distinct target roles. Their current shared legacy storage type must be replaced by their target schema types only through the Track 3 catalog and Track 5 migration contracts.\n\n## Acceptance Record\nThe epic closes only after each role-mapped ticket is complete, every implementation handoff cites its preceding research/planning records, Track 6 validation passes, and the review ticket approves the final evidence."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 296,
+      "role": "assistant",
+      "content": "The corrected mapping is stored. I’m running an independent dry-run on the expanded graph to verify the target-role fields, research/planning gates, feature order, and the new first actionable unit before creating the replacement handoff.",
+      "captured_at": "2026-08-06T00:22:48.816Z",
+      "event_meta": {
+        "event_id": "9266fbe2-89b9-4d83-9395-11112a51552b",
+        "parent_event_id": "3c9374e4-d3ef-4f04-9ad0-7c352ab2e040",
+        "event_type": "assistant.message",
+        "message_id": "9b3cc7f9-f614-4f4e-b51e-51a81663c598",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_AyOTi27QHRWRSyptxQp89zkm",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Review Agent",
+              "model": "GPT-5.6 Terra (copilot)",
+              "description": "Review workflow-role ticket track",
+              "prompt": "Repository: c:/Users/linus/git/context-engine. Conduct a read-only dry-run review of the expanded schema-modernization ticket track. Do not edit, transition, or create artifacts.\n\nBinding design sources:\n- transcripts/05-08-2026_ticketschema-state-machines/interview.md (full final contract; superseded answers non-binding)\n- spec e9c38d24-42cc-4044-8b2c-6811b918530f, especially the sections Full Interview Decision Register and Implementation Workflow and Role Mapping.\n\nTrack:\n- Epic 8fdfe135 maps to target `epic`.\n- Existing implementation-mapped tickets: 7ef3f8db engine; 1f8e6e6d loader; abd3f280 catalog/JSON built-ins; 9e7a5f1a clients; 7df984eb migration.\n- Existing testing-mapped ticket: 3bb41fb2 release validation.\n- Existing research-mapped classifier ticket: d8bd4c53.\n- New legacy-storage tickets must have target_schema_type/workflow_role fields: research 85012858; planning 9e450826; research 047dffaf; planning d4233399; research 0887b8d6; planning 9019477b; research 5e1e799e; planning 9e2c1f17; planning 9242e574; research 2def6b85; planning 3eae33fb; review e03eb731.\n\nExpected strict order:\n85012858 -> 9e450826 -> 7ef3f8db -> 047dffaf -> d4233399 -> 1f8e6e6d -> 0887b8d6 -> 9019477b -> abd3f280 -> 5e1e799e -> 9e2c1f17 -> 9e7a5f1a -> d8bd4c53 -> 9242e574 -> 7df984eb -> 2def6b85 -> 3eae33fb -> 3bb41fb2 -> e03eb731, where A -> B means B depends_on A.\n\nVerify: (1) every implementation/testing feature is preceded by research and planning; (2) each legacy tracker-improvement role maps explicitly to target role; (3) all final interview decisions retain owning implementation/testing tracks; (4) the epic depends on all role tickets; (5) the first actionable ticket is 85012858 research, not implementation; and (6) no unresolved user decision exists. Return only verdict pass|fail; findings; dependency/order verdict; first actionable ticket; handoff readiness."
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_1qJSxSmXnPiQH5KfityRdvLX",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Explore Agent",
+              "model": "GPT-5 mini (copilot)",
+              "description": "Check expanded track health",
+              "prompt": "Repository: c:/Users/linus/git/context-engine. Read-only validation only. Run ticket health scoped to epic 8fdfe135-e3b1-4876-b638-24154edcd78d and inspect its dependency graph enough to confirm no cycle/dangling edge and that 85012858-cbf3-40df-b55e-b82e89f72434 is the earliest actionable leaf. Do not edit anything. Return exactly: health pass|fail; graph pass|fail; earliest actionable id; concise findings."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 297,
+      "role": "user",
+      "content": "Repository: c:/Users/linus/git/context-engine. Conduct a read-only dry-run review of the expanded schema-modernization ticket track. Do not edit, transition, or create artifacts.\n\nBinding design sources:\n- transcripts/05-08-2026_ticketschema-state-machines/interview.md (full final contract; superseded answers non-binding)\n- spec e9c38d24-42cc-4044-8b2c-6811b918530f, especially the sections Full Interview Decision Register and Implementation Workflow and Role Mapping.\n\nTrack:\n- Epic 8fdfe135 maps to target `epic`.\n- Existing implementation-mapped tickets: 7ef3f8db engine; 1f8e6e6d loader; abd3f280 catalog/JSON built-ins; 9e7a5f1a clients; 7df984eb migration.\n- Existing testing-mapped ticket: 3bb41fb2 release validation.\n- Existing research-mapped classifier ticket: d8bd4c53.\n- New legacy-storage tickets must have target_schema_type/workflow_role fields: research 85012858; planning 9e450826; research 047dffaf; planning d4233399; research 0887b8d6; planning 9019477b; research 5e1e799e; planning 9e2c1f17; planning 9242e574; research 2def6b85; planning 3eae33fb; review e03eb731.\n\nExpected strict order:\n85012858 -> 9e450826 -> 7ef3f8db -> 047dffaf -> d4233399 -> 1f8e6e6d -> 0887b8d6 -> 9019477b -> abd3f280 -> 5e1e799e -> 9e2c1f17 -> 9e7a5f1a -> d8bd4c53 -> 9242e574 -> 7df984eb -> 2def6b85 -> 3eae33fb -> 3bb41fb2 -> e03eb731, where A -> B means B depends_on A.\n\nVerify: (1) every implementation/testing feature is preceded by research and planning; (2) each legacy tracker-improvement role maps explicitly to target role; (3) all final interview decisions retain owning implementation/testing tracks; (4) the epic depends on all role tickets; (5) the first actionable ticket is 85012858 research, not implementation; and (6) no unresolved user decision exists. Return only verdict pass|fail; findings; dependency/order verdict; first actionable ticket; handoff readiness.",
+      "captured_at": "2026-08-06T00:22:49.521Z",
+      "event_meta": {
+        "event_id": "73969caa-012c-4e89-8383-0bcbe89de652",
+        "parent_event_id": "846de598-8237-4e1d-95cc-1ab8164ec94b",
+        "event_type": "user.message",
+        "subagent_run_id": "call_AyOTi27QHRWRSyptxQp89zkm"
+      }
+    },
+    {
+      "sequence": 298,
+      "role": "user",
+      "content": "Repository: c:/Users/linus/git/context-engine. Read-only validation only. Run ticket health scoped to epic 8fdfe135-e3b1-4876-b638-24154edcd78d and inspect its dependency graph enough to confirm no cycle/dangling edge and that 85012858-cbf3-40df-b55e-b82e89f72434 is the earliest actionable leaf. Do not edit anything. Return exactly: health pass|fail; graph pass|fail; earliest actionable id; concise findings.",
+      "captured_at": "2026-08-06T00:22:49.554Z",
+      "event_meta": {
+        "event_id": "b474dc3f-8a52-4ac1-8e1a-dbfefd236661",
+        "parent_event_id": "24e1cf7d-1d87-481f-8453-f70f98082425",
+        "event_type": "user.message",
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 299,
+      "role": "assistant",
+      "content": "I’ll inspect the binding interview/spec, ticket metadata, and dependency graph without changing any repository state, then compare the requested chain and role mappings against the recorded artifacts.",
+      "captured_at": "2026-08-06T00:22:56.257Z",
+      "event_meta": {
+        "event_id": "754a19d4-9b61-4747-89a8-1d7b1f7dfe37",
+        "parent_event_id": "ab363010-5aab-40c1-9c79-a03f4286e0f5",
+        "event_type": "assistant.message",
+        "message_id": "4f425b82-f85d-4bc2-bc18-6940dcb7c36d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_XJFl0hgBjPW4vdE8x3hv3lMx",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk rg -n -C 2 \"(Full Interview Decision Register|Implementation Workflow and Role Mapping|85012858|8fdfe135|e9c38d24)\" transcripts/05-08-2026_ticketschema-state-machines/interview.md .spec .ticket --glob '!target/**'",
+              "explanation": "Locates the binding decision sections and the ticket/spec artifacts needed for the dry-run review.",
+              "goal": "Anchor review evidence",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 300,
+      "role": "assistant",
+      "content": "I'll run the ticket health check and fetch the epic's dependency subgraph.",
+      "captured_at": "2026-08-06T00:23:03.262Z",
+      "event_meta": {
+        "event_id": "e3030117-d95a-4a14-94f8-f1b41318bbc7",
+        "parent_event_id": "767463b2-18f1-4a1d-a815-23059612a128",
+        "event_type": "assistant.message",
+        "message_id": "e4d78bb4-d937-4a97-ba5d-d97cf9eb42c2",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_5ncke2kwa1Ub8ORL66tayQzm",
+            "name": "mcp_ticket-mcp_health_check",
+            "arguments": {
+              "caller_model": "gpt-5 mini",
+              "workspace": "default",
+              "root": "8fdfe135-e3b1-4876-b638-24154edcd78d"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_jGEO3GEEmJWkghkOnMPTm1Iw",
+            "name": "mcp_ticket-mcp_subgraph",
+            "arguments": {
+              "caller_model": "gpt-5 mini",
+              "workspace": "default",
+              "root": "8fdfe135-e3b1-4876-b638-24154edcd78d"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 301,
+      "role": "assistant",
+      "content": "The ticket history shows the track was expanded with the requested role fields and dependencies; I’m now checking the current manifests rather than history, plus the binding decision register, so the verdict reflects the actual review surface.",
+      "captured_at": "2026-08-06T00:23:05.792Z",
+      "event_meta": {
+        "event_id": "499af72f-9862-425e-bdf8-2625c9e35ac8",
+        "parent_event_id": "c4a7fb5f-58b2-4369-b67a-8525df6cb1ca",
+        "event_type": "assistant.message",
+        "message_id": "9c30de4a-db6a-4c89-8443-b6c9d5998298",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_UwQvpG8m8cfG4hI3Bme8j2ez",
+            "name": "run_in_terminal",
+            "arguments": {
+              "command": "rtk bash -lc 'for id in 8fdfe135 7ef3f8db 1f8e6e6d abd3f280 9e7a5f1a 7df984eb 3bb41fb2 d8bd4c53 85012858 9e450826 047dffaf d4233399 0887b8d6 9019477b 5e1e799e 9e2c1f17 9242e574 2def6b85 3eae33fb e03eb731; do f=$(find .ticket/tickets -path \"*$id*/ticket.toml\" -print -quit); printf \"\\n=== %s ===\\n\" \"$id\"; rg -n \"^(title|state|type|target_schema_type|workflow_role|depends_on)\\s*=\" \"$f\"; done'",
+              "explanation": "Reads current metadata and dependencies for every ticket in the requested modernization track.",
+              "goal": "Verify track manifest state",
+              "mode": "sync"
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 302,
+      "role": "assistant",
+      "content": "The current manifests exactly encode the requested 19-node chain, and the epic lists all 19 role tickets as prerequisites. I’m making the final pass over the contractual decision register to check that no implementation or validation obligation fell out of the track.",
+      "captured_at": "2026-08-06T00:23:21.355Z",
+      "event_meta": {
+        "event_id": "66b0920e-eeaa-49d8-805e-6b39425b3bc1",
+        "parent_event_id": "20408c9a-577f-4572-ba51-468534a11726",
+        "event_type": "assistant.message",
+        "message_id": "e5d8e05d-a611-4e29-a9ac-42ea83c98566",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_qcGNGjVt3qPBnoZDjFnRAUBk",
+            "name": "read_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\AppData\\Roaming\\Code\\User\\workspaceStorage\\8c555ca5a1e8e713994831dc7a55167b\\GitHub.copilot-chat\\chat-session-resources\\1ed7ccab-666d-4299-94a4-a2a7d63ebdf0\\call_iktGrlyUcABgDXnizGn4Z60t__vscode-1785974525340\\content.txt",
+              "startLine": 1,
+              "endLine": 220
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 303,
+      "role": "assistant",
+      "content": "verdict: pass\n\nfindings: none.\n\ndependency/order verdict: pass. All 19 tickets form the required strict dependency chain; epic [8fdfe135 Schema modernization implementation track](.ticket/tickets/8fdfe135-e3b1-4876-b638-24154edcd78d/ticket.toml) depends on every role ticket.\n\nfirst actionable ticket: [85012858 Research lifecycle engine design surfaces](.ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml), target role `research`.\n\nhandoff readiness: ready. Implementation/testing tracks have research and planning predecessors; legacy storage mappings are explicit; final decisions retain owning tracks; no unresolved user decision exists.",
+      "captured_at": "2026-08-06T00:23:41.854Z",
+      "event_meta": {
+        "event_id": "5881bd86-2fb4-434b-b2e3-ed39ebc85f1b",
+        "parent_event_id": "43714ae1-cd3f-4300-a9d5-3f1831e9a746",
+        "event_type": "assistant.message",
+        "message_id": "3964332d-158f-4e10-83b5-a16ab90deb04",
+        "tool_requests_json": [],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 304,
+      "role": "assistant",
+      "content": "health pass; graph pass; 85012858-cbf3-40df-b55e-b82e89f72434; Health check returned 0 findings; subgraph has no cycles or dangling edges; node 85012858 is a leaf (no outgoing dependencies).",
+      "captured_at": "2026-08-06T00:24:53.447Z",
+      "event_meta": {
+        "event_id": "af33b32d-b517-4d1b-a191-0e48647b1404",
+        "parent_event_id": "84ad3036-4864-4e42-b780-b9d574643596",
+        "event_type": "assistant.message",
+        "message_id": "db3c9447-5c3e-4b68-b494-08a811d65c80",
+        "tool_requests_json": [],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 305,
+      "role": "assistant",
+      "content": "The independent review and scoped health both pass. The workflow now correctly starts with research ticket [85012858 Research lifecycle engine design surfaces](.ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml), so I’m generating a new handoff for that discovery step rather than prematurely handing off implementation.",
+      "captured_at": "2026-08-06T00:25:07.119Z",
+      "event_meta": {
+        "event_id": "b16cffbd-97e0-42ae-ac38-337ce46c3e07",
+        "parent_event_id": "5243842c-fe2d-46f9-8370-a4e4a492017e",
+        "event_type": "assistant.message",
+        "message_id": "6a9e0e1a-1c1e-423c-b2cf-97e9c4ebe35b",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_uDKf7a5BIY4SZAjfAuh1jx3m",
+            "name": "runSubagent",
+            "arguments": {
+              "agentName": "Handoff Agent",
+              "model": "GPT-5 mini (copilot)",
+              "description": "Package lifecycle research handoff",
+              "prompt": "Repository: c:/Users/linus/git/context-engine. Generate a compact forward handoff for the first actionable research ticket only. Do not edit artifacts.\n\nTrack is verified healthy and ready. Target ticket: 85012858-cbf3-40df-b55e-b82e89f72434, Research lifecycle engine design surfaces, legacy storage `tracker-improvement` mapped by fields to target role `research`. Its successor is planning ticket 9e450826-60e1-437f-b236-2c8839e4ab9e; implementation ticket 7ef3f8db must not begin before both research and planning finish.\n\nBinding context: spec e9c38d24-42cc-4044-8b2c-6811b918530f and transcripts/05-08-2026_ticketschema-state-machines/interview.md. Research scope: existing shared schema, ticket registry, spec registry, rule-schema integration, lifecycle graph call sites, relation graph separation, parent inheritance, cancellation exception, atomic reload/cache boundaries, and focused test locations. Research produces a cited brief only; no production edits or implementation tests.\n\nReturn exactly JSON with objective, target_tickets, target_files, decisions, validation, non_goals, context_anchors, open_escalations, risk_notes, next_after. `open_escalations` must be empty. Do not invent exact target files or unresolved decisions."
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_1qJSxSmXnPiQH5KfityRdvLX"
+      }
+    },
+    {
+      "sequence": 306,
+      "role": "user",
+      "content": "Repository: c:/Users/linus/git/context-engine. Generate a compact forward handoff for the first actionable research ticket only. Do not edit artifacts.\n\nTrack is verified healthy and ready. Target ticket: 85012858-cbf3-40df-b55e-b82e89f72434, Research lifecycle engine design surfaces, legacy storage `tracker-improvement` mapped by fields to target role `research`. Its successor is planning ticket 9e450826-60e1-437f-b236-2c8839e4ab9e; implementation ticket 7ef3f8db must not begin before both research and planning finish.\n\nBinding context: spec e9c38d24-42cc-4044-8b2c-6811b918530f and transcripts/05-08-2026_ticketschema-state-machines/interview.md. Research scope: existing shared schema, ticket registry, spec registry, rule-schema integration, lifecycle graph call sites, relation graph separation, parent inheritance, cancellation exception, atomic reload/cache boundaries, and focused test locations. Research produces a cited brief only; no production edits or implementation tests.\n\nReturn exactly JSON with objective, target_tickets, target_files, decisions, validation, non_goals, context_anchors, open_escalations, risk_notes, next_after. `open_escalations` must be empty. Do not invent exact target files or unresolved decisions.",
+      "captured_at": "2026-08-06T00:25:07.807Z",
+      "event_meta": {
+        "event_id": "52676191-a018-42ea-8195-329411b2288d",
+        "parent_event_id": "27b24c80-19a7-49ab-8dbf-d43bb10e4379",
+        "event_type": "user.message",
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 307,
+      "role": "assistant",
+      "content": "I'll search the repo for the spec id and the transcript file to confirm their paths.",
+      "captured_at": "2026-08-06T00:25:17.853Z",
+      "event_meta": {
+        "event_id": "c5907929-0ffd-4760-b2af-2a361b27a0a0",
+        "parent_event_id": "bd504df6-15d7-4f09-8da2-fd608538e6df",
+        "event_type": "assistant.message",
+        "message_id": "4ff9c69c-3999-4477-b9d6-d144cc6e9745",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_HguR5zw4dMPYIxvE2Q5lyxCp",
+            "name": "grep_search",
+            "arguments": {
+              "query": "e9c38d24-42cc-4044-8b2c-6811b918530f",
+              "isRegexp": false,
+              "includePattern": "**/*",
+              "maxResults": 50
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 308,
+      "role": "assistant",
+      "content": "Now confirming the transcript file path exists.",
+      "captured_at": "2026-08-06T00:25:21.798Z",
+      "event_meta": {
+        "event_id": "1c3edda3-41f2-4424-a256-a4caa8ea82f6",
+        "parent_event_id": "03af006e-36f9-451c-8251-ec579f5f1acf",
+        "event_type": "assistant.message",
+        "message_id": "60177755-6861-4e35-97b2-683e1c167233",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_4ynKXyrN9IcfBaRLxrgDPtkc",
+            "name": "file_search",
+            "arguments": {
+              "query": "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+              "maxResults": 20
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 309,
+      "role": "assistant",
+      "content": "I'll verify the full implementation ticket id referenced in the repo to ensure accuracy.",
+      "captured_at": "2026-08-06T00:25:51.052Z",
+      "event_meta": {
+        "event_id": "8fdd196a-b566-4a95-bae6-763325002c54",
+        "parent_event_id": "1ab5861a-2647-4255-923a-2d665be22d01",
+        "event_type": "assistant.message",
+        "message_id": "4e23d789-2e90-4837-a250-50b147f11df0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_a45MnwK38ywKbntqjR6x8qmf",
+            "name": "grep_search",
+            "arguments": {
+              "query": "7ef3f8db",
+              "isRegexp": false,
+              "includePattern": "**/*",
+              "maxResults": 20
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 310,
+      "role": "assistant",
+      "content": "The new handoff correctly targets research, but I’m removing a speculative “spec owner acknowledgement” requirement before persisting it. The persisted handoff will require only the documented brief and the planning dependency already encoded in the graph.",
+      "captured_at": "2026-08-06T00:26:29.604Z",
+      "event_meta": {
+        "event_id": "da1387a7-237e-4b1e-9d7b-adcfd9b54982",
+        "parent_event_id": "31bdfa9c-2cf1-48ca-b0c6-7d1310b7fdf2",
+        "event_type": "assistant.message",
+        "message_id": "616f8670-782d-4eba-9fb5-b60093fcec0f",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_ifCyMQpstM5IfKlPTn5kpq7N",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "workspace_session_id": "1ed7ccab-666d-4299-94a4-a2a7d63ebdf0",
+              "predecessor_handoff": "16c6bc36-613d-4fd9-860f-303f17064ceb",
+              "objective": "Produce the cited lifecycle-engine design-surface research brief required before planning ticket 9e450826 and implementation ticket 7ef3f8db.",
+              "target_tickets": [
+                "85012858-cbf3-40df-b55e-b82e89f72434"
+              ],
+              "target_files": [
+                "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/body.md"
+              ],
+              "decisions": [
+                "Research ticket 85012858 is stored as legacy tracker-improvement but maps explicitly to target schema type research through target_schema_type and workflow_role fields.",
+                "The research brief must preserve the final interview contract; superseded interview entries are non-binding.",
+                "Research maps existing shared schema, ticket/spec/rule registries, lifecycle call sites, relation graph separation, strict parent inheritance, cancellation terminal exception, atomic reload/cache boundaries, and focused test locations.",
+                "Research makes no production edits or new design decisions. Planning ticket 9e450826 converts the cited brief into the bounded implementation plan for 7ef3f8db.",
+                "Implementation ticket 7ef3f8db cannot begin until both 85012858 research and 9e450826 planning are complete."
+              ],
+              "validation": [],
+              "non_goals": [
+                "Do not edit production code, create implementation tests, or run implementation validation.",
+                "Do not perform the Track 1 implementation, loader work, catalog conversion, client integration, migration, or release work.",
+                "Do not transition tickets as part of the research brief."
+              ],
+              "context_anchors": [
+                "Authoritative final-interview source: transcripts/05-08-2026_ticketschema-state-machines/interview.md.",
+                "Owning spec e9c38d24-42cc-4044-8b2c-6811b918530f contains the Full Interview Decision Register and Implementation Workflow and Role Mapping.",
+                "Epic 8fdfe135-e3b1-4876-b638-24154edcd78d is healthy; independent review confirmed the full research -> planning -> implementation/testing -> review chain.",
+                "Successor planning ticket: 9e450826-60e1-437f-b236-2c8839e4ab9e. Gated implementation ticket: 7ef3f8db-d4a9-4135-99eb-3c006070a328."
+              ],
+              "open_escalations": [],
+              "risk_notes": "Atomic reload/cache semantics, parent inheritance compatibility, and lifecycle-vs-relation graph separation are the research brief's high-risk boundaries. Record exact existing owners and test seams; defer solutions to the planning ticket."
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 311,
+      "role": "assistant",
+      "content": "The session store accepts only file-path context anchors, not prose notes. I’m replacing the narrative anchors with the actual spec, transcript, and ticket files, then persisting the research handoff.",
+      "captured_at": "2026-08-06T00:26:36.982Z",
+      "event_meta": {
+        "event_id": "d129153b-d43b-4b5d-8efe-58f0a8919af0",
+        "parent_event_id": "1a16aa0b-6b4c-4434-a16e-5ee2d7e5fbaa",
+        "event_type": "assistant.message",
+        "message_id": "15dac74c-d296-4fb6-89a4-5ff3bbc87b52",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_SBjurikMfzWIEWYOVMufoplx",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "workspace_session_id": "1ed7ccab-666d-4299-94a4-a2a7d63ebdf0",
+              "predecessor_handoff": "16c6bc36-613d-4fd9-860f-303f17064ceb",
+              "objective": "Produce the cited lifecycle-engine design-surface research brief required before planning ticket 9e450826 and implementation ticket 7ef3f8db.",
+              "target_tickets": [
+                "85012858-cbf3-40df-b55e-b82e89f72434"
+              ],
+              "target_files": [
+                "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/body.md"
+              ],
+              "decisions": [
+                "Research ticket 85012858 is stored as legacy tracker-improvement but maps explicitly to target schema type research through target_schema_type and workflow_role fields.",
+                "The research brief must preserve the final interview contract; superseded interview entries are non-binding.",
+                "Research maps existing shared schema, ticket/spec/rule registries, lifecycle call sites, relation graph separation, strict parent inheritance, cancellation terminal exception, atomic reload/cache boundaries, and focused test locations.",
+                "Research makes no production edits or new design decisions. Planning ticket 9e450826 converts the cited brief into the bounded implementation plan for 7ef3f8db.",
+                "Implementation ticket 7ef3f8db cannot begin until both 85012858 research and 9e450826 planning are complete."
+              ],
+              "validation": [],
+              "non_goals": [
+                "Do not edit production code, create implementation tests, or run implementation validation.",
+                "Do not perform the Track 1 implementation, loader work, catalog conversion, client integration, migration, or release work.",
+                "Do not transition tickets as part of the research brief."
+              ],
+              "context_anchors": [
+                "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+                ".ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml",
+                ".ticket/tickets/9e450826-60e1-437f-b236-2c8839e4ab9e/ticket.toml",
+                ".ticket/tickets/7ef3f8db-d4a9-4135-99eb-3c006070a328/ticket.toml"
+              ],
+              "open_escalations": [],
+              "risk_notes": "Atomic reload/cache semantics, parent inheritance compatibility, and lifecycle-vs-relation graph separation are the research brief's high-risk boundaries. Record exact existing owners and test seams; defer solutions to the planning ticket."
+            },
+            "type": "function"
+          }
+        ],
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 312,
+      "role": "assistant",
+      "content": "- **Track:** [8fdfe135 Schema modernization implementation track](.ticket/tickets/8fdfe135-e3b1-4876-b638-24154edcd78d/ticket.toml)\n- **Phase outcomes:** Review: expanded workflow-role track passed independent review and scoped health.\n- **Phase outcomes:** Interview: none required; all implementation decisions remain in [e9c38d24 Schema modernization lifecycle and migration](.spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml).\n- **Phase outcomes:** Commit: blocked on `main`; repository policy requires an isolated feature worktree.\n- **Phase outcomes:** Handoff: regenerated for the first research step.\n- **Review findings:**\n  - Role mapping → legacy `tracker-improvement` tickets now explicitly map to target `research`, `planning`, `implementation`, `testing`, or `review`.\n  - Workflow gates → every implementation/testing slice now has research and planning predecessors.\n  - Dependency chain → `research → planning → implementation` through final testing and review passes.\n  - Health → zero findings; [85012858 Research lifecycle engine design surfaces](.ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml) is first actionable.\n- **Ticket transitions:** created 12 role-mapped research/planning/review tickets and updated target-role fields on existing track tickets.\n- **Commits:** none\n- **Handoff package:** [6083cbab research handoff](.session/sessions/1ed7ccab-666d-4299-94a4-a2a7d63ebdf0/handoffs/6083cbab-7698-4cd3-a4e4-ff525526f8d7) — produce the lifecycle-engine design-surface brief.\n- **Next actions:** Complete [85012858 Research lifecycle engine design surfaces](.ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml), then execute [9e450826 Plan lifecycle engine implementation](.ticket/tickets/9e450826-60e1-437f-b236-2c8839e4ab9e/ticket.toml) before starting [7ef3f8db Implement directed inherited schema lifecycle engine](.ticket/tickets/7ef3f8db-d4a9-4135-99eb-3c006070a328/ticket.toml).",
+      "captured_at": "2026-08-06T00:26:44.826Z",
+      "event_meta": {
+        "event_id": "77e77414-4f30-4886-bc24-49406314496f",
+        "parent_event_id": "b892b5b2-8d22-4df9-b242-5437122a6c9b",
+        "event_type": "assistant.message",
+        "message_id": "5a84fc82-66f7-40f2-8da2-ed73f8f62ace",
+        "tool_requests_json": [],
+        "subagent_run_id": "call_uDKf7a5BIY4SZAjfAuh1jx3m"
+      }
+    },
+    {
+      "sequence": 313,
+      "role": "user",
+      "content": "the handoff generation has been updated with a new schema. generate the handoff again in the new schema.",
+      "captured_at": "2026-08-06T01:03:25Z",
+      "event_meta": {
+        "event_id": "78044bec-0fd7-452f-b908-2a10289ae167",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 314,
+      "role": "assistant",
+      "content": "I’ll regenerate the active research handoff using the updated session schema, carrying forward the verified role mapping, upstream epic/spec context, and the research-specific validation obligations.",
+      "captured_at": "2026-08-06T01:03:35.142Z",
+      "event_meta": {
+        "event_id": "43351c3a-eedc-4d41-b1b3-57debc3bc13c",
+        "parent_event_id": "c661bf81-eab1-4a36-9d43-797f2adc5b55",
+        "event_type": "assistant.message",
+        "message_id": "0b8cbfd2-4159-427a-841b-65d8bd610ce0",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_U7CGy2uEumHWcIrY57keYd0U",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "85012858-cbf3-40df-b55e-b82e89f72434",
+              "view": "plan"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_NGECoPwEtcmdoGtrLSm7OYiU",
+            "name": "mcp_ticket-mcp_get_ticket",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "9e450826-60e1-437f-b236-2c8839e4ab9e",
+              "view": "summary"
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_l9wk5tutwItD62DiVrcxdKk0",
+            "name": "mcp_spec-mcp_spec_get",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "id": "e9c38d24-42cc-4044-8b2c-6811b918530f",
+              "full": false
+            },
+            "type": "function"
+          },
+          {
+            "toolCallId": "call_LT3D5SgEJ3oIBK4HZtnRTQJl",
+            "name": "mcp_session-mcp_session_runtime_view",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "workspace_session_id": "1ed7ccab-666d-4299-94a4-a2a7d63ebdf0"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 315,
+      "role": "assistant",
+      "content": "The active unit is still the role-mapped research ticket, with planning ticket [9e450826 Plan lifecycle engine implementation](.ticket/tickets/9e450826-60e1-437f-b236-2c8839e4ab9e) as its direct successor. I’m writing the replacement handoff with the new `upward_context`, structured target-ticket rationale, and explicit scope fields.",
+      "captured_at": "2026-08-06T01:04:29.925Z",
+      "event_meta": {
+        "event_id": "66b54bf6-45e9-4ab3-b8aa-4a98182916be",
+        "parent_event_id": "7a06dc62-e66e-4f42-8685-118433b5ad5a",
+        "event_type": "assistant.message",
+        "message_id": "e3fea451-8cf1-4ddc-93c6-e62c1eccc68e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "call_tICjZizxMfo6MYZa60x9PMhI",
+            "name": "mcp_session-mcp_session_handoff",
+            "arguments": {
+              "caller_model": "claude-sonnet-5",
+              "workspace": "c:\\Users\\linus\\git\\context-engine",
+              "workspace_session_id": "1ed7ccab-666d-4299-94a4-a2a7d63ebdf0",
+              "predecessor_handoff": "6083cbab-7698-4cd3-a4e4-ff525526f8d7",
+              "higher_level_objective": "Deliver the schema-modernization program defined by the full interview contract: replace legacy flat schema workflows with inherited directed lifecycle schemas, compatible loading, generated catalog/client integration, auditable migration, and release validation.",
+              "objective": "Produce the cited lifecycle-engine design-surface research brief required before planning ticket 9e450826 and implementation ticket 7ef3f8db.",
+              "target_tickets": [
+                {
+                  "id": "85012858-cbf3-40df-b55e-b82e89f72434",
+                  "why": "First actionable role-mapped research unit. The brief supplies the concrete evidence and design-surface map that the successor planning ticket requires.",
+                  "state": "open",
+                  "acceptance_criteria": [
+                    "Map shared schema, ticket/spec/rule registries, lifecycle call sites, relation-graph separation, parent inheritance, cancellation exception, atomic reload/cache boundaries, and focused test locations.",
+                    "Produce a cited brief only; do not make production edits."
+                  ]
+                },
+                {
+                  "id": "9e450826-60e1-437f-b236-2c8839e4ab9e",
+                  "why": "Direct successor target-role planning unit; it translates the completed research brief into the bounded Track 1 implementation plan.",
+                  "state": "open",
+                  "acceptance_criteria": [
+                    "Define model/API changes, validation ordering, atomic reload/cache boundary, governing-rule artifact, tests, and exact target files.",
+                    "Do not begin Track 1 production edits."
+                  ]
+                }
+              ],
+              "target_files": [
+                "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/body.md",
+                ".ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/parts/"
+              ],
+              "decisions": [
+                "The full interview is authoritative; superseded interview answers are non-binding.",
+                "Ticket 85012858 currently uses legacy tracker-improvement storage but maps to target research through target_schema_type and workflow_role.",
+                "Research records existing owners, seams, and compatibility constraints without making new product decisions or production changes.",
+                "The Track 1 lifecycle-engine implementation cannot begin until both research ticket 85012858 and planning ticket 9e450826 complete."
+              ],
+              "non_goals": [
+                "Production code edits, implementation tests, or implementation validation.",
+                "Track 1 implementation and all downstream loader, catalog, client, migration, and release work.",
+                "Ticket state transitions performed by the research unit."
+              ],
+              "context_anchors": [
+                "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+                ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+                ".ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml",
+                ".ticket/tickets/9e450826-60e1-437f-b236-2c8839e4ab9e/ticket.toml",
+                ".ticket/tickets/7ef3f8db-d4a9-4135-99eb-3c006070a328/ticket.toml"
+              ],
+              "upward_context": [
+                {
+                  "entity_urn": "ce://default/spec/e9c38d24-42cc-4044-8b2c-6811b918530f",
+                  "title": "Schema modernization lifecycle and migration",
+                  "role": "parent"
+                },
+                {
+                  "entity_urn": "ce://default/ticket/8fdfe135-e3b1-4876-b638-24154edcd78d",
+                  "title": "Schema modernization implementation track",
+                  "role": "epic"
+                },
+                {
+                  "entity_urn": "ce://default/ticket/7ef3f8db-d4a9-4135-99eb-3c006070a328",
+                  "title": "Implement directed inherited schema lifecycle engine",
+                  "role": "phase"
+                }
+              ],
+              "validation": [],
+              "open_escalations": [],
+              "risk_notes": "Atomic reload/cache semantics, parent inheritance compatibility, and lifecycle-vs-relation graph separation are the research brief's high-risk boundaries. Record exact existing owners and test seams; defer solution selection to the planning ticket."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 316,
+      "role": "assistant",
+      "content": "Regenerated the handoff using the new schema.\n\n[aa3de4ef research handoff](.session/sessions/1ed7ccab-666d-4299-94a4-a2a7d63ebdf0/handoffs/aa3de4ef-6d9a-4f02-a5d2-d2d37d171db4) supersedes the prior handoff and includes structured target tickets, `higher_level_objective`, `upward_context`, acceptance criteria, non-goals, and risk notes.\n\nThe active unit remains [85012858 Research lifecycle engine design surfaces](.ticket/tickets/85012858-cbf3-40df-b55e-b82e89f72434/ticket.toml); [9e450826 Plan lifecycle engine implementation](.ticket/tickets/9e450826-60e1-437f-b236-2c8839e4ab9e) is captured as the dependent planning successor.",
+      "captured_at": "2026-08-06T01:04:38.494Z",
+      "event_meta": {
+        "event_id": "40fadb47-0be0-4e67-b620-685f12386473",
+        "parent_event_id": "81f17f92-d91e-49fa-95df-ac9edf78ce4d",
+        "event_type": "assistant.message",
+        "message_id": "81548e81-aed1-4353-ae25-d2ca702ebb8b",
+        "tool_requests_json": []
       }
     }
   ]

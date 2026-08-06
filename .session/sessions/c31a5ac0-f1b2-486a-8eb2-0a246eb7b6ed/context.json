@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "workspace_session_id": "c31a5ac0-f1b2-486a-8eb2-0a246eb7b6ed",
+  "workspace_slug": "default",
+  "created_at": "2026-08-06T01:49:58.512284500Z",
+  "updated_at": "2026-08-06T01:51:40.487243100Z",
+  "active_run_id": "59680700-7da0-4621-addb-c5393f1428ab",
+  "runs": [
+    {
+      "run_id": "171c55f0-b706-46f5-bb1a-fbb56892cf7d",
+      "captured_session_id": "c31a5ac0-f1b2-486a-8eb2-0a246eb7b6ed",
+      "started_at": "2026-08-06T01:49:58.512284500Z"
+    },
+    {
+      "run_id": "59680700-7da0-4621-addb-c5393f1428ab",
+      "predecessor_run_id": "171c55f0-b706-46f5-bb1a-fbb56892cf7d",
+      "captured_session_id": "c31a5ac0-f1b2-486a-8eb2-0a246eb7b6ed",
+      "started_at": "2026-08-06T01:51:40.487243100Z"
+    }
+  ],
+  "pinned_entities": [
+    {
+      "urn": "ce://default/spec/e9c38d24-42cc-4044-8b2c-6811b918530f",
+      "kind": "spec",
+      "relation": "governing-contract",
+      "reason": "Authoritative schema-modernization contract and role ordering.",
+      "pinned_at": "2026-08-06T01:50:13.062119Z",
+      "last_used_at": "2026-08-06T01:50:13.062119Z"
+    },
+    {
+      "urn": "ce://default/ticket/85012858-cbf3-40df-b55e-b82e89f72434",
+      "kind": "ticket",
+      "relation": "next-work",
+      "reason": "Sole unblocked research leaf and the next implementation unit.",
+      "pinned_at": "2026-08-06T01:50:13.283468800Z",
+      "last_used_at": "2026-08-06T01:50:13.283468800Z"
+    },
+    {
+      "urn": "ce://default/ticket/8fdfe135-e3b1-4876-b638-24154edcd78d",
+      "kind": "ticket",
+      "relation": "track-root",
+      "reason": "Schema-modernization epic whose normalized dependency chain determines progression.",
+      "pinned_at": "2026-08-06T01:50:13.131050600Z",
+      "last_used_at": "2026-08-06T01:50:13.131050600Z"
+    },
+    {
+      "urn": "ce://default/ticket/9e450826-60e1-437f-b236-2c8839e4ab9e",
+      "kind": "ticket",
+      "relation": "successor",
+      "reason": "Planning successor after the Track 1 research brief.",
+      "pinned_at": "2026-08-06T01:50:13.353059800Z",
+      "last_used_at": "2026-08-06T01:50:13.353059800Z"
+    }
+  ],
+  "workflow": {}
+}

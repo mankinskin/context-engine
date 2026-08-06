@@ -1,0 +1,88 @@
+{
+  "handoff_id": "a4874905-1dcb-495e-aa1b-bc32fb9ac61a",
+  "workspace_session_id": "c31a5ac0-f1b2-486a-8eb2-0a246eb7b6ed",
+  "outgoing_run_id": "171c55f0-b706-46f5-bb1a-fbb56892cf7d",
+  "created_at": "2026-08-06T01:50:24.780204100Z",
+  "resume_command": "session-cli resume --workspace-session-id c31a5ac0-f1b2-486a-8eb2-0a246eb7b6ed --predecessor-run-id 171c55f0-b706-46f5-bb1a-fbb56892cf7d",
+  "pinned_entities": [
+    {
+      "urn": "ce://default/spec/e9c38d24-42cc-4044-8b2c-6811b918530f",
+      "kind": "spec",
+      "relation": "governing-contract",
+      "reason": "Authoritative schema-modernization contract and role ordering."
+    },
+    {
+      "urn": "ce://default/ticket/85012858-cbf3-40df-b55e-b82e89f72434",
+      "kind": "ticket",
+      "relation": "next-work",
+      "reason": "Sole unblocked research leaf and the next implementation unit."
+    },
+    {
+      "urn": "ce://default/ticket/8fdfe135-e3b1-4876-b638-24154edcd78d",
+      "kind": "ticket",
+      "relation": "track-root",
+      "reason": "Schema-modernization epic whose normalized dependency chain determines progression."
+    },
+    {
+      "urn": "ce://default/ticket/9e450826-60e1-437f-b236-2c8839e4ab9e",
+      "kind": "ticket",
+      "relation": "successor",
+      "reason": "Planning successor after the Track 1 research brief."
+    }
+  ],
+  "workflow": {
+    "workflow": {}
+  },
+  "objective": "Produce the Track 1 cited lifecycle-engine design-surface research brief for the normalized schema-modernization track.",
+  "target_tickets": [
+    {
+      "id": "85012858-cbf3-40df-b55e-b82e89f72434",
+      "why": "Sole unblocked frontier ticket. The research brief must identify existing owners, compatibility constraints, and test seams before planning can proceed.",
+      "state": "open"
+    },
+    {
+      "id": "9e450826-60e1-437f-b236-2c8839e4ab9e",
+      "why": "Immediate planning successor. It converts the completed research brief and decision register into an implementation-ready Track 1 plan.",
+      "state": "open"
+    }
+  ],
+  "higher_level_objective": "Deliver the schema-modernization program: inherited directed lifecycle schemas, compatible loading, generated catalog/client integration, auditable migration, and release validation.",
+  "upward_context": [
+    {
+      "entity_urn": "ce://default/ticket/8fdfe135-e3b1-4876-b638-24154edcd78d",
+      "title": "Schema modernization implementation track",
+      "role": "epic"
+    },
+    {
+      "entity_urn": "ce://default/spec/e9c38d24-42cc-4044-8b2c-6811b918530f",
+      "title": "Schema modernization lifecycle and migration",
+      "role": "parent"
+    }
+  ],
+  "target_files": [
+    "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+    ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+    ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/body.md",
+    "memory-api/crates/memory-api/src/model/schema.rs",
+    "memory-api/crates/ticket-api/src/model/schema_registry.rs"
+  ],
+  "decisions": [
+    "The canonical graph is a single 19-step role sequence; the epic depends only on final review and each ticket depends only on its immediate prerequisite.",
+    "Ticket 85012858 is the sole frontier leaf; ticket 9e450826 follows only after the cited research brief is complete.",
+    "The WIP graph-and-contract refinement is committed as 439a48db on agent/8fdfe135-schema-track-refinement.",
+    "Track 1 research records existing ownership and constraints only; production design selection remains with ticket 9e450826."
+  ],
+  "non_goals": [
+    "Production code edits, implementation tests, or state transitions during the research unit.",
+    "Dual-format loader, catalog generation, client integration, migration, and release-validation track work.",
+    "Reopening graph design unless new evidence contradicts the governing specification."
+  ],
+  "context_anchors": [
+    "transcripts/05-08-2026_ticketschema-state-machines/interview.md",
+    ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml",
+    ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/body.md",
+    "memory-api/crates/memory-api/src/model/schema.rs",
+    "memory-api/crates/ticket-api/src/model/schema_registry.rs"
+  ],
+  "risk_notes": "Atomic reload/cache semantics, strict parent inheritance compatibility, and lifecycle-versus-relation graph separation remain the high-risk research boundaries. The dedicated worktree lacks an initialized ticket index, so prior validation used ticket MCP traversal plus git diff --check rather than local ticket CLI health."
+}

@@ -30,3 +30,12 @@ Add durable, backward-compatible package data and conditional creation-time vali
 - Supporting checks: `cargo build --workspace`, `cargo check -p session-mcp`, `cargo check -p session-cli`
 - Coverage: legacy `target_tickets` deserialization, readiness-gated upward-context enforcement, warning-path persistence, breadcrumb/table rendering, fallback rendering for unresolved tickets, and regeneration-vs-exemplar proof with no manual hand edit required for the proof run.
 - Acceptance verdicts: AC1 met; AC2 met; AC3 met; AC4 met.
+## Review Verdict (2026-08-06)
+Validation: `cargo test -p session-api` passed, 262 tests.
+- AC1 initially UNMET — the folder round-trip test never asserted the deserialized `higher_level_objective` or `upward_context` values.
+- AC1 now MET on branch `agent/742dbc65-handoff-roundtrip-assertions`: `handoff_persists_as_folder_with_json_and_markdown` now asserts the prose objective plus the full ordered ancestor chain, with explicit `entity_urn`/`title`/`role` checks on the first entry.
+- AC2 met — `create_handoff_record` rejects ready-but-contextless handoffs before writing files (`ready_handoff_missing_upward_context_fails_before_writing_files`).
+- AC3 met — `non_ready_handoff_missing_upward_context_persists` proves the warning path preserves readiness derivation.
+- AC4 met — `legacy_target_ticket_strings_and_absent_context_fields_deserialize`; existing path validation unchanged.
+Commits: submodule `5802526`, outer `9505b147`. NOT yet merged to main.
+Blocked on: fast-forward merge deferred because main's `memory-api` submodule holds an unrelated agent's uncommitted changes.
