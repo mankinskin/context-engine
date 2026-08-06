@@ -56,17 +56,11 @@ tool_names=(
 )
 
 
-# Locate install-ctl: prefer an already-installed binary on PATH, otherwise
-# run it straight from source via cargo (no separate build step required).
-# All tool path/bin resolution now lives in install-ctl's runtime-read
-# tools/install/artifacts.toml registry, not in this script.
+# Run install-ctl from source so a stale installed copy cannot shadow
+# a registry schema change.
 install_ctl_cmd=()
 resolve_install_ctl() {
-    if command -v install-ctl >/dev/null 2>&1; then
-        install_ctl_cmd=(install-ctl)
-    else
-        install_ctl_cmd=(cargo run --manifest-path "$repo_root/tools/install/install-ctl/Cargo.toml" --quiet --)
-    fi
+    install_ctl_cmd=(cargo run --manifest-path "$repo_root/tools/install/install-ctl/Cargo.toml" --quiet --)
 }
 
 usage() {
