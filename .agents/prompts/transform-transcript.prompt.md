@@ -20,6 +20,7 @@ Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-tran
 2. For a file or folder path, locate and read the raw transcript in place (prefer an obvious raw/source transcript inside a folder; if multiple candidates exist and the choice is material, ask one short clarifying question).
 3. For raw pasted text, create a new dated folder under `transcripts/` at the repo root following the existing convention — `transcripts/DD-MM-YYYY_<short-kebab-slug>/` (add `-HHMMSS` only if that date+slug folder already exists) — and write the text verbatim into `input.md` inside it (`input-2.md`, ... if `input.md` already exists there from an earlier run today). Treat that new file as the raw transcript for the rest of the workflow.
 4. Note any requested target format (default: a single concise prompt/document).
+5. A request to merge or fold transcripts is an operation on existing clean artifacts, not raw transcript content. Do not save operational request text as an `input-N.md` file.
 
 ## Workflow
 
@@ -31,6 +32,15 @@ Run the three-stage pipeline as distinct passes. Do not collapse them.
    - Produce a faithful, still-linear, fully English denoised signal. Do not restructure yet.
 2. **Stage 2 — Restructure.** Reshape the denoised English signal into the intended markdown format (concise prose, ordered/bulleted lists, or sections the speaker implied). Correct grammar and merge redundant restatements without adding scaffolding the speaker did not intend.
 3. **Stage 3 — Verify.** Run the checklist: constraint inventory, no-new-information check, correction integrity, translation fidelity (output is fully English and meaning-preserving), and intent equivalence. Fix and re-verify any discrepancy; surface anything unresolved as a short "Open questions" note.
+
+## Multi-Transcript Refinement
+
+For a larger discussion captured across multiple transcripts, use a durable source-to-composition workflow:
+
+1. Create and verify a distinct numbered raw/clean pair for every pasted transcript.
+2. When asked to merge clean transcripts, create or update `merged.clean.md` in the same folder from the selected clean files. Preserve every raw and individual clean file.
+3. When asked to fold a new transcript into the merged artifact, first create and verify the numbered raw/clean pair, then update `merged.clean.md` from that clean file. Keep compatible earlier content and apply a later transcript only where the speaker explicitly changes or supersedes earlier intent.
+4. Treat `merged.clean.md` as the maintained concise view of the evolving discussion, not as a replacement for its raw or individually cleaned sources.
 
 ## Output
 

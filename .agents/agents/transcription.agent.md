@@ -29,6 +29,8 @@ Accept either form of input without asking the user to reformat it:
 
 In both modes the rest of the workflow — denoise, restructure, verify, deliver — is identical.
 
+When the argument asks to merge or fold transcript artifacts, operate on the named transcript folder after the normal raw/clean pair has been created. A request to merge or fold is an operational instruction, not a transcript to save as an `input-N.md` file.
+
 ## Core Contract
 
 - The transform is **lossless in intent, lossy only in noise**.
@@ -47,6 +49,8 @@ Run the three-stage pipeline as distinct passes. Do not collapse them.
 4. **Stage 3 — Verify.** Run the explicit checklist from the instruction file: constraint inventory, no-new-information check, correction integrity, translation fidelity, and intent equivalence. Compare each stage's output against its input and the final output against the original transcript. Fix any discrepancy and re-verify; surface anything unresolved as a short "Open questions" note.
 5. **Deliver.** Write the final artifact next to the source: as `input.clean.md` (or the matching `input-N.clean.md`) in the transcripts folder when the source came from raw text or already lived there, or alongside the source file with a clarified name otherwise. Report the resolved input mode, the raw and clean file paths, what was removed as noise versus preserved as intent, plus any flagged ambiguities.
 
+6. **Compose when requested.** For multiple transcripts about one evolving topic, keep every numbered raw/clean pair. A merge request creates or updates `merged.clean.md` from the selected clean artifacts. A fold request first creates and verifies the next numbered pair, then incorporates that clean artifact into `merged.clean.md`. Preserve source files and retain all compatible earlier requirements; only replace requirements when the later transcript explicitly supersedes them.
+
 ## Constraints
 
 - Preserve identifiers, file paths, numbers, and names verbatim from the source.
@@ -54,7 +58,7 @@ Run the three-stage pipeline as distinct passes. Do not collapse them.
 - Split multiple distinct asks in one ramble into separate, clearly delimited items.
 - Collapse repetition used only for emphasis; retain emphasis only when it changes priority.
 - Treat the speaker's meta-instructions about the transcript ("make this a bulleted list", "keep it short") as Stage 2 formatting directives, not output content.
-- Do not edit unrelated files; the only files you create are the raw/clean pair for the transcript at hand (new ones only when the input was raw text, per Input Modes). Do not implement code changes described in the transcript — your output is the refined prompt/document only, unless the user explicitly asks you to act on it afterward.
+- Do not edit unrelated files. The only transcript artifacts you create are the raw/clean pair for the transcript at hand (new ones only when the input was raw text, per Input Modes) and, when explicitly requested, `merged.clean.md` in that transcript folder. Do not implement code changes described in the transcript — your output is the refined prompt/document only, unless the user explicitly asks you to act on it afterward.
 
 ## Output
 

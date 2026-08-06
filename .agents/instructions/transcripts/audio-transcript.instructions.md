@@ -75,6 +75,17 @@ Perform an explicit checklist:
 
 If any check fails, return to the responsible stage, fix it, and re-verify. Do not ship an output with an unresolved discrepancy; instead surface it as an explicit "Open questions" note.
 
+## Multi-Transcript Composition
+
+When a speaker provides a larger topic across multiple raw transcripts, preserve the individual source artifacts and compose only from verified clean artifacts.
+
+1. **Clean each transcript first.** Every raw pasted transcript gets its own verbatim `input.md`, `input-2.md`, and so on, plus the matching `input.clean.md`, `input-2.clean.md`, and so on. Do not merge raw transcripts.
+2. **Merge on request.** When asked to merge selected transcripts, create or update `merged.clean.md` in the same folder. Reconcile duplicate statements and later self-corrections across the selected clean artifacts, retaining the speaker's final intent. Preserve the individual raw and clean files unchanged.
+3. **Fold on request.** When asked to fold a later transcript into a merged artifact, first create and verify the next numbered raw/clean pair. Then update `merged.clean.md` from that clean artifact, retaining all earlier compatible requirements and replacing only statements explicitly superseded by the newer transcript.
+4. **Keep operational instructions separate.** Requests such as "merge these transcripts" or "create source files" are workflow instructions, not transcript content. Do not create a raw/clean pair from those instructions unless the user explicitly identifies the instruction text as a transcript.
+
+The merged artifact is a maintained composition, not a substitute for the source artifacts. Its purpose is to make repeated refinement of a long, evolving spoken design discussion manageable while keeping every original input and its independently verified clean rendering available.
+
 ## Common Problem Situations (handle explicitly)
 
 - **Layered self-correction**: multiple corrections chained ("X, actually Y, well really Z"). Resolve to the last value only.
