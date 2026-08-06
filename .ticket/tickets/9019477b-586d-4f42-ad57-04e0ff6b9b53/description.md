@@ -6,10 +6,9 @@ Specify manifest records, generated concrete schema catalog, reproducibility val
 
 ## Done
 A reviewed implementation plan exists before Track 3 production edits.
-
 ## Planning Output Obligation
 
-This planning ticket is not complete until it has written the following into its implementation ticket `<IMPL_TICKET_ID>` as an appended `## Acceptance Criteria` section:
+This planning ticket is not complete until it has written the following into its implementation ticket `abd3f280` as an appended `## Acceptance Criteria` section:
 
 1. **Target files** — the definitive list of files the implementation will create or modify, as repo-root-relative forward-slash paths, each with a one-line reason.
 2. **Numbered acceptance criteria** — each independently verifiable and phrased as an observable behavior, not an activity. A criterion a reviewer cannot mark pass/fail from evidence alone is a defect. "Inheritance works correctly" is wrong; "loading a schema whose declared parent does not exist fails the whole load and leaves the prior registry generation intact" is right.
