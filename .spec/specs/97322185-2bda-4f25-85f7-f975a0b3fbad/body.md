@@ -15,7 +15,7 @@ If this spec is implemented, dependents can rely on the following:
 - Every entry classified `safe` is bounded and read-only (for example: a read-only CLI query or catalog inspection); every other capability — install, start, stop, restart, uninstall, or any state-mutating action — requires `approval-required` classification regardless of entry category.
 - Hooks are registered in the same schema as other entries but expose only the `inspect` lifecycle capability in this contract's scope. No `install`, `enable`, or `disable` lifecycle operation is defined for hooks by this contract.
 - The registry is repository-scoped only: it enumerates artifacts that exist in this repository's source tree. Discovery of external, non-repository tools is explicitly out of scope and is not implied by any registry entry or generated catalog output.
-- `install-ctl` (ticket [c7becdaa install-ctl: Manage registry tools and services across install lifecycle](.ticket/tickets/c7becdaa-6939-4ab9-a8a5-29fbf8921584/ticket.toml)) and Terminal Command Agent's catalog-driven planning (ticket [fdd059ed Drive Terminal Command Agent planning from generated command catalog](.ticket/tickets/fdd059ed-69e4-4328-9167-ea4986aee788/ticket.toml)) both consume this same registry and generated catalog rather than each maintaining a parallel listing.
+- `install-ctl` (ticket [c7becdaa install-ctl: Manage registry tools and services across install lifecycle](.ticket/tickets/c7becdaa-6939-4ab9-a8a5-29fbf8921584/ticket.toml)) and Terminal Command Agent (ticket [fdd059ed Rework Terminal Command Agent for autonomous command execution](.ticket/tickets/fdd059ed-69e4-4328-9167-ea4986aee788/ticket.toml)) both consume this same registry and generated catalog rather than each maintaining a parallel listing. Terminal Command Agent uses the catalog to discover repository-owned command surfaces and invocation patterns while retaining general shell command execution for clear user requests.
 
 ## Scope
 
@@ -29,7 +29,7 @@ If this spec is implemented, dependents can rely on the following:
 
 - No external (non-repository) tool discovery of any kind.
 - No hook lifecycle operations beyond `inspect` (no install/enable/disable/uninstall for hooks) in this contract.
-- No change to the Terminal Command Agent's existing fixed VS Code client tool allowlist — runtime schemas remain the source of truth for client tool invocation; the generated catalog becomes the source of truth for *repository command* selection only, and only once ticket [fdd059ed](.ticket/tickets/fdd059ed-69e4-4328-9167-ea4986aee788/ticket.toml) is implemented.
+- No change to the Terminal Command Agent's fixed VS Code client tool allowlist beyond the execution tools required by ticket [fdd059ed](.ticket/tickets/fdd059ed-69e4-4328-9167-ea4986aee788/ticket.toml). Runtime schemas remain the source of truth for client tool invocation; the generated catalog is the source of truth for repository command-surface discovery, not a restriction on general shell commands.
 - No third safety level and no per-entry custom safety taxonomy — exactly `safe` and `approval-required`.
 
 # Guards
@@ -50,7 +50,7 @@ No `ValidationSpec` guard ids are registered yet — this spec-authoring session
 - `not-implemented` — freshness validation proving the committed catalog matches generator output.
 - `not-implemented` — hook registry entries and their `inspect`-only lifecycle exposure.
 - `not-implemented` — `install-ctl` lifecycle integration against the extended registry (owned by ticket [c7becdaa](.ticket/tickets/c7becdaa-6939-4ab9-a8a5-29fbf8921584/ticket.toml)).
-- `not-implemented` — Terminal Command Agent catalog-driven planning (owned by ticket [fdd059ed](.ticket/tickets/fdd059ed-69e4-4328-9167-ea4986aee788/ticket.toml)); the agent's existing fixed VS Code client tool allowlist is unaffected by this spec.
+- `not-implemented` — Terminal Command Agent autonomous command execution and batch scripting, informed by catalog-driven repository command discovery (owned by ticket [fdd059ed](.ticket/tickets/fdd059ed-69e4-4328-9167-ea4986aee788/ticket.toml)).
 
 # Governing-rule requirement
 
@@ -64,6 +64,7 @@ No governing PolicyRule for this spec's component (`tooling`) was found in the r
 4. Every entry whose `safety` is `safe` exposes only bounded read-only actions; every entry with any other action (install, start, stop, restart, uninstall) is classified `approval-required`. No entry has a `safety` value other than `safe` or `approval-required`.
 5. Every hook entry in the registry declares only the `inspect` lifecycle capability; no hook entry declares install, enable, or disable.
 6. The registry contains no entry describing a tool that is not part of this repository's source tree (no external-tool discovery entries).
+7. Terminal Command Agent uses `COMMANDS.md` to discover repository command surfaces, executes clear user-requested commands without an approval prompt, and supports bounded multi-command batches and short non-interactive scripts without treating the catalog as a restriction on general shell command usage.
 
 # Traceability
 
