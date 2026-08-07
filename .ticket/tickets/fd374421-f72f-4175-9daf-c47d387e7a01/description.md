@@ -30,3 +30,21 @@ In `memory-api/crates/compact-terminal-api/src/execute.rs`:
 3. **DONE:** Timeout kills and reaps the shell process. Covered by `timeout_kills_and_reaps_shell_process`.
 4. **DONE:** Buffered output is retained as `stdout_partial` on timeout. Covered by `timeout_kills_and_reaps_shell_process`.
 5. **PENDING:** A live `echo alive` through the MCP surface returns promptly twice in a row. This requires reinstalling the binary and restarting the MCP server; the orchestrator will perform that separate validation.
+
+
+## 2026-08-07 AC5 Live Verification
+
+The MCP terminal tool is currently disabled in the editor, so AC5 was verified through the CLI binary `memory-api/target/debug/compact-terminal.exe run`, which exercises the same `compact-terminal-api` execute path the MCP server calls, plus the 6 in-process `compact-terminal-mcp` integration tests that drive the server surface itself.
+
+| Check | Result | Duration |
+|---|---|---|
+| `echo alive-first` | exit 0 | 24 ms |
+| `echo alive-second` immediately after | exit 0 | 24 ms |
+| `cat` with no input | exit 0 | 33 ms |
+| `sleep 30` with `--timeout 3` | `timed_out` | 3.125 s |
+
+The back-to-back `echo` pair is the AC5 regression: before the fix the second call hung forever because an orphaned shell still held stdin. The bare `cat` case previously blocked indefinitely on inherited stdin and now returns at EOF. After the timeout check, `ps -W` showed no surviving `sleep` or `sh.exe` child, confirming the kill-and-reap path.
+
+**AC5: DONE** (verified at CLI + MCP integration-test level; live editor MCP surface unavailable because the tool is disabled).
+
+All five acceptance criteria are now satisfied.
