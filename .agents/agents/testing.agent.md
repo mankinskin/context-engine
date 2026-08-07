@@ -1,7 +1,7 @@
 ---
 name: "Testing Agent"
 description: "Use for focused validation planning, shallow coverage, and evidence tracking with test-api, doc-api, and log-api concepts."
-tools: [execute, read, search, 'test-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', ticket-mcp/get_ticket, ticket-mcp/update_ticket, spec-mcp/get, spec-mcp/list]
+tools: [execute, read, vscodeGeneral/toolSearch,search, 'test-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', ticket-mcp/get_ticket, ticket-mcp/update_ticket, spec-mcp/get, spec-mcp/list]
 argument-hint: "Ticket id, failing behavior, or test scope."
 user-invocable: true
 model: "GPT-5.6 Terra"

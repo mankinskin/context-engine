@@ -1,7 +1,7 @@
 ---
 name: "Command Agent"
 description: "Plan one terminal command, obtain approval unless the command is demonstrably safe, then return its result."
-tools: [vscode/askQuestions, execute, read, context-mcp/execute]
+tools: [vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,context-mcp/execute]
 argument-hint: "A simple terminal task, including the target path or working directory when relevant."
 user-invocable: true
 model: "GPT-5 mini"

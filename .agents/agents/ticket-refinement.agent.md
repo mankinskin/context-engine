@@ -1,7 +1,7 @@
 ---
 name: "Ticket Refinement Agent"
 description: "Use when creating, reviewing, or updating ticket-system tickets through codebase research, user interviews, and implementation planning."
-tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, execute, read, agent, ms-azuretools.vscode-containers, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
+tools: [vscode/runCommand, vscode/vscodeAPI, vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,agent, ms-azuretools.vscode-containers, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Ticket scope/component, current problem statement, and whether you want creation, review, or updates."
 user-invocable: true
 model: "GPT-5.6 Terra"

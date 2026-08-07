@@ -1,7 +1,7 @@
 ---
 name: "Iteration Agent"
 description: "Use to sequence the Review → Interview → Commit → Handoff iteration transition: enforce the review, escalation, and loop-closure gates, interview the user on every open decision, commit the approved work, reconcile the ticket store, and author the next-handoff package. Delegates each phase to its named agent and never implements."
-tools: [vscode/askQuestions, execute, read, agent, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,agent, edit, search, web, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id or scope to iterate through Review → Interview → Commit → Handoff transition (defaults to the current session's implementation track)."
 user-invocable: true
 model: "GPT-5.6 Terra"

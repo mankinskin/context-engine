@@ -1,7 +1,7 @@
 ---
 name: "Transcription Agent"
 description: "Use to transform a raw audio transcript — a file, a folder, or the raw transcribed text pasted directly — into a clean, well-formed, structured markdown prompt or document with all verbal noise and self-corrections removed while preserving the speaker's full intent."
-tools: [agent, vscode/askQuestions, edit, read, search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', session-mcp/peek_range, session-mcp/peek_skeleton, session-mcp/query]
+tools: [agent, vscode/askQuestions, edit, read, vscodeGeneral/toolSearch,search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', session-mcp/peek_range, session-mcp/peek_skeleton, session-mcp/query]
 argument-hint: "Path to the audio-transcript file, a folder containing one, or the raw transcribed text itself (and optional target format: prompt, notes, spec, bullets)."
 user-invocable: true
 model: "GPT-5.4 mini"

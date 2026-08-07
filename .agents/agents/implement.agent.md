@@ -1,7 +1,7 @@
 ---
 name: "Implement Agent"
 description: "Use for surgical implementation once the target slice is clear and ready to change."
-tools: [execute, read, edit, search, 'audit-mcp/*', 'compact-terminal-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [execute, read, vscodeGeneral/toolSearch,edit, search, 'audit-mcp/*', 'compact-terminal-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id, failing behavior, file, symbol, or narrow implementation scope."
 user-invocable: true
 model: "GPT-5.6 Terra"

@@ -1,7 +1,7 @@
 ---
 name: "Spec Agent"
 description: "Use when creating new specs, updating existing specs, or refining specification traceability across tickets, tests, validation evidence, and related specs."
-tools: [vscode/askQuestions, execute, read, edit, search, 'spec-mcp/*', 'peek-mcp/*', ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/list_edges, ticket-mcp/subgraph, ticket-mcp/topgraph, ticket-mcp/health_check, test-mcp/get_spec, test-mcp/get_execution, test-mcp/list_executions, test-mcp/list_specs]
+tools: [vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,edit, search, 'spec-mcp/*', 'peek-mcp/*', ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/list_edges, ticket-mcp/subgraph, ticket-mcp/topgraph, ticket-mcp/health_check, test-mcp/get_spec, test-mcp/get_execution, test-mcp/list_executions, test-mcp/list_specs]
 argument-hint: "Spec scope, feature, behavior change, or spec id/slug to create or refine."
 user-invocable: true
 model: "GPT-5.6 Terra"

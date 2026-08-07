@@ -1,7 +1,7 @@
 ---
 name: "Review Agent"
 description: "Use to guide a human reviewer through an in-review ticket set or draft spec set, verify acceptance criteria, and record findings."
-tools: [vscode/runCommand, vscode/askQuestions, execute, read, agent, edit, search, web, 'audit-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/runCommand, vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,agent, edit, search, web, 'audit-mcp/*', context-mcp/execute, 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket, spec, or review scope to walk through (defaults to the highest-ranked in-review work)."
 user-invocable: true
 model: "GPT-5.6 Terra"

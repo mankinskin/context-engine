@@ -1,7 +1,7 @@
 ---
 name: "Audit Agent"
 description: "Use for honest repository audits, findings-first reviews, and automated validation triage."
-tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Path, feature, ticket, or scope to audit."
 user-invocable: true
 model: "GPT-5.6 Terra"

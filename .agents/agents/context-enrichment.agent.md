@@ -1,7 +1,7 @@
 ---
 name: "Context Enrichment Agent"
 description: "Use to reconstruct an in-review ticket's context from recorded session history alone, judge its acceptance criteria against verified evidence, and autonomously drive it to a terminal state."
-tools: [execute, read, agent, edit, search, 'peek-mcp/*', 'session-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [execute, read, vscodeGeneral/toolSearch,agent, edit, search, 'peek-mcp/*', 'session-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Ticket id in `in-review` state to reconstruct and close (defaults to the oldest in-review ticket without a resolved verdict)."
 user-invocable: true
 model: "GPT-5.6 Terra"

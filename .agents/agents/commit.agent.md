@@ -1,7 +1,7 @@
 ---
 name: "Commit Agent"
 description: "Use when committing changes across the repo or submodules. Handles pre-commit hooks, generated file regeneration, submodule pointer updates, and conventional commit messages."
-tools: [read, search, execute, ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/update_ticket, ticket-mcp/close_ticket, ticket-mcp/cancel_ticket, ticket-mcp/board_check_in, ticket-mcp/board_check_out, ticket-mcp/board_heartbeat, ticket-mcp/board_show]
+tools: [read, vscodeGeneral/toolSearch,search, execute, ticket-mcp/get_ticket, ticket-mcp/list_tickets, ticket-mcp/update_ticket, ticket-mcp/close_ticket, ticket-mcp/cancel_ticket, ticket-mcp/board_check_in, ticket-mcp/board_check_out, ticket-mcp/board_heartbeat, ticket-mcp/board_show]
 argument-hint: "Optional commit message prefix or scope hint."
 user-invocable: true
 model: "GPT-5 mini"

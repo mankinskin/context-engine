@@ -1,7 +1,7 @@
 ---
 name: "Research Agent"
 description: "Use for focused repository research before ticketing, spec updates, or implementation."
-tools: [edit, read, search, agent, execute, vscode/askQuestions, todo, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [edit, read, vscodeGeneral/toolSearch,search, agent, execute, vscode/askQuestions, todo, 'audit-mcp/*', 'compact-terminal-mcp/*', 'context-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Topic, code path, feature, or ticket scope to investigate."
 user-invocable: true
 model: "GPT-5 mini"

@@ -1,7 +1,7 @@
 ---
 name: "Roast Agent"
 description: "Use for brutally honest, technically grounded code and repository critique — findings-first, evidence-backed roasting of complexity, naming, smells, docs, tests, CI, dependencies, security, and architecture."
-tools: [vscode/askQuestions, execute, read, agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
+tools: [vscode/askQuestions, execute, read, vscodeGeneral/toolSearch,agent, search, 'audit-mcp/*', 'feedback-mcp/*', 'fs-mcp/*', 'log-viewer-mcp/*', 'peek-mcp/*', 'spec-mcp/*', 'test-mcp/*', 'ticket-mcp/*']
 argument-hint: "Path, file, feature, or scope to roast."
 user-invocable: true
 model: "GPT-5.6 Terra"
