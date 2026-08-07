@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "session_id": "044bb46a-1b50-44da-8351-f5953828afac",
+  "captured_at": "2026-08-07T22:39:38.432Z",
+  "tools": {
+    "apply_patch": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        11025
+      ],
+      "duration_ms_values": [
+        59
+      ]
+    },
+    "file_search": {
+      "call_count": 2,
+      "success_count": 2,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        52,
+        54
+      ],
+      "duration_ms_values": [
+        86,
+        112
+      ]
+    },
+    "get_errors": {
+      "call_count": 1,
+      "success_count": 1,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        283
+      ],
+      "duration_ms_values": [
+        15
+      ]
+    },
+    "grep_search": {
+      "call_count": 3,
+      "success_count": 3,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        179,
+        157,
+        205
+      ],
+      "duration_ms_values": [
+        247,
+        127,
+        2676
+      ]
+    },
+    "read_file": {
+      "call_count": 12,
+      "success_count": 12,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [],
+      "output_source": [],
+      "input_char_sizes": [
+        144,
+        147,
+        137,
+        115,
+        209,
+        144,
+        290,
+        115,
+        290,
+        141,
+        93,
+        149
+      ],
+      "duration_ms_values": [
+        22,
+        36,
+        23,
+        23,
+        27,
+        27,
+        45,
+        25,
+        23,
+        29,
+        46,
+        20
+      ]
+    },
+    "run_in_terminal": {
+      "call_count": 23,
+      "success_count": 23,
+      "fail_count": 0,
+      "timeout_count": 0,
+      "hang_count": 0,
+      "output_char_sizes": [
+        12653,
+        1298,
+        1765,
+        111,
+        240,
+        1804,
+        28,
+        33,
+        3721,
+        11404
+      ],
+      "output_source": [
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload",
+        "hook_payload"
+      ],
+      "input_char_sizes": [
+        205,
+        219,
+        204,
+        248,
+        234,
+        240,
+        285,
+        290,
+        288,
+        906,
+        227,
+        221,
+        928,
+        1348,
+        274,
+        980,
+        387,
+        158,
+        641,
+        168,
+        633,
+        349,
+        431
+      ],
+      "duration_ms_values": [
+        1565,
+        118607,
+        11964,
+        192,
+        285,
+        6354,
+        179,
+        98,
+        96,
+        275,
+        159,
+        934,
+        454,
+        607,
+        141,
+        1226,
+        21475,
+        729,
+        307,
+        251,
+        401,
+        332,
+        399
+      ]
+    }
+  }
+}
