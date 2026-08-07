@@ -8805,10 +8805,7 @@ dependencies = [
 name = "session-workspace-resolver"
 version = "0.1.0"
 dependencies = [
- "chrono",
- "fs2",
  "memory-api",
- "serde",
  "serde_json",
  "session-api",
  "tempfile",

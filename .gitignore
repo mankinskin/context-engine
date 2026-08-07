@@ -41,9 +41,6 @@ tools/log-viewer/demo-logs/
 .session/local/**
 .session/**/*.lock
 
-# Machine-local session->worktree routing state (never commit)
-.session-routing/
-
 # Capture logs and large event payloads stay local; durable transcript/handoff/finish files stay tracked.
 .session/sessions/**/session-capture-stop.log
 .session/sessions/**/events.json
