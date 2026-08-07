@@ -8878,6 +8878,7 @@ dependencies = [
 name = "session-worktree-provision"
 version = "0.1.0"
 dependencies = [
+ "filetime",
  "git2",
  "serde_json",
  "spec-api",
