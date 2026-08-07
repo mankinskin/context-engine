@@ -61,9 +61,9 @@ The policy orders passing candidates by modification time and then name. A faile
 
 ## Capture Resolution
 
-The capture hook first resolves a session-specific store root before any provisioning decision. A valid capture path needs a non-blank session id, a usable current directory, an anchored checkout containing `.session`, successful resolver construction, and a session mapping to a worktree or store root.
+For a valid `UserPromptSubmit`, the hook routes and attempts eager provisioning before transcript capture or capture-store resolution. The transcript guard runs next and skips only transcript capture when the transcript path is absent. Capture-store resolution then determines whether the hook can persist a session record; a blank `workspace_slug` or an unresolvable store root does not block provisioning.
 
-The resolver uses `MCP_MAIN_CHECKOUT` when that environment variable has a non-empty value; otherwise the current directory anchors the checkout. Missing prerequisites result in an early return rather than an error visible through stdout.
+The resolver uses `MCP_MAIN_CHECKOUT` when that environment variable has a non-empty value; otherwise the current directory anchors the checkout. An explicit external store that does not match the resolved checkout prevents provisioning, but ordinary capture-resolution failures only prevent transcript capture and persistence.
 
 For a valid `UserPromptSubmit`, [main.rs](../../../memory-api/crates/session-capture-hook/src/main.rs) evaluates `WORKTREE_EAGER_PROVISION` before calling the policy. The equivalent source condition is:
 
@@ -102,9 +102,9 @@ The reuse prefix intentionally permits a manual `<short_id>-<slug>` worktree. Us
 
 ## Silent-Skip Guards
 
-`run()` returns early if capture-store resolution returns `None`. Resolution fails closed when the payload lacks a non-blank session id, `current_dir()` fails, the anchored checkout lacks `.session`, resolver construction fails, or the session cannot map to a worktree or store root.
+Malformed hook input cannot identify a valid event or session and therefore skips provisioning. Provisioning also skips for any event other than `UserPromptSubmit`, a blank `session_id`, an unavailable current directory, an invalid anchor checkout, `WORKTREE_EAGER_PROVISION=0`, or a mismatched explicit external store. `AlreadyProvisioned` reuses a registered worktree whose name starts with `{short_id}-` rather than creating another worktree.
 
-Provisioning is not reached without `UserPromptSubmit` and a non-blank `session_id`. `WORKTREE_EAGER_PROVISION=0` skips eager provisioning, and `AlreadyProvisioned` short-circuits an existing matching worktree. These early paths emit the same `{}` stdout as successful creation.
+A missing transcript path skips only transcript capture, and an unresolvable capture store or blank `workspace_slug` does not block provisioning. All provisioning failures still exit 0 and emit `{}` with diagnostics on stderr, so a silent success, reuse, failure, and skip remain indistinguishable from outside the hook.
 
 ## Troubleshooting
 
@@ -112,10 +112,12 @@ Because the hook is intentionally quiet, use this checklist to establish whether
 
 1. **Check the current checkout.** Run `git rev-parse --show-toplevel`. A repository-root path rather than `.worktrees/...` means automatic provisioning did not place the session in a worktree.
 2. **Check registered worktrees.** Run `git worktree list` and find a name beginning with the session id's first eight characters.
-3. **Check hook execution.** Look for a recent directory in `.session/sessions/` matching the session id. No record means the hook did not execute for that session. Reload the VS Code window after changes to [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) or [.vscode/settings.json](../../../.vscode/settings.json), because VS Code reads hook registration at window start.
+3. **Check hook registration.** Reload the VS Code window after changes to [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) or [.vscode/settings.json](../../../.vscode/settings.json), because VS Code reads hook registration at window start. A missing `.session/sessions/` record does not prove provisioning failed because transcript capture and session persistence run after provisioning.
 4. **Check the opt-out.** Run `echo "[$WORKTREE_EAGER_PROVISION]"`. A value of `0` disables provisioning.
 5. **Check the cap.** Compare the `git worktree list` count to `WORKTREE_MAX`, which defaults to 8.
 6. **Use the manual fallback.** Run `bash tools/worktree/worktree.sh new <short-id> <slug>`. A matching `<short-id>` makes the hook reuse the manually created worktree on the next prompt instead of creating another worktree.
+
+When hand-constructing a `transcript_path` for a manual hook invocation under Git Bash, use a Windows-style `C:/...` path. The native binary does not resolve POSIX `/tmp/...` paths produced by `mktemp`.
 
 `WORKTREE_IDLE_SECS` defaults to 24 hours. Existing worktrees have been touched recently, so reclaim will not occur in the near term; new sessions pay the full cold-provision cost and count toward `WORKTREE_MAX`.
 
@@ -134,13 +136,16 @@ Because the hook is intentionally quiet, use this checklist to establish whether
 
 ## Verification Evidence
 
-Measured on 2026-08-07:
+Measured on 2026-08-08:
 
-- `cargo test -p session-worktree-provision -p session-capture-hook` passed 38 tests: 10 in `session-capture-hook`, 4 in `copilot_stop_hook_e2e`, and 24 in `session-worktree-provision`. The repository state was byte-identical before and after the run; the tests no longer create worktrees in the developer checkout.
-- A live end-to-end invocation of the installed binary with a synthetic `UserPromptSubmit` payload exited 0, wrote `{}`, cold-provisioned in 92 seconds, created the worktree and branch, and populated all 5 of 5 submodules.
+- `cargo test -p session-worktree-provision -p session-capture-hook` passed 56 tests across 5 suites. The repository state was identical before and after the run.
+- A live run of the installed binary with a brand-new session id and a nonexistent `transcript_path` exited 0 in 61 seconds, created and registered a worktree, and populated all 5 of 5 submodules. The same payload with `hook_event_name: "Stop"` provisioned nothing.
+- An earlier live run with a valid transcript and a brand-new session id exited 0 in 56 seconds, created both the worktree and session record, and populated all 5 of 5 submodules. Measured cold provisioning is therefore 56-61 seconds; the earlier 92-second cold run remains historical context.
 - A second identical invocation completed in 0.077 seconds, created nothing, and demonstrated the reuse path. Cleanup restored the baseline exactly.
 
 ## Known Gaps And Follow-Up
+
+On 2026-08-08, two ordering defects in `copilot-capture-hook` were confirmed fixed: superproject `28b9f05d` / submodule `a02828e8` moved provisioning ahead of capture-store resolution, and superproject `f671a3b0` / submodule `87f2d336` moved provisioning ahead of the transcript-capture guard.
 
 `bash tools/worktree/tests/run.sh` currently reports 6 passed and 10 failed. The first concrete failure is `error: unknown subcommand: rename`; affected tests cover dry runs, dirty-checkout acknowledgement and preservation, finish/remove/rename behavior, submodule initialization, explicit override, commit-ahead preservation, and session reuse. Those tests encode the not-yet-merged Rust rewrite contract, so the failures are a known rewrite gap rather than a provisioning regression.
 
