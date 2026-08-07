@@ -4,6 +4,8 @@ description: "Use when starting, committing, or integrating any implementation t
 
 ## Why
 
+A worktree may already have been provisioned automatically by the capture hook before an implementation session begins. [worktree-provisioning.instructions.md](../session/worktree-provisioning.instructions.md) documents the automatic bootstrap policy, diagnostics, and manual fallback; this guide owns the manual branch, claim, rebase, and merge protocol.
+
 Multiple agents editing the same checkout at the same time is the failure mode this protocol exists to prevent: one agent's `cargo fmt`, revert, or `git add -A` silently swallows another agent's in-progress work, and the resulting commit cannot be attributed to either session. Isolation is structural — each implementation session gets its own git worktree on its own branch, so two agents physically cannot write the same file.
 
 ## The Loop
