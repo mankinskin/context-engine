@@ -73,3 +73,9 @@ supplies the resolution half of the same feature.
 Separately tracked: `.worktrees/` currently holds nine directories while git
 registers only three or four. Eager per-session creation will amplify this
 orphan accumulation.
+
+
+
+## 2026-08-07 Scope Update
+
+The narrow capture-hook fix moved out of this ticket to ticket `a1b911ab-9394-4ba8-9134-1b2687e96ccd` and is already implemented there. This ticket now covers only eager worktree creation and the `worktree.sh`-to-Rust rewrite.

@@ -90,3 +90,49 @@ session error: session 70abae1b-14c4-4033-9265-d37fe08b02b2 ownership mismatch f
 This occurred with `--owner-id copilot-agent-70abae1b` and again with `--owner-id copilot-agent`, the latter matching the existing record's `metadata.agent_id` exactly. A `--predecessor-session-id` rotation variation failed identically. Both the main store and the worktree store were left unchanged.
 
 The consequence is that a session record written by the capture hook — which always points at the main checkout — cannot be repaired through the supported CLI path. The ownership guard rejects even the identity that wrote the record. Correct routing therefore rests entirely on the resolver distrusting main-pointing records; there is currently no way to author a correct explicit anchor. The ownership check needs to either accept the recording identity or expose a supported takeover path.
+## Correction, 2026-08-07: the hook preserves, it does not rewrite
+
+An earlier note in this ticket claimed the capture hook rewrites `metadata.worktree` on every prompt. That is incorrect. `memory-api/crates/session-api/src/store/config/worktree_capture_inference.rs:25` early-returns with `if record.metadata.worktree.is_some() { return Ok(()); }`, and the persistence merge at `helpers/storage.rs:251` prefers `incoming.worktree.or(existing.worktree)`. The hook only infers a worktree when none is recorded. The main-pointing value was inferred once, during the first capture in the main checkout, and has been faithfully preserved since; the refreshing `captured_at` timestamps were mistaken for rewrites.
+
+The practical consequence is the opposite of what was recorded: a CORRECT assignment, once written, is also preserved indefinitely. Bootstrapping a session therefore only requires getting the right value in place once.
+
+### Defect: a hook-written record is permanently unclaimable
+
+`check_in_worktree` (`memory-api/crates/session-api/src/store/config/worktree_runtime.rs:15`) rejects unless BOTH hold:
+
+```
+existing_record.metadata.agent_id  == request.owner_id
+existing_record.metadata.ticket_id == request.ticket_id
+```
+
+A hook-written record carries no `ticket_id`, while `validate_worktree_request` (`helpers/storage.rs:262`) requires the caller to supply a non-empty one. The second comparison is therefore `None != Some(..)` for every possible caller, so no caller can ever claim a hook-created assignment. The only way through today is to delete the record and re-create it via check-in.
+
+Acceptance criteria (new, OPEN):
+1. A session record created by the capture hook can be claimed via `check_in_worktree` without deleting it first.
+2. The ownership check tolerates an absent `ticket_id` on the existing record, treating an unclaimed record as claimable rather than as a mismatch.
+3. A regression test covers claiming a hook-written record that has `agent_id` set and `ticket_id` absent.
+
+
+## 2026-08-07 Implementation Update
+
+### User Decisions
+
+1. **Ownership relaxation scope:** tolerate both gates. A record with no `ticket_id` is unclaimed, so any owner may claim it. The hook's `agent_id` is a generic placeholder, so relaxing only the `ticket_id` gate would leave hook-written records unclaimable at the `agent_id` gate.
+2. **Hook fix ownership:** the narrow capture-hook fix moved from ticket `5e6cf4f8-120c-4674-95de-d7b79c99f5b3` to this ticket as a new acceptance criterion. Ticket `5e6cf4f8-120c-4674-95de-d7b79c99f5b3` retains only eager worktree creation and the `worktree.sh`-to-Rust rewrite.
+3. **Fresh-session capture:** when a brand-new session has no record and no discoverable worktree, the hook deliberately skips capture. No main-checkout capture fallback will be added.
+
+### Implemented
+
+- **Ownership relaxation (DONE):** `memory-api/crates/session-api/src/store/config/worktree_runtime.rs` treats a missing or whitespace-only `metadata.ticket_id` as unclaimed. Any owner may claim an unclaimed record; claimed records still require matching `agent_id` and `ticket_id`; successful claims persist the claimant owner and ticket. Covering tests: `check_in_worktree_claims_unclaimed_hook_record` and `check_in_worktree_rejects_mismatched_claimed_owner`.
+- **Capture-hook worktree resolution (DONE):** `memory-api/crates/session-capture-hook/src/main.rs` derives the capture-time worktree root from the resolved `store_root` parent, and `initialize_session_routing` resolves through `SessionWorkspaceResolver` rather than process current directory. `memory-api/crates/session-api/src/store/config/worktree_capture_inference.rs` adds `SessionStoreConfig::replace_main_worktree_inference`, which replaces only a stale main-checkout assignment once a real worktree resolves. Covering tests: `capture_inference_uses_resolved_store_parent_not_process_directory`, `user_prompt_submit_discovers_the_session_worktree_from_main_cwd`, `user_prompt_submit_without_discoverable_worktree_does_not_assign_main`, and `user_prompt_submit_replaces_a_stale_main_checkout_assignment`.
+
+### Acceptance Criteria Status
+
+- **New capture-hook criterion (DONE):** The capture hook records the resolved worktree and never persists a main-pointing assignment. A stale main-pointing assignment is corrected once a real worktree resolves.
+- **Defect: a hook-written record is permanently unclaimable, criterion 1 (DONE):** an absent or whitespace-only `ticket_id` makes the record unclaimed. Covered by `check_in_worktree_claims_unclaimed_hook_record`.
+- **Defect: a hook-written record is permanently unclaimable, criterion 2 (DONE):** any owner may claim an unclaimed record despite the hook placeholder `agent_id`. Covered by `check_in_worktree_claims_unclaimed_hook_record`.
+- **Defect: a hook-written record is permanently unclaimable, criterion 3 (DONE):** a claimed record with mismatched owner or ticket remains rejected. Covered by `check_in_worktree_rejects_mismatched_claimed_owner`.
+
+### Implementation Finding
+
+A second inference call site, `initialize_session_routing`, was discovered during implementation. `initialize_session_routing` wrote into the anchor/main `.session` store that the resolver reads and was the true source of the wrong main-pointing record; earlier ticket notes attributed the problem to a single call site. Fresh-session skip behavior remains deliberate when no record and no discoverable worktree exist.

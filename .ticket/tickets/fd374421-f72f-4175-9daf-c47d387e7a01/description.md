@@ -15,3 +15,18 @@ In `memory-api/crates/compact-terminal-api/src/execute.rs`:
 3. A regression test asserts that a command which reads from stdin (for example `cat`) terminates rather than hanging, and does not disturb the server.
 4. A regression test asserts that a command exceeding its timeout leaves no surviving child process.
 5. After the fix, a trivial `echo alive` through the MCP surface returns promptly, and a subsequent call also returns promptly (proving no orphan wedged the stream).
+
+
+## 2026-08-07 Implementation Update
+
+### compact-terminal-mcp stdin Hang
+
+`memory-api/crates/compact-terminal-api/src/execute.rs` is implemented with spawned `sh` stdin set to `Stdio::null()`, preventing inheritance of the MCP stdio-transport stdin. The timeout path kills and reaps the child, recursively kills Git Bash MSYS descendants on Windows, and returns buffered output in `stdout_partial`.
+
+### Acceptance Criteria Status
+
+1. **DONE:** Commands that read stdin terminate rather than hanging. Covered by `stdin_reading_command_terminates_and_subsequent_command_succeeds`.
+2. **DONE:** The command after an stdin-reading command succeeds. Covered by `stdin_reading_command_terminates_and_subsequent_command_succeeds`.
+3. **DONE:** Timeout kills and reaps the shell process. Covered by `timeout_kills_and_reaps_shell_process`.
+4. **DONE:** Buffered output is retained as `stdout_partial` on timeout. Covered by `timeout_kills_and_reaps_shell_process`.
+5. **PENDING:** A live `echo alive` through the MCP surface returns promptly twice in a row. This requires reinstalling the binary and restarting the MCP server; the orchestrator will perform that separate validation.
