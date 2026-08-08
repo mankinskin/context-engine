@@ -31,6 +31,10 @@ Steps 1 and 7 belong to the root orchestrator session. Steps 2 through 6 belong 
 
 `<ticket-short-id>` is the first 8 characters of the ticket id. `<slug>` is a lowercase hyphenated shortening of the ticket title, 40 characters or fewer. One ticket, one branch, one worktree — never two tickets on one branch.
 
+For auto-provisioned sessions, use `{short-id}-{topic-slug}` for the worktree and `agent/{short-id}-{topic-slug}` for the branch. `<topic-slug>` is lowercase kebab-case, describes the work rather than the ticket id, has 2-4 words, and is 40 characters or fewer. Do not use dates, agent names, or `tmp`, `test`, or `scratch`; a bare ticket id is not a slug because `5e6cf4f8-worktree-rust-rewrite` already carries identity in the id and the slug must add meaning.
+
+`{short-id}-session` is the hook-assigned placeholder meaning "topic not yet declared". Rename the placeholder before session check-in.
+
 `.worktrees/` is git-ignored at the repository root. Never commit a worktree directory.
 
 ## 1. Bootstrap (root orchestrator)
@@ -46,6 +50,32 @@ This is the canonical invocation — it is the single source of truth for the ex
 The branch is always cut from `main`, never from another feature branch. If the branch already exists, the worktree is being re-created for an interrupted task — use `git worktree add .worktrees/<short-id>-<slug> agent/<short-id>-<slug>` without `-b`.
 
 Pass the resolved worktree path to the implementation agent in its context bundle. The agent does not derive the path itself.
+
+## 1b. Name the topic (rename the worktree)
+
+As soon as the implementation agent knows the topic, rename the hook-provisioned placeholder exactly once for that topic, before the first edit and before step 2 (Claim). Run the sequence from the repository root, with no shell or other process using the worktree as its current directory:
+
+```bash
+mv .worktrees/<short-id>-session .worktrees/<short-id>-<topic-slug>
+git worktree repair .worktrees/<short-id>-<topic-slug>
+git branch -m agent/<short-id>-session agent/<short-id>-<topic-slug>
+```
+
+`git worktree move` is unusable in this repository because every worktree contains five submodule linked worktrees. [tools/worktree/worktree.sh](tools/worktree/worktree.sh) has no `rename` subcommand, so the raw-git sequence is the current procedure.
+
+The ordering is mandatory: `session_check_in` records `worktree_path` and `branch`, with no update surface or topic/slug field in [memory-api/crates/session-api/src/store.rs](memory-api/crates/session-api/src/store.rs). Renaming after check-in strands the stored path and branch.
+
+Verify that the top-level repair kept every submodule populated:
+
+```bash
+git -C .worktrees/<short-id>-<topic-slug> submodule status
+```
+
+The output must show all five populated submodules: `memory-viewers`, `context-stack`, `memory-api`, `viewer-api`, and `memory-kernel`. Only when fewer than five are populated, run `git -C .worktrees/<short-id>-<topic-slug>/<submodule> worktree repair` for each affected submodule. Then `cd` into `.worktrees/<short-id>-<topic-slug>` and proceed to step 2 (Claim).
+
+### Renaming again when focus changes
+
+Re-renaming is allowed but should be rare: use the same sequence with the current name as the old name only when scope materially changes to a different feature or ticket, not for every sub-task. Re-run `session_check_in` with the new `worktree_path` and `branch` so the store is not stale, and run `board_check_in` when the claimed files change. Avoid renaming mid-commit or with a dirty index; commit or stash first. Never rename while a viewer, `cargo` build, or another agent has its current directory inside the worktree.
 
 ## 2. Claim (implementation agent, before the first edit)
 

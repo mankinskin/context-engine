@@ -88,7 +88,7 @@ The `git` subprocess performs only writes that libgit2 cannot express: `git work
 | Worktree | `<main_checkout>/.worktrees/{short_id}-session` |
 | Branch | `agent/{short_id}-session` |
 
-The reuse prefix intentionally permits a manual `<short_id>-<slug>` worktree. Use the session's first eight characters when manually bootstrapping a worktree that the hook should adopt.
+The `-session` suffix is a placeholder for a topic not yet declared. The `{short_id}-` reuse prefix intentionally permits a renamed `<short_id>-<topic-slug>` worktree, so the hook adopts the renamed worktree rather than duplicating it. Follow [## 1b. Name the topic (rename the worktree)](../commit/branch-worktree.instructions.md#1b-name-the-topic-rename-the-worktree) before session check-in; use the session's first eight characters when manually bootstrapping a worktree that the hook should adopt.
 
 ## Environment Variables
 
@@ -116,6 +116,7 @@ Because the hook is intentionally quiet, use this checklist to establish whether
 4. **Check the opt-out.** Run `echo "[$WORKTREE_EAGER_PROVISION]"`. A value of `0` disables provisioning.
 5. **Check the cap.** Compare the `git worktree list` count to `WORKTREE_MAX`, which defaults to 8.
 6. **Use the manual fallback.** Run `bash tools/worktree/worktree.sh new <short-id> <slug>`. A matching `<short-id>` makes the hook reuse the manually created worktree on the next prompt instead of creating another worktree.
+7. **Repair a missing submodule worktree path.** If repository-root `git status` reports `fatal: cannot chdir to '../../../../../.worktrees/<name>/memory-api': No such file or directory`, followed by `fatal: 'git status --porcelain=2' failed in submodule memory-api`, a rolled-back or manually deleted worktree left `core.worktree` in the shared submodule config pointing at the missing directory. `git worktree prune` cannot self-heal because it reaches the same error. Run `git config --file .git/modules/<submodule>/config --unset core.worktree`, then `git -C <submodule> worktree prune` and `git worktree prune` at the repository root. Check all five submodules with `git config --file .git/modules/<name>/config --get core.worktree`. Stale `.git/modules/<name>/worktrees/<entry>/gitdir` entries pointing at missing paths are a separate, milder symptom cleared by the same prune.
 
 When hand-constructing a `transcript_path` for a manual hook invocation under Git Bash, use a Windows-style `C:/...` path. The native binary does not resolve POSIX `/tmp/...` paths produced by `mktemp`.
 
