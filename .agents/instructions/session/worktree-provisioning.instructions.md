@@ -5,14 +5,14 @@ applyTo: "**"
 
 ## What Fires And When
 
-The capture hook can provision a session worktree before the session's first tool call. VS Code loads [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) through the `.chat.hookFilesLocations` setting in [.vscode/settings.json](../../../.vscode/settings.json). The registered binary is `copilot-capture-hook`, installed on `PATH` at `~/.cargo/bin/copilot-capture-hook`.
+The capture hook can provision a session worktree before the session's first tool call. VS Code loads [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) through the `.chat.hookFilesLocations` setting in [.vscode/settings.json](../../../.vscode/settings.json). The registered binary is `session-capture-hook`, installed on `PATH` at `~/.cargo/bin/session-capture-hook`.
 
 `UserPromptSubmit` is the only registered event that runs before any tool call. Eager provisioning is attached to that event so a session receives an isolated worktree before implementation begins. The event timeout is 300 seconds to allow a cold provision.
 
 The binary usage is:
 
 ```text
-Usage: copilot-capture-hook (session sync ingest) [--from-hook-stdin] [--transcript-path <PATH>] [--store-root <PATH>] [--workspace-slug <SLUG>] [--trigger <NAME>]
+Usage: session-capture-hook (session sync ingest) [--from-hook-stdin] [--transcript-path <PATH>] [--store-root <PATH>] [--workspace-slug <SLUG>] [--trigger <NAME>]
 ```
 
 The hook writes `{}` to stdout for both success and early skip, with diagnostics only on stderr. There is no hook log file, so an externally silent success is indistinguishable from a silent skip.
@@ -21,11 +21,11 @@ The hook writes `{}` to stdout for both success and early skip, with diagnostics
 
 | Event | Registered command | Timeout |
 |---|---|---:|
-| `UserPromptSubmit` | `copilot-capture-hook --from-hook-stdin` | 300s |
+| `UserPromptSubmit` | `session-capture-hook --from-hook-stdin` | 300s |
 | `PreToolUse` | `bash tools/agent-hooks/rtk-hook-copilot.sh`, then `bash tools/agent-hooks/preflight-write.sh` | 5s, 30s |
-| `PostToolUse` | `bash tools/agent-hooks/validate-docs.sh`, `bash tools/agent-hooks/terminal-pwd.sh`, then `copilot-capture-hook --from-hook-stdin` | 30s, 5s, 120s |
-| `Stop` | `copilot-capture-hook --from-hook-stdin` | 120s |
-| `SessionEnd` | `copilot-capture-hook --from-hook-stdin` | 120s |
+| `PostToolUse` | `bash tools/agent-hooks/validate-docs.sh`, `bash tools/agent-hooks/terminal-pwd.sh`, then `session-capture-hook --from-hook-stdin` | 30s, 5s, 120s |
+| `Stop` | `session-capture-hook --from-hook-stdin` | 120s |
+| `SessionEnd` | `session-capture-hook --from-hook-stdin` | 120s |
 
 Hook stdin accepts `transcript_path`, `workspace_slug`, `hook_event_name`, `tool_use_id`, `session_id`, and `tool_response`. `hook_event_name` supplies the trigger. A blank or unknown trigger normalizes to `stop`.
 
@@ -146,7 +146,7 @@ Measured on 2026-08-08:
 
 ## Known Gaps And Follow-Up
 
-On 2026-08-08, two ordering defects in `copilot-capture-hook` were confirmed fixed: superproject `28b9f05d` / submodule `a02828e8` moved provisioning ahead of capture-store resolution, and superproject `f671a3b0` / submodule `87f2d336` moved provisioning ahead of the transcript-capture guard.
+On 2026-08-08, two ordering defects in `session-capture-hook` were confirmed fixed: superproject `28b9f05d` / submodule `a02828e8` moved provisioning ahead of capture-store resolution, and superproject `f671a3b0` / submodule `87f2d336` moved provisioning ahead of the transcript-capture guard.
 
 `bash tools/worktree/tests/run.sh` currently reports 6 passed and 10 failed. The first concrete failure is `error: unknown subcommand: rename`; affected tests cover dry runs, dirty-checkout acknowledgement and preservation, finish/remove/rename behavior, submodule initialization, explicit override, commit-ahead preservation, and session reuse. Those tests encode the not-yet-merged Rust rewrite contract, so the failures are a known rewrite gap rather than a provisioning regression.
 

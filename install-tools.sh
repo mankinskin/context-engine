@@ -34,7 +34,7 @@ tool_names=(
     log-viewer
     spec-viewer
     ticket-viewer
-    copilot-capture-hook
+    session-capture-hook
     ticket-cli
     spec-cli
     audit-cli

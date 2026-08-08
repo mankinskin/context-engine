@@ -12,7 +12,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 - Bin: `mcp-toolmon`
 - Lifecycle: Install, Inspect
 
-## copilot-capture-hook
+## session-capture-hook
 
 - Source: `memory-api/crates/session-capture-hook`
 - Lifecycle: Install, Inspect
@@ -254,7 +254,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 - Source: `memory-api/crates/session-api`
 - Owner: tooling
 - Safety: Safe
-- Bin: `copilot-capture-hook --from-hook-stdin`
+- Bin: `session-capture-hook --from-hook-stdin`
 - Lifecycle: Inspect
 
 ## hook-rtk-hook-copilot

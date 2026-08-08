@@ -18,14 +18,14 @@ safety = "approval-required"
 bin = "mcp-toolmon"
 
 [[artifact]]
-id = "copilot-capture-hook"
+id = "session-capture-hook"
 category = "misc"
 kind = "rust-binary"
 source_path = "memory-api/crates/session-capture-hook"
 owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
-bin = "copilot-capture-hook"
+bin = "session-capture-hook"
 
 [[artifact]]
 id = "ticket-cli"
@@ -265,7 +265,7 @@ source_path = "memory-api/crates/session-api"
 owner = "tooling"
 lifecycle = ["inspect"]
 safety = "safe"
-bin = "copilot-capture-hook --from-hook-stdin"
+bin = "session-capture-hook --from-hook-stdin"
 
 [[artifact]]
 id = "hook-rtk-hook-copilot"

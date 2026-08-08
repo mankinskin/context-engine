@@ -4212,7 +4212,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=3d4c4739-3138-40be-947d-556e5f7de53a slug=in-review/feedback-api digest=64bb74f23888 -->
 #### [3d4c4739] [feedback-api][analyzer] Backtraceable, verifiable follow-up ticket format; re-enable synthesis behind it
 - priority: `high`
-- summary: The stop-hook (`crates/session-api/src/bin/copilot-capture-hook.rs`) currently only logs structured signals — auto-ticket synthesis was paused after the naive miner created 522 false-positive tickets...
+- summary: The stop-hook (`crates/session-api/src/bin/session-capture-hook.rs`) currently only logs structured signals — auto-ticket synthesis was paused after the naive miner created 522 false-positive tickets...
 - ref: `memory-api/.ticket/tickets/3d4c4739-3138-40be-947d-556e5f7de53a/ticket.toml`
 
 <!-- ticket-index:entry id=fb6aa078-1f8b-4a76-99bd-3a26190b1208 slug=in-review/feedback-api digest=0d0b4a19924e -->
