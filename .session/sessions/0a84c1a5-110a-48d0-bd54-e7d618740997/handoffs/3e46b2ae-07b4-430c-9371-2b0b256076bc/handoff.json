@@ -1,0 +1,134 @@
+{
+  "handoff_id": "3e46b2ae-07b4-430c-9371-2b0b256076bc",
+  "workspace_session_id": "0a84c1a5-110a-48d0-bd54-e7d618740997",
+  "outgoing_run_id": "3f40a1ed-0c05-4f06-b4ea-b53f4a80628f",
+  "created_at": "2026-08-08T16:10:42.671739500Z",
+  "resume_command": "session-cli resume --workspace-session-id 0a84c1a5-110a-48d0-bd54-e7d618740997 --predecessor-run-id 3f40a1ed-0c05-4f06-b4ea-b53f4a80628f",
+  "pinned_entities": [
+    {
+      "urn": "ce://default/spec/939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d",
+      "kind": "spec",
+      "relation": "governing-spec",
+      "reason": "Approved storeless workspace startup behavior"
+    },
+    {
+      "urn": "ce://default/ticket/52724aed-7215-471b-b2d8-7fb425f5ed61",
+      "kind": "ticket",
+      "relation": "implementation-track",
+      "reason": "Storeless startup side-effect contract and validation-first implementation"
+    }
+  ],
+  "workflow": {
+    "workflow": {
+      "nodes": [
+        {
+          "node_id": "spec-939d066a",
+          "kind": "spec",
+          "requirement": "required",
+          "status": "done",
+          "title": "Storeless workspace startup side-effect contract",
+          "created_at": "2026-08-08T16:06:09.086664900Z",
+          "updated_at": "2026-08-08T16:08:32.457708900Z",
+          "spec_urn": "ce://default/spec/939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+        },
+        {
+          "node_id": "task-validation-first",
+          "kind": "task",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Author failing empty-workspace startup matrix before production fixes",
+          "created_at": "2026-08-08T16:06:09.086664900Z",
+          "updated_at": "2026-08-08T16:06:09.086664900Z",
+          "anchor_urn": "ce://default/ticket/52724aed-7215-471b-b2d8-7fb425f5ed61",
+          "category": "implementation-step"
+        },
+        {
+          "node_id": "ticket-52724aed",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "in-progress",
+          "title": "Implement storeless startup side-effect contract",
+          "created_at": "2026-08-08T16:06:09.086664900Z",
+          "updated_at": "2026-08-08T16:08:32.554908400Z",
+          "ticket_urn": "ce://default/ticket/52724aed-7215-471b-b2d8-7fb425f5ed61",
+          "cached_ticket_title": "Startup artifact pollution: MCP servers/viewers must not create stores or log dirs on mere startup in storeless workspaces"
+        },
+        {
+          "node_id": "validation-storeless-matrix",
+          "kind": "validation",
+          "requirement": "required",
+          "status": "pending",
+          "title": "Storeless workspace startup filesystem matrix",
+          "created_at": "2026-08-08T16:08:57.746022600Z",
+          "updated_at": "2026-08-08T16:08:57.746022600Z",
+          "anchor_urn": "ce://default/ticket/52724aed-7215-471b-b2d8-7fb425f5ed61",
+          "validation_spec_id": "vt-storeless-startup-matrix"
+        }
+      ]
+    },
+    "resolutions": [
+      {
+        "node_id": "spec-939d066a",
+        "live_ticket_state": "reviewed"
+      },
+      {
+        "node_id": "ticket-52724aed",
+        "live_ticket_state": "in-implementation"
+      }
+    ]
+  },
+  "validation": [
+    {
+      "validation_spec_id": "vt-storeless-startup-matrix",
+      "required": true
+    }
+  ],
+  "objective": "Author the reusable storeless-workspace startup matrix first, run it to identify every MCP server/viewer that creates filesystem artifacts during mere startup, then remove those eager side effects while preserving explicit initialization and configured first-write behavior.",
+  "target_tickets": [
+    {
+      "id": "52724aed-7215-471b-b2d8-7fb425f5ed61",
+      "why": "Owns the startup artifact pollution regression and validation matrix.",
+      "state": "in-implementation",
+      "acceptance_criteria": [
+        "Create a reusable fresh storeless-workspace fixture.",
+        "Parameterize startup across the discovered installed MCP server/viewer matrix.",
+        "Assert zero filesystem delta for unconfigured read-only startup.",
+        "Return clear non-mutating errors when an operation requires a missing store.",
+        "Prove explicit initialization and configured first writes still create intended artifacts.",
+        "Identify the exact creator of test-logs/ or target/test-logs/.",
+        "Run focused affected-package tests.",
+        "Provide a repository-level startup matrix command."
+      ]
+    }
+  ],
+  "higher_level_objective": "Make MCP servers and viewers safe to launch from arbitrary empty directories without silently polluting the filesystem.",
+  "upward_context": [
+    {
+      "entity_urn": "ce://default/ticket/fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3",
+      "title": "Session-anchored MCP workspace resolution",
+      "role": "parent"
+    }
+  ],
+  "target_files": [
+    "memory-api/tools/mcp/ticket-mcp/src/main.rs",
+    "memory-viewers/log-viewer/Cargo.toml"
+  ],
+  "decisions": [
+    "Persistent stores such as .ticket require explicit initialization or configuration; mere startup must not create a store.",
+    "Generated output directories such as test-logs/ and target/test-logs/ are created lazily only on the first actual configured write.",
+    "Without an explicit filesystem log destination, filesystem logging remains disabled.",
+    "The fixture captures exit status, stdout, stderr, and exact before/after filesystem snapshots for each discovered installed MCP server/viewer.",
+    "Production fixes begin only after the failing matrix identifies the actual artifact creators."
+  ],
+  "non_goals": [
+    "Do not ban intentional explicit store initialization or configured writes.",
+    "Do not change configured log contents or retention behavior.",
+    "Do not fold pre-dispatch agent quality gates into this implementation.",
+    "Do not assume ticket-mcp and log-viewer are the only affected binaries before running the matrix."
+  ],
+  "context_anchors": [
+    ".ticket/tickets/52724aed-7215-471b-b2d8-7fb425f5ed61/ticket.toml",
+    ".spec/specs/939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d/spec.toml"
+  ],
+  "risk_notes": "The first matrix run may reveal additional creators beyond ticket-mcp and log-viewer. Keep the production patch driven by observed filesystem deltas. The current session/worktree check-in proxy defect is related infrastructure risk but is not part of ticket 52724aed unless a failing matrix proves direct overlap."
+}

@@ -1,11 +1,21 @@
 {
   "id": "vt-storeless-startup-matrix",
-  "title": "Storeless startup matrix",
-  "command": "bash tools/validate-storeless-startup.sh",
-  "detail": "16 real entry points were started as genuine subprocesses against a fresh storeless workspace fixture with no store or log sink configured. Before/after filesystem snapshots were compared directly. 12 MCP servers and 4 viewers reported zero filesystem delta; 4 components legitimately refused to start without a store. Three production defects were found and fixed by the matrix.",
+  "title": "Storeless workspace startup filesystem matrix",
+  "command": "cargo test --workspace storeless_workspace_startup -- --nocapture",
+  "detail": "Use a fresh temporary storeless workspace per installed MCP server/viewer; capture exit code, stdout, stderr, and exact before/after filesystem snapshots. Assert zero delta for unconfigured startup, non-mutating errors for missing required stores, and expected creation after explicit init/configured first write.",
   "links": {
     "spec_ids": [
       "939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+    ],
+    "acceptance_criterion_ids": [
+      "empty-workspace-fixture",
+      "startup-tool-matrix",
+      "zero-filesystem-delta",
+      "missing-store-error",
+      "positive-explicit-write",
+      "identify-test-logs-creator",
+      "focused-tests",
+      "repository-matrix"
     ],
     "ticket_ids": [
       "52724aed-7215-471b-b2d8-7fb425f5ed61"
