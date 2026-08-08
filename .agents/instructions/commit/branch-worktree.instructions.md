@@ -53,7 +53,14 @@ Pass the resolved worktree path to the implementation agent in its context bundl
 
 ## 1b. Name the topic (rename the worktree)
 
-As soon as the implementation agent knows the topic, rename the hook-provisioned placeholder exactly once for that topic, before the first edit and before step 2 (Claim). Run the sequence from the repository root, with no shell or other process using the worktree as its current directory:
+As soon as the implementation agent knows the topic, rename the hook-provisioned placeholder exactly once for that topic, before the first edit and before step 2 (Claim). Run the sequence from the repository root, with no shell or other process using the worktree as its current directory. Before renaming, check for uncommitted tracked changes:
+
+```bash
+git -C .worktrees/<name> diff --stat          # unstaged tracked changes
+git -C .worktrees/<name> diff --stat --cached # staged tracked changes
+```
+
+Both commands must be empty; otherwise commit or stash the tracked changes first. Untracked `.session/sessions/` entries do not block a rename: the capture hook writes those continuously as background noise.
 
 ```bash
 mv .worktrees/<short-id>-session .worktrees/<short-id>-<topic-slug>
@@ -75,7 +82,7 @@ The output must show all five populated submodules: `memory-viewers`, `context-s
 
 ### Renaming again when focus changes
 
-Re-renaming is allowed but should be rare: use the same sequence with the current name as the old name only when scope materially changes to a different feature or ticket, not for every sub-task. Re-run `session_check_in` with the new `worktree_path` and `branch` so the store is not stale, and run `board_check_in` when the claimed files change. Avoid renaming mid-commit or with a dirty index; commit or stash first. Never rename while a viewer, `cargo` build, or another agent has its current directory inside the worktree.
+Re-renaming is allowed but should be rare: use the same sequence with the current name as the old name only when scope materially changes to a different feature or ticket, not for every sub-task. Re-run `session_check_in` with the new `worktree_path` and `branch` so the store is not stale, and run `board_check_in` when the claimed files change. Do not rename with uncommitted tracked modifications, staged or unstaged; commit or stash those first. Untracked `.session/sessions/` entries are capture-hook background noise and never block a rename. Never rename while a viewer, `cargo` build, or another agent has its current directory inside the worktree.
 
 ## 2. Claim (implementation agent, before the first edit)
 
