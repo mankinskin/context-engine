@@ -176,7 +176,7 @@ board_check_out {
   workspace: "default",
   ticket_id: "<ticket id>",
   agent_id: "<agent id>",
-  handoff_reason: "ready-to-merge: agent/<short-id>-<slug> @ <commit sha> — rebased onto origin/main, <validation command> passed"
+  handoff_reason: "ready-to-merge: agent/<short-id>-<slug> @ <commit sha> — rebased onto local `main`, <validation command> passed"
 }
 ```
 

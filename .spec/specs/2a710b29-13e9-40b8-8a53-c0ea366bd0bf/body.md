@@ -29,7 +29,7 @@ Any tooling or reviewer inspecting the board can recover the branch/worktree pai
 
 ### Rebase-before-ready rule
 
-- Conflict resolution against `main` happens exclusively on the feature branch, via `git rebase origin/main`. Conflicts are never resolved directly on `main`.
+- Conflict resolution against `main` happens exclusively on the feature branch, via `git rebase main`. Conflicts are never resolved directly on `main`.
 - After any rebase, validation (tests, build) is re-run on the feature branch before the branch is marked ready.
 
 ### Ready-to-merge signal
