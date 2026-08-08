@@ -135,4 +135,6 @@ own origin before the superproject push, per the "submodules pushed before super
 Validation: use an isolated two-repository fixture with a committed submodule feature branch; assert `merge <name>` advances the submodule `main`, leaves the main submodule checkout on `main`, and then fast-forwards the superproject. Confirm a detached nested submodule is skipped and dry-run performs no mutation.
 
 
-Validation evidence: `.test/default/` validation spec `worktree-submodule-merge` and passing execution `exec-worktree-submodule-merge-20260805`. Reproduce by querying executions for ticket `4ef88dbc-cb39-4724-9f2c-53ab09cf90c5` and validation spec `worktree-submodule-merge`.
+Validation evidence: `.test/default/` validation spec `worktree-submodule-merge` and passing execution `exec-worktree-submodule-merge-20260805`. Reproduce by querying executions for ticket `4ef88dbc-cb39-4724-9f2c-53ab09cf90c5` and validati
+
+Retirement of tools/worktree/worktree.sh was rescoped out of this ticket on 2026-08-08 and is now owned by ticket 5e6cf4f8 (Rewrite worktree.sh as a Rust binary and add worktree lifecycle recycling). This ticket's scope is limited to delivering the helper script, which is verified merged to main.on spec `worktree-submodule-merge`.

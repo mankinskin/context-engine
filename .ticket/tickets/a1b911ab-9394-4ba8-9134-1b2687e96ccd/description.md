@@ -149,3 +149,5 @@ Spec [0f5acbfe session-worktree-routing](.spec/specs/0f5acbfe-743b-4f1e-abfd-546
 The main checkout's session record still reads `path: C:/Users/linus/git/context-engine, branch: main` (captured 14:26, before the fix was installed). The new `replace_main_worktree_inference` path is expected to overwrite it on the next `UserPromptSubmit` now that the corrected `copilot-capture-hook` binary is installed. That self-heal is the remaining observable confirmation.
 
 Stale `.session-routing/worktree-index.json` in the main checkout — a leftover of the removed registry design that held a wrong session-to-checkout mapping — has been deleted.
+
+Verified 2026-08-08: acceptance criteria already satisfied by merged work; no additional code change required.
