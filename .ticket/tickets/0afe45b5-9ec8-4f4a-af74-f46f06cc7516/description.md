@@ -34,11 +34,33 @@ full iteration. Promoted ahead of ticket 5e6cf4f8 by user decision on
 - Store resolution never treats a `.worktrees/*/` nested store as a candidate
   when resolving from the repository root.
 - `--workspace <repo-root>` alone is sufficient to pin both the store and the
-  index; `--index-root` either follows `--workspace` by default or is
-  documented as required.
+  index; `--index-root` follows `--workspace` by default, while an explicitly
+  passed `--index-root` overrides the default.
 - `session_check_in` can create a worktree assignment for a session that has
   none, without the anchor precheck rejecting it first.
 - A session running in `.worktrees/<name>` still resolves to that worktree's
   store when that is the intended target.
-- Regression coverage asserts a root-invoked write lands in the root store
-  while ~15 worktree stores are present on disk.
+- A repository-root invocation resolves to the root store without enumerating
+  sibling `.worktrees/*` stores, then is rejected by the existing main-checkout
+  guard with the main-checkout reason and instructions to check in to a
+  worktree, rather than a ~16-entry candidate list.
+
+## Rescoping note (2026-08-08)
+
+Main-checkout mutations remain blocked. The original acceptance criterion 5
+was withdrawn because it contradicted commit `4637548f` ("feat(session): route
+MCP calls through active worktrees so tool operations stay scoped to the
+initiating checkout"), which deliberately rejects a resolved target equal to
+the repository root via `MainCheckoutMutationBlocked`.
+
+Blocking reads as well as writes was reviewed and confirmed intentional; no
+read/write classification will be added to the guard. The guard is named for
+mutations but also rejects `read_file`, and that behavior was accepted as-is by
+user decision.
+
+The fix is proxy-only (`mcp-toolmon`). The known accepted limitation is that
+the `ticket`/`session` CLI bootstrap path remains broken and is not addressed
+by this ticket. Closing that gap requires a separate ticket.
+
+Governing spec authored for this work:
+`5d9e5a99-74b5-4f4e-9e6f-0a6cc3741ddf`.
