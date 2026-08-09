@@ -1,0 +1,18 @@
+{
+  "id": "exec-vt-0afe45b5-main-20260809",
+  "validation_spec_id": "vt-0afe45b5-main-regression-suite",
+  "outcome": "passed",
+  "executed_at": "2026-08-09T17:49:52.298929900Z",
+  "detail": "cargo build: 0 errors, 8 warnings (0 crates); cargo test: 65 passed (12 suites, 6.89s); cargo test: 31 passed (1 suite, 0.25s); cargo test: 25 passed (2 suites, 0.09s); cargo test: 247 passed, 1 ignored (8 suites, 3.96s).",
+  "links": {
+    "ticket_ids": [
+      "0afe45b5-9ec8-4f4a-af74-f46f06cc7516"
+    ]
+  },
+  "provenance": {
+    "domain": "session",
+    "operation": "store-resolution",
+    "transport": "cli",
+    "run_id": "0afe45b5-main-20260809"
+  }
+}

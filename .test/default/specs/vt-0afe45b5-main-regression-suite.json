@@ -1,0 +1,11 @@
+{
+  "id": "vt-0afe45b5-main-regression-suite",
+  "title": "Store-resolution regression suite on main",
+  "command": "cargo build -p mcp-toolmon && cargo test -p mcp-toolmon && cargo test -p mcp-toolmon --lib && cargo test -p session-workspace-resolver && cargo test -p session-api",
+  "detail": "Main commit 700d64ee with memory-api submodule 184b8e5e.",
+  "links": {
+    "ticket_ids": [
+      "0afe45b5-9ec8-4f4a-af74-f46f06cc7516"
+    ]
+  }
+}
