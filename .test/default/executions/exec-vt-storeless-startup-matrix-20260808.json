@@ -1,0 +1,22 @@
+{
+  "id": "exec-vt-storeless-startup-matrix-20260808",
+  "validation_spec_id": "vt-storeless-startup-matrix",
+  "outcome": "passed",
+  "executed_at": "2026-08-08T00:00:00Z",
+  "detail": "bash tools/validate-storeless-startup.sh: 16 rows, all clean-or-refusal, exit 0. 12 MCP servers initialized successfully: mcp-toolmon, context-mcp, ticket-mcp, spec-mcp, test-mcp, feedback-mcp, session-mcp, rule-mcp, audit-mcp, fs-mcp, peek-mcp, compact-terminal-mcp. 4 viewers were probed as browser frontends with real GET / readiness: doc-viewer, log-viewer, ticket-viewer, spec-viewer. 4 components legitimately refused to start without a store, emitting workspace-not-initialized messages and creating nothing. Cargo validation commands also passed: memory-fixtures startup_matrix 2 passed, memory-fixtures 8 passed, viewer-api 33 passed 2 ignored, rule-cli 51 passed, session-api 247 passed 1 ignored, workspace check 0 errors 6 pre-existing warnings, install-ctl registry freshness 1 passed.",
+  "links": {
+    "spec_ids": [
+      "939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+    ],
+    "ticket_ids": [
+      "52724aed-7215-471b-b2d8-7fb425f5ed61"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/validate-storeless-startup.sh",
+    "domain": "ticket",
+    "operation": "get",
+    "transport": "cli",
+    "run_id": "storeless-startup-matrix"
+  }
+}

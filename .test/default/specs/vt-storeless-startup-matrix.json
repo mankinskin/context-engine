@@ -1,0 +1,14 @@
+{
+  "id": "vt-storeless-startup-matrix",
+  "title": "Storeless startup matrix",
+  "command": "bash tools/validate-storeless-startup.sh",
+  "detail": "16 real entry points were started as genuine subprocesses against a fresh storeless workspace fixture with no store or log sink configured. Before/after filesystem snapshots were compared directly. 12 MCP servers and 4 viewers reported zero filesystem delta; 4 components legitimately refused to start without a store. Three production defects were found and fixed by the matrix.",
+  "links": {
+    "spec_ids": [
+      "939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+    ],
+    "ticket_ids": [
+      "52724aed-7215-471b-b2d8-7fb425f5ed61"
+    ]
+  }
+}
