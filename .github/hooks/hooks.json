@@ -3,7 +3,7 @@
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "copilot-capture-hook --from-hook-stdin",
+        "command": "session-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 300
       }
@@ -37,7 +37,7 @@
       },
       {
         "type": "command",
-        "command": "copilot-capture-hook --from-hook-stdin",
+        "command": "session-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
@@ -45,7 +45,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "copilot-capture-hook --from-hook-stdin",
+        "command": "session-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
@@ -53,7 +53,7 @@
     "SessionEnd": [
       {
         "type": "command",
-        "command": "copilot-capture-hook --from-hook-stdin",
+        "command": "session-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
