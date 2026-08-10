@@ -138,3 +138,76 @@ A finish operation takes a session's worktree from work-complete to released: re
 ## Known defect in this spec
 
 The Traceability links above use absolute paths under `C:/Users/linus_behrbohm/git/SECOND_CHECKOUT/...`, which do not resolve in this repository and violate the repository's repo-root-relative reference policy. They are left unmodified here to keep this refinement scoped; correcting them is follow-up work.
+
+## Session Identity and Cross-Session Handoff Protocol (2026-08-10)
+
+### Motivation
+
+An implementation agent needs a stable way to identify the active session, its isolated checkout, and the durable evidence needed to resume a predecessor's work without replaying a raw transcript. Ambiguous session identifiers can select the wrong session record or make a valid CLI lookup appear missing.
+
+### Dependent Expectation
+
+If this specification is implemented, dependents can rely on agents resolving and declaring the authoritative per-session UUID, worktree path, and branch before substantive work; on cross-session handoffs consulting durable records before bounded transcript evidence; and on tools receiving the identifier form required by the selected command.
+
+### R1: Dual identity and identifier discipline
+
+The system exposes two identifiers that agents MUST NOT conflate:
+
+1. `workspace_session_id` is a slug-plus-hex logical workspace identifier, for example `epic-kickoff-8fdfe135`. Its local source of truth is `.session/local/active_workspace_session.json`, whose only keys are `workspace_session_id` and `updated_at`.
+2. The per-session identifier is a UUID, for example `16263c13-7f29-4780-ba09-bf94190cb87f`, and keys the record directory `.session/sessions/<uuid>/`.
+
+CLI parameter names do not supersede this identity distinction. Some commands accept only the UUID form: `session.exe subagent-rollups --workspace-session-id epic-kickoff-8fdfe135` reports `session data was not found`, while the same command with the UUID succeeds. Agents MUST use the identifier form verified for the command being invoked.
+
+### R2: Self-identification before substantive work
+
+Before the first substantive action, an agent MUST resolve its own identity with `./target/debug/session.exe init --workspace . --toon`. The command returns `context.session_id`, `context.workspace_session_id`, `active_run_id`, and `runs[]`. When the CLI surface is unavailable, the agent MAY read `workspace_session_id` from `.session/local/active_workspace_session.json` as a fallback, while treating a UUID lookup as separately required where the target command requires one.
+
+### R3: Authoritative worktree binding
+
+The isolated checkout for a session is `.worktrees/<short-id>-<slug>` on branch `agent/<short-id>-<slug>`, where `<short-id>` is the first eight hexadecimal characters of the session UUID. `./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon` is authoritative for a session's `worktree_path` and `branch`.
+
+The claim and rename command sequence belongs exclusively to [.agents/instructions/commit/branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md). This specification references that ownership boundary and does not duplicate the commands.
+
+### R4: Transcript-visible traceability
+
+Every agent's first substantive response MUST declare the per-session UUID, worktree path, and branch. Every agent's final response MUST repeat the same three values. This response-level declaration makes lineage greppable from the chat transcript alone; board and session-store records remain supporting evidence rather than the exclusive source.
+
+### R5: Prior-session inspection and handoff evidence
+
+When resuming handed-off work, an agent MUST read durable artifacts in this order: the linked ticket, this or another owning specification, and the handoff package. Only then may the agent inspect bounded transcript slices. An agent MUST NOT dump a raw transcript.
+
+The inspection surfaces are:
+
+- `./target/debug/session.exe sessions-for-ticket <ticket-id> --workspace . --toon` returns `count` and `sessions[]`.
+- `./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon` returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`.
+- `./target/debug/session.exe peek-skeleton --session-id <uuid> --preview-chars N --toon` returns `total_turns` and `entries[]{sequence,role,preview,content_len}`.
+- `./target/debug/session.exe peek-range --session-id <uuid> --start N --end M --toon` returns `turns[]{sequence,role,content}`.
+- `./target/debug/session.exe subagent-rollups --workspace-session-id <uuid> --toon` returns per-run turn, tool-call, and token counts.
+
+Prior handoff packages are read from `.session/sessions/<uuid>/handoffs/<handoff-id>/handoff.json` and `handoff.md`. There is no read subcommand: `session.exe handoff` is write-only and requires `--objective`, `--higher-level-objective`, and at least one `--upward-context` JSON entry.
+
+### Guards and Evidence
+
+The implementation and guidance evidence must demonstrate the identifier distinction with the successful UUID `subagent-rollups` invocation and the failing slug-plus-hex invocation; capture `session.exe init` and `session.exe lookup` TOON output; and demonstrate durable-artifact-first inspection using `sessions-for-ticket`, `peek-skeleton`, and a bounded `peek-range` call. A review of the first and final agent responses must confirm the UUID, worktree path, and branch are declared in both locations.
+
+### Positions
+
+- `partial` — `.session/local/active_workspace_session.json` and the session CLI provide the identity and inspection surfaces; ticket [7be23bd8 Agent session identity, worktree traceability, and prior-session inspection protocol](.ticket/tickets/7be23bd8-9793-4f86-a96d-403824f8af94/ticket.toml) owns the guidance contract that makes agents use them consistently.
+- `implemented` — [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md) owns worktree claim and rename commands.
+- `implemented` — [worktree-provisioning.instructions.md](.agents/instructions/session/worktree-provisioning.instructions.md), [session-artifacts.instructions.md](.agents/instructions/orchestration/session-artifacts.instructions.md), and [write-and-die.instructions.md](.agents/instructions/orchestration/write-and-die.instructions.md) define neighboring provisioning, durable-artifact, and worker-lifecycle guidance.
+
+### Governing-rule Requirement
+
+The guidance introduced for ticket 7be23bd8 must introduce this specification's dual-identity, response-traceability, and durable-artifact-first requirements in each agent session. The governing guidance must defer worktree command ownership to [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md).
+
+### Explicit Non-goals and Known Defect
+
+- Fixing `session.exe query` is out of scope. The current command aborts an entire listing on one unreadable record with `session error: session data was not found at .\\.session\\sessions\\6a51a1af-6812-4dfc-80d7-0e4f56b4af4f\\session.json`.
+- Adding a `handoff --read` subcommand is out of scope.
+- Changing worktree-provisioning-hook behavior is out of scope.
+
+### Traceability
+
+- Related ticket: [7be23bd8 Agent session identity, worktree traceability, and prior-session inspection protocol](.ticket/tickets/7be23bd8-9793-4f86-a96d-403824f8af94/ticket.toml).
+- Related guidance: [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md), [worktree-provisioning.instructions.md](.agents/instructions/session/worktree-provisioning.instructions.md), [session-artifacts.instructions.md](.agents/instructions/orchestration/session-artifacts.instructions.md), and [write-and-die.instructions.md](.agents/instructions/orchestration/write-and-die.instructions.md).
+- Related specifications: `memory-api/session-api/durable-session-workflow`, `memory-api/session-api/handoff-provenance-and-tracks`, and `agent-workflow/handoff-package-schema` define adjacent runtime workflow, handoff-provenance, and package-schema behavior.
