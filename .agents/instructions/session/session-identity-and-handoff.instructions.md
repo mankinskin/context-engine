@@ -32,7 +32,7 @@ Resolve the authoritative worktree binding for any session:
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
+The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. If no persisted assignment exists, lookup attempts unambiguous discovery of the session's worktree. No candidate returns `MissingSessionWorktree`; multiple candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. On either error, inspect registered worktrees and repair or create the session assignment before running mutations; do not proceed in the main checkout. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
 
 ## Opening Declaration
 
@@ -90,7 +90,7 @@ Resolve a session's worktree, branch, and ticket:
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The command returns the session assignment fields.
+The command returns the session assignment fields. `MissingSessionWorktree` or `AmbiguousSessionWorktree` means no authoritative binding is available; inspect the registered worktrees and repair or create the session assignment before continuing.
 
 Inspect transcript shape before reading content:
 
