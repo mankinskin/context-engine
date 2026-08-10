@@ -88,6 +88,8 @@ Re-renaming is allowed but should be rare: use the same sequence with the curren
 
 Two claims, both required, in this order.
 
+Resolve session identity and use the closing traceability footer described in [session-identity-and-handoff.instructions.md](../session/session-identity-and-handoff.instructions.md).
+
 **Session claim** — records the authoritative session-to-worktree-to-branch assignment and rejects a second session claiming the same worktree:
 
 ```

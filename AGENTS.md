@@ -14,6 +14,7 @@ Global working rules for this repository. Keep this file small and stable.
 - Use Unix-style paths (`/`) in commands and docs.
 - Read test logs in `target/test-logs/` for debugging instead of relying on truncated test stdout.
 - Keep scope tight: do not add extra features or broad refactors unless requested.
+- Declare the session identity and assigned worktree at the start of each session, then repeat both in the final response; follow [session-identity-and-handoff.instructions.md](.agents/instructions/session/session-identity-and-handoff.instructions.md).
 
 ## Discovery Protocol (Before Editing)
 
