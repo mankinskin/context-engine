@@ -39,3 +39,9 @@ Validation: `cargo test -p session-api` passed, 262 tests.
 - AC4 met — `legacy_target_ticket_strings_and_absent_context_fields_deserialize`; existing path validation unchanged.
 Commits: submodule `5802526`, outer `9505b147`. NOT yet merged to main.
 Blocked on: fast-forward merge deferred because main's `memory-api` submodule holds an unrelated agent's uncommitted changes.
+
+
+
+## Iteration Decision (2026-08-08)
+
+Retain existing commit `9505b147` on `agent/742dbc65-handoff-roundtrip-assertions` as WIP. Restore or recreate the branch worktree, rebase onto current `main`, complete the missing AC1 deserialized-equality assertions, and run `cargo test -p session-api --test handoff_roundtrip`.

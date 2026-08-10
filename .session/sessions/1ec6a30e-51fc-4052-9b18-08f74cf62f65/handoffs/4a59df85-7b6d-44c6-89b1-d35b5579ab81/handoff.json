@@ -1,0 +1,64 @@
+{
+  "handoff_id": "4a59df85-7b6d-44c6-89b1-d35b5579ab81",
+  "workspace_session_id": "1ec6a30e-51fc-4052-9b18-08f74cf62f65",
+  "outgoing_run_id": "93a4d279-84b5-4113-a65c-f567826737ee",
+  "created_at": "2026-08-08T13:16:12.068437Z",
+  "resume_command": "session-cli resume --workspace-session-id 1ec6a30e-51fc-4052-9b18-08f74cf62f65 --predecessor-run-id 93a4d279-84b5-4113-a65c-f567826737ee",
+  "workflow": {
+    "workflow": {}
+  },
+  "objective": "Restore the retained 742dbc65 WIP branch, rebase it onto current main, complete its handoff round-trip assertions, and validate the focused test.",
+  "target_tickets": [
+    {
+      "id": "742dbc65-a100-4278-9274-7d99a3e2afc4",
+      "why": "Failed review: the worktree registration is broken and AC1 lacks deserialized equality assertions.",
+      "state": "in-implementation",
+      "acceptance_criteria": [
+        "Restore or recreate the branch worktree from agent/742dbc65-handoff-roundtrip-assertions.",
+        "Rebase onto current main.",
+        "Add AC1 deserialized equality assertions.",
+        "Run cargo test -p session-api --test handoff_roundtrip."
+      ]
+    },
+    {
+      "id": "565ae4b1-dd93-4685-955d-58490a0dd3fb",
+      "why": "User selected best-effort pre-store diagnostics; amend AC3 and test/document that contract.",
+      "state": "in-implementation"
+    },
+    {
+      "id": "2d48cf8c-c56e-47e1-afbb-ceb5e8035fd4",
+      "why": "Blocked on a human-observable VS Code additionalContext sentinel round-trip.",
+      "state": "blocked"
+    }
+  ],
+  "higher_level_objective": "Close review-raised contract gaps while preserving verified merged work and the retained WIP branch.",
+  "upward_context": [
+    {
+      "entity_urn": "ce://default/ticket/742dbc65-a100-4278-9274-7d99a3e2afc4",
+      "title": "Model and enforce upward context",
+      "role": "parent"
+    }
+  ],
+  "target_files": [
+    "memory-api/crates/session-api/tests/handoff_roundtrip.rs",
+    ".agents/instructions/session/worktree-provisioning.instructions.md",
+    "memory-api/crates/session-capture-hook/src/main.rs"
+  ],
+  "decisions": [
+    "Temporary diagnostic files written before session-store resolution are best-effort diagnostics only.",
+    "The session-store provisioning record is the authoritative durable history.",
+    "Retain commit 9505b147 on agent/742dbc65-handoff-roundtrip-assertions as WIP."
+  ],
+  "non_goals": [
+    "Do not treat OS temporary storage as durable provisioning history.",
+    "Do not infer VS Code hook additionalContext delivery without a real prompt round-trip.",
+    "Do not discard the retained 742dbc65 WIP commit."
+  ],
+  "context_anchors": [
+    "Review verdict: 2d48cf8c is blocked pending live UserPromptSubmit and PostToolUse sentinel experiments.",
+    "Review verdict: 742dbc65 has a missing worktree administration directory; branch commit 9505b147 remains valid but AC1 equality assertions are absent.",
+    "Review verdict: 565ae4b1 fallback temp sink does not satisfy durable history; user selected an explicit best-effort contract.",
+    "The session worktree is behind main and lacks ticket records 565ae4b1 and 2d48cf8c; rebase before reconciling those two records."
+  ],
+  "risk_notes": "Ticket records 565ae4b1 and 2d48cf8c cannot be transitioned from the iteration worktree until a rebase onto main. No root-checkout files were modified."
+}

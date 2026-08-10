@@ -1,12 +1,17 @@
 {
   "schema_version": 1,
   "session_id": "1ec6a30e-51fc-4052-9b18-08f74cf62f65",
-  "source": "session-worktree-inference",
-  "started_at": "2026-08-08T13:05:19.913163100Z",
-  "captured_at": "2026-08-08T13:05:20.181432200Z",
+  "source": "copilot-hook",
+  "started_at": "2026-08-08T13:04:20.864Z",
+  "captured_at": "2026-08-08T13:16:36.584Z",
   "metadata": {
     "workspace_slug": "default",
-    "trigger": "session-worktree-inference",
+    "agent_id": "copilot-agent",
+    "trigger": "Stop",
+    "producer": "copilot-agent",
+    "copilot_version": "0.60.0",
+    "vscode_version": "1.132.0",
+    "protocol_version": 1,
     "worktree": {
       "path": "C:/Users/linus/git/context-engine/.worktrees/1ec6a30e-session",
       "branch": "agent/1ec6a30e-session",
@@ -14,5 +19,8 @@
       "status": "active"
     }
   },
-  "links": {}
+  "links": {},
+  "emitted_handoff_ids": [
+    "4a59df85-7b6d-44c6-89b1-d35b5579ab81"
+  ]
 }
