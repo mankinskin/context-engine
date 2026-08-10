@@ -6175,11 +6175,9 @@ name = "memory-fixtures"
 version = "0.1.0"
 dependencies = [
  "serde",
- "serde_json",
  "tempfile",
  "thiserror 2.0.18",
  "toml 0.8.23",
- "toon-format",
 ]
 
 [[package]]
@@ -8313,7 +8311,6 @@ dependencies = [
  "clap",
  "feedback-api",
  "memory-api",
- "memory-fixtures 0.1.0",
  "rule-api",
  "serde_json",
  "spec-api",
@@ -12233,6 +12230,16 @@ dependencies = [
  "serde_json",
  "unicode-xid",
  "wasmparser",
+]
+
+[[package]]
+name = "worktree-ctl"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "git2",
+ "session-worktree-provision",
+ "tempfile",
 ]
 
 [[package]]
