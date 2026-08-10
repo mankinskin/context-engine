@@ -48,7 +48,7 @@ If the handoff package is incomplete or ambiguous, **escalate immediately** to t
 - Stop and ask for direction only when a focused search still leaves a material product or architecture ambiguity.
 - Work only inside the git worktree assigned to this task. Never edit, build, or commit in the repository root checkout, and never commit to `main`.
 - Claim the worktree with `session_check_in` and the ticket and file scope with `board_check_in` before the first edit; a conflict on either is an escalation, not something to work around. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
-- The worktree is provisioned FOR this agent by the orchestrator via `tools/worktree/worktree.sh new`, and its path arrives in this task's context bundle. This agent never runs `worktree.sh new`, `merge`, or `remove` itself, and never merges into `main`.
+- The worktree is provisioned FOR this agent by the orchestrator via `./target/debug/worktree-ctl.exe new`, and its path arrives in this task's context bundle. This agent never runs `worktree-ctl new`, `merge`, or `remove` itself, and never merges into `main`.
 
 ## Required Workflow
 
@@ -58,7 +58,7 @@ If the handoff package is incomplete or ambiguous, **escalate immediately** to t
 4. State one local hypothesis and the first cheap falsifying check.
 5. Make the smallest grounded edit that tests or implements that hypothesis.
 6. Run the first focused validation immediately after that edit.
-7. Iterate locally until the slice is correct, then rebase onto local `main` (`bash tools/worktree/worktree.sh rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here, and re-run validation.
+7. Iterate locally until the slice is correct, then rebase onto local `main` (`./target/debug/worktree-ctl.exe rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here, and re-run validation.
 8. Check out of the board with a `ready-to-merge:` reason, then summarize the result and evidence with minimal extra narration. Do not merge into `main`.
 
 ## Output Format

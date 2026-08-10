@@ -242,14 +242,14 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 - Npm script: `install:vsix`
 - Lifecycle: Install, Inspect
 
-## worktree-script
+## worktree-ctl
 
 - Category: Misc
-- Kind: Script
-- Source: `tools/worktree/worktree.sh`
+- Kind: RustBinary
+- Source: `tools/worktree/worktree-ctl`
 - Owner: tooling
 - Safety: Safe
-- Bin: `bash tools/worktree/worktree.sh`
+- Bin: `worktree-ctl`
 - Lifecycle: Inspect
 
 ## storeless-startup-matrix

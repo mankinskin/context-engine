@@ -116,25 +116,27 @@ Because the hook is intentionally quiet, use this checklist to establish whether
 4. **Check hook registration.** Reload the VS Code window after changes to [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) or [.vscode/settings.json](../../../.vscode/settings.json), because VS Code reads hook registration at window start. A missing `.session/sessions/` record indicates that provisioning did not persist the required assignment.
 4. **Check the opt-out.** Run `echo "[$WORKTREE_EAGER_PROVISION]"`. A value of `0` disables provisioning.
 5. **Check the cap.** Compare the `git worktree list` count to `WORKTREE_MAX`, which defaults to 8.
-6. **Use the manual fallback.** Run `bash tools/worktree/worktree.sh new <short-id> <slug>`. An ownerless matching `<short-id>` worktree remains claimable by the hook on the next prompt; a worktree recorded for another session causes `SessionOwnershipConflict`.
+6. **Use the manual fallback.** Run `./target/debug/worktree-ctl.exe new <short-id> <slug>`. A matching `<short-id>` makes the hook reuse the manually created worktree on the next prompt instead of creating another worktree.
 7. **Repair a missing submodule worktree path.** If repository-root `git status` reports `fatal: cannot chdir to '../../../../../.worktrees/<name>/memory-api': No such file or directory`, followed by `fatal: 'git status --porcelain=2' failed in submodule memory-api`, a rolled-back or manually deleted worktree left `core.worktree` in the shared submodule config pointing at the missing directory. `git worktree prune` cannot self-heal because it reaches the same error. Run `git config --file .git/modules/<submodule>/config --unset core.worktree`, then `git -C <submodule> worktree prune` and `git worktree prune` at the repository root. Check all five submodules with `git config --file .git/modules/<name>/config --get core.worktree`. Stale `.git/modules/<name>/worktrees/<entry>/gitdir` entries pointing at missing paths are a separate, milder symptom cleared by the same prune.
 
 When hand-constructing a `transcript_path` for a manual hook invocation under Git Bash, use a Windows-style `C:/...` path. The native binary does not resolve POSIX `/tmp/...` paths produced by `mktemp`.
 
 `WORKTREE_IDLE_SECS` defaults to 24 hours. Existing worktrees have been touched recently, so reclaim will not occur in the near term; new sessions pay the full cold-provision cost and count toward `WORKTREE_MAX`.
 
-## Shell Helper Reference
+## Worktree CLI Reference
 
-[tools/worktree/worktree.sh](../../../tools/worktree/worktree.sh) supports `--dry-run` on every subcommand, and `-h` or `--help` prints usage.
+`./target/debug/worktree-ctl.exe` supports `--dry-run` on every subcommand, and `-h` or `--help` prints usage.
 
 | Subcommand | Signature | Behavior |
 |---|---|---|
-| `new` | `new <short-id> <slug>` | Creates `.worktrees/<short-id>-<slug>` and `agent/<short-id>-<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
-| `list` | `list` | Lists `.worktrees` entries, branches, submodule initialization, and unregistered debris. |
-| `rebase` | `rebase <name>` | Rebases the worktree branch onto local `main`; stops on conflict. |
-| `merge` | `merge <name>` | Fast-forwards nested submodule branches and then the superproject into `main`. |
-| `remove` | `remove <name>` | Removes the worktree, prunes registrations, and deletes the branch. |
-| `doctor` | `doctor` | Repairs deinitialized main-checkout submodules and reports stale registrations. |
+| `new` | `new <short-id> <slug> [--allow-additional] [--preserve-main-changes] [--dry-run]` | Creates `.worktrees/<short-id>-<slug>` and `agent/<short-id>-<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
+| `list` | `list [--dry-run]` | Lists `.worktrees` entries, branches, submodule initialization, and unregistered debris. |
+| `rebase` | `rebase <name> [--dry-run]` | Rebases the worktree branch onto local `main`; stops on conflict. |
+| `merge` | `merge <name> [--dry-run]` | Fast-forwards nested submodule branches and then the superproject into `main`. |
+| `remove` | `remove <name> [--force] [--dry-run]` | Refuses dirty worktrees unless forced, then removes the worktree, prunes registrations, and deletes the merged branch. |
+| `rename` | `rename <source-name> <target-name> [--dry-run]` | Re-topics a clean worktree through filesystem relocation, repair, and branch rename. |
+| `finish` | `finish <name> [--dry-run]` | Evaluates completion and preserves or reclaims the worktree according to lifecycle gates. |
+| `doctor` | `doctor [--dry-run]` | Repairs deinitialized main-checkout submodules and reports stale registrations. |
 
 ## Verification Evidence
 
@@ -149,9 +151,9 @@ Measured on 2026-08-08:
 
 On 2026-08-08, two ordering defects in `session-capture-hook` were confirmed fixed: superproject `28b9f05d` / submodule `a02828e8` moved provisioning ahead of capture-store resolution, and superproject `f671a3b0` / submodule `87f2d336` moved provisioning ahead of the transcript-capture guard.
 
-`bash tools/worktree/tests/run.sh` currently reports 6 passed and 10 failed. The first concrete failure is `error: unknown subcommand: rename`; affected tests cover dry runs, dirty-checkout acknowledgement and preservation, finish/remove/rename behavior, submodule initialization, explicit override, commit-ahead preservation, and session reuse. Those tests encode the not-yet-merged Rust rewrite contract, so the failures are a known rewrite gap rather than a provisioning regression.
+The Rust lifecycle rewrite is complete: `cargo test -p worktree-ctl` passes 28 tests (10 unit, 15 lifecycle-contract, and 3 maintenance tests), superseding the 16 retired shell contracts for dry runs, dirty-checkout acknowledgement and preservation, finish/remove/rename behavior, submodule initialization, explicit override, commit-ahead preservation, and session reuse.
 
-Ticket `5e6cf4f8` (Rewrite worktree.sh as a Rust binary and add worktree lifecycle recycling) is open. The planned `worktree-ctl` binary will provide `list`, `rebase`, `merge`, `remove`, and `doctor`, retiring the shell scripts. Related ticket `3d535b2c` (Add prompt-time worktree bootstrap hook) is open; ticket `0f5acbfe` (Session-id worktree routing: discovery resolver, capture-hook self-heal, and terminal stdio isolation) is reviewed.
+Ticket `5e6cf4f8` owns the completed `worktree-ctl` migration and retirement of the Bash implementation. Related ticket `3d535b2c` (Add prompt-time worktree bootstrap hook) is open; ticket `0f5acbfe` (Session-id worktree routing: discovery resolver, capture-hook self-heal, and terminal stdio isolation) is reviewed.
 
 ## Manual Lifecycle Protocol
 

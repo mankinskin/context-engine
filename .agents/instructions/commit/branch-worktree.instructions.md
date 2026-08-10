@@ -42,10 +42,10 @@ For auto-provisioned sessions, use `{short-id}-{topic-slug}` for the worktree an
 Run from the repository root, on `main`, before dispatching the implementation agent:
 
 ```bash
-bash tools/worktree/worktree.sh new <short-id> <slug>
+./target/debug/worktree-ctl.exe new <short-id> <slug>
 ```
 
-This is the canonical invocation — it is the single source of truth for the exact git sequence, so hand-typed variants cannot drift from it. Under the hood it runs: `git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main` (branching directly from LOCAL `main`, no fetch, no origin dependency), then populates every submodule OFFLINE by giving each one its own linked worktree — `git -C <main-checkout>/<submodule> worktree add --detach .worktrees/<short-id>-<slug>/<submodule> <recorded-sha>` — rolling back the partial worktree on persistent failure. Local `main` is authoritative here, not `origin/main`: this repo's local `main` and its recorded submodule commits are routinely ahead of, or entirely absent from, `origin`, so origin is never a valid source for either. That sequence stays discoverable here as a manual fallback if the script is ever unavailable. Pass `--dry-run` to print the exact commands without running them.
+This is the canonical invocation — it is the single source of truth for the exact git sequence, so hand-typed variants cannot drift from it. Under the hood the Rust CLI runs: `git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main` (branching directly from LOCAL `main`, no fetch, no origin dependency), then populates every submodule OFFLINE by giving each one its own linked worktree — `git -C <main-checkout>/<submodule> worktree add --detach .worktrees/<short-id>-<slug>/<submodule> <recorded-sha>` — rolling back the partial worktree on persistent failure. Local `main` is authoritative here, not `origin/main`: this repo's local `main` and its recorded submodule commits are routinely ahead of, or entirely absent from, `origin`, so origin is never a valid source for either. Pass `--dry-run` to print the exact commands without running them.
 
 The branch is always cut from `main`, never from another feature branch. If the branch already exists, the worktree is being re-created for an interrupted task — use `git worktree add .worktrees/<short-id>-<slug> agent/<short-id>-<slug>` without `-b`.
 
@@ -63,12 +63,10 @@ git -C .worktrees/<name> diff --stat --cached # staged tracked changes
 Both commands must be empty; otherwise commit or stash the tracked changes first. Untracked `.session/sessions/` entries do not block a rename: the capture hook writes those continuously as background noise.
 
 ```bash
-mv .worktrees/<short-id>-session .worktrees/<short-id>-<topic-slug>
-git worktree repair .worktrees/<short-id>-<topic-slug>
-git branch -m agent/<short-id>-session agent/<short-id>-<topic-slug>
+./target/debug/worktree-ctl.exe rename <short-id>-session <short-id>-<topic-slug>
 ```
 
-`git worktree move` is unusable in this repository because every worktree contains five submodule linked worktrees. [tools/worktree/worktree.sh](tools/worktree/worktree.sh) has no `rename` subcommand, so the raw-git sequence is the current procedure.
+`git worktree move` is unusable in this repository because every worktree contains five submodule linked worktrees. `worktree-ctl rename` uses filesystem relocation, top-level repair, and branch rename instead.
 
 The ordering is mandatory: `session_check_in` records `worktree_path` and `branch`, with no update surface or topic/slug field in [memory-api/crates/session-api/src/store.rs](memory-api/crates/session-api/src/store.rs). Renaming after check-in strands the stored path and branch.
 
@@ -82,7 +80,7 @@ The output must show all five populated submodules: `memory-viewers`, `context-s
 
 ### Renaming again when focus changes
 
-Re-renaming is allowed but should be rare: use the same sequence with the current name as the old name only when scope materially changes to a different feature or ticket, not for every sub-task. Re-run `session_check_in` with the new `worktree_path` and `branch` so the store is not stale, and run `board_check_in` when the claimed files change. Do not rename with uncommitted tracked modifications, staged or unstaged; commit or stash those first. Untracked `.session/sessions/` entries are capture-hook background noise and never block a rename. Never rename while a viewer, `cargo` build, or another agent has its current directory inside the worktree.
+Re-renaming is allowed but should be rare: run `./target/debug/worktree-ctl.exe rename <current-name> <target-name>` only when scope materially changes to a different feature or ticket, not for every sub-task. Re-run `session_check_in` with the new `worktree_path` and `branch` so the store is not stale, and run `board_check_in` when the claimed files change. Do not rename with uncommitted tracked modifications, staged or unstaged; commit or stash those first. Untracked `.session/sessions/` entries are capture-hook background noise and never block a rename. Never rename while a viewer, `cargo` build, or another agent has its current directory inside the worktree.
 
 ## 2. Claim (implementation agent, before the first edit)
 
@@ -153,7 +151,7 @@ Commits land on the feature branch inside the worktree. [workflow.instructions.m
 Conflicts are resolved by the feature branch, never by the integrator. Before marking ready:
 
 ```bash
-bash tools/worktree/worktree.sh rebase <name>
+./target/debug/worktree-ctl.exe rebase <name>
 ```
 
 This rebases `<name>`'s branch onto LOCAL `main`; it never fetches `origin`, and it stops on conflict and never auto-resolves or aborts, so conflict resolution still happens by hand inside the worktree:
@@ -191,7 +189,7 @@ Then move the ticket to `in-review`. The `ready-to-merge:` prefix is the marker 
 Because the branch already rebased onto `main`, integration is a fast-forward and must be asserted as one:
 
 ```bash
-bash tools/worktree/worktree.sh merge <name>
+./target/debug/worktree-ctl.exe merge <name>
 ```
 
 For every branch-bearing nested submodule worktree, `merge` first checks out the corresponding main-checkout submodule's local `main` and fast-forwards it from the nested branch. Detached nested submodule worktrees are skipped because no branch exists to integrate. The helper then runs `git checkout main` and `git merge --ff-only agent/<short-id>-<slug>` in the superproject, so the resulting gitlink records the current local submodule `main` commit. Any submodule fast-forward failure stops integration before the superproject is merged. If the superproject `--ff-only` fails, `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
@@ -199,14 +197,14 @@ For every branch-bearing nested submodule worktree, `merge` first checks out the
 Tear down after a successful merge:
 
 ```bash
-bash tools/worktree/worktree.sh remove <name>
+./target/debug/worktree-ctl.exe remove <name>
 ```
 
 This runs `git worktree remove --force .worktrees/<short-id>-<slug>`, `git worktree prune`, then `git branch -d agent/<short-id>-<slug>`.
 
-`git worktree remove` refuses outright with `fatal: working trees containing submodules cannot be moved or removed` while the worktree's submodules are still initialized — `--force` alone bypasses that refusal, is safe once the branch is confirmed merged (the fast-forward above already proves it), and needs no prior deinit step. Use `-d`, never `-D`, so git refuses to delete a branch that was not actually merged.
+`worktree-ctl remove` refuses a dirty worktree unless `--force` is explicit. Its successful force path uses `git worktree remove --force`, which bypasses Git's refusal to remove initialized submodules once the branch is confirmed merged (the fast-forward above already proves it) and needs no prior deinit step. The CLI uses `-d`, never `-D`, so git refuses to delete a branch that was not actually merged.
 
-One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration. `bash tools/worktree/worktree.sh doctor` diagnoses and repairs exactly this state. Every mutating subcommand of `worktree.sh` (`new`, `rebase`, `merge`, `remove`, `doctor`) must be run from the main checkout, never from inside a linked worktree.
+One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration. `worktree-ctl doctor` diagnoses and repairs exactly this state. Every mutating `worktree-ctl` subcommand (`new`, `rebase`, `merge`, `remove`, `rename`, `finish`, `doctor`) must be run from the main checkout, never from inside a linked worktree.
 
 ## Submodules
 

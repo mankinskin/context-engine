@@ -3,8 +3,8 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/context-engine"
-top_level_dirs[10]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tmp,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
+  root: "//?/C:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl"
+top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
   kind: dir
@@ -74,7 +74,7 @@ crates:
         - name: crates
           kind: dir
           path: "crates/memory-api/crates"
-          children[17]{name,kind,path,note}:
+          children[20]{name,kind,path,note}:
             "audit-api",dir,"crates/memory-api/crates/audit-api","crate=audit-api"
             "compact-terminal-api",dir,"crates/memory-api/crates/compact-terminal-api","crate=compact-terminal-api"
             "doc-api",dir,"crates/memory-api/crates/doc-api","crate=doc-api"
@@ -87,6 +87,9 @@ crates:
             "peek-api",dir,"crates/memory-api/crates/peek-api","crate=peek-api"
             "rule-api",dir,"crates/memory-api/crates/rule-api","crate=rule-api"
             "session-api",dir,"crates/memory-api/crates/session-api","crate=session-api"
+            "session-capture-hook",dir,"crates/memory-api/crates/session-capture-hook","crate=session-capture-hook"
+            "session-workspace-resolver",dir,"crates/memory-api/crates/session-workspace-resolver","crate=session-workspace-resolver"
+            "session-worktree-provision",dir,"crates/memory-api/crates/session-worktree-provision","crate=session-worktree-provision"
             "spec-api",dir,"crates/memory-api/crates/spec-api","crate=spec-api"
             "test-api",dir,"crates/memory-api/crates/test-api","crate=test-api"
             ticket,dir,"crates/memory-api/crates/ticket",crate=ticket
@@ -176,7 +179,7 @@ crates:
     - name: tools
       kind: dir
       path: crates/tools
-      children[5]:
+      children[6]:
         - name: cli
           kind: dir
           path: crates/tools/cli
@@ -199,6 +202,11 @@ crates:
           kind: dir
           path: "crates/tools/tracing-analyzer"
           note: "crate=tracing-analyzer"
+        - name: worktree
+          kind: dir
+          path: crates/tools/worktree
+          children[1]{name,kind,path,note}:
+            "worktree-ctl",dir,"crates/tools/worktree/worktree-ctl","crate=worktree-ctl"
     - name: "viewer-api"
       kind: dir
       path: "crates/viewer-api"
@@ -237,11 +245,12 @@ agent_files:
         - name: prompts
           kind: dir
           path: "agent-files/.agents/prompts"
-          children[22]{name,kind,path}:
+          children[23]{name,kind,path}:
             audit.prompt.md,file,"agent-files/.agents/prompts/audit.prompt.md"
             "build-validate-tools.prompt.md",file,"agent-files/.agents/prompts/build-validate-tools.prompt.md"
             commit.prompt.md,file,"agent-files/.agents/prompts/commit.prompt.md"
             "debug-test.prompt.md",file,"agent-files/.agents/prompts/debug-test.prompt.md"
+            "epic-db6980d1.prompt.md",file,"agent-files/.agents/prompts/epic-db6980d1.prompt.md"
             "handoff-tickets.prompt.md",file,"agent-files/.agents/prompts/handoff-tickets.prompt.md"
             handoff.prompt.md,file,"agent-files/.agents/prompts/handoff.prompt.md"
             implement.prompt.md,file,"agent-files/.agents/prompts/implement.prompt.md"

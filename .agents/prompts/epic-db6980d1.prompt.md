@@ -57,7 +57,7 @@ For every implementation unit:
 9. Before Review, require the implementation session to rebase its feature branch onto current `main`, resolve conflicts, and re-run focused validation. Run Review and resolve any open decision through Interview. Reviewer-requested code fixes return to the Implement Agent with a fresh, complete handoff, then repeat validation, rebase, and review. After the branch is marked ready to merge, the root orchestrator authorizes one Commit Agent to attempt only a fast-forward merge from the repository root, remove the completed worktree, and delete the merged branch. A failed fast-forward returns the ticket to rebase, validation, and review; never resolve rebase conflicts during integration.
 10. Re-read the epic graph after every merged unit. Start the next unblocked phase only when its gates hold.
 
-Use one active owner per overlapping file set. Do not concurrently edit `tools/worktree/worktree.sh`, the Rust lifecycle replacement, session-worktree provisioning, or session capture routing from two workers.
+Use one active owner per overlapping file set. Do not concurrently edit `tools/worktree/worktree-ctl`, session-worktree provisioning, or session capture routing from two workers.
 
 ## Phase 0: Close Reviewed Foundations
 
@@ -75,7 +75,7 @@ Execution rules:
 
 - Review `a1b911ab` and `40349f3f` sequentially because both touch session capture and worktree assignment behavior.
 - Review `e38c258e` before accepting `c060bf94`, because board binding relies on the documented one-worktree-one-branch contract.
-- `4ef88dbc` may be reviewed independently, but do not modify its helper while Phase 1 owns the same script.
+- `4ef88dbc` may be reviewed independently, but do not modify the lifecycle tool while Phase 1 owns the same behavior.
 - Resolve the anomalous ticket states before dispatching successor implementation: `4ef88dbc` is in review despite merged evidence; `2b65715` is ready despite merged evidence.
 
 Completion gate:
@@ -94,11 +94,11 @@ Strict order:
 2. `e068602b` — prune removes a live submodule linked-worktree registration.
 3. `69e69b4b` — reject root-only operations from inside a worktree.
 
-No parallelism: all three touch the current shell worktree tool, doctor behavior, or root-operation safety contract.
+No parallelism: all three touch the current worktree lifecycle tool, doctor behavior, or root-operation safety contract.
 
 Required outcomes:
 
-- The current `worktree.sh doctor` detects `core.worktree` as `OK`, `HIJACKED`, or `DANGLING`, resolves paths correctly, exits non-zero for `DANGLING`, reports the exact remediation command, and offers or documents a non-destructive fix path.
+- `worktree-ctl doctor` detects `core.worktree` as `OK`, `HIJACKED`, or `DANGLING`, resolves paths correctly, exits non-zero for `DANGLING`, reports the exact remediation command, and offers or documents a non-destructive fix path.
 - Doctor detects stale linked-worktree registration targets and a submodule `.git` gitdir that points to a missing registration.
 - A live worktree renamed on disk remains usable through root and per-submodule prune attempts. The regression must prove `git -C <worktree> status` succeeds for all five submodules afterwards.
 - Root-only operations fail fast with an actionable non-zero error if the caller's resolved cwd is inside a worktree.
@@ -110,7 +110,7 @@ Completion gate:
 - A clean real-repository smoke check shows root status works, all five root submodules initialize, each registered worktree directory exists, each linked-worktree registration target exists, and no shared `core.worktree` points inside `.worktrees/`.
 - A reviewer verifies that the Phase 1 implementation did not make cleanup, prune, remove, or repair more destructive.
 
-## Phase 2: Stabilize The Existing Shell Lifecycle
+## Phase 2: Stabilize The Existing Lifecycle
 
 Objective: finish safe shell behavior while preserving the Phase 1 recovery guarantees.
 
@@ -119,7 +119,7 @@ Strict order:
 1. `2b65715` — handle unregistered worktree debris during removal.
 2. `503b9711` — bootstrap agent worktrees from local `main`.
 
-`2b65715` and `503b9711` do not run in parallel: both own `tools/worktree/worktree.sh` and worktree cleanup/bootstrap semantics.
+`2b65715` and `503b9711` do not run in parallel: both own worktree cleanup/bootstrap semantics.
 
 Required outcomes:
 
@@ -136,7 +136,7 @@ Completion gate:
 
 Objective: implement `5e6cf4f8` without regressing the hardened shell behavior.
 
-Ticket: `5e6cf4f8` — rewrite `worktree.sh` as a Rust binary and add lifecycle recycling.
+Ticket: `5e6cf4f8` — Rust lifecycle migration and recycling.
 
 Preconditions:
 

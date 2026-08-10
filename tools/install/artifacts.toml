@@ -248,14 +248,14 @@ safety = "approval-required"
 npm_script = "install:vsix"
 
 [[artifact]]
-id = "worktree-script"
+ id = "worktree-ctl"
 category = "misc"
-kind = "script"
-source_path = "tools/worktree/worktree.sh"
+ kind = "rust-binary"
+ source_path = "tools/worktree/worktree-ctl"
 owner = "tooling"
 lifecycle = ["inspect"]
 safety = "safe"
-bin = "bash tools/worktree/worktree.sh"
+ bin = "worktree-ctl"
 
 [[artifact]]
 id = "storeless-startup-matrix"
