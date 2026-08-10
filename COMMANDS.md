@@ -14,7 +14,12 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 ## session-capture-hook
 
+- Category: Misc
+- Kind: RustBinary
 - Source: `memory-api/crates/session-capture-hook`
+- Owner: tooling
+- Safety: ApprovalRequired
+- Bin: `session-capture-hook`
 - Lifecycle: Install, Inspect
 
 ## ticket-cli
@@ -245,6 +250,16 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 - Owner: tooling
 - Safety: Safe
 - Bin: `bash tools/worktree/worktree.sh`
+- Lifecycle: Inspect
+
+## storeless-startup-matrix
+
+- Category: Misc
+- Kind: Script
+- Source: `tools/validate-storeless-startup.sh`
+- Owner: tooling
+- Safety: Safe
+- Bin: `bash tools/validate-storeless-startup.sh [--toon]`
 - Lifecycle: Inspect
 
 ## hook-copilot-capture

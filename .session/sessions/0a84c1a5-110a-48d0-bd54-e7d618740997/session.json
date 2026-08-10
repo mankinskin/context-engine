@@ -3,11 +3,12 @@
   "session_id": "0a84c1a5-110a-48d0-bd54-e7d618740997",
   "source": "copilot-hook",
   "started_at": "2026-08-08T14:46:17.314Z",
-  "captured_at": "2026-08-08T16:16:50.425Z",
+  "captured_at": "2026-08-08T21:28:16.513515300Z",
   "metadata": {
     "workspace_slug": "default",
-    "agent_id": "copilot-agent",
-    "trigger": "PostToolUse",
+    "agent_id": "implement-agent",
+    "ticket_id": "52724aed-7215-471b-b2d8-7fb425f5ed61",
+    "trigger": "Stop",
     "producer": "copilot-agent",
     "copilot_version": "0.60.0",
     "vscode_version": "1.132.0",
@@ -15,12 +16,13 @@
     "worktree": {
       "path": "C:/Users/linus/git/context-engine/.worktrees/0a84c1a5-startup-artifact-pollution",
       "branch": "agent/0a84c1a5-startup-artifact-pollution",
-      "allocation_mode": "new",
+      "allocation_mode": "reused",
       "status": "active"
     }
   },
   "links": {},
   "emitted_handoff_ids": [
-    "3e46b2ae-07b4-430c-9371-2b0b256076bc"
+    "3e46b2ae-07b4-430c-9371-2b0b256076bc",
+    "08fe59fe-368c-4fbd-8a9a-348c8d0a416d"
   ]
 }

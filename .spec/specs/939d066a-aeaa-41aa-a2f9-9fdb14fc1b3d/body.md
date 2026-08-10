@@ -1,6 +1,12 @@
+<!-- aligned-structure:v2 -->
+
 ## Goal
 
 Persistent stores and generated output directories must never appear as a side effect of a tool merely starting up in a workspace. Every MCP server and viewer covered by this contract must leave a fresh, storeless workspace filesystem-identical before and after startup, unless the caller explicitly initializes or configures a store/log sink.
+
+## Dependent Expectation
+
+If this specification is implemented, callers can start an installed MCP server or viewer in a fresh storeless workspace without creating a persistent store, log directory, or other filesystem artifact; store-required operations fail without mutation until a caller explicitly initializes or configures a write.
 
 ## Authoritative Behavior (approved)
 
@@ -34,14 +40,14 @@ The actual installed tool matrix must be enumerated during implementation (do no
 
 ## Acceptance Criteria
 
-1. A reusable fixture produces a fresh, temporary, storeless workspace directory with no `.ticket`/`.spec`/`.session`/`.feedback`/`.test`/log-output artifacts, usable both by focused per-package tests and by a repository-level command.
-2. The fixture snapshots the complete filesystem state before startup, spawns each matrix entry with captured exit code/stdout/stderr, snapshots again, and asserts the pre/post snapshots are byte-for-byte identical (exact delta assertion, not absence-of-error).
-3. A parameterized startup matrix exists over the actual discovered set of installed MCP servers/viewers (see Scope) — the matrix is not hardcoded to `ticket-mcp` and `log-viewer` only.
-4. For any tool whose invoked operation requires a missing store, the operation returns a clear, non-mutating error; the fixture confirms no store directory was created as a side effect of that failed call.
-5. A positive-path case exists per relevant tool proving that explicit init or an explicit configured write still creates the intended artifact (store directory, log file/dir), confirming the contract does not regress legitimate lazy-creation behavior.
-6. Regression evidence identifies the exact code path/creator previously responsible for eager `test-logs/`/`target/test-logs/` creation on startup — a test that fails again specifically at that creator if reintroduced, not merely a pass/fail assertion at the fixture boundary.
-7. Focused package-level tests pass for every affected crate/tool.
-8. A repository-level matrix command exists that runs the full startup matrix in one invocation and reports the filesystem-delta result per tool.
+1. A reusable empty-workspace fixture exists (e.g., a temp-dir helper) that produces a fresh, storeless workspace directory with no `.ticket`/`.spec`/`.session`/`.feedback`/`.test`/log-output artifacts, usable by both focused package tests and a repository-level fixture command.
+2. A parameterized startup test matrix exists covering every relevant installed MCP server/viewer entry point identified during investigation (not just ticket-mcp and log-viewer).
+3. For each tool in the matrix, starting the tool (or running its read-only/no-op startup path) against the empty-workspace fixture with no configured store/log sink produces a zero filesystem delta: before/after snapshots of the fixture directory are identical, verified by direct comparison, not by absence-of-error alone.
+4. For any tool whose normal operation requires a store to exist, invoking an operation against the empty-workspace fixture (no store configured/initialized) produces a clear, non-mutating error — the tool must not silently create the missing store as a side effect of the failed operation.
+5. A positive-path test exists proving that explicit initialization or an explicit configured write still creates the intended artifact (store directory, log file/dir) when the caller actually requests it — confirming the fix does not break legitimate lazy-creation behavior.
+6. Regression coverage exists that pinpoints the exact code path/creator responsible for the previously observed `test-logs/`/`target/test-logs/` creation-on-startup behavior (not just a passing/failing assertion, but a test that would fail again at the specific creator if reintroduced).
+7. Focused package-level tests pass for each affected crate/tool.
+8. A repository-level fixture/validation command exists (e.g., a script or test target) that can run the full startup matrix and report the delta-per-tool result in one invocation.
 
 ## Validation Plan
 
@@ -49,6 +55,20 @@ The actual installed tool matrix must be enumerated during implementation (do no
 - Focused, affected-package test suites per tool discovered in the matrix.
 - Repository-level fixture/matrix command (Acceptance Criterion 8) as the single source of truth for the full startup contract.
 - Regression test targeting the exact prior `test-logs/`/`target/test-logs/` creator (Acceptance Criterion 6).
+
+## Guards
+
+- `vt-storeless-startup-matrix` is the required test-api `ValidationSpec` for this contract. The validation spec is not yet present in `.test/default/specs`; implementation must create it before recording startup-matrix evidence.
+
+## Positions
+
+- `not-implemented` — `memory-api/tools/mcp/ticket-mcp/src/main.rs` is a handoff-identified startup surface; the startup matrix must determine whether the path creates an artifact before claiming a specific creator.
+- `not-implemented` — `memory-viewers/log-viewer/src/config.rs` is a handoff-identified logging startup surface; the startup matrix must determine whether the path creates an artifact before claiming a specific creator.
+- `not-implemented` — `context-stack/context-trace/src/logging/tracing_utils/test_tracing.rs` and `context-stack/context-trace/src/logging/tracing_utils/config/loader.rs` are handoff-identified tracing startup surfaces; the startup matrix must determine whether either path creates an artifact before claiming a specific creator.
+
+## Governing-rule Requirement
+
+No PolicyRule currently introduces this specification in-session. A governing rule must be registered before the specification can be presented as implemented; until then, this contract remains a planned requirement with an absent validation guard.
 
 ## Related
 

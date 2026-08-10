@@ -258,6 +258,16 @@ safety = "safe"
 bin = "bash tools/worktree/worktree.sh"
 
 [[artifact]]
+id = "storeless-startup-matrix"
+category = "misc"
+kind = "script"
+source_path = "tools/validate-storeless-startup.sh"
+owner = "tooling"
+lifecycle = ["inspect"]
+safety = "safe"
+bin = "bash tools/validate-storeless-startup.sh [--toon]"
+
+[[artifact]]
 id = "hook-copilot-capture"
 category = "hook"
 kind = "hook"

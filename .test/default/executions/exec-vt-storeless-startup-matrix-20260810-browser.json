@@ -1,0 +1,22 @@
+{
+  "id": "exec-vt-storeless-startup-matrix-20260810-browser",
+  "validation_spec_id": "vt-storeless-startup-matrix",
+  "outcome": "failed",
+  "executed_at": "2026-08-10T15:30:40Z",
+  "detail": "Current storeless matrix counts: 9 MCP clean starts, 3 MCP store refusals, 2 viewer clean starts, and 2 viewer store refusals. Browser evidence used Chromium via `npx playwright screenshot` at 1440x900. doc-viewer at :3001 rendered the Documentation heading and UI (target/browser-evidence/doc-viewer-populated-1440x900.png). ticket-viewer at :3002 and spec-viewer at :4002 both served blank white pages from their worktree static directories; ticket-viewer's visible ticket-tree selector timed out, so the mandatory browser gate is failed. Isolated external-root refusal probes exited 1 before binding: ticket-viewer: Failed to open ticket store ... workspace not initialized; spec-viewer: Failed to open spec store ... workspace not initialized. No refusal screenshot applies because neither process started an HTTP server. Managed `install-ctl start` was attempted first for ticket-viewer, spec-viewer, and doc-viewer, then worktree-local `cargo run --manifest-path memory-viewers/<viewer>/Cargo.toml` fallback supplied persistent endpoints for Chromium checks.",
+  "links": {
+    "spec_ids": [
+      "939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+    ],
+    "ticket_ids": [
+      "52724aed-7215-471b-b2d8-7fb425f5ed61"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/validate-storeless-startup.sh",
+    "domain": "viewer",
+    "operation": "startup-browser-verification",
+    "transport": "cli",
+    "run_id": "storeless-startup-matrix-browser-20260810"
+  }
+}
