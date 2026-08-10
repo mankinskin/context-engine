@@ -1,0 +1,22 @@
+{
+  "id": "exec-vt-storeless-startup-browser-seam-20260810",
+  "validation_spec_id": "vt-storeless-startup-matrix",
+  "outcome": "passed",
+  "executed_at": "2026-08-10T16:44:00Z",
+  "detail": "Populated-workspace managed viewer browser verification at 1440x900 using Playwright Chromium: ticket-viewer asserted the visible New ticket control, spec-viewer asserted the visible Specifications heading, and doc-viewer asserted the visible doc-viewer navigation row. Screenshots: target/browser-evidence/ticket-viewer-after-seam-fix-1440x900.png, target/browser-evidence/spec-viewer-after-seam-fix-1440x900.png, target/browser-evidence/doc-viewer-after-seam-fix-1440x900.png. No console or missing static-asset errors occurred for ticket-viewer or spec-viewer. doc-viewer emitted a non-blocking 404 only for /favicon.ico; all CSS, JavaScript, WASM, and API resources required by the rendered page loaded.",
+  "links": {
+    "spec_ids": [
+      "939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+    ],
+    "ticket_ids": [
+      "52724aed-7215-471b-b2d8-7fb425f5ed61"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/install/install-ctl",
+    "domain": "viewer",
+    "operation": "startup-browser-verification",
+    "transport": "cli",
+    "run_id": "storeless-startup-browser-seam-20260810"
+  }
+}
