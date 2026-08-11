@@ -1,0 +1,1 @@
+Two sessions are finished. They worked on roughly the same topics, mainly around the worktree tools. A few tickets could not progress cleanly, and a few more are no longer needed but still need to be removed. We want to return to a clean state: main should be fully committed and clean.
