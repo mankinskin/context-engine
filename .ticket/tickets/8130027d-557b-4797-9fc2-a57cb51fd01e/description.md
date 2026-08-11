@@ -18,5 +18,4 @@ Add regression coverage proving an explicit root is honored, nested same-checkou
 
 ## Parent
 Implements one slice of ticket `3a624bf6`.
-AC3/AC4/AC5 implemented in memory-api c51114c8: scan roots under .worktrees are refused and pruned on open, indexed paths into deleted worktrees are re-resolved to the main store, and  /  were added. Regression tests added; ticket-api 213 passed, ticket-cli all passed. AC1/AC2 already held.
 AC3/AC4/AC5 implemented in memory-api c51114c8: scan roots under .worktrees are refused and pruned on open, indexed paths into deleted worktrees are re-resolved to the main store, and `ticket workspace roots` / `prune-roots` were added. Regression tests added; ticket-api 213 passed, ticket-cli all passed. AC1/AC2 already held.
