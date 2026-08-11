@@ -3,7 +3,7 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl"
+  root: "//?/C:/Users/linus/git/context-engine/.worktrees/99e040a2-session-worktree-registry"
 top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
