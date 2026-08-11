@@ -33,3 +33,10 @@ The implementation must preserve the crate split: use `git2` for reads and shell
 ## Notes
 
 The test fixture will need to construct a real temporary superproject with submodules, which may not exist in the current test harness. Constructing that fixture is likely the largest single piece of work in this ticket.
+## Update
+
+Merged `agent/23e67e65-worktree-ctl-invariant` into `main` at `8ed1b6f8e21632544192dd604160c7f954b1e2a9`.
+
+Validation: `cargo test -p worktree-ctl` passed 35 tests.
+
+Documentation was already handled separately in commit `30b541b0`.
