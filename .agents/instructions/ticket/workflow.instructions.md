@@ -240,10 +240,10 @@ Opportunistically improve ticket quality whenever you touch the store:
 
 ```bash
 # Health-check a subgraph rooted at a ticket (BFS traversal)
-ticket health abcd1234 --toon
+ticket health <ticket-id> --toon
 
 # Health-check a subgraph, filtering to a specific type
-ticket health abcd1234 --where type=tracker-improvement --toon
+ticket health <ticket-id> --where type=tracker-improvement --toon
 
 # Health-check all tickets
 ticket health --all --toon
@@ -261,12 +261,12 @@ ticket list --where priority=high --json \
   | ticket health --stdin --toon
 
 # Subgraph → filter open tickets → health check
-ticket subgraph abcd1234 --json \
+ticket subgraph <ticket-id> --json \
   | jq -r '.payload.nodes[] | select(.state=="open") | .id' \
   | ticket health --stdin --toon
 
 # Topgraph → health check all reverse dependencies
-ticket topgraph abcd1234 --json \
+ticket topgraph <ticket-id> --json \
   | jq -r '.payload.nodes[].id' \
   | ticket health --stdin --toon
 ```

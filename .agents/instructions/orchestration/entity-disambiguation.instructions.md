@@ -10,18 +10,18 @@ Ambiguous references ("this", "that", "the engine", "it") force the reader to re
 ### The Three Tiers
 
 1. **First mention — full establishment.** The first time an entity appears in a response (or after a context reset, see below), state its type, its fully-qualified name or id, and a short summary or tag. Use a clickable reference per the Clickable Reference Policy where the entity has one (ticket, spec, doc, log).
-   - Example: "Ticket [95403a71 Extend entity disambiguation protocol](.ticket/tickets/95403a71-cb2a-45ea-b48d-3444904e66dd/ticket.toml) (component agent-guidance, priority high) is open with no dependencies."
+   - Template: "Ticket [<ticket-short-id> <ticket-title>](.ticket/tickets/<ticket-uuid>/ticket.toml) (component <component>, priority <priority>) is open with no dependencies."
 2. **Proximity — short id or name only.** Within the same turn or the immediately following turns, while still discussing the same entity, a short id or name is sufficient. Do not re-establish type and summary every sentence.
-   - Example, continuing the same turn: "95403a71 has no linked spec yet."
+   - Template, continuing the same turn: "<ticket-short-id> has no linked spec yet."
 3. **Context reset — re-establish.** When the conversation switches file, step, task, or subject, treat the next reference to a previously-mentioned entity as a first mention again: restate type, id, and summary before using shorthand.
-   - Example: after a detour into a different ticket or file, "Back to ticket 95403a71 (Extend entity disambiguation protocol, agent-guidance): the new instructions file is in place."
+   - Template: after a detour into a different ticket or file, "Back to ticket <ticket-short-id> (<ticket-title>, <component>): the updated instructions file is in place."
 
 ### The Rule
 
 No bare pronoun ever refers to an entity (ticket, spec, instruction file, doc, log, ref, agent, tool). If a sentence would read "it", "this", or "that" where an entity is meant, replace the pronoun with the short id or name established under tier 1 or 2.
 
 - Bad: "This needs a spec before it can move to in-review."
-- Good: "Ticket 95403a71 needs a spec before it can move to in-review." (or, in proximity, "95403a71 needs a spec...")
+- Good: "Ticket <ticket-short-id> needs a spec before it can move to in-review." (or, in proximity, "<ticket-short-id> needs a spec...")
 
 - Bad: "That file already bans ambiguous pronouns, but only for questions."
 - Good: "[question-quality.instructions.md](question-quality.instructions.md) already bans ambiguous pronouns, but only for interview questions."

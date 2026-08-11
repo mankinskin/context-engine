@@ -20,7 +20,7 @@ Run pre-dispatch gates for EVERY delegation, regardless of delegation class. Eac
 - **Receives**: the delegation class (Implement/Review/Testing/Commit), the candidate ticket/spec ids or handoff package draft, and the specific gate set below for that class. Nothing else — the gate agent is context-isolated like any sub-agent.
 - **Must return exactly one of**:
   - `{pass: true, bundle: {...}}` — the resolved context bundle (ticket, specs, paths, validation commands per the gate set's "Output" line below), ready to hand to the real delegation's sub-agent unmodified.
-  - `{pass: false, blocker: "<single exact reason>"}` — one concrete, actionable blocker (not a list, not a hedge). Example: `"ticket fb14754e is in state 'blocked', not dispatchable"`, not "there might be an issue with the ticket."
+   - `{pass: false, blocker: "<single exact reason>"}` — one concrete, actionable blocker (not a list, not a hedge). Template: `"ticket <ticket-short-id> is in state 'blocked', not dispatchable"`, not "there might be an issue with the ticket."
 
 **Fail-fast semantics (binding)**: `pass: false` means the delegation is **NOT dispatched**, full stop. The orchestrator MUST do exactly one of:
 

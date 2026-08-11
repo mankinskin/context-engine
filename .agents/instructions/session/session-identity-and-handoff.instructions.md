@@ -5,10 +5,10 @@ applyTo: "**"
 
 ## Two Identifiers, Never Conflated
 
-- `workspace_session_id` is a slug-plus-hex form such as `epic-kickoff-8fdfe135`. It lives in `.session/local/active_workspace_session.json`, whose only keys are `workspace_session_id` and `updated_at`.
-- The session UUID is a value such as `16263c13-7f29-4780-ba09-bf94190cb87f`. The session UUID keys the on-disk record directory `.session/sessions/<uuid>/`.
-- Several subcommands accept only the UUID form despite the flag name `--workspace-session-id`. `./target/debug/session.exe subagent-rollups --workspace-session-id epic-kickoff-8fdfe135 --toon` fails with `session data was not found`; the same command with the UUID succeeds.
-- The worktree short-id is the first eight hex characters of the session UUID. Worktrees are therefore named `.worktrees/16263c13-session`, never after the slug form.
+- `workspace_session_id` is a context-specific slug-plus-hex value in the form `<topic-slug>-<short-id>`. Read the current value from `.session/local/active_workspace_session.json`; never reuse a value printed by another session or copied from an example.
+- The session UUID is the context-specific `<session-uuid>` that keys the on-disk record directory `.session/sessions/<session-uuid>/`.
+- Several subcommands accept only `<session-uuid>` despite the flag name `--workspace-session-id`. For example, `./target/debug/session.exe subagent-rollups --workspace-session-id <session-uuid> --toon` requires the UUID, not `<workspace_session_id>`.
+- The worktree short-id is the first eight hex characters of `<session-uuid>`. Worktrees are therefore named `.worktrees/<session-short-id>-session`, never after the slug form.
 
 ## Resolve Your Own Identity First
 
@@ -42,11 +42,7 @@ The first substantive response must begin with the session declaration before an
 session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<short-id>-<slug> | branch: agent/<short-id>-<slug>
 ```
 
-For example:
-
-```text
-session: 16263c13-7f29-4780-ba09-bf94190cb87f (epic-kickoff-8fdfe135) | worktree: .worktrees/16263c13-session | branch: agent/16263c13-session
-```
+Resolve every placeholder from the current session; never copy an identifier, worktree, or branch from a previous transcript.
 
 ## Claim Order
 
@@ -64,11 +60,7 @@ Every agent final response ends with this footer so lineage is greppable from th
 session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<short-id>-<slug> | branch: agent/<short-id>-<slug> | ticket: <short-id> <title>
 ```
 
-For example:
-
-```
-session: 16263c13-7f29-4780-ba09-bf94190cb87f (epic-kickoff-8fdfe135) | worktree: .worktrees/8fdfe135-session-traceability-guidance | branch: agent/8fdfe135-session-traceability-guidance | ticket: 7be23bd8 Agent session identity, worktree traceability, and prior-session inspection protocol
-```
+Resolve every placeholder from the current session and its claimed ticket; never copy values from a previous transcript or instruction example.
 
 The footer applies to sub-agents too: a sub-agent's single returned message carries the footer, so a write-and-die Worker's one step remains attributable after the session is gone. See [write-and-die.instructions.md](../orchestration/write-and-die.instructions.md).
 

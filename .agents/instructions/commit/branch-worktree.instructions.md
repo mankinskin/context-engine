@@ -26,12 +26,12 @@ Steps 1 and 7 belong to the root orchestrator session. Steps 2 through 6 belong 
 
 | Thing | Form | Example |
 |---|---|---|
-| Branch | `agent/<ticket-short-id>-<slug>` | `agent/0869353b-handoff-edge-model` |
-| Worktree path | `.worktrees/<ticket-short-id>-<slug>` | `.worktrees/0869353b-handoff-edge-model` |
+| Branch | `agent/<ticket-short-id>-<slug>` | `agent/<ticket-short-id>-<slug>` |
+| Worktree path | `.worktrees/<ticket-short-id>-<slug>` | `.worktrees/<ticket-short-id>-<slug>` |
 
 `<ticket-short-id>` is the first 8 characters of the ticket id. `<slug>` is a lowercase hyphenated shortening of the ticket title, 40 characters or fewer. One ticket, one branch, one worktree — never two tickets on one branch.
 
-For auto-provisioned sessions, use `{short-id}-{topic-slug}` for the worktree and `agent/{short-id}-{topic-slug}` for the branch. `<topic-slug>` is lowercase kebab-case, describes the work rather than the ticket id, has 2-4 words, and is 40 characters or fewer. Do not use dates, agent names, or `tmp`, `test`, or `scratch`; a bare ticket id is not a slug because `5e6cf4f8-worktree-rust-rewrite` already carries identity in the id and the slug must add meaning.
+For auto-provisioned sessions, use `{short-id}-{topic-slug}` for the worktree and `agent/{short-id}-{topic-slug}` for the branch. `<topic-slug>` is lowercase kebab-case, describes the work rather than the ticket id, has 2-4 words, and is 40 characters or fewer. Do not use dates, agent names, or `tmp`, `test`, or `scratch`; a bare ticket id is not a slug because `<ticket-short-id>-<topic-slug>` already carries identity in the id and the slug must add meaning.
 
 `{short-id}-session` is the hook-assigned placeholder meaning "topic not yet declared". Rename the placeholder before session check-in.
 

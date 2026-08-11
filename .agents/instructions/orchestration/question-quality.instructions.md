@@ -48,7 +48,7 @@ Offered options and example answers must be derived from what you actually found
 
 ## Anti-Patterns
 
-- Bare identifiers: "Should `dcf86212` block the release?" — name and link the ticket.
+- Bare identifiers: "Should `<ticket-short-id>` block the release?" — name and link the ticket.
 - Context-dependent deixis: "Should we do the same here?" / "Is that acceptable?" — restate the subject.
 - Compound decisions: "Should we normalize model names and also relax the rejection policy?" — split.
 - Unstated current behavior: asking for a change without saying what happens today.

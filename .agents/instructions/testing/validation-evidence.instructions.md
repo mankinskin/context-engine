@@ -35,7 +35,7 @@ Always set `ticket_ids` on executions so the evidence can be queried back from t
 
 # Record an execution linked to the ticket
 ./target/debug/test.exe --store-root "$PWD/.test" \
-  record --id exec-vt-core-tests-20260615 --spec-id vt-core-tests \
+  record --id <execution-id> --spec-id vt-core-tests \
   --outcome passed --detail "16 passed" --ticket <ticket-id>
 
 # Query the evidence linked to a ticket
