@@ -338,6 +338,11 @@ fn handle_rebase(
                     nested_worktree.display()
                 )
             })?;
+            commit_rebased_gitlink(&worktree.path, &submodule)?;
+        } else {
+            println!(
+                "skip {submodule} because branch {branch} does not exist"
+            );
         }
     }
     rebase_onto_local_main(&worktree.path)
@@ -695,6 +700,42 @@ fn checkout_and_rebase(
 ) -> Result<(), String> {
     run_git(worktree, ["checkout", branch])?;
     rebase_onto_local_main(worktree)
+}
+
+fn commit_rebased_gitlink(
+    worktree: &Path,
+    submodule: &str,
+) -> Result<(), String> {
+    let repository =
+        Repository::open(worktree).map_err(|error| error.to_string())?;
+    let parent = repository
+        .head()
+        .and_then(|head| head.peel_to_commit())
+        .map_err(|error| error.to_string())?;
+    let mut index = repository.index().map_err(|error| error.to_string())?;
+    index
+        .add_path(Path::new(submodule))
+        .map_err(|error| error.to_string())?;
+    let tree_id = index.write_tree().map_err(|error| error.to_string())?;
+    let tree = repository
+        .find_tree(tree_id)
+        .map_err(|error| error.to_string())?;
+    if tree.id() == parent.tree_id() {
+        return Ok(());
+    }
+    index.write().map_err(|error| error.to_string())?;
+    let signature = repository.signature().map_err(|error| error.to_string())?;
+    repository
+        .commit(
+            Some("HEAD"),
+            &signature,
+            &signature,
+            &format!("rebase submodule {submodule} onto local main"),
+            &tree,
+            &[&parent],
+        )
+        .map_err(|error| error.to_string())?;
+    Ok(())
 }
 
 fn handle_doctor(dry_run: bool) -> Result<(), String> {

@@ -331,3 +331,100 @@ fn merge_allows_backward_gitlink_and_dry_run_mutates_nothing() {
     let merge = fixture.run(["merge", "merge-behind"]);
     assert!(merge.status.success(), "merge failed: {}", all(&merge));
 }
+
+#[test]
+fn rebase_rebases_submodule_before_superproject() {
+    let fixture = fixture_repo();
+    create(&fixture, "rebase", "ordered");
+    let worktree = fixture.worktree("rebase-ordered");
+    let submodule = worktree.join("modules/example");
+    let branch = "agent/rebase-ordered";
+    git(&submodule, &["checkout", "-b", branch]);
+    fs::write(submodule.join("feature.txt"), "feature\n")
+        .expect("write nested feature");
+    git(&submodule, &["add", "feature.txt"]);
+    git(&submodule, &["commit", "-m", "nested feature"]);
+    fs::write(worktree.join("feature.txt"), "feature\n")
+        .expect("write superproject feature");
+    git(&worktree, &["add", "feature.txt"]);
+    git(&worktree, &["commit", "-m", "superproject feature"]);
+    let main_submodule = fixture.main.join("modules/example");
+    fs::write(main_submodule.join("file.txt"), "initial\nmain\n")
+        .expect("write nested main");
+    git(&main_submodule, &["commit", "-am", "nested main"]);
+    fs::write(fixture.main.join("main.txt"), "main\n")
+        .expect("write superproject main");
+    git(&fixture.main, &["add", "main.txt"]);
+    git(&fixture.main, &["commit", "-m", "superproject main"]);
+
+    let dry_run = fixture.run(["rebase", "rebase-ordered", "--dry-run"]);
+    assert!(dry_run.status.success(), "dry-run failed: {}", all(&dry_run));
+    let plan = all(&dry_run);
+    assert!(
+        plan.find("checkout agent/rebase-ordered")
+            < plan.find("rebase ").filter(|_| plan.contains("rebase-ordered")),
+        "{plan}"
+    );
+
+    let output = fixture.run(["rebase", "rebase-ordered"]);
+    assert!(output.status.success(), "rebase failed: {}", all(&output));
+    git(&submodule, &["merge-base", "--is-ancestor", "main", branch]);
+    assert_eq!(
+        git_revision(&worktree, &["rev-parse", "HEAD:modules/example"]),
+        git_revision(&submodule, &["rev-parse", branch])
+    );
+}
+
+#[test]
+fn rebase_reports_missing_submodule_branch_as_skipped() {
+    let fixture = fixture_repo();
+    create(&fixture, "rebase", "skipped");
+
+    let output = fixture.run(["rebase", "rebase-skipped"]);
+
+    assert!(output.status.success(), "rebase failed: {}", all(&output));
+    assert!(
+        all(&output).contains("skip modules/example because branch agent/rebase-skipped does not exist"),
+        "{}",
+        all(&output)
+    );
+}
+
+#[test]
+fn rebase_conflict_stops_before_superproject_rebase() {
+    let fixture = fixture_repo();
+    create(&fixture, "rebase", "conflict");
+    let worktree = fixture.worktree("rebase-conflict");
+    let submodule = worktree.join("modules/example");
+    git(&submodule, &["checkout", "-b", "agent/rebase-conflict"]);
+    fs::write(submodule.join("file.txt"), "agent\n")
+        .expect("write nested feature");
+    git(&submodule, &["commit", "-am", "nested feature"]);
+    fs::write(worktree.join("feature.txt"), "feature\n")
+        .expect("write superproject feature");
+    git(&worktree, &["add", "feature.txt"]);
+    git(&worktree, &["commit", "-m", "superproject feature"]);
+    let main_submodule = fixture.main.join("modules/example");
+    fs::write(main_submodule.join("file.txt"), "main\n")
+        .expect("write nested main");
+    git(&main_submodule, &["commit", "-am", "nested main"]);
+    fs::write(fixture.main.join("main.txt"), "main\n")
+        .expect("write superproject main");
+    git(&fixture.main, &["add", "main.txt"]);
+    git(&fixture.main, &["commit", "-m", "superproject main"]);
+    let before = git_revision(&worktree, &["rev-parse", "HEAD"]);
+
+    let output = fixture.run(["rebase", "rebase-conflict"]);
+
+    assert!(
+        !output.status.success(),
+        "rebase unexpectedly succeeded: {}",
+        all(&output)
+    );
+    assert!(
+        all(&output).contains("submodule modules/example branch agent/rebase-conflict"),
+        "{}",
+        all(&output)
+    );
+    assert_eq!(before, git_revision(&worktree, &["rev-parse", "HEAD"]));
+}
