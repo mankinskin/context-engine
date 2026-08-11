@@ -302,6 +302,42 @@ fn merge_rejects_orphan_gitlink_before_mutation() {
 }
 
 #[test]
+fn merge_rejects_unresolvable_gitlink_before_mutation() {
+    let fixture = fixture_repo();
+    create(&fixture, "merge", "unresolvable");
+    let worktree = fixture.worktree("merge-unresolvable");
+    fs::write(worktree.join("feature.txt"), "feature\n")
+        .expect("write feature");
+    git(&worktree, &["add", "feature.txt"]);
+    git(&worktree, &["commit", "-m", "feature"]);
+    let missing_sha = "0123456789abcdef0123456789abcdef01234567";
+    git(
+        &fixture.main,
+        &[
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            &format!("160000,{missing_sha},modules/example"),
+        ],
+    );
+    git(&fixture.main, &["commit", "-m", "record missing gitlink"]);
+    let before = git_revision(&fixture.main, &["rev-parse", "main"]);
+
+    let output = fixture.run(["merge", "merge-unresolvable"]);
+
+    assert!(
+        !output.status.success(),
+        "merge unexpectedly succeeded: {}",
+        all(&output)
+    );
+    let report = all(&output);
+    assert!(report.contains("modules/example"), "{report}");
+    assert!(report.contains(missing_sha), "{report}");
+    assert!(report.contains("object database"), "{report}");
+    assert_eq!(before, git_revision(&fixture.main, &["rev-parse", "main"]));
+}
+
+#[test]
 fn merge_allows_backward_gitlink_and_dry_run_mutates_nothing() {
     let fixture = fixture_repo();
     create(&fixture, "merge", "behind");

@@ -532,6 +532,7 @@ enum GitlinkState {
     Behind,
     Orphan,
     NotContained,
+    Unresolvable,
 }
 
 #[derive(Debug)]
@@ -571,20 +572,27 @@ fn verify_gitlink_containment(
                 .get()
                 .target()
                 .ok_or_else(|| format!("submodule {submodule_path} main has no target"))?;
-            let contained_in_main = main_sha == recorded_sha
-                || submodule
-                    .graph_descendant_of(main_sha, recorded_sha)
-                    .map_err(|error| error.to_string())?;
-            let state = if contained_in_main {
-                if main_sha == recorded_sha {
-                    GitlinkState::Ok
-                } else {
-                    GitlinkState::Behind
+            let state = match submodule.find_commit(recorded_sha) {
+                Ok(_) => {
+                    let contained_in_main = main_sha == recorded_sha
+                        || submodule
+                            .graph_descendant_of(main_sha, recorded_sha)
+                            .map_err(|error| error.to_string())?;
+                    if contained_in_main {
+                        if main_sha == recorded_sha {
+                            GitlinkState::Ok
+                        } else {
+                            GitlinkState::Behind
+                        }
+                    } else if branch_contains(&submodule, recorded_sha)? {
+                        GitlinkState::NotContained
+                    } else {
+                        GitlinkState::Orphan
+                    }
                 }
-            } else if branch_contains(&submodule, recorded_sha)? {
-                GitlinkState::NotContained
-            } else {
-                GitlinkState::Orphan
+                Err(error) if error.code() == git2::ErrorCode::NotFound =>
+                    GitlinkState::Unresolvable,
+                Err(error) => return Err(error.to_string()),
             };
             Ok(GitlinkStatus {
                 submodule_path,
@@ -622,16 +630,27 @@ fn branch_contains(
 fn reject_gitlink_violations(statuses: &[GitlinkStatus]) -> Result<(), String> {
     let violations = statuses
         .iter()
-        .filter(|status| matches!(status.state, GitlinkState::Orphan | GitlinkState::NotContained))
-        .map(|status| format!(
-            "submodule {} recorded {} is {:?}; local main is {}; run `git -C {} checkout main && git -C {} merge --ff-only <feature-branch>`, then bump the gitlink",
-            status.submodule_path,
-            status.recorded_sha,
+        .filter(|status| matches!(
             status.state,
-            status.main_sha,
-            status.submodule_path,
-            status.submodule_path,
+            GitlinkState::Orphan | GitlinkState::NotContained | GitlinkState::Unresolvable
         ))
+        .map(|status| match status.state {
+            GitlinkState::Unresolvable => format!(
+                "submodule {} recorded gitlink {} is not present in that submodule's object database; it was never fetched or has been garbage-collected. Fetch it (`git -C {} fetch <remote-or-local-path>`) or restore it from a rescue branch before merging.",
+                status.submodule_path,
+                status.recorded_sha,
+                status.submodule_path,
+            ),
+            _ => format!(
+                "submodule {} recorded {} is {:?}; local main is {}; run `git -C {} checkout main && git -C {} merge --ff-only <feature-branch>`, then bump the gitlink",
+                status.submodule_path,
+                status.recorded_sha,
+                status.state,
+                status.main_sha,
+                status.submodule_path,
+                status.submodule_path,
+            ),
+        })
         .collect::<Vec<_>>();
     if violations.is_empty() {
         Ok(())
