@@ -27,11 +27,12 @@ use session_worktree_provision::{
 
 const WORKTREE_PATH_OUTPUT_PREFIX: &str = "WORKTREE_PATH=";
 const FINISH_READY_TO_MERGE_MARKER: &str = "ready-to-merge";
-const SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT: &str = "--allow-additional";
 const DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE: &str = "uncommitted changes";
 const PRESERVE_MAIN_CHANGES_HINT: &str = "preserve-main-changes";
-const WORKTREE_PATH_TEMPLATE: &str = ".worktrees/<short-id>-<slug>";
-const BRANCH_TEMPLATE: &str = "agent/<short-id>-<slug>";
+#[cfg(test)]
+const WORKTREE_PATH_TEMPLATE: &str = ".worktrees/<full-session-uuid>/<slug>";
+#[cfg(test)]
+const BRANCH_TEMPLATE: &str = "agent/<full-session-uuid>/<slug>";
 
 #[derive(Debug, Parser)]
 #[command(
@@ -46,12 +47,10 @@ struct Cli {
 #[derive(Debug, Subcommand, PartialEq, Eq)]
 enum Command {
     New {
-        short_id: String,
+        session_uuid: String,
         slug: String,
         #[arg(long)]
         dry_run: bool,
-        #[arg(long)]
-        allow_additional: bool,
         #[arg(long)]
         preserve_main_changes: bool,
     },
@@ -104,16 +103,14 @@ fn main() {
 fn dispatch(command: Command) -> Result<(), String> {
     match command {
         Command::New {
-            short_id,
+            session_uuid,
             slug,
             dry_run,
-            allow_additional,
             preserve_main_changes,
         } => handle_new(
-            &short_id,
+            &session_uuid,
             &slug,
             dry_run,
-            allow_additional,
             preserve_main_changes,
         ),
         Command::List { dry_run } => handle_list(dry_run),
@@ -155,36 +152,37 @@ impl LifecyclePlan {
 }
 
 fn handle_new(
-    short_id: &str,
+    session_uuid: &str,
     slug: &str,
     dry_run: bool,
-    allow_additional: bool,
     preserve_main_changes: bool,
 ) -> Result<(), String> {
+    validate_full_session_uuid(session_uuid)?;
     let main_checkout =
         env::current_dir().map_err(|error| error.to_string())?;
     let git =
         WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
-    let name = format!("{short_id}-{slug}");
-    let branch = format!("agent/{name}");
-    let worktree_path = git.main_checkout().join(".worktrees").join(&name);
+    let relative_path = Path::new(session_uuid).join(slug);
+    let branch = format!("agent/{session_uuid}/{slug}");
+    let worktree_path = git
+        .main_checkout()
+        .join(".worktrees")
+        .join(&relative_path);
     let worktrees = git.list_worktrees().map_err(|error| error.to_string())?;
 
-    if let Some(worktree) =
-        worktrees.iter().find(|worktree| worktree.name == name)
+    if let Some(worktree) = worktrees
+        .iter()
+        .find(|worktree| worktree.path == worktree_path)
     {
         println!("{WORKTREE_PATH_OUTPUT_PREFIX}{}", worktree.path.display());
         return Ok(());
     }
 
-    let identity_prefix = format!("{short_id}-");
-    if worktrees
-        .iter()
-        .any(|worktree| worktree.name.starts_with(&identity_prefix))
-        && !allow_additional
-    {
+    let nested_slugs = nested_slug_directories(git.main_checkout(), session_uuid)?;
+    if !nested_slugs.is_empty() {
         return Err(format!(
-            "a worktree already exists for {short_id}; pass {SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT} to create another"
+            "ambiguous session worktree for {session_uuid}: nested slug directories already exist: {}; exactly one active slug is allowed",
+            nested_slugs.join(", ")
         ));
     }
 
@@ -243,7 +241,7 @@ fn handle_new(
             .map_err(|error| error.to_string())?;
     }
     let worktree = git
-        .create_worktree(&name, &branch, "main")
+        .create_worktree_at(&relative_path, &branch, "main")
         .map_err(|error| error.to_string())?;
     println!("{WORKTREE_PATH_OUTPUT_PREFIX}{}", worktree.path.display());
     Ok(())
@@ -280,7 +278,9 @@ fn handle_list(_dry_run: bool) -> Result<(), String> {
             let entry = entry.map_err(|error| error.to_string())?;
             let path = entry.path();
             if path.is_dir()
-                && !registered.iter().any(|worktree| worktree.path == path)
+                && !registered.iter().any(|worktree| {
+                    worktree.path == path || worktree.path.starts_with(&path)
+                })
             {
                 println!(
                     "path={} lifecycle=unregistered-debris",
@@ -432,6 +432,12 @@ fn handle_remove(
     let mut plan = LifecyclePlan::default();
     plan.add(format!("remove {} with force", worktree.path.display()));
     plan.add("prune removed worktree registrations");
+    if nested_worktree_parent(git.main_checkout(), &worktree.path).is_some() {
+        plan.add(format!(
+            "remove the session directory if {} is empty",
+            worktree.path.parent().expect("worktree has a parent").display()
+        ));
+    }
     if dry_run {
         plan.emit();
         return Ok(());
@@ -439,7 +445,8 @@ fn handle_remove(
 
     git.worktree_remove_force(&worktree.path)
         .map_err(|error| error.to_string())?;
-    git.worktree_prune().map_err(|error| error.to_string())
+    git.worktree_prune().map_err(|error| error.to_string())?;
+    remove_empty_nested_parent(git.main_checkout(), &worktree.path)
 }
 
 fn handle_rename(
@@ -452,8 +459,10 @@ fn handle_rename(
     let git =
         WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
     let source = find_worktree(&git, source_name)?;
-    let target_path = git.main_checkout().join(".worktrees").join(target_name);
-    let target_branch = format!("agent/{target_name}");
+    let source_relative = worktree_relative_path(&git, &source)?;
+    let target_relative = rename_target_path(&source_relative, target_name)?;
+    let target_path = git.main_checkout().join(".worktrees").join(&target_relative);
+    let target_branch = branch_for_relative_path(&target_relative)?;
     let mut plan = LifecyclePlan::default();
     plan.add(format!(
         "move {} to {}, repair Git metadata, and rename its branch to {target_branch}",
@@ -465,7 +474,7 @@ fn handle_rename(
         return Ok(());
     }
 
-    git.rename_worktree(source_name, target_name, &target_branch)
+    git.rename_worktree(&source.name, &target_relative, &target_branch)
         .map_err(|error| error.to_string())?;
     Ok(())
 }
@@ -496,6 +505,7 @@ fn handle_finish(
     git.worktree_remove_force(&worktree.path)
         .map_err(|error| error.to_string())?;
     git.worktree_prune().map_err(|error| error.to_string())?;
+    remove_empty_nested_parent(git.main_checkout(), &worktree.path)?;
     println!("{FINISH_READY_TO_MERGE_MARKER}");
     Ok(())
 }
@@ -504,11 +514,142 @@ fn find_worktree(
     git: &WorktreeGit,
     name: &str,
 ) -> Result<session_worktree_provision::WorktreeRef, String> {
-    git.list_worktrees()
-        .map_err(|error| error.to_string())?
+    let worktrees = git.list_worktrees().map_err(|error| error.to_string())?;
+    if name.contains('/') {
+        let relative_path = nested_relative_path(name)?;
+        let path = git.main_checkout().join(".worktrees").join(relative_path);
+        return worktrees
+            .into_iter()
+            .find(|worktree| worktree.path == path)
+            .ok_or_else(|| format!("worktree '{name}' was not found"));
+    }
+
+    let mut matches = worktrees
         .into_iter()
-        .find(|worktree| worktree.name == name)
-        .ok_or_else(|| format!("worktree '{name}' was not found"))
+        .filter(|worktree| worktree.name == name);
+    let Some(worktree) = matches.next() else {
+        return Err(format!("worktree '{name}' was not found"));
+    };
+    if matches.next().is_some() {
+        return Err(format!(
+            "ambiguous worktree name '{name}'; use <full-session-uuid>/<slug> for nested worktrees"
+        ));
+    }
+    Ok(worktree)
+}
+
+fn validate_full_session_uuid(session_uuid: &str) -> Result<(), String> {
+    let valid = session_uuid.len() == 36
+        && session_uuid
+            .chars()
+            .enumerate()
+            .all(|(index, character)| {
+                matches!(index, 8 | 13 | 18 | 23) && character == '-'
+                    || !matches!(index, 8 | 13 | 18 | 23) && character.is_ascii_hexdigit()
+            });
+    if valid {
+        Ok(())
+    } else {
+        Err(format!(
+            "session UUID must be a full UUID such as 12345678-1234-1234-1234-123456789abc; short id '{session_uuid}' is not accepted"
+        ))
+    }
+}
+
+fn nested_relative_path(name: &str) -> Result<PathBuf, String> {
+    let mut parts = name.split('/');
+    let session_uuid = parts.next().unwrap_or_default();
+    let slug = parts.next().unwrap_or_default();
+    if parts.next().is_some() || slug.is_empty() {
+        return Err(format!(
+            "nested worktree name '{name}' must be <full-session-uuid>/<slug>"
+        ));
+    }
+    validate_full_session_uuid(session_uuid)?;
+    Ok(Path::new(session_uuid).join(slug))
+}
+
+fn worktree_relative_path(
+    git: &WorktreeGit,
+    worktree: &session_worktree_provision::WorktreeRef,
+) -> Result<PathBuf, String> {
+    worktree
+        .path
+        .strip_prefix(git.main_checkout().join(".worktrees"))
+        .map(Path::to_path_buf)
+        .map_err(|_| format!("worktree {} is outside .worktrees", worktree.path.display()))
+}
+
+fn rename_target_path(
+    source_relative: &Path,
+    target_name: &str,
+) -> Result<PathBuf, String> {
+    if source_relative.components().count() == 2 {
+        let target_relative = nested_relative_path(target_name)?;
+        if target_relative.parent() != source_relative.parent() {
+            return Err("nested worktree rename must keep the same full session UUID".to_owned());
+        }
+        return Ok(target_relative);
+    }
+    if target_name.contains('/') {
+        return Err("legacy worktree rename target must be a flat name".to_owned());
+    }
+    Ok(PathBuf::from(target_name))
+}
+
+fn branch_for_relative_path(relative_path: &Path) -> Result<String, String> {
+    let value = relative_path
+        .to_str()
+        .ok_or("worktree path must be valid UTF-8")?;
+    Ok(format!("agent/{}", value.replace('\\', "/")))
+}
+
+fn nested_slug_directories(
+    main_checkout: &Path,
+    session_uuid: &str,
+) -> Result<Vec<String>, String> {
+    let parent = main_checkout.join(".worktrees").join(session_uuid);
+    if !parent.is_dir() {
+        return Ok(Vec::new());
+    }
+    let mut slugs = std::fs::read_dir(parent)
+        .map_err(|error| error.to_string())?
+        .filter_map(|entry| entry.ok())
+        .filter_map(|entry| entry.file_type().ok().filter(|kind| kind.is_dir()).map(|_| entry))
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .collect::<Vec<_>>();
+    slugs.sort();
+    Ok(slugs)
+}
+
+fn nested_worktree_parent(
+    main_checkout: &Path,
+    worktree_path: &Path,
+) -> Option<PathBuf> {
+    let relative = worktree_path.strip_prefix(main_checkout.join(".worktrees")).ok()?;
+    if relative.components().count() == 2 {
+        worktree_path.parent().map(Path::to_path_buf)
+    } else {
+        None
+    }
+}
+
+fn remove_empty_nested_parent(
+    main_checkout: &Path,
+    worktree_path: &Path,
+) -> Result<(), String> {
+    let Some(parent) = nested_worktree_parent(main_checkout, worktree_path) else {
+        return Ok(());
+    };
+    if parent.is_dir()
+        && std::fs::read_dir(&parent)
+            .map_err(|error| error.to_string())?
+            .next()
+            .is_none()
+    {
+        std::fs::remove_dir(parent).map_err(|error| error.to_string())?;
+    }
+    Ok(())
 }
 
 fn rebase_onto_local_main(worktree: &std::path::Path) -> Result<(), String> {
@@ -971,7 +1112,6 @@ mod tests {
         DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE,
         FINISH_READY_TO_MERGE_MARKER,
         PRESERVE_MAIN_CHANGES_HINT,
-        SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT,
         WORKTREE_PATH_OUTPUT_PREFIX,
         WORKTREE_PATH_TEMPLATE,
     };
@@ -980,14 +1120,19 @@ mod tests {
     fn defines_lifecycle_output_contract_constants() {
         assert_eq!(WORKTREE_PATH_OUTPUT_PREFIX, "WORKTREE_PATH=");
         assert_eq!(FINISH_READY_TO_MERGE_MARKER, "ready-to-merge");
-        assert_eq!(SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT, "--allow-additional");
         assert_eq!(
             DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE,
             "uncommitted changes"
         );
         assert_eq!(PRESERVE_MAIN_CHANGES_HINT, "preserve-main-changes");
-        assert_eq!(WORKTREE_PATH_TEMPLATE, ".worktrees/<short-id>-<slug>");
-        assert_eq!(BRANCH_TEMPLATE, "agent/<short-id>-<slug>");
+        assert_eq!(
+            WORKTREE_PATH_TEMPLATE,
+            ".worktrees/<full-session-uuid>/<slug>"
+        );
+        assert_eq!(
+            BRANCH_TEMPLATE,
+            "agent/<full-session-uuid>/<slug>"
+        );
     }
 
     #[test]
@@ -995,10 +1140,9 @@ mod tests {
         let cli = Cli::try_parse_from([
             "worktree-ctl",
             "new",
-            "5e6cf4f8",
+            "12345678-1234-1234-1234-123456789abc",
             "worktree-ctl",
             "--dry-run",
-            "--allow-additional",
             "--preserve-main-changes",
         ])
         .unwrap();
@@ -1006,10 +1150,9 @@ mod tests {
         assert_eq!(
             cli.command,
             Command::New {
-                short_id: "5e6cf4f8".to_owned(),
+                session_uuid: "12345678-1234-1234-1234-123456789abc".to_owned(),
                 slug: "worktree-ctl".to_owned(),
                 dry_run: true,
-                allow_additional: true,
                 preserve_main_changes: true,
             }
         );
@@ -1132,7 +1275,7 @@ mod tests {
     #[test]
     fn accepts_dry_run_for_every_mutating_subcommand() {
         for args in [
-            vec!["new", "id", "slug", "--dry-run"],
+            vec!["new", "12345678-1234-1234-1234-123456789abc", "slug", "--dry-run"],
             vec!["rebase", "example", "--dry-run"],
             vec!["merge", "example", "--dry-run"],
             vec!["remove", "example", "--dry-run"],
