@@ -40,3 +40,5 @@ Merged `agent/23e67e65-worktree-ctl-invariant` into `main` at `8ed1b6f8e21632544
 Validation: `cargo test -p worktree-ctl` passed 35 tests.
 
 Documentation was already handled separately in commit `30b541b0`.
+
+Landed: bottom-up submodule integration and gitlink containment merged to main; 35 tests pass.

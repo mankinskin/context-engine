@@ -9,3 +9,4 @@ Implement the verified move, top-level repair, and branch-rename sequence in the
 ## Done
 
 The acceptance criteria in the `requirements` part pass, including the currently-red rename coverage in `tools/worktree/tests/run.sh`.
+Landed: worktree-ctl now exposes a rename subcommand for topic-slug renaming.

@@ -197,3 +197,5 @@ Not yet started: 1, 3, 10, 12 — the `worktree-ctl` binary, the `list`/`rebase`
 Criterion 10 has a `TODO` seam marked in the policy module. Criterion 3's specification is the existing shell suite under `tools/worktree/tests/`, of which 6 pass and 10 encode never-implemented lifecycle behavior.
 
 Scope expanded 2026-08-08: this ticket now also absorbs the retirement of tools/worktree/worktree.sh, rescoped out of ticket 4ef88dbc. Branch agent/5e6cf4f8-worktree-rust-rewrite is currently zero commits ahead of main with no Rust source; the 16 shell tests under tools/worktree/tests/ (10 currently failing) are the behavioral specification for worktree-ctl: rename, finish, --dry-run, dirty acknowledgement, --preserve-main-changes, --allow-additional, session reuse, and remove-refuses-dirty.
+
+Landed: worktree-ctl migrated from Bash to Rust; 28 tests pass and 16 shell contracts were retired.

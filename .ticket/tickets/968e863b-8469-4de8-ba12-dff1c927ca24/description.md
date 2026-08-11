@@ -20,3 +20,4 @@ Add resolver and session-store tests covering deletion of an assigned worktree, 
 
 ## Parent
 Implements one slice of ticket `3a624bf6`.
+Obsolete: registry-backed session-to-worktree assignments no longer exist; discovery is positional as of ticket 99e040a2.

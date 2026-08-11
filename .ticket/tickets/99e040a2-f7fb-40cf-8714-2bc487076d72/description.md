@@ -53,3 +53,4 @@ Ticket `674e8e44` owns the earlier assignment-persistence and provisioning-obser
 - Active-session marker reader/writer: `memory-api/crates/session-api/src/store/config/persistence.rs` lines 218 and 230.
 - Federated-reader targets: `capture_query.rs:119`, `ticket_relation.rs:77`, `tool_metrics.rs:14`, `ticket_backfill.rs:9`, `handoff_pickup.rs:4`, and `session-worktree-provision/src/policy.rs:55`.
 - Worktree CLI target and maintenance tests: `tools/worktree/worktree-ctl/src/main.rs` and `tools/worktree/worktree-ctl/tests/maintenance.rs`.
+Landed: registry removed, positional discovery implemented and merged to main.

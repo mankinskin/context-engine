@@ -17,3 +17,4 @@ Ensure worktree population keeps shared submodule configuration free of hijackin
 ## Done
 
 The requirements part passes with regression coverage for shared configuration isolation, manual deletion resilience, supported recovery, and `doctor` diagnostics.
+Landed: shared-config core.worktree hijack repair recorded under ticket 5e6cf4f8.
