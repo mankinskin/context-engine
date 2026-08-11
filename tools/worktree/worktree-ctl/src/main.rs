@@ -7,15 +7,22 @@ use std::{
     process::Command as ProcessCommand,
 };
 
-use clap::{Parser, Subcommand};
-use git2::Repository;
+use clap::{
+    Parser,
+    Subcommand,
+};
+use git2::{
+    BranchType,
+    Oid,
+    Repository,
+};
 use session_worktree_provision::{
+    evaluate_reclaim_candidate,
+    policy::ProvisionPolicy,
     ReclaimEligibility,
     ReclaimRejectionReason,
     SessionStoreActivity,
     WorktreeGit,
-    evaluate_reclaim_candidate,
-    policy::ProvisionPolicy,
 };
 
 const WORKTREE_PATH_OUTPUT_PREFIX: &str = "WORKTREE_PATH=";
@@ -27,7 +34,10 @@ const WORKTREE_PATH_TEMPLATE: &str = ".worktrees/<short-id>-<slug>";
 const BRANCH_TEMPLATE: &str = "agent/<short-id>-<slug>";
 
 #[derive(Debug, Parser)]
-#[command(name = "worktree-ctl", about = "Manage local Git worktree lifecycles")]
+#[command(
+    name = "worktree-ctl",
+    about = "Manage local Git worktree lifecycles"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -130,7 +140,10 @@ struct LifecyclePlan {
 }
 
 impl LifecyclePlan {
-    fn add(&mut self, action: impl Into<String>) {
+    fn add(
+        &mut self,
+        action: impl Into<String>,
+    ) {
         self.actions.push(action.into());
     }
 
@@ -148,14 +161,18 @@ fn handle_new(
     allow_additional: bool,
     preserve_main_changes: bool,
 ) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
     let name = format!("{short_id}-{slug}");
     let branch = format!("agent/{name}");
     let worktree_path = git.main_checkout().join(".worktrees").join(&name);
     let worktrees = git.list_worktrees().map_err(|error| error.to_string())?;
 
-    if let Some(worktree) = worktrees.iter().find(|worktree| worktree.name == name) {
+    if let Some(worktree) =
+        worktrees.iter().find(|worktree| worktree.name == name)
+    {
         println!("{WORKTREE_PATH_OUTPUT_PREFIX}{}", worktree.path.display());
         return Ok(());
     }
@@ -233,9 +250,13 @@ fn handle_new(
 }
 
 fn handle_list(_dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
-    let activity = SessionStoreActivity::with_default_staleness(git.main_checkout().join(".session"));
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
+    let activity = SessionStoreActivity::with_default_staleness(
+        git.main_checkout().join(".session"),
+    );
     let policy = ProvisionPolicy::default();
     let registered = git.list_worktrees().map_err(|error| error.to_string())?;
 
@@ -253,49 +274,109 @@ fn handle_list(_dry_run: bool) -> Result<(), String> {
 
     let worktree_root = git.main_checkout().join(".worktrees");
     if worktree_root.is_dir() {
-        for entry in std::fs::read_dir(&worktree_root).map_err(|error| error.to_string())? {
+        for entry in std::fs::read_dir(&worktree_root)
+            .map_err(|error| error.to_string())?
+        {
             let entry = entry.map_err(|error| error.to_string())?;
             let path = entry.path();
-            if path.is_dir() && !registered.iter().any(|worktree| worktree.path == path) {
-                println!("path={} lifecycle=unregistered-debris", path.display());
+            if path.is_dir()
+                && !registered.iter().any(|worktree| worktree.path == path)
+            {
+                println!(
+                    "path={} lifecycle=unregistered-debris",
+                    path.display()
+                );
             }
         }
     }
     Ok(())
 }
 
-fn handle_rebase(name: &str, dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
+fn handle_rebase(
+    name: &str,
+    dry_run: bool,
+) -> Result<(), String> {
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
     let worktree = find_worktree(&git, name)?;
+    let branch = worktree.branch.as_deref().ok_or_else(|| {
+        format!("worktree {name} is detached and cannot be rebased")
+    })?;
     let mut plan = LifecyclePlan::default();
-    plan.add(format!("rebase {} onto local main", worktree.path.display()));
+    for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
+        let nested_worktree = worktree.path.join(&submodule);
+        if repository_has_branch(&nested_worktree, branch)? {
+            plan.add(format!(
+                "checkout {branch} and rebase {} onto its local main",
+                nested_worktree.display()
+            ));
+        } else {
+            plan.add(format!(
+                "skip {} because branch {branch} does not exist",
+                nested_worktree.display()
+            ));
+        }
+    }
+    plan.add(format!(
+        "rebase {} onto local main",
+        worktree.path.display()
+    ));
 
     if dry_run {
         plan.emit();
         return Ok(());
     }
 
+    for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
+        let nested_worktree = worktree.path.join(&submodule);
+        if repository_has_branch(&nested_worktree, branch)? {
+            checkout_and_rebase(&nested_worktree, branch).map_err(|error| {
+                format!(
+                    "submodule {submodule} branch {branch} could not rebase onto local main: {error}; resolve the conflict in {} and continue or abort the rebase",
+                    nested_worktree.display()
+                )
+            })?;
+        }
+    }
     rebase_onto_local_main(&worktree.path)
 }
 
-fn handle_merge(name: &str, dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
+fn handle_merge(
+    name: &str,
+    dry_run: bool,
+) -> Result<(), String> {
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
     let worktree = find_worktree(&git, name)?;
-    let branch = worktree
-        .branch
-        .as_deref()
-        .ok_or_else(|| format!("worktree {name} is detached and cannot be merged"))?;
+    let branch = worktree.branch.as_deref().ok_or_else(|| {
+        format!("worktree {name} is detached and cannot be merged")
+    })?;
     let mut plan = LifecyclePlan::default();
+
+    let preflight = verify_gitlink_containment(git.main_checkout())?;
+    reject_gitlink_violations(&preflight)?;
 
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
         let nested_worktree = worktree.path.join(&submodule);
-        if let Some(nested_branch) = branch_for_repository(&nested_worktree)? {
+        if repository_has_branch(&nested_worktree, branch)? {
+            reject_unmerged_submodule_branch(
+                &git.main_checkout().join(&submodule),
+                branch,
+                &submodule,
+            )?;
             let main_submodule = git.main_checkout().join(&submodule);
             plan.add(format!(
-                "fast-forward {} local main from nested branch {nested_branch}",
+                "fast-forward {} local main from nested branch {branch}",
                 main_submodule.display()
+            ));
+        } else {
+            plan.add(format!(
+                "skip {} because branch {branch} does not exist",
+                submodule
             ));
         }
     }
@@ -309,17 +390,25 @@ fn handle_merge(name: &str, dry_run: bool) -> Result<(), String> {
 
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
         let nested_worktree = worktree.path.join(&submodule);
-        let Some(nested_branch) = branch_for_repository(&nested_worktree)? else {
+        if !repository_has_branch(&nested_worktree, branch)? {
             continue;
-        };
-        merge_ff_only(&git.main_checkout().join(&submodule), &nested_branch)?;
+        }
+        merge_ff_only(&git.main_checkout().join(&submodule), branch)?;
     }
-    merge_ff_only(git.main_checkout(), branch)
+    merge_ff_only(git.main_checkout(), branch)?;
+    let postflight = verify_gitlink_containment(git.main_checkout())?;
+    reject_gitlink_violations(&postflight)
 }
 
-fn handle_remove(name: &str, force: bool, dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
+fn handle_remove(
+    name: &str,
+    force: bool,
+    dry_run: bool,
+) -> Result<(), String> {
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
     let worktree = find_worktree(&git, name)?;
     let dirty_paths = git
         .dirty_paths(&worktree.path)
@@ -330,7 +419,9 @@ fn handle_remove(name: &str, force: bool, dry_run: bool) -> Result<(), String> {
             .map(|path| path.path.display().to_string())
             .collect::<Vec<_>>()
             .join(", ");
-        return Err(format!("worktree {name} has uncommitted changes: {paths}"));
+        return Err(format!(
+            "worktree {name} has uncommitted changes: {paths}"
+        ));
     }
 
     let mut plan = LifecyclePlan::default();
@@ -346,9 +437,15 @@ fn handle_remove(name: &str, force: bool, dry_run: bool) -> Result<(), String> {
     git.worktree_prune().map_err(|error| error.to_string())
 }
 
-fn handle_rename(source_name: &str, target_name: &str, dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
+fn handle_rename(
+    source_name: &str,
+    target_name: &str,
+    dry_run: bool,
+) -> Result<(), String> {
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
     let source = find_worktree(&git, source_name)?;
     let target_path = git.main_checkout().join(".worktrees").join(target_name);
     let target_branch = format!("agent/{target_name}");
@@ -368,12 +465,20 @@ fn handle_rename(source_name: &str, target_name: &str, dry_run: bool) -> Result<
     Ok(())
 }
 
-fn handle_finish(name: &str, dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
+fn handle_finish(
+    name: &str,
+    dry_run: bool,
+) -> Result<(), String> {
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
     let worktree = find_worktree(&git, name)?;
     let mut plan = LifecyclePlan::default();
-    plan.add(format!("rebase {} onto local main", worktree.path.display()));
+    plan.add(format!(
+        "rebase {} onto local main",
+        worktree.path.display()
+    ));
     plan.add(format!("remove {} with force", worktree.path.display()));
     plan.add("prune removed worktree registrations");
     plan.add(FINISH_READY_TO_MERGE_MARKER);
@@ -416,21 +521,210 @@ fn rebase_onto_local_main(worktree: &std::path::Path) -> Result<(), String> {
     ))
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum GitlinkState {
+    Ok,
+    Behind,
+    Orphan,
+    NotContained,
+}
+
+#[derive(Debug)]
+struct GitlinkStatus {
+    submodule_path: String,
+    recorded_sha: Oid,
+    main_sha: Oid,
+    state: GitlinkState,
+}
+
+fn verify_gitlink_containment(
+    repo_root: &Path
+) -> Result<Vec<GitlinkStatus>, String> {
+    let superproject =
+        Repository::open(repo_root).map_err(|error| error.to_string())?;
+    let head = superproject.head().map_err(|error| error.to_string())?;
+    let commit = head.peel_to_commit().map_err(|error| error.to_string())?;
+    let tree = commit.tree().map_err(|error| error.to_string())?;
+    let paths = WorktreeGit::open(repo_root)
+        .map_err(|error| error.to_string())?
+        .submodule_paths()
+        .map_err(|error| error.to_string())?;
+
+    paths
+        .into_iter()
+        .map(|submodule_path| {
+            let recorded_sha = tree
+                .get_path(Path::new(&submodule_path))
+                .map_err(|error| error.to_string())?
+                .id();
+            let submodule = Repository::open(repo_root.join(&submodule_path))
+                .map_err(|error| format!("failed to open submodule {submodule_path}: {error}"))?;
+            let main = submodule
+                .find_branch("main", BranchType::Local)
+                .map_err(|error| format!("submodule {submodule_path} has no local main branch: {error}"))?;
+            let main_sha = main
+                .get()
+                .target()
+                .ok_or_else(|| format!("submodule {submodule_path} main has no target"))?;
+            let contained_in_main = main_sha == recorded_sha
+                || submodule
+                    .graph_descendant_of(main_sha, recorded_sha)
+                    .map_err(|error| error.to_string())?;
+            let state = if contained_in_main {
+                if main_sha == recorded_sha {
+                    GitlinkState::Ok
+                } else {
+                    GitlinkState::Behind
+                }
+            } else if branch_contains(&submodule, recorded_sha)? {
+                GitlinkState::NotContained
+            } else {
+                GitlinkState::Orphan
+            };
+            Ok(GitlinkStatus {
+                submodule_path,
+                recorded_sha,
+                main_sha,
+                state,
+            })
+        })
+        .collect()
+}
+
+fn branch_contains(
+    repository: &Repository,
+    commit: Oid,
+) -> Result<bool, String> {
+    for branch in repository
+        .branches(Some(BranchType::Local))
+        .map_err(|error| error.to_string())?
+    {
+        let (branch, _) = branch.map_err(|error| error.to_string())?;
+        let Some(tip) = branch.get().target() else {
+            continue;
+        };
+        if tip == commit
+            || repository
+                .graph_descendant_of(tip, commit)
+                .map_err(|error| error.to_string())?
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn reject_gitlink_violations(statuses: &[GitlinkStatus]) -> Result<(), String> {
+    let violations = statuses
+        .iter()
+        .filter(|status| matches!(status.state, GitlinkState::Orphan | GitlinkState::NotContained))
+        .map(|status| format!(
+            "submodule {} recorded {} is {:?}; local main is {}; run `git -C {} checkout main && git -C {} merge --ff-only <feature-branch>`, then bump the gitlink",
+            status.submodule_path,
+            status.recorded_sha,
+            status.state,
+            status.main_sha,
+            status.submodule_path,
+            status.submodule_path,
+        ))
+        .collect::<Vec<_>>();
+    if violations.is_empty() {
+        Ok(())
+    } else {
+        Err(format!(
+            "gitlink containment failed:\n{}",
+            violations.join("\n")
+        ))
+    }
+}
+
+fn repository_has_branch(
+    path: &Path,
+    branch: &str,
+) -> Result<bool, String> {
+    let repository = match Repository::open(path) {
+        Ok(repository) => repository,
+        Err(_) => return Ok(false),
+    };
+    match repository.find_branch(branch, BranchType::Local) {
+        Ok(_) => Ok(true),
+        Err(error) if error.code() == git2::ErrorCode::NotFound => Ok(false),
+        Err(error) => Err(error.to_string()),
+    }
+}
+
+fn reject_unmerged_submodule_branch(
+    repository_path: &Path,
+    branch: &str,
+    submodule_path: &str,
+) -> Result<(), String> {
+    let repository =
+        Repository::open(repository_path).map_err(|error| error.to_string())?;
+    let feature_sha = repository
+        .find_branch(branch, BranchType::Local)
+        .map_err(|error| error.to_string())?
+        .get()
+        .target()
+        .ok_or_else(|| {
+            format!("submodule {submodule_path} branch {branch} has no target")
+        })?;
+    let main_sha = repository
+        .find_branch("main", BranchType::Local)
+        .map_err(|error| error.to_string())?
+        .get()
+        .target()
+        .ok_or_else(|| {
+            format!("submodule {submodule_path} main has no target")
+        })?;
+    if main_sha == feature_sha
+        || repository
+            .graph_descendant_of(main_sha, feature_sha)
+            .map_err(|error| error.to_string())?
+    {
+        Ok(())
+    } else {
+        Err(format!(
+            "submodule {submodule_path} branch {branch} ({feature_sha}) is not contained in local main ({main_sha}); run `git -C {submodule_path} checkout main && git -C {submodule_path} merge --ff-only {branch}` before merging the superproject"
+        ))
+    }
+}
+
+fn checkout_and_rebase(
+    worktree: &Path,
+    branch: &str,
+) -> Result<(), String> {
+    run_git(worktree, ["checkout", branch])?;
+    rebase_onto_local_main(worktree)
+}
+
 fn handle_doctor(dry_run: bool) -> Result<(), String> {
-    let main_checkout = env::current_dir().map_err(|error| error.to_string())?;
-    let git = WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
     let mut plan = LifecyclePlan::default();
 
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
         let path = git.main_checkout().join(&submodule);
-        if let Some(config) = stale_worktree_config(git.main_checkout(), &submodule)? {
-            println!("submodule={submodule} status=stale-core-worktree path={}", config.display());
-            plan.add(format!("unset stale core.worktree for submodule {submodule}"));
-            plan.add(format!("prune nested worktree registrations for submodule {submodule}"));
+        if let Some(config) =
+            stale_worktree_config(git.main_checkout(), &submodule)?
+        {
+            println!(
+                "submodule={submodule} status=stale-core-worktree path={}",
+                config.display()
+            );
+            plan.add(format!(
+                "unset stale core.worktree for submodule {submodule}"
+            ));
+            plan.add(format!(
+                "prune nested worktree registrations for submodule {submodule}"
+            ));
         }
         if Repository::open(&path).is_err() {
             println!("submodule={submodule} status=deinitialized");
-            plan.add(format!("initialize and update deinitialized submodule {submodule}"));
+            plan.add(format!(
+                "initialize and update deinitialized submodule {submodule}"
+            ));
         }
     }
     plan.add("prune stale superproject worktree registrations");
@@ -454,7 +748,10 @@ fn handle_doctor(dry_run: bool) -> Result<(), String> {
     Ok(())
 }
 
-fn submodule_status(git: &WorktreeGit, worktree: &Path) -> Result<String, String> {
+fn submodule_status(
+    git: &WorktreeGit,
+    worktree: &Path,
+) -> Result<String, String> {
     let missing = git
         .submodule_paths()
         .map_err(|error| error.to_string())?
@@ -478,33 +775,31 @@ fn lifecycle_status(
         .map_err(|error| error.to_string())?
     {
         ReclaimEligibility::Reclaimable => Ok("reclaimable".to_owned()),
-        ReclaimEligibility::Rejected(reason) => Ok(format!("preserved reason={}", rejection_reason(&reason))),
+        ReclaimEligibility::Rejected(reason) =>
+            Ok(format!("preserved reason={}", rejection_reason(&reason))),
     }
 }
 
 fn rejection_reason(reason: &ReclaimRejectionReason) -> String {
     match reason {
-        ReclaimRejectionReason::OutsideWorktreeRoot => "outside-worktree-root".to_owned(),
+        ReclaimRejectionReason::OutsideWorktreeRoot =>
+            "outside-worktree-root".to_owned(),
         ReclaimRejectionReason::SessionActive => "session-active".to_owned(),
         ReclaimRejectionReason::Detached => "detached".to_owned(),
         ReclaimRejectionReason::Dirty => "dirty".to_owned(),
-        ReclaimRejectionReason::ContainsCurrentDirectory => "contains-current-directory".to_owned(),
+        ReclaimRejectionReason::ContainsCurrentDirectory =>
+            "contains-current-directory".to_owned(),
         ReclaimRejectionReason::NotIdle => "not-idle".to_owned(),
-        ReclaimRejectionReason::DirtySubmodule { path } => format!("dirty-submodule:{}", path.display()),
+        ReclaimRejectionReason::DirtySubmodule { path } =>
+            format!("dirty-submodule:{}", path.display()),
         ReclaimRejectionReason::AheadOfMain => "ahead-of-main".to_owned(),
     }
 }
 
-fn branch_for_repository(path: &Path) -> Result<Option<String>, String> {
-    let repository = match Repository::open(path) {
-        Ok(repository) => repository,
-        Err(_) => return Ok(None),
-    };
-    let head = repository.head().map_err(|error| error.to_string())?;
-    Ok(head.is_branch().then(|| head.shorthand().unwrap_or_default().to_owned()))
-}
-
-fn merge_ff_only(repository: &Path, branch: &str) -> Result<(), String> {
+fn merge_ff_only(
+    repository: &Path,
+    branch: &str,
+) -> Result<(), String> {
     run_git(repository, ["merge", "--ff-only", branch]).map_err(|error| {
         format!(
             "merge --ff-only failed for {} from {branch}: {error}; rebase the feature branch onto local main and retry",
@@ -513,28 +808,44 @@ fn merge_ff_only(repository: &Path, branch: &str) -> Result<(), String> {
     })
 }
 
-fn stale_worktree_config(main_checkout: &Path, submodule: &str) -> Result<Option<PathBuf>, String> {
-    let config_path = main_checkout.join(".git").join("modules").join(submodule).join("config");
+fn stale_worktree_config(
+    main_checkout: &Path,
+    submodule: &str,
+) -> Result<Option<PathBuf>, String> {
+    let config_path = main_checkout
+        .join(".git")
+        .join("modules")
+        .join(submodule)
+        .join("config");
     if !config_path.exists() {
         return Ok(None);
     }
-    let config = git2::Config::open(&config_path).map_err(|error| error.to_string())?;
+    let config =
+        git2::Config::open(&config_path).map_err(|error| error.to_string())?;
     let value = match config.get_string("core.worktree") {
         Ok(value) => value,
-        Err(error) if error.code() == git2::ErrorCode::NotFound => return Ok(None),
+        Err(error) if error.code() == git2::ErrorCode::NotFound =>
+            return Ok(None),
         Err(error) => return Err(error.to_string()),
     };
     let configured_path = PathBuf::from(value);
     let resolved_path = if configured_path.is_absolute() {
         configured_path
     } else {
-        config_path.parent().ok_or("submodule config has no parent")?.join(configured_path)
+        config_path
+            .parent()
+            .ok_or("submodule config has no parent")?
+            .join(configured_path)
     };
     Ok((!resolved_path.exists()).then_some(resolved_path))
 }
 
-fn initialize_submodule(main_checkout: &Path, submodule: &str) -> Result<(), String> {
-    let repository = Repository::open(main_checkout).map_err(|error| error.to_string())?;
+fn initialize_submodule(
+    main_checkout: &Path,
+    submodule: &str,
+) -> Result<(), String> {
+    let repository =
+        Repository::open(main_checkout).map_err(|error| error.to_string())?;
     let mut handle = repository
         .find_submodule(submodule)
         .map_err(|error| error.to_string())?;
@@ -542,13 +853,26 @@ fn initialize_submodule(main_checkout: &Path, submodule: &str) -> Result<(), Str
     handle.update(true, None).map_err(|error| error.to_string())
 }
 
-fn unset_core_worktree(main_checkout: &Path, submodule: &str) -> Result<(), String> {
-    let config = main_checkout.join(".git").join("modules").join(submodule).join("config");
-    let mut config = git2::Config::open(&config).map_err(|error| error.to_string())?;
-    config.remove("core.worktree").map_err(|error| error.to_string())
+fn unset_core_worktree(
+    main_checkout: &Path,
+    submodule: &str,
+) -> Result<(), String> {
+    let config = main_checkout
+        .join(".git")
+        .join("modules")
+        .join(submodule)
+        .join("config");
+    let mut config =
+        git2::Config::open(&config).map_err(|error| error.to_string())?;
+    config
+        .remove("core.worktree")
+        .map_err(|error| error.to_string())
 }
 
-fn run_git<const N: usize>(repository: &Path, arguments: [&str; N]) -> Result<(), String> {
+fn run_git<const N: usize>(
+    repository: &Path,
+    arguments: [&str; N],
+) -> Result<(), String> {
     let output = git_command(repository)
         .args(arguments)
         .output()
@@ -581,9 +905,14 @@ mod tests {
     use clap::Parser;
 
     use super::{
-        BRANCH_TEMPLATE, Cli, Command, DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE,
-        FINISH_READY_TO_MERGE_MARKER, PRESERVE_MAIN_CHANGES_HINT,
-        SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT, WORKTREE_PATH_OUTPUT_PREFIX,
+        Cli,
+        Command,
+        BRANCH_TEMPLATE,
+        DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE,
+        FINISH_READY_TO_MERGE_MARKER,
+        PRESERVE_MAIN_CHANGES_HINT,
+        SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT,
+        WORKTREE_PATH_OUTPUT_PREFIX,
         WORKTREE_PATH_TEMPLATE,
     };
 
@@ -592,7 +921,10 @@ mod tests {
         assert_eq!(WORKTREE_PATH_OUTPUT_PREFIX, "WORKTREE_PATH=");
         assert_eq!(FINISH_READY_TO_MERGE_MARKER, "ready-to-merge");
         assert_eq!(SECOND_WORKTREE_ALLOW_ADDITIONAL_HINT, "--allow-additional");
-        assert_eq!(DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE, "uncommitted changes");
+        assert_eq!(
+            DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE,
+            "uncommitted changes"
+        );
         assert_eq!(PRESERVE_MAIN_CHANGES_HINT, "preserve-main-changes");
         assert_eq!(WORKTREE_PATH_TEMPLATE, ".worktrees/<short-id>-<slug>");
         assert_eq!(BRANCH_TEMPLATE, "agent/<short-id>-<slug>");
@@ -632,7 +964,13 @@ mod tests {
 
     #[test]
     fn parses_rebase_with_dry_run() {
-        let cli = Cli::try_parse_from(["worktree-ctl", "rebase", "example", "--dry-run"]).unwrap();
+        let cli = Cli::try_parse_from([
+            "worktree-ctl",
+            "rebase",
+            "example",
+            "--dry-run",
+        ])
+        .unwrap();
 
         assert_eq!(
             cli.command,
@@ -645,7 +983,13 @@ mod tests {
 
     #[test]
     fn parses_merge_with_dry_run() {
-        let cli = Cli::try_parse_from(["worktree-ctl", "merge", "example", "--dry-run"]).unwrap();
+        let cli = Cli::try_parse_from([
+            "worktree-ctl",
+            "merge",
+            "example",
+            "--dry-run",
+        ])
+        .unwrap();
 
         assert_eq!(
             cli.command,
@@ -700,7 +1044,13 @@ mod tests {
 
     #[test]
     fn parses_finish_with_dry_run() {
-        let cli = Cli::try_parse_from(["worktree-ctl", "finish", "example", "--dry-run"]).unwrap();
+        let cli = Cli::try_parse_from([
+            "worktree-ctl",
+            "finish",
+            "example",
+            "--dry-run",
+        ])
+        .unwrap();
 
         assert_eq!(
             cli.command,
@@ -713,7 +1063,8 @@ mod tests {
 
     #[test]
     fn parses_doctor_with_dry_run() {
-        let cli = Cli::try_parse_from(["worktree-ctl", "doctor", "--dry-run"]).unwrap();
+        let cli = Cli::try_parse_from(["worktree-ctl", "doctor", "--dry-run"])
+            .unwrap();
 
         assert_eq!(cli.command, Command::Doctor { dry_run: true });
     }
