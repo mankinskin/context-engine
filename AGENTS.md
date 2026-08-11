@@ -10,6 +10,7 @@ Global working rules for this repository. Keep this file small and stable.
 - For implementation work, create or update the relevant ticket(s) before editing code.
 - For new or changed requirements and goals, create or update the relevant spec before implementation proceeds.
 - Keep the ticket, spec, validation, and documentation trail current so review and status summaries stay accurate.
+- Commit every completed change on its owning feature branch; uncommitted completed work is not a valid handoff.
 - Prefer bash commands over PowerShell/cmd.
 - Use Unix-style paths (`/`) in commands and docs.
 - Read test logs in `target/test-logs/` for debugging instead of relying on truncated test stdout.

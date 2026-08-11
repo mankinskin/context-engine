@@ -52,6 +52,14 @@ Neither signal alone constitutes readiness; both must hold.
 - A superproject worktree created under this scheme requires `git submodule update --init --recursive` before work begins.
 - Submodule-local work follows the same branch-per-task naming scheme within the submodule, and is committed deepest-first (submodules before the superproject pointer update).
 
+### State isolation
+
+No component MAY persist a dependency on another worktree's path or content. Store resolution MUST use the explicit selector or the containing checkout and MUST NOT traverse sibling worktrees. Deleting any worktree MUST NOT break store operations in another worktree or the main checkout. Shared caches MUST be checkout-local or keyed so worktrees cannot overwrite each other's content.
+
+Recording bare worktree existence is permitted but is not currently required. The contract deliberately does not require an existence registry because a stored dependency on existence can fail when a worktree is deleted.
+
+The related contracts are `2860a8db` (default worktree-backed session workflow), `10dee1dc` (board-to-session worktree binding), `0f5acbfe` (session-id worktree routing), and `aff42efb` (session-anchored MCP workspace resolution). `5d9e5a99` states that sibling `.worktrees/*` directories are never resolution candidates; the verified store-resolution finding for tracking ticket `3a624bf6` contradicts that claim in the current implementation. The implementation must reconcile the behavior with `5d9e5a99` rather than treating the existing claim as satisfied.
+
 ## Non-goals
 
 The following are explicitly out of scope for this requirement:
