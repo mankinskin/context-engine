@@ -66,3 +66,63 @@ All five acceptance criteria (peek-api owns the logic, peek-cli is a thin adapte
 ### Schema-error investigation ("no schema for type 'ticket'")
 
 Did not reproduce. No `.ticket/schema*` or `.ticket/schemas/` file exists in either the worktree or main checkout, and no `schema` key appears in any ticket-store config found. The `update_ticket` MCP call against `06cfe998` completed cleanly with `{"status":"ok", ..., "state_transition": {"from":"in-review","to":"done"}}`. Root cause of the prior failure on a *different* ticket is not established here — it did not recur for this ticket/store combination, so no cwd-dependent or schema-file-dependent behavior was observed to explain it.
+
+---
+
+### Reproducible gap: `session_check_in` unusable in fresh worktrees — session init does not create session.json
+
+Reproduction (fresh worktree):
+
+1. Create a fresh worktree and populate submodules (example run used by reporter):
+
+```
+bash tools/worktree/worktree.sh new 5e6cf4f8 worktree-ctl
+# worktree created at c:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl
+# branch: agent/5e6cf4f8-worktree-ctl (cut from local main)
+```
+
+2. Attempt the standard agent claim protocol from inside the new worktree (both commands pass the worktree path as the `--workspace` / `--store-root` selector):
+
+```
+./target/debug/session.exe init --workspace "c:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl" --toon
+./target/debug/ticket.exe board check-in 5e6cf4f8 --workspace "c:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl" --agent github-copilot --session-id 6a51a1af-6812-4dfc-80d7-0e4f56b4af4f --worktree-path "c:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl" --branch agent/5e6cf4f8-worktree-ctl --intent "worktree claim remediation" --toon
+```
+
+Observed outcomes (verbatim):
+
+- `board_check_in` initially failed with: "the assigned worktree ticket store is uninitialized". This was worked around by running:
+
+```
+./target/debug/ticket.exe init --workspace "c:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl" --toon
+```
+
+which rebuilt the file-store artifacts (`.ticket/search_index/`, `tickets.db` and WAL/SHM files) and allowed `board_check_in` to succeed (returned `status: ok`, entry_id `0e78cd6a-4c9b-4b5a-a38b-6cc3475bcaa0`).
+
+- `session_check_in` continues to fail. Verbatim error when attempting check-in after running `session init`:
+
+```
+status: error
+message: "session error: session data was not found at c:/Users/linus/git/context-engine/.worktrees/5e6cf4f8-worktree-ctl\\.session\\sessions\\6a51a1af-6812-4dfc-80d7-0e4f56b4af4f\\session.json"
+```
+
+The reporter ran `./target/debug/session.exe init` with both `--workspace` and an explicit `--store-root`. The command reports success but does not create the required `<uuid>/session.json` file in the targeted `.session/` store, leaving `session_check_in` unable to complete.
+
+Root-cause facts (repository pointers):
+
+- Store-root resolution anchors on the current checkout via `working_dir()` in `memory-api/crates/session-workspace-resolver/src/lib.rs` (see resolution and anchor logic near lines ~137-140 and candidate checks around ~188-190). The mutation guard that forbids main-checkout mutations is at ~lines 85-87 in the same file (`if self.is_main_checkout() { return Err(ResolutionError::MainCheckoutMutationBlocked); }`). Worktrees are intended to be valid mutation targets but the reported behavior shows the per-worktree `.session` entry is not being created by `session init`.
+- The `session init` CLI entrypoint lives at `memory-api/tools/cli/session-cli/src/lib.rs` (~L68-80). `ticket init` lives at `memory-api/tools/cli/ticket-cli/src/cli.rs` (~L74-90). Notably, `tools/worktree/worktree.sh` does not initialize `.session` or `.ticket` stores.
+
+Impact:
+
+- In a freshly bootstrapped worktree, `board_check_in` can be unblocked by manually running `ticket init` (workaround), but `session_check_in` remains unusable because `session init` does not create the required `session.json` record in the targeted `.session/` store. The documented claim order (session_check_in → board_check_in → first edit) is therefore unsatisfiable in a fresh worktree without manual repair.
+
+Relation to other tickets: this is related to the dogfood finding already recorded in this ticket (missing/ corrupt session entries) and to session/worktree store resolution work tracked by `fa2ba34b` and `3d535b2c`, but the reproduced, actionable gap below is distinct: it is a reproducible initialization gap where `session init` reports success yet fails to create the session record in the targeted worktree store.
+
+Acceptance criteria (minimum):
+
+1. `session_check_in` succeeds in a freshly bootstrapped worktree without manual intervention.
+2. `session init` either creates the `<uuid>/session.json` record it claims to create, or fails loudly and clearly (no silent success with missing file).
+3. Worktree bootstrap (tools/worktree/worktree.sh new) initializes required store state (or the resolver falls back to the main checkout) so manual `ticket init` is not required to make `board_check_in` or `session_check_in` usable.
+4. A regression test reproduces the claim-protocol completion flow (worktree new → session init → session_check_in → board_check_in) and fails if any step requires manual intervention.
+
+Suggested immediate next step: assign to `session-api` for triage and add `high` priority — this blocks the documented agent claim protocol for fresh worktrees and therefore blocks agent-first onboarding of new worktrees.
