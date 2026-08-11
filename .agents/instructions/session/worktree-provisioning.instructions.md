@@ -33,11 +33,11 @@ Hook stdin accepts `transcript_path`, `workspace_slug`, `hook_event_name`, `tool
 
 The hook crate lives in [memory-api/crates/session-capture-hook](../../../memory-api/crates/session-capture-hook/), with entry point [main.rs](../../../memory-api/crates/session-capture-hook/src/main.rs). The provisioning crate is [memory-api/crates/session-worktree-provision](../../../memory-api/crates/session-worktree-provision/), with policy in [policy.rs](../../../memory-api/crates/session-worktree-provision/src/policy.rs). Both crates compile into the ordinary release binary; provisioning is not feature-gated or test-only.
 
-Eager provisioning runs only for `UserPromptSubmit` with a non-blank session id. A successful provision persists the session-to-worktree assignment, so a fresh session-store handle resolves `session.exe lookup` to the provisioned worktree path and branch. `WORKTREE_EAGER_PROVISION` is opt-out: the condition treats unset as enabled and only `0` as disabled.
+Eager provisioning runs only for `UserPromptSubmit` with a non-blank session id. A successful provision creates the session worktree; worktree discovery is positional from the supported directory layouts, with no main-checkout session-to-worktree assignment index. `WORKTREE_EAGER_PROVISION` is opt-out: the condition treats unset as enabled and only `0` as disabled.
 
 The policy follows reuse, reclaim, then create:
 
-1. **Reuse**: `AlreadyProvisioned` returns only when a registered `{short_id}-` worktree has a recorded owner matching the full session id. A prefix-matching worktree owned by another session returns `SessionOwnershipConflict`. A registered worktree with no recorded owner remains claimable by a prefix-matching session for backward compatibility.
+1. **Reuse**: `AlreadyProvisioned` returns when `.worktrees/<full-session-uuid>/` has exactly one immediate slug directory. More than one slug directory for one session UUID is a deterministic ambiguity error with lexicographically ordered candidate paths. Legacy flat `.worktrees/<short-id>-<slug>` worktrees remain discoverable only when their local `.session/sessions/<full-session-uuid>/session.json` record matches the session UUID; nested wins when both layouts are valid.
 2. **Reclaim**: a candidate must have no session-store activity, a branch, a clean worktree, no current directory inside the worktree, idle age beyond `WORKTREE_IDLE_SECS`, no dirty submodule path, and zero commits ahead of `main`. Candidates sort by mtime then name. Failed reclaim falls through to create.
 3. **Create**: below `WORKTREE_MAX`, provisioning creates a new branch from `main`. At the cap, with no reclaim candidate, provisioning returns `CapReached`.
 
@@ -81,14 +81,14 @@ The `git` subprocess performs only writes that libgit2 cannot express: `git work
 
 ## Naming And Paths
 
-`short_id` is the first eight characters of the session id. Eager provisioning uses these names:
+New sessions use the nested layout below. `<full-session-uuid>` is the complete session UUID, and `<slug>` is the selected topic slug:
 
 | Resource | Template |
 |---|---|
-| Worktree | `<main_checkout>/.worktrees/{short_id}-session` |
-| Branch | `agent/{short_id}-session` |
+| Worktree | `<main_checkout>/.worktrees/<full-session-uuid>/session` |
+| Branch | `agent/<full-session-uuid>/session` |
 
-The `-session` suffix is a placeholder for a topic not yet declared. The `{short_id}-` prefix permits a renamed `<short_id>-<topic-slug>` worktree to be considered for reuse, but reuse requires a matching recorded full session id; legacy ownerless worktrees remain claimable. Follow [## 1b. Name the topic (rename the worktree)](../commit/branch-worktree.instructions.md#1b-name-the-topic-rename-the-worktree) before session check-in; use the session's first eight characters when manually bootstrapping a worktree that the hook should adopt.
+The `session` slug is a placeholder for a topic not yet declared. Rename the nested worktree before session check-in. Existing flat `.worktrees/<short-id>-<slug>` worktrees remain supported during transition and are not migrated. Nested layout wins when both layouts match one session UUID; multiple valid nested or legacy candidates fail with a deterministic ambiguity error instead of selecting a worktree. Follow [## 1b. Name the topic (rename the worktree)](../commit/branch-worktree.instructions.md#1b-name-the-topic-rename-the-worktree) before session check-in. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is canonical for manual lifecycle commands and integration order.
 
 ## Environment Variables
 
@@ -102,7 +102,7 @@ The `-session` suffix is a placeholder for a topic not yet declared. The `{short
 
 ## Silent-Skip Guards
 
-Malformed hook input cannot identify a valid event or session and therefore skips provisioning. Provisioning also skips for any event other than `UserPromptSubmit`, a blank `session_id`, an unavailable current directory, an invalid anchor checkout, `WORKTREE_EAGER_PROVISION=0`, or a mismatched explicit external store. `AlreadyProvisioned` reuses a registered `{short_id}-` worktree only when the recorded owner matches the full session id; a conflicting owner returns `SessionOwnershipConflict`.
+Malformed hook input cannot identify a valid event or session and therefore skips provisioning. Provisioning also skips for any event other than `UserPromptSubmit`, a blank `session_id`, an unavailable current directory, an invalid anchor checkout, `WORKTREE_EAGER_PROVISION=0`, or a mismatched explicit external store. `AlreadyProvisioned` requires exactly one nested slug directory for the full session UUID; competing slug directories return the deterministic ambiguity error.
 
 A missing transcript path skips only transcript capture, and an unresolvable capture store or blank `workspace_slug` does not block provisioning. All provisioning failures still exit 0 and emit `{}` with diagnostics on stderr, so a silent success, reuse, failure, and skip remain indistinguishable from outside the hook.
 
@@ -110,14 +110,14 @@ A missing transcript path skips only transcript capture, and an unresolvable cap
 
 Because the hook is intentionally quiet, use this checklist to establish whether automatic provisioning fired:
 
-1. **Check the persisted assignment.** Open a fresh session-store handle and run `./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon`; the returned `worktree_path` and `branch` must match the provisioned worktree and feature branch. This is the acceptance check for eager provisioning.
-2. **Check the current checkout.** Run `git rev-parse --show-toplevel`. A repository-root path rather than `.worktrees/...` means automatic provisioning did not place the session in a worktree.
-3. **Check registered worktrees.** Run `git worktree list` and find a name beginning with the session id's first eight characters.
-4. **Check hook registration.** Reload the VS Code window after changes to [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) or [.vscode/settings.json](../../../.vscode/settings.json), because VS Code reads hook registration at window start. A missing `.session/sessions/` record indicates that provisioning did not persist the required assignment.
-4. **Check the opt-out.** Run `echo "[$WORKTREE_EAGER_PROVISION]"`. A value of `0` disables provisioning.
-5. **Check the cap.** Compare the `git worktree list` count to `WORKTREE_MAX`, which defaults to 8.
-6. **Use the manual fallback.** Run `./target/debug/worktree-ctl.exe new <short-id> <slug>`. A matching `<short-id>` makes the hook reuse the manually created worktree on the next prompt instead of creating another worktree.
-7. **Repair a missing submodule worktree path.** If repository-root `git status` reports `fatal: cannot chdir to '../../../../../.worktrees/<name>/memory-api': No such file or directory`, followed by `fatal: 'git status --porcelain=2' failed in submodule memory-api`, a rolled-back or manually deleted worktree left `core.worktree` in the shared submodule config pointing at the missing directory. `git worktree prune` cannot self-heal because it reaches the same error. Run `git config --file .git/modules/<submodule>/config --unset core.worktree`, then `git -C <submodule> worktree prune` and `git worktree prune` at the repository root. Check all five submodules with `git config --file .git/modules/<name>/config --get core.worktree`. Stale `.git/modules/<name>/worktrees/<entry>/gitdir` entries pointing at missing paths are a separate, milder symptom cleared by the same prune.
+1. **Check positional discovery.** Run `./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon`. The resolved path must be the sole `.worktrees/<uuid>/<slug>` directory. A missing directory returns `MissingSessionWorktree`; multiple slug directories return `AmbiguousSessionWorktree` with sorted candidates. No main-checkout `.session/sessions/<uuid>/session.json` assignment record is read or written.
+2. **Check the current checkout.** Run `git rev-parse --show-toplevel`. A repository-root path rather than `.worktrees/<uuid>/<slug>` means automatic provisioning did not place the session in a worktree.
+3. **Check registered worktrees.** Run `git worktree list` and find `.worktrees/<full-session-uuid>/<slug>`. Existing flat `<short-id>-<slug>` entries remain valid legacy worktrees.
+4. **Check hook registration.** Reload the VS Code window after changes to [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) or [.vscode/settings.json](../../../.vscode/settings.json), because VS Code reads hook registration at window start. A missing worktree-local `.session/sessions/<uuid>/session.json` record may prevent legacy-layout validation, but is not a main-checkout assignment check.
+5. **Check the opt-out.** Run `echo "[$WORKTREE_EAGER_PROVISION]"`. A value of `0` disables provisioning.
+6. **Check the cap.** Compare the `git worktree list` count to `WORKTREE_MAX`, which defaults to 8.
+7. **Use the manual fallback.** Run `./target/debug/worktree-ctl.exe new <full-session-uuid> <slug>`. The full UUID is required; the resulting nested worktree lets positional discovery resolve the session on the next prompt.
+8. **Repair a missing submodule worktree path.** If repository-root `git status` reports `fatal: cannot chdir to '../../../../../.worktrees/<name>/memory-api': No such file or directory`, followed by `fatal: 'git status --porcelain=2' failed in submodule memory-api`, a rolled-back or manually deleted worktree left `core.worktree` in the shared submodule config pointing at the missing directory. `git worktree prune` cannot self-heal because it reaches the same error. Run `git config --file .git/modules/<submodule>/config --unset core.worktree`, then `git -C <submodule> worktree prune` and `git worktree prune` at the repository root. Check all five submodules with `git config --file .git/modules/<name>/config --get core.worktree`. Stale `.git/modules/<name>/worktrees/<entry>/gitdir` entries pointing at missing paths are a separate, milder symptom cleared by the same prune.
 
 When hand-constructing a `transcript_path` for a manual hook invocation under Git Bash, use a Windows-style `C:/...` path. The native binary does not resolve POSIX `/tmp/...` paths produced by `mktemp`.
 
@@ -129,13 +129,13 @@ When hand-constructing a `transcript_path` for a manual hook invocation under Gi
 
 | Subcommand | Signature | Behavior |
 |---|---|---|
-| `new` | `new <short-id> <slug> [--allow-additional] [--preserve-main-changes] [--dry-run]` | Creates `.worktrees/<short-id>-<slug>` and `agent/<short-id>-<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
-| `list` | `list [--dry-run]` | Lists `.worktrees` entries, branches, submodule initialization, and unregistered debris. |
+| `new` | `new <full-session-uuid> <slug> [--dry-run] [--preserve-main-changes]` | Requires a full UUID and creates `.worktrees/<full-session-uuid>/<slug>` with `agent/<full-session-uuid>/<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
+| `list` | `list [--dry-run]` | Lists nested and legacy flat `.worktrees` entries, branches, submodule initialization, and unregistered debris. |
 | `rebase` | `rebase <name> [--dry-run]` | Rebases only the superproject worktree branch onto local `main`; stops on conflict. |
 | `merge` | `merge <name> [--dry-run]` | Partially automates nested submodule fast-forwards and then the superproject fast-forward; it does not enforce gitlink containment. |
-| `remove` | `remove <name> [--force] [--dry-run]` | Refuses dirty worktrees unless forced, then removes the worktree, prunes registrations, and deletes the merged branch. |
-| `rename` | `rename <source-name> <target-name> [--dry-run]` | Re-topics a clean worktree through filesystem relocation, repair, and branch rename. |
-| `finish` | `finish <name> [--dry-run]` | Evaluates completion and preserves or reclaims the worktree according to lifecycle gates. |
+| `remove` | `remove <name> [--force] [--dry-run]` | Refuses dirty worktrees unless forced, then removes the worktree, prunes registrations, and deletes the merged branch. Use `<full-session-uuid>/<slug>` for nested worktrees; the UUID parent is removed only when empty. |
+| `rename` | `rename <source-name> <target-name> [--dry-run]` | Re-topics a clean worktree through filesystem relocation, repair, and branch rename. Use `<full-session-uuid>/<slug>` addresses for nested worktrees; bare names address legacy flat worktrees. |
+| `finish` | `finish <name> [--dry-run]` | Evaluates completion and preserves or reclaims the worktree according to lifecycle gates. Use `<full-session-uuid>/<slug>` for nested worktrees. |
 | `doctor` | `doctor [--dry-run]` | Repairs deinitialized main-checkout submodules and reports stale registrations. |
 
 ## Verification Evidence
@@ -143,8 +143,8 @@ When hand-constructing a `transcript_path` for a manual hook invocation under Gi
 Measured on 2026-08-08:
 
 - `cargo test -p session-worktree-provision -p session-capture-hook` passed 56 tests across 5 suites. The repository state was identical before and after the run.
-- A live run of the installed binary with a brand-new session id and a nonexistent `transcript_path` exited 0 in 61 seconds, created and registered a worktree, and populated all 5 of 5 submodules. The same payload with `hook_event_name: "Stop"` provisioned nothing.
-- An earlier live run with a valid transcript and a brand-new session id exited 0 in 56 seconds, created both the worktree and session record, and populated all 5 of 5 submodules. Measured cold provisioning is therefore 56-61 seconds; the earlier 92-second cold run remains historical context. Wall-clock duration and worktree registration do not prove the required persisted assignment.
+- A live run of the installed binary with a brand-new session id and a nonexistent `transcript_path` exited 0 in 61 seconds, created a worktree, and populated all 5 of 5 submodules. The same payload with `hook_event_name: "Stop"` provisioned nothing.
+- An earlier live run with a valid transcript and a brand-new session id exited 0 in 56 seconds, created both the worktree and session record, and populated all 5 of 5 submodules. Measured cold provisioning is therefore 56-61 seconds; the earlier 92-second cold run remains historical context. Positional discovery, rather than a persisted main-checkout assignment, establishes the selected worktree.
 - A second identical invocation completed in 0.077 seconds, created nothing, and demonstrated reuse for the same session. Cleanup restored the baseline exactly.
 
 ## Known Gaps And Follow-Up

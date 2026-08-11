@@ -8,7 +8,7 @@ applyTo: "**"
 - `workspace_session_id` is a context-specific slug-plus-hex value in the form `<topic-slug>-<short-id>`. Read the current value from `.session/local/active_workspace_session.json`; never reuse a value printed by another session or copied from an example.
 - The session UUID is the context-specific `<session-uuid>` that keys the on-disk record directory `.session/sessions/<session-uuid>/`.
 - Several subcommands accept only `<session-uuid>` despite the flag name `--workspace-session-id`. For example, `./target/debug/session.exe subagent-rollups --workspace-session-id <session-uuid> --toon` requires the UUID, not `<workspace_session_id>`.
-- The worktree short-id is the first eight hex characters of `<session-uuid>`. Worktrees are therefore named `.worktrees/<session-short-id>-session`, never after the slug form.
+- New worktrees are named `.worktrees/<session-uuid>/<slug>` and branches are named `agent/<session-uuid>/<slug>`. Existing flat `.worktrees/<session-short-id>-<slug>` worktrees remain supported during transition and are not migrated. Positional discovery selects nested first; more than one valid slug directory for one UUID is `AmbiguousSessionWorktree`.
 
 ## Resolve Your Own Identity First
 
@@ -26,27 +26,27 @@ Fallback marker-file command, which returns the slug form only:
 jq -r '.workspace_session_id' .session/local/active_workspace_session.json
 ```
 
-Resolve the authoritative worktree binding for any session:
+Resolve the positionally discovered worktree for any session:
 
 ```bash
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. If no persisted assignment exists, lookup attempts unambiguous discovery of the session's worktree. No candidate returns `MissingSessionWorktree`; multiple candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. On either error, inspect registered worktrees and repair or create the session assignment before running mutations; do not proceed in the main checkout. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
+The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. Lookup discovers the worktree positionally: exactly one nested `.worktrees/<session-uuid>/<slug>` directory wins over a valid legacy flat candidate. No candidate returns `MissingSessionWorktree`; multiple valid candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. On either error, inspect the layouts described in [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) and repair or create the worktree before running mutations; do not proceed in the main checkout. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
 
 ## Opening Declaration
 
 The first substantive response must begin with the session declaration before any other content. Use this exact template:
 
 ```text
-session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<short-id>-<slug> | branch: agent/<short-id>-<slug>
+session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug>
 ```
 
 Resolve every placeholder from the current session; never copy an identifier, worktree, or branch from a previous transcript.
 
 ## Claim Order
 
-Checklist: bootstrap worktree, rename to the topic slug, `session_check_in`, `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is the canonical owner of the commands. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<short-id>-session` placeholder.
+Checklist: bootstrap worktree, rename to the topic slug, `session_check_in`, `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is the canonical owner of the commands. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<uuid>/session` placeholder.
 
 ### Check-in targets the worktree, not the main checkout
 
@@ -57,7 +57,7 @@ Mutations resolved against the main checkout are refused by `require_mutation_ta
 Every agent final response ends with this footer so lineage is greppable from the chat transcript alone, rather than only from the board and session store:
 
 ```
-session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<short-id>-<slug> | branch: agent/<short-id>-<slug> | ticket: <short-id> <title>
+session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug> | ticket: <short-id> <title>
 ```
 
 Resolve every placeholder from the current session and its claimed ticket; never copy values from a previous transcript or instruction example.
@@ -82,7 +82,7 @@ Resolve a session's worktree, branch, and ticket:
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The command returns the session assignment fields. `MissingSessionWorktree` or `AmbiguousSessionWorktree` means no authoritative binding is available; inspect the registered worktrees and repair or create the session assignment before continuing.
+The command returns the positionally discovered session-worktree fields. `MissingSessionWorktree` or `AmbiguousSessionWorktree` means no unambiguous worktree is available; inspect the nested and legacy layouts and repair or create the worktree before continuing.
 
 Inspect transcript shape before reading content:
 
