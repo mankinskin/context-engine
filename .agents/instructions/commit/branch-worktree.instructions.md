@@ -16,7 +16,7 @@ One implementation task, start to merge:
 2. **Claim** — the implementation agent checks in on the session store and the ticket board.
 3. **Work** — all edits, builds, and tests happen inside the worktree only.
 4. **Commit** — commits land on the feature branch, never on `main`.
-5. **Rebase** — the feature branch rebases onto the updated `main` and resolves every conflict on its own side.
+5. **Rebase** — in every affected submodule first, then in the superproject, the feature branch rebases onto that repository's updated `main` and resolves every conflict on its own side.
 6. **Mark ready** — the agent checks out of the board with a `ready-to-merge:` reason and moves the ticket to `in-review`.
 7. **Merge** — the root orchestrator session, and only it, fast-forwards `main` and tears the worktree down.
 
@@ -148,7 +148,14 @@ Commits land on the feature branch inside the worktree. [workflow.instructions.m
 
 ## 5. Rebase onto main
 
-Conflicts are resolved by the feature branch, never by the integrator. Before marking ready:
+Conflicts are resolved by the feature branch, never by the integrator. `worktree-ctl rebase` runs only the superproject's `git rebase main`; it is not submodule-aware. For every affected submodule, first run this manual sequence from the superproject root:
+
+```bash
+git -C <sm> checkout agent/<short-id>-<slug>
+git -C <sm> rebase main
+```
+
+Resolve each conflict on `agent/<short-id>-<slug>`, validate the submodule, and do not mark the change ready until every affected submodule rebase is clean. Then rebase the superproject feature branch:
 
 ```bash
 ./target/debug/worktree-ctl.exe rebase <name>
@@ -186,13 +193,42 @@ Then move the ticket to `in-review`. The `ready-to-merge:` prefix is the marker 
 
 **No implementation session ever merges into `main`.** The root orchestrator session holds the merge monopoly, because merge order across concurrent branches is a global decision and no worker session sees the other branches.
 
-Because the branch already rebased onto `main`, integration is a fast-forward and must be asserted as one:
+### Bottom-up integration sequence (canonical)
+
+The superproject records submodules as gitlinks. **Every gitlink recorded by the superproject MUST be contained in the corresponding submodule's `main` branch.** The prior failure treated the gitlink as the record of truth while the submodule branch was left behind, leaving orphaned commits reachable only through the gitlink and vulnerable to `git gc`.
+
+Never merge the superproject branch while any affected submodule branch is unmerged. For a change spanning submodules and the superproject, run this sequence from the superproject root:
+
+1. **Pin before rewriting history.** In each affected submodule, pin the feature tip before rebasing: `git -C <sm> branch rescue/pre-rebase-<short-sha> <sha>`. Also pin any recorded gitlink that will be superseded: `git -C <sm> branch rescue/gitlink-<short-sha> <gitlink-sha>`.
+2. **Integrate each affected submodule, deepest first.** Rebase `agent/<short-id>-<slug>` onto that submodule's `main`, resolve conflicts there, validate it, then fast-forward: `git -C <sm> checkout main && git -C <sm> merge --ff-only agent/<short-id>-<slug>`.
+3. **Bump gitlinks on the superproject feature branch.** Run `git add <sm>` for every merged submodule and commit the pointer updates, so the feature branch records each submodule's new `main` tip.
+4. **Verify containment before the superproject merge.** Run the invariant loop below; all five entries must print `ok`.
+5. **Rebase and integrate the superproject last.** Rebase `agent/<short-id>-<slug>` onto superproject `main`, resolve conflicts on the feature branch, then fast-forward superproject `main` with `git merge --ff-only agent/<short-id>-<slug>`.
+6. **Re-verify containment after the superproject merge.** Run the same loop again; all five entries must print `ok`.
 
 ```bash
-./target/debug/worktree-ctl.exe merge <name>
+for sm in context-stack memory-api memory-kernel memory-viewers viewer-api; do
+  link=$(git ls-tree HEAD "$sm" | awk '{print $3}')
+  if git -C "$sm" merge-base --is-ancestor "$link" main; then
+    echo "ok   $sm $link"
+  else
+    echo "BAD  $sm $link not contained in $sm main"
+  fi
+done
 ```
 
-For every branch-bearing nested submodule worktree, `merge` first checks out the corresponding main-checkout submodule's local `main` and fast-forwards it from the nested branch. Detached nested submodule worktrees are skipped because no branch exists to integrate. The helper then runs `git checkout main` and `git merge --ff-only agent/<short-id>-<slug>` in the superproject, so the resulting gitlink records the current local submodule `main` commit. Any submodule fast-forward failure stops integration before the superproject is merged. If the superproject `--ff-only` fails, `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
+`git submodule status` prefixes `+` when the checked-out submodule HEAD differs from the recorded gitlink and `-` when the submodule is uninitialized. A clean integration shows neither marker for any of the five submodules.
+
+`worktree-ctl merge` partially automates nested fast-forwards, but the manual sequence above is authoritative: neither `worktree-ctl rebase` nor `worktree-ctl merge` enforces the containment invariant.
+
+Because every affected branch has rebased onto its repository's `main`, each integration is a fast-forward and must be asserted as one:
+
+```bash
+git -C <sm> checkout main && git -C <sm> merge --ff-only agent/<short-id>-<slug>
+git checkout main && git merge --ff-only agent/<short-id>-<slug>
+```
+
+If any `--ff-only` fails, the target `main` moved after the branch rebased. Do not merge — send the branch back through step 5 for a fresh rebase. Never resolve a conflict on `main`.
 
 Tear down after a successful merge:
 
@@ -215,7 +251,7 @@ When the change touches a submodule:
 - Bootstrap must initialize every submodule the build needs, not just the one being edited. The root `Cargo.toml` lists workspace members inside several submodules, so `cargo` fails to load the workspace with `failed to read <submodule>/Cargo.toml` if any are left uninitialized.
 - Cut a matching `agent/<short-id>-<slug>` branch inside that submodule's checkout within the worktree before editing it.
 - Commit the submodule first, then the superproject pointer — the deepest-first rule in [submodule.instructions.md](submodule.instructions.md) is unchanged.
-- Rebase (step 5) and merge (step 7) apply to the submodule branch too: submodule first, superproject second.
+- Rebase (step 5) and merge (step 7) apply to the submodule branch too: follow the canonical bottom-up sequence above.
 
 ## Escalation triggers
 

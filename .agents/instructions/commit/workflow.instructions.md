@@ -13,10 +13,11 @@ git submodule foreach --recursive 'git status --short && echo "=== $name ==="'
 
 3. Stage in logical batches and commit each batch with an appropriate conventional commit message.
 
-4. Update submodule pointers last (deepest-first cadence).
+4. Update submodule pointers last (deepest-first cadence), then verify the gitlink invariant from [branch-worktree.instructions.md](./branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
 
 5. Verify clean state:
 
 git status --short
+git submodule status
 
-6. Rebase the feature branch onto the updated `main`, resolve any conflicts here rather than on `main`, re-run validation, then mark the branch ready to merge with a `board check-out` whose reason starts `ready-to-merge:`. The merge into `main` belongs to the root orchestrator session. See [branch-worktree.instructions.md](./branch-worktree.instructions.md).
+6. Rebase the feature branch onto updated `main` in every affected repository: each affected submodule first, then the superproject. Resolve conflicts on feature branches, re-run validation, run the invariant check in [branch-worktree.instructions.md](./branch-worktree.instructions.md#bottom-up-integration-sequence-canonical), then mark the branch ready to merge with a `board check-out` whose reason starts `ready-to-merge:`. The root orchestrator integrates bottom-up (submodules before the superproject); see [branch-worktree.instructions.md](./branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).

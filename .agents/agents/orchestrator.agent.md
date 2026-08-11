@@ -122,14 +122,14 @@ Every implementation unit you dispatch runs in its own git worktree on its own b
 
 This is the canonical invocation for the bootstrap sequence (`git worktree add .worktrees/<short-id>-<slug> -b agent/<short-id>-<slug> main`, branching directly from LOCAL `main` with no fetch and no origin dependency, then offline per-submodule linked-worktree population); pass `--dry-run` to preview it. Then pass the resolved worktree path and branch name in that sub-agent's context bundle. A worker left to derive its own worktree path will guess wrong, and a worker that lands in the repository root will overwrite another agent's uncommitted work. Initialize every submodule, not only the one being edited: the root `Cargo.toml` has workspace members inside several of them, and cargo cannot load the workspace while any are empty.
 
-**After the unit reports ready**, you hold the merge monopoly: no sub-agent ever merges into `main`, because merge order across concurrent branches is a global decision no worker can see. The branch has already rebased onto `main` and resolved its own conflicts, so integration must be a fast-forward and must be asserted as one:
+**After the unit reports ready**, you hold the merge monopoly: no sub-agent ever merges into `main`, because merge order across concurrent branches is a global decision no worker can see. Integrate every affected submodule branch bottom-up before the superproject branch, and run the gitlink invariant check before and after the superproject fast-forward. The complete ordered sequence is [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). The branch has already rebased onto `main` in every affected repository and resolved its own conflicts, so every integration must be a fast-forward:
 
 ```bash
 ./target/debug/worktree-ctl.exe merge <name>
 ./target/debug/worktree-ctl.exe remove <name>
 ```
 
-`merge` runs `git checkout main` then `git merge --ff-only agent/<short-id>-<slug>`, failing loudly rather than falling back to a real merge. `remove` runs `git worktree remove --force`, `git worktree prune`, then `git branch -d`. If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`. `--force` alone handles the worktree's initialized submodules and is safe once the merge above proves the branch is integrated — never add a `submodule deinit` step here: it rewrites the shared `.git/config` and silently deinitializes the main checkout's submodules too.
+`worktree-ctl merge` partially automates the fast-forwards but does not enforce the invariant; the canonical manual order remains authoritative. `remove` runs `git worktree remove --force`, `git worktree prune`, then `git branch -d`. If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`. `--force` alone handles the worktree's initialized submodules and is safe once the merge above proves the branch is integrated — never add a `submodule deinit` step here: it rewrites the shared `.git/config` and silently deinitializes the main checkout's submodules too.
 
 Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
 
@@ -154,7 +154,7 @@ Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-w
   context for planning and aggregation. Deviating from the ladder is allowed —
   deviating silently is not.
 - Keep sub-agent scopes small and their return contracts compact.
-- Bootstrap a worktree and branch before every implementation dispatch, and merge into `main` yourself — never delegate the merge, and never let a worker touch `main`.
+- Bootstrap a worktree and branch before every implementation dispatch, and integrate bottom-up into `main` yourself — never delegate the merge, and never let a worker touch `main`.
 - Do not narrate obvious next dispatches; spend reasoning budget on
   decomposition, reconciliation, and decisions.
 

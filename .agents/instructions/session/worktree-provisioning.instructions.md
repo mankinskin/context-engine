@@ -131,8 +131,8 @@ When hand-constructing a `transcript_path` for a manual hook invocation under Gi
 |---|---|---|
 | `new` | `new <short-id> <slug> [--allow-additional] [--preserve-main-changes] [--dry-run]` | Creates `.worktrees/<short-id>-<slug>` and `agent/<short-id>-<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
 | `list` | `list [--dry-run]` | Lists `.worktrees` entries, branches, submodule initialization, and unregistered debris. |
-| `rebase` | `rebase <name> [--dry-run]` | Rebases the worktree branch onto local `main`; stops on conflict. |
-| `merge` | `merge <name> [--dry-run]` | Fast-forwards nested submodule branches and then the superproject into `main`. |
+| `rebase` | `rebase <name> [--dry-run]` | Rebases only the superproject worktree branch onto local `main`; stops on conflict. |
+| `merge` | `merge <name> [--dry-run]` | Partially automates nested submodule fast-forwards and then the superproject fast-forward; it does not enforce gitlink containment. |
 | `remove` | `remove <name> [--force] [--dry-run]` | Refuses dirty worktrees unless forced, then removes the worktree, prunes registrations, and deletes the merged branch. |
 | `rename` | `rename <source-name> <target-name> [--dry-run]` | Re-topics a clean worktree through filesystem relocation, repair, and branch rename. |
 | `finish` | `finish <name> [--dry-run]` | Evaluates completion and preserves or reclaims the worktree according to lifecycle gates. |
@@ -157,4 +157,4 @@ Ticket `5e6cf4f8` owns the completed `worktree-ctl` migration and retirement of 
 
 ## Manual Lifecycle Protocol
 
-Automatic provisioning only establishes or reuses the isolated checkout. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) owns the manual lifecycle: claim the session and board, work and commit on the feature branch, rebase onto local `main`, mark ready to merge, and leave merging to the root orchestrator.
+Automatic provisioning only establishes or reuses the isolated checkout. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical) owns the manual lifecycle: claim the session and board, work and commit on the feature branch, rebase affected submodules then the superproject onto local `main`, mark ready to merge, and leave bottom-up integration to the root orchestrator.
