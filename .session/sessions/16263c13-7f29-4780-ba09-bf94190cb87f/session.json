@@ -3,11 +3,15 @@
   "session_id": "16263c13-7f29-4780-ba09-bf94190cb87f",
   "source": "copilot-hook",
   "started_at": "2026-08-10T14:02:31.746Z",
-  "captured_at": "2026-08-10T14:35:40.567Z",
+  "captured_at": "2026-08-11T12:47:05.353Z",
   "metadata": {
     "workspace_slug": "default",
     "agent_id": "copilot-agent",
     "trigger": "PostToolUse",
+    "provisioning": {
+      "outcome": "reused",
+      "hook_event_name": "UserPromptSubmit"
+    },
     "producer": "copilot-agent",
     "copilot_version": "0.60.0",
     "vscode_version": "1.132.0",
