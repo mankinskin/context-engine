@@ -74,6 +74,15 @@ cat > "$workdir/.github/hooks/hooks.json" <<'HOOKS'
 }
 HOOKS
 
+# Repo-level hooks load only when the fixture directory is a Git repository.
+(
+    cd "$workdir"
+    git init --quiet
+    git config user.email "hook@example.com"
+    git config user.name "hook"
+    git commit --quiet --allow-empty -m init
+)
+
 # The prompt deliberately forces a tool call so PreToolUse and PostToolUse fire
 # in addition to the session-lifecycle events.
 prompt='Run the shell command `echo hook-fixture-probe` and then reply with only the word done.'

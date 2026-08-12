@@ -28,6 +28,12 @@
         "command": "bash tools/agent-hooks/preflight-write.sh",
         "cwd": ".",
         "timeout": 30
+      },
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "cwd": ".",
+        "timeout": 120
       }
     ],
     "PostToolUse": [
