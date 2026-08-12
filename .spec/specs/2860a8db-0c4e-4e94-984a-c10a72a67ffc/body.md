@@ -149,18 +149,13 @@ An implementation agent needs a stable way to identify the active session, its i
 
 If this specification is implemented, dependents can rely on agents resolving and declaring the authoritative per-session UUID, worktree path, and branch before substantive work; on cross-session handoffs consulting durable records before bounded transcript evidence; and on tools receiving the identifier form required by the selected command.
 
-### R1: Dual identity and identifier discipline
+### R1: UUID identity and identifier discipline
 
-The system exposes two identifiers that agents MUST NOT conflate:
-
-1. `workspace_session_id` is a slug-plus-hex logical workspace identifier, `<slug>-<session-short-id>`. Its local source of truth is `.session/local/active_workspace_session.json`, whose only keys are `workspace_session_id` and `updated_at`.
-2. The per-session identifier is a UUID, for example `16263c13-7f29-4780-ba09-bf94190cb87f`, and keys the record directory `.session/sessions/<uuid>/`.
-
-CLI parameter names do not supersede this identity distinction. Some commands accept only the UUID form: `session.exe subagent-rollups --workspace-session-id epic-kickoff-8fdfe135` reports `session data was not found`, while the same command with the UUID succeeds. Agents MUST use the identifier form verified for the command being invoked.
+The Copilot session UUID is the only session identifier. The UUID comes from the Copilot hook payload, keys `.session/sessions/<uuid>/`, and must be supplied explicitly to session operations. Slug-shaped values are rejected; no marker file or other fallback resolves a session identity.
 
 ### R2: Self-identification before substantive work
 
-Before the first substantive action, an agent MUST resolve its own identity with `./target/debug/session.exe init --workspace . --toon`. The command returns `context.session_id`, `context.workspace_session_id`, `active_run_id`, and `runs[]`. When the CLI surface is unavailable, the agent MAY read `workspace_session_id` from `.session/local/active_workspace_session.json` as a fallback, while treating a UUID lookup as separately required where the target command requires one.
+Before the first substantive action, an agent MUST obtain its UUID from the Copilot hook payload and pass the UUID explicitly to `./target/debug/session.exe init --session-id <uuid> --workspace . --toon`. The command returns `context.session_id`, `active_run_id`, and `runs[]`; no fallback session-identity resolution exists when the CLI surface is unavailable.
 
 ### R3: Authoritative worktree binding
 
@@ -182,23 +177,23 @@ The inspection surfaces are:
 - `./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon` returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`.
 - `./target/debug/session.exe peek-skeleton --session-id <uuid> --preview-chars N --toon` returns `total_turns` and `entries[]{sequence,role,preview,content_len}`.
 - `./target/debug/session.exe peek-range --session-id <uuid> --start N --end M --toon` returns `turns[]{sequence,role,content}`.
-- `./target/debug/session.exe subagent-rollups --workspace-session-id <uuid> --toon` returns per-run turn, tool-call, and token counts.
+- `./target/debug/session.exe subagent-rollups --session-id <uuid> --toon` returns per-run turn, tool-call, and token counts.
 
 Prior handoff packages are read from `.session/sessions/<uuid>/handoffs/<handoff-id>/handoff.json` and `handoff.md`. There is no read subcommand: `session.exe handoff` is write-only and requires `--objective`, `--higher-level-objective`, and at least one `--upward-context` JSON entry.
 
 ### Guards and Evidence
 
-The implementation and guidance evidence must demonstrate the identifier distinction with the successful UUID `subagent-rollups` invocation and the failing slug-plus-hex invocation; capture `session.exe init` and `session.exe lookup` TOON output; and demonstrate durable-artifact-first inspection using `sessions-for-ticket`, `peek-skeleton`, and a bounded `peek-range` call. A review of the first and final agent responses must confirm the UUID, worktree path, and branch are declared in both locations.
+The implementation and guidance evidence must demonstrate the successful UUID `subagent-rollups` invocation and rejection of a slug-shaped value; capture `session.exe init` and `session.exe lookup` TOON output; and demonstrate durable-artifact-first inspection using `sessions-for-ticket`, `peek-skeleton`, and a bounded `peek-range` call. A review of the first and final agent responses must confirm the UUID, worktree path, and branch are declared in both locations.
 
 ### Positions
 
-- `partial` — `.session/local/active_workspace_session.json` and the session CLI provide the identity and inspection surfaces; ticket [7be23bd8 Agent session identity, worktree traceability, and prior-session inspection protocol](.ticket/tickets/7be23bd8-9793-4f86-a96d-403824f8af94/ticket.toml) owns the guidance contract that makes agents use them consistently.
+- `implemented` — the Copilot hook payload and session CLI provide the UUID identity and inspection surfaces; ticket [7be23bd8 Agent session identity, worktree traceability, and prior-session inspection protocol](.ticket/tickets/7be23bd8-9793-4f86-a96d-403824f8af94/ticket.toml) owns the guidance contract that makes agents use them consistently.
 - `implemented` — [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md) owns worktree claim and rename commands.
 - `implemented` — [worktree-provisioning.instructions.md](.agents/instructions/session/worktree-provisioning.instructions.md), [session-artifacts.instructions.md](.agents/instructions/orchestration/session-artifacts.instructions.md), and [write-and-die.instructions.md](.agents/instructions/orchestration/write-and-die.instructions.md) define neighboring provisioning, durable-artifact, and worker-lifecycle guidance.
 
 ### Governing-rule Requirement
 
-The guidance introduced for ticket 7be23bd8 must introduce this specification's dual-identity, response-traceability, and durable-artifact-first requirements in each agent session. The governing guidance must defer worktree command ownership to [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md).
+The guidance introduced for ticket 7be23bd8 must introduce this specification's UUID-identity, response-traceability, and durable-artifact-first requirements in each agent session. The governing guidance must defer worktree command ownership to [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md).
 
 ### Explicit Non-goals and Known Defect
 

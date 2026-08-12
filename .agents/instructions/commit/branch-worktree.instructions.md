@@ -126,7 +126,7 @@ If `session_check_in` reports a worktree conflict, or the board shows the ticket
 
 ### Entity stores are worktree-local
 
-The active-session marker is `.session/local/active_workspace_session.json` inside the assigned worktree. Read and write that marker only through the assigned worktree; the main checkout marker is not active session state for an implementation session.
+The active-session marker no longer exists. The assigned worktree's `.session/sessions/<session-uuid>/session.json` manifest carries runtime state, and agents supply the Copilot session UUID explicitly from the hook payload.
 
 `.session`, `.ticket`, and `.spec` are version-controlled, so every worktree carries its own copy. The active copy is the one **inside the session's worktree**. The main checkout's copies are a merge target: they become current only when a branch merges, never by direct edit.
 

@@ -23,7 +23,7 @@ The main checkout's `.session/sessions/<session-uuid>/session.json` assignment r
 
 # Worktree-Local Session State
 
-For a nested worktree, the active-session marker is `.worktrees/<full-session-uuid>/<slug>/.session/local/active_workspace_session.json`. For a legacy worktree, the marker remains `<legacy-worktree>/.session/local/active_workspace_session.json`. The main checkout marker is never read or written for worktree discovery or active-session state under this contract.
+No active-session marker exists in either worktree layout. Runtime state is persisted in the UUID-owned `.session/sessions/<session-uuid>/session.json` manifest, and agents supply the Copilot session UUID explicitly from the hook payload. The main checkout does not read or write a marker for worktree discovery or active-session state under this contract.
 
 `.session/` remains git-tracked. Records produced in a worktree are committed on that worktree's feature branch and reach `main` only through the ordinary branch merge path.
 

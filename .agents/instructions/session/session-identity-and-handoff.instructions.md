@@ -3,28 +3,22 @@ description: "Use at the start of and at the end of every session, and whenever 
 applyTo: "**"
 ---
 
-## Two Identifiers, Never Conflated
+## Single Session Identifier
 
-- `workspace_session_id` is a context-specific slug-plus-hex value in the form `<topic-slug>-<short-id>`. Read the current value from `.session/local/active_workspace_session.json`; never reuse a value printed by another session or copied from an example.
-- The session UUID is the context-specific `<session-uuid>` that keys the on-disk record directory `.session/sessions/<session-uuid>/`.
-- Several subcommands accept only `<session-uuid>` despite the flag name `--workspace-session-id`. For example, `./target/debug/session.exe subagent-rollups --workspace-session-id <session-uuid> --toon` requires the UUID, not `<workspace_session_id>`.
+- The Copilot session UUID is the only session identifier. The UUID comes from the Copilot hook payload and keys the on-disk record directory `.session/sessions/<session-uuid>/`.
+- Session IDs must be UUIDs. A slug-shaped value is rejected; session identity must always be supplied explicitly, with no marker-file or other fallback.
+- Runtime state (`active_run_id`, `runs`, `pinned_entities`, and `workflow`) lives in `.session/sessions/<session-uuid>/session.json`.
 - New worktrees are named `.worktrees/<session-uuid>/<slug>` and branches are named `agent/<session-uuid>/<slug>`. Existing flat `.worktrees/<session-short-id>-<slug>` worktrees remain supported during transition and are not migrated. Positional discovery selects nested first; more than one valid slug directory for one UUID is `AmbiguousSessionWorktree`.
 
 ## Resolve Your Own Identity First
 
-Primary command, which returns both identifiers at once:
+Obtain the UUID from the Copilot hook payload and supply it explicitly. The primary command initializes or resumes the UUID-owned runtime state:
 
 ```bash
-./target/debug/session.exe init --workspace . --toon
+./target/debug/session.exe init --session-id <uuid> --workspace . --toon
 ```
 
-The result contains `context.session_id`, `context.workspace_session_id`, `active_run_id`, and `runs[]`.
-
-Fallback marker-file command, which returns the slug form only:
-
-```bash
-jq -r '.workspace_session_id' .session/local/active_workspace_session.json
-```
+The result contains `context.session_id`, `active_run_id`, and `runs[]`. There is no fallback session-identity resolution.
 
 Resolve the positionally discovered worktree for any session:
 
@@ -39,7 +33,7 @@ The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `bran
 The first substantive response must begin with the session declaration before any other content. Use this exact template:
 
 ```text
-session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug>
+session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug>
 ```
 
 Resolve every placeholder from the current session; never copy an identifier, worktree, or branch from a previous transcript.
@@ -57,7 +51,7 @@ Mutations resolved against the main checkout are refused by `require_mutation_ta
 Every agent final response ends with this footer so lineage is greppable from the chat transcript alone, rather than only from the board and session store:
 
 ```
-session: <uuid> (<workspace_session_id>) | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug> | ticket: <short-id> <title>
+session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug> | ticket: <short-id> <title>
 ```
 
 Resolve every placeholder from the current session and its claimed ticket; never copy values from a previous transcript or instruction example.
@@ -103,7 +97,7 @@ The command returns `turns[]{sequence,role,content}`. Keep the window small and 
 Inspect what sub-agents cost and did:
 
 ```bash
-./target/debug/session.exe subagent-rollups --workspace-session-id <uuid> --toon
+./target/debug/session.exe subagent-rollups --session-id <uuid> --toon
 ```
 
 The command returns per-run `turn_count`, `tool_call_count`, `input_tokens`, `output_tokens`, `cache_read_tokens`, and `cache_write_tokens`.
