@@ -153,7 +153,7 @@ If this specification is implemented, dependents can rely on agents resolving an
 
 The system exposes two identifiers that agents MUST NOT conflate:
 
-1. `workspace_session_id` is a slug-plus-hex logical workspace identifier, for example `epic-kickoff-8fdfe135`. Its local source of truth is `.session/local/active_workspace_session.json`, whose only keys are `workspace_session_id` and `updated_at`.
+1. `workspace_session_id` is a slug-plus-hex logical workspace identifier, `<slug>-<session-short-id>`. Its local source of truth is `.session/local/active_workspace_session.json`, whose only keys are `workspace_session_id` and `updated_at`.
 2. The per-session identifier is a UUID, for example `16263c13-7f29-4780-ba09-bf94190cb87f`, and keys the record directory `.session/sessions/<uuid>/`.
 
 CLI parameter names do not supersede this identity distinction. Some commands accept only the UUID form: `session.exe subagent-rollups --workspace-session-id epic-kickoff-8fdfe135` reports `session data was not found`, while the same command with the UUID succeeds. Agents MUST use the identifier form verified for the command being invoked.
