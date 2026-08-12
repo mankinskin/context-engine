@@ -7,7 +7,7 @@ set -uo pipefail
 capture_dir="${SESSION_HOOK_CAPTURE_DIR:-.session/local/hook-captures}"
 
 if [[ "${SESSION_HOOK_CAPTURE:-1}" == "0" ]]; then
-    exec session-capture-hook --from-hook-stdin
+    session-capture-hook --from-hook-stdin
 fi
 
 mkdir -p "$capture_dir"
@@ -24,4 +24,4 @@ capture_path="$capture_dir/$event.json"
 mv "$temporary_capture" "$capture_path"
 trap - EXIT
 
-exec session-capture-hook --from-hook-stdin < "$capture_path"
+session-capture-hook --from-hook-stdin < "$capture_path"
