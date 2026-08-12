@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "session_id": "b3bd7c08-7dcc-4ba6-9718-05bff1365cf7",
+  "source": "session-runtime-init",
+  "started_at": "2026-08-12T20:09:48.347344600Z",
+  "captured_at": "2026-08-12T22:58:26.283267500Z",
+  "metadata": {
+    "workspace_slug": "default",
+    "trigger": "session-runtime-init"
+  },
+  "links": {},
+  "active_run_id": "994c5fa9-90a2-46e7-801e-05c195025fb7",
+  "runs": [
+    {
+      "run_id": "994c5fa9-90a2-46e7-801e-05c195025fb7",
+      "captured_session_id": "b3bd7c08-7dcc-4ba6-9718-05bff1365cf7",
+      "started_at": "2026-08-12T20:09:48.347344600Z"
+    }
+  ],
+  "pinned_entities": [
+    {
+      "urn": "ce://default/ticket/8f94b367-da11-4c59-9dbd-783700f36056",
+      "kind": "ticket",
+      "relation": "goal",
+      "reason": "PRIMARY GOAL: fresh clone -> fully usable repo in one documented step, zero errors",
+      "pinned_at": "2026-08-12T20:09:56.806834600Z",
+      "last_used_at": "2026-08-12T20:09:56.806834600Z"
+    }
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "node_id": "f1-peek-cli",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "F1: README first command fails - peek-cli missing from install-tools.sh tool_names",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T21:11:41.640356500Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "f2-rule-store",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "F2: rule CLI installed but .rule store never initialized",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T21:11:41.666849700Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "f3-untracked-scripts",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "F3: init.sh and setup_git.sh untracked and undocumented",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T21:11:41.689799100Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "f4-missing-clis",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "F4: test-cli, context-cli, fs-cli, compact-terminal-cli never installed",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T21:11:41.713544200Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "f5-cargo-make",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "F5: cargo-make required by instructions but not installed",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T21:12:01.237445700Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "f6-no-getting-started",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "F6: README has no ordered first-run sequence",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T21:12:03.523900700Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "f7-session-mcp",
+        "kind": "task",
+        "requirement": "optional",
+        "status": "done",
+        "title": "F7: session-mcp tools reject valid session_id parameter (CLI works)",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T22:58:23.522518Z",
+        "category": "friction"
+      },
+      {
+        "node_id": "goal",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Fresh clone -> usable repo in one documented step, zero errors",
+        "created_at": "2026-08-12T20:10:36.837122600Z",
+        "updated_at": "2026-08-12T22:58:26.283267500Z",
+        "ticket_urn": "ce://default/ticket/8f94b367-da11-4c59-9dbd-783700f36056",
+        "cached_ticket_title": "[onboarding] Fresh-clone bootstrap must work in one documented step without errors"
+      }
+    ],
+    "edges": [
+      {
+        "from": "f1-peek-cli",
+        "to": "goal",
+        "kind": "depends-on"
+      },
+      {
+        "from": "f2-rule-store",
+        "to": "goal",
+        "kind": "depends-on"
+      },
+      {
+        "from": "f3-untracked-scripts",
+        "to": "goal",
+        "kind": "depends-on"
+      },
+      {
+        "from": "f4-missing-clis",
+        "to": "goal",
+        "kind": "depends-on"
+      },
+      {
+        "from": "f5-cargo-make",
+        "to": "goal",
+        "kind": "depends-on"
+      },
+      {
+        "from": "f6-no-getting-started",
+        "to": "goal",
+        "kind": "depends-on"
+      },
+      {
+        "from": "f7-session-mcp",
+        "to": "goal",
+        "kind": "depends-on"
+      }
+    ]
+  }
+}
