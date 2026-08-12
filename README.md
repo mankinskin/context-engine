@@ -52,7 +52,7 @@ memory-viewers child READMEs:
 
 ## Installable Tools
 
-The shared installer in [install-tools.sh](install-tools.sh) refreshes the executable Rust binaries and installable tooling surfaced by this repository.
+The shared installer in [install-tools.sh](install-tools.sh) refreshes the 30 executable Rust binaries and installable tooling surfaced by this repository.
 
 Install the complete MCP server set used by VS Code with:
 

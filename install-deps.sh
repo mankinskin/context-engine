@@ -16,8 +16,14 @@ source "$common_install_helpers"
 dependency_names=(
     ripgrep
     rtk
-  trunk
-  cargo-llvm-cov
+    trunk
+    cargo-llvm-cov
+    cargo-make
+)
+
+optional_dependency_names=(
+    trunk
+    cargo-llvm-cov
     cargo-make
 )
 
@@ -91,6 +97,9 @@ Supported dependencies:
   cargo-llvm-cov
     cargo-make
 
+Failure policy:
+    ripgrep and rtk are essential. trunk, cargo-llvm-cov, and cargo-make warn on failure.
+
 Environment:
   INSTALL_DEPS             Comma-separated dependency list used when none are passed.
 
@@ -106,6 +115,7 @@ EOF
 selected_dependencies=()
 installed_dependencies=()
 failed_dependencies=()
+optional_failed_dependencies=()
 dry_run=0
 
 while [[ $# -gt 0 ]]; do
@@ -178,24 +188,23 @@ install_one() {
 
     case "$dependency" in
         ripgrep)
-            command=(cargo install ripgrep --quiet --force)
+            command=(cargo install ripgrep --locked --quiet --force)
             ;;
         rtk)
-            command=(cargo install --git https://github.com/rtk-ai/rtk --quiet --force)
+            command=(cargo install --git https://github.com/rtk-ai/rtk --locked --quiet --force)
             ;;
         trunk)
-            command=(cargo install trunk --quiet --force)
+            command=(cargo install trunk --locked --quiet --force)
             ;;
         cargo-llvm-cov)
-            command=(cargo install cargo-llvm-cov --quiet --force)
+            command=(cargo install cargo-llvm-cov --locked --quiet --force)
             post_command=(rustup component add llvm-tools-preview)
             ;;
         cargo-make)
-            command=(cargo install cargo-make --quiet --force)
+            command=(cargo install cargo-make --locked --quiet --force)
             ;;
         *)
             printf 'error: unsupported dependency: %s\n' "$dependency" >&2
-            failed_dependencies+=("$dependency")
             return 1
             ;;
     esac
@@ -232,14 +241,25 @@ install_one() {
         return 0
     fi
 
-    failed_dependencies+=("$dependency")
     printf 'error: install failed for %s\n' "$dependency" >&2
     return 1
 }
 
 for dependency in "${selected_dependencies[@]}"; do
-    install_one "$dependency" || true
+    if ! install_one "$dependency"; then
+        if contains_dependency "$dependency" "${optional_dependency_names[@]}"; then
+            optional_failed_dependencies+=("$dependency")
+        else
+            failed_dependencies+=("$dependency")
+        fi
+    fi
 done
+
+if [[ ${#optional_failed_dependencies[@]} -gt 0 ]]; then
+    printf 'warning: optional dependencies unavailable: '
+    print_joined_items "${optional_failed_dependencies[@]}"
+    printf '\n'
+fi
 
 if ! installer_print_summary "${#selected_dependencies[@]}" installed_dependencies failed_dependencies "./install-deps.sh" "./install-deps.sh --help"; then
     exit 1

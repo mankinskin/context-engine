@@ -18,19 +18,14 @@ case $# in
 esac
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cargo_bin_dir="${CARGO_HOME:-$HOME/.cargo}/bin"
-if [[ ! -f "$cargo_bin_dir/audit" && ! -f "$cargo_bin_dir/audit.exe" ]]; then
-  IFS=: read -r -a path_entries <<< "$PATH"
-  for path_entry in "${path_entries[@]}"; do
-    if [[ -f "$path_entry/audit" || -f "$path_entry/audit.exe" ]]; then
-      cargo_bin_dir="$path_entry"
-      break
-    fi
-  done
+if [[ -n "${CARGO_INSTALL_ROOT:-}" ]]; then
+  cargo_bin_dir="$CARGO_INSTALL_ROOT/bin"
+else
+  cargo_bin_dir="${CARGO_HOME:-$HOME/.cargo}/bin"
 fi
 binaries=(
   audit compact-terminal compact-terminal-mcp context-cli context-mcp doc-viewer
-  feedback feedback-mcp fs fs-mcp install-ctl log-viewer mcp-toolmon peek
+  audit-mcp feedback feedback-mcp fs fs-mcp install-ctl log-viewer mcp-toolmon peek
   peek-mcp rule rule-mcp session session-capture-hook session-mcp spec spec-mcp
   spec-viewer test test-mcp ticket ticket-mcp ticket-viewer worktree-ctl
 )
