@@ -4,6 +4,11 @@ context-engine is the top-level workspace that coordinates the graph crates in `
 
 ## Getting Started
 
+Before step 1, install Git, a Rust toolchain with `cargo` and `rustup`, and a
+Bash shell (Git Bash on Windows). Node/npm are not required for this bootstrap
+or the Trunk-based viewer frontends. `install-deps.sh` installs `ripgrep`,
+`rtk`, `trunk`, `cargo-llvm-cov` (and `llvm-tools-preview`), and `cargo-make`.
+
 From a fresh clone, run the bootstrap commands in order:
 
 ```bash
@@ -60,7 +65,8 @@ running Cargo for each request. Ensure Cargo's binary directory (`$HOME/.cargo/b
 on Unix or `%USERPROFILE%\\.cargo\\bin` on Windows) is on the `PATH` inherited by
 VS Code, then run `Developer: Reload Window` to restart and rediscover the servers.
 
-The companion installer in [install-deps.sh](install-deps.sh) installs repo-wide developer dependencies such as `ripgrep` and `rtk`.
+The companion installer in [install-deps.sh](install-deps.sh) installs the
+repo-wide developer dependencies listed in [Getting Started](#getting-started).
 
 The companion installer in [install-extensions.sh](install-extensions.sh) packages and installs the workspace's VS Code extensions into your local VS Code profile:
 
