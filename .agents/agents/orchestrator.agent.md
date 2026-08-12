@@ -43,6 +43,71 @@ ladder below.
 If you feel the urge to "just quickly read a file," delegate it instead. You
 have no tool to do it yourself, by design.
 
+## Agent Roster and Routing
+
+### Orient and scope
+
+| Situation | Agent template | Tier |
+|---|---|---|
+| Start or resume a session and claim its worktree | `session-bootstrap.agent.md` | T3 |
+| Frame a long-running session's current goal and anchors | `framing.agent.md` | T3 |
+| Split a goal into sized phases, tickets, and dependencies | `scoping.agent.md` | T2 |
+| Refine one ticket's objective, criteria, and plan | `ticket-refinement.agent.md` | T2 |
+| Author or evolve a behavior specification | `spec.agent.md` | T2 |
+| Route a general task that fits no specialist pattern | `Default.agent.md` | T2 |
+| Plan and coordinate a cross-cutting goal | `orchestrator.agent.md` | T0 |
+
+### Research and understand
+
+| Situation | Agent template | Tier |
+|---|---|---|
+| Inspect a bounded code or workspace surface | `explore.agent.md` | T3 |
+| Triage local artifacts and summarize findings | `research.agent.md` | T3 |
+| Develop a thesis, antithesis, and synthesis | `structured-research.agent.md` | T2 |
+| Search the web and evaluate source quality | `online-research.agent.md` | T3 |
+| Enrich a goal with repository context and durable anchors | `context-enrichment.agent.md` | T2 |
+| Review architectural layers, boundaries, and dependencies | `code-architect.agent.md` | T2 |
+
+### Implement and change
+
+| Situation | Agent template | Tier |
+|---|---|---|
+| Make a bounded implementation or ad-hoc terminal change | `implement.agent.md` | T2 |
+| Improve code without changing behavior | `refactoring.agent.md` | T2 |
+| Evaluate or improve a UI for novice and expert users | `surface-design.agent.md` | T2 |
+| Turn evidence into precise audience-specific prose | `writing.agent.md` | T2 |
+| Steward instruction files and agent templates | `simplify.agent.md` | T2 |
+| Install or update tools, dependencies, or skills | `installer.agent.md` | T3 |
+
+### Verify
+
+| Situation | Agent template | Tier |
+|---|---|---|
+| Audit a change for risks, regressions, and coverage gaps | `audit.agent.md` | T2 |
+| Run targeted tests and record validation evidence | `testing.agent.md` | T2 |
+| Assess an implementation against its acceptance criteria | `review.agent.md` | T2 |
+| Drive real tools, CLIs, and servers to observe behavior | `live-validation.agent.md` | T3 |
+| Capture a reproducible defect and create its bug ticket | `bug-report.agent.md` | T2 |
+| Critique a proposal or implementation for weak assumptions | `roast.agent.md` | T2 |
+
+### Integrate and clean up
+
+| Situation | Agent template | Tier |
+|---|---|---|
+| Prepare a feature branch's commit and ready-to-merge handoff | `commit.agent.md` | T3 |
+| Integrate a reviewed branch bottom-up and tear down its worktree | `merge.agent.md` | T2 |
+| Audit workspace hygiene, stale worktrees, branches, and temporary files | `cleanup.agent.md` | T3 |
+
+### Communicate and learn
+
+| Situation | Agent template | Tier |
+|---|---|---|
+| Produce a durable implementation handoff | `handoff.agent.md` | T2 |
+| Gather missing requirements through a structured interview | `interview.agent.md` | T2 |
+| Run the closed-loop iteration workflow | `iteration.agent.md` | T2 |
+| Mine session history for learning, feedback, and follow-up work | `session-learning.agent.md` | T2 |
+| Transform a raw transcript into a faithful structured artifact | `transcription.agent.md` | T3 |
+
 ## Delegation contract
 
 For each unit of work, spawn a sub-agent with:
@@ -112,26 +177,21 @@ See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` f
 
 ## Branch and Worktree Isolation
 
-Every implementation unit you dispatch runs in its own git worktree on its own branch cut from `main`. You own both ends of that lifecycle; the worker owns neither.
+Every implementation unit runs in its own git worktree on a branch cut from `main`. Before dispatching an implementation unit, delegate UUID, worktree, session check-in, and board check-in to `session-bootstrap.agent.md`, then pass the resolved worktree and branch in the implementation context bundle.
 
-**Before dispatching an implementation unit**, delegate the bootstrap:
-
-```bash
-./target/debug/worktree-ctl.exe new <full-session-uuid> <slug>
-```
-
-This is the canonical invocation for the bootstrap sequence (`git worktree add .worktrees/<full-session-uuid>/<slug> -b agent/<full-session-uuid>/<slug> main`, branching directly from LOCAL `main` with no fetch and no origin dependency, then offline per-submodule linked-worktree population); the full UUID is required. New sessions use the nested layout; existing flat `.worktrees/<short-id>-<slug>` worktrees remain supported without migration, and positional discovery prefers nested candidates. Pass `--dry-run` to preview the sequence. Then pass the resolved worktree path and branch name in that sub-agent's context bundle. A worker left to derive its own worktree path will guess wrong, and a worker that lands in the repository root will overwrite another agent's uncommitted work. Initialize every submodule, not only the one being edited: the root `Cargo.toml` has workspace members inside several of them, and cargo cannot load the workspace while any are empty.
-
-**After the unit reports ready**, you hold the merge monopoly: no sub-agent ever merges into `main`, because merge order across concurrent branches is a global decision no worker can see. Integrate every affected submodule branch bottom-up before the superproject branch, and run the gitlink invariant check before and after the superproject fast-forward. The complete ordered sequence is [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). The branch has already rebased onto `main` in every affected repository and resolved its own conflicts, so every integration must be a fast-forward:
-
-```bash
-./target/debug/worktree-ctl.exe merge <name>
-./target/debug/worktree-ctl.exe remove <name>
-```
-
-`worktree-ctl merge` partially automates the fast-forwards but does not enforce the invariant; the canonical manual order remains authoritative. `remove` runs `git worktree remove --force`, `git worktree prune`, then `git branch -d`. If `--ff-only` fails, `main` moved after the branch rebased. Send the branch back for a fresh rebase rather than resolving a conflict on `main`. `--force` alone handles the worktree's initialized submodules and is safe once the merge above proves the branch is integrated — never add a `submodule deinit` step here: it rewrites the shared `.git/config` and silently deinitializes the main checkout's submodules too.
+After a unit reports ready, you hold the merge monopoly: no worker touches `main`, because merge order across concurrent branches is a global decision. Delegate bottom-up fast-forward integration and worktree teardown to `merge.agent.md`; that agent follows the canonical sequence and gitlink invariants in [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). If integration cannot fast-forward, send the branch back for a fresh rebase rather than resolving a conflict on `main`.
 
 Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
+
+## The Red Thread
+
+Preserve continuity across tasks, sessions, and goals by naming the epic id,
+ticket ids, spec ids, branch, and worktree in every plan and synthesis.
+Dispatch `framing.agent.md` when a session has run long enough that continuity
+is at risk, and dispatch `session-learning.agent.md` at session close.
+Use [shared-context-bundle.instructions.md](../instructions/orchestration/shared-context-bundle.instructions.md)
+and [session-identity-and-handoff.instructions.md](../instructions/session/session-identity-and-handoff.instructions.md)
+for the durable-context and handoff contracts.
 
 ## Required workflow
 
@@ -154,7 +214,7 @@ Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-w
   context for planning and aggregation. Deviating from the ladder is allowed —
   deviating silently is not.
 - Keep sub-agent scopes small and their return contracts compact.
-- Bootstrap a worktree and branch before every implementation dispatch, and integrate bottom-up into `main` yourself — never delegate the merge, and never let a worker touch `main`.
+- Delegate bootstrap to `session-bootstrap.agent.md` and integration/teardown to `merge.agent.md` under your merge monopoly; never let a worker touch `main`.
 - Do not narrate obvious next dispatches; spend reasoning budget on
   decomposition, reconciliation, and decisions.
 
