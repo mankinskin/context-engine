@@ -13,5 +13,309 @@
     "vscode_version": "1.130.0",
     "protocol_version": 1
   },
-  "links": {}
+  "links": {},
+  "active_run_id": "a4ec3d56-95d2-44f2-8146-a6a445fc90ec",
+  "runs": [
+    {
+      "run_id": "a4ec3d56-95d2-44f2-8146-a6a445fc90ec",
+      "captured_session_id": "78a67ddb-1d98-4f9f-8d41-4d938bb07b35",
+      "started_at": "2026-07-29T11:07:39.711846300Z"
+    }
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "node_id": "epic-root",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Structured Ticket Entities (track root)",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/bbb4bce9-d57c-4f85-8757-8d239f9f7cde",
+        "cached_ticket_title": "Structured Ticket Entities (track root)"
+      },
+      {
+        "node_id": "r-deferred-amendment-order",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "Resolve amendment rendering order during 4c7b884e refinement",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:41:02.122654500Z",
+        "category": "deferred-decision"
+      },
+      {
+        "node_id": "r-deferred-viewer-ux",
+        "kind": "task",
+        "requirement": "required",
+        "status": "done",
+        "title": "Resolve viewer profile/amendment UX during 89fa0c25 refinement",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:41:08.108466100Z",
+        "category": "deferred-decision"
+      },
+      {
+        "node_id": "spec-anchor",
+        "kind": "spec",
+        "requirement": "required",
+        "status": "done",
+        "title": "Spec: Structured Ticket Entities",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:26.062199900Z",
+        "spec_urn": "ce://default/spec/24b3d22b-e235-4c4f-b53c-75fb819ea95b"
+      },
+      {
+        "node_id": "t0-state-rename",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Rename lifecycle states new-&gt;open, ready-&gt;planned, migrate store",
+        "created_at": "2026-07-29T13:40:48.225079900Z",
+        "updated_at": "2026-07-29T13:40:48.225079900Z",
+        "ticket_urn": "ce://memory-api/ticket/5b3da351-1c87-4619-a0bc-6d7abe147d60",
+        "cached_ticket_title": "Rename ticket lifecycle states: new -> open, ready -> planned, with store migration"
+      },
+      {
+        "node_id": "t1-parts-storage",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Parts storage, [[parts]] manifest, core kind vocabulary",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/5a3d152c-faf7-4d33-8a4e-7ed19cf6b142",
+        "cached_ticket_title": "Ticket parts: parts/ storage, [[parts]] manifest index, and core kind vocabulary"
+      },
+      {
+        "node_id": "t2-part-writes",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Part-addressed writes and mandatory description_mode",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/3d952036-efd4-4f36-a77f-6b7f5058a0a0",
+        "cached_ticket_title": "Part-addressed writes and mandatory description_mode (remove the replace default)"
+      },
+      {
+        "node_id": "t3-typed-refs",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Typed [[refs]] manifest table",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/9d69e93d-b7ab-4f88-a88c-40ec76d5206b",
+        "cached_ticket_title": "Typed [[refs]] manifest table for external entity references"
+      },
+      {
+        "node_id": "t4-freezing",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Plan freezing at planned, amendments, unfreeze by transition",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/f9e70385-adb7-4942-a8fb-6a383863cc7e",
+        "cached_ticket_title": "Plan freezing at `planned`: hard reject, amendment parts, unfreeze by state transition"
+      },
+      {
+        "node_id": "t5-projections",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Projected reads: summary/plan/review/full and --parts",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/4c7b884e-fd9b-4967-9599-5b55495d6e52",
+        "cached_ticket_title": "Projected ticket reads: summary/plan/review/full profiles and explicit part lists"
+      },
+      {
+        "node_id": "t6-migration",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Migrate existing descriptions into typed parts",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/f65f2b32-9297-4360-9ad7-deb75e7ea401",
+        "cached_ticket_title": "Migrate existing descriptions into typed parts (dry-run then apply, lossless)"
+      },
+      {
+        "node_id": "t7-viewer",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "ticket-viewer: parts, frozen state, amendments, typed refs",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/89fa0c25-a9ee-4f2d-a341-09fd9707946a",
+        "cached_ticket_title": "ticket-viewer: render parts, frozen state, amendments, and typed refs"
+      },
+      {
+        "node_id": "t8-guidance",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Agent guidance and rule entries",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "ticket_urn": "ce://memory-api/ticket/71e13480-4f92-418a-a9e6-155f3274f180",
+        "cached_ticket_title": "Update agent guidance and rule entries for parts, freezing, and projected reads"
+      },
+      {
+        "node_id": "v-migration-dryrun",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "pending",
+        "title": "Migration dry-run then lossless apply",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "validation_spec_id": "vt-structured-ticket-entities-migration"
+      },
+      {
+        "node_id": "v-viewer-e2e",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "pending",
+        "title": "ticket-viewer release E2E with screenshots",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "validation_spec_id": "vt-structured-ticket-entities-viewer-e2e"
+      },
+      {
+        "node_id": "v-workspace-build",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "pending",
+        "title": "cargo test -p ticket-api -p memory-api",
+        "created_at": "2026-07-29T13:27:08.457512600Z",
+        "updated_at": "2026-07-29T13:27:08.457512600Z",
+        "validation_spec_id": "vt-structured-ticket-entities-rust"
+      }
+    ],
+    "edges": [
+      {
+        "from": "epic-root",
+        "to": "t0-state-rename",
+        "kind": "depends-on"
+      },
+      {
+        "from": "epic-root",
+        "to": "t8-guidance",
+        "kind": "depends-on"
+      },
+      {
+        "from": "epic-root",
+        "to": "v-migration-dryrun",
+        "kind": "depends-on"
+      },
+      {
+        "from": "epic-root",
+        "to": "v-viewer-e2e",
+        "kind": "depends-on"
+      },
+      {
+        "from": "epic-root",
+        "to": "v-workspace-build",
+        "kind": "depends-on"
+      },
+      {
+        "from": "r-deferred-amendment-order",
+        "to": "t3-typed-refs",
+        "kind": "order"
+      },
+      {
+        "from": "r-deferred-viewer-ux",
+        "to": "t5-projections",
+        "kind": "order"
+      },
+      {
+        "from": "t0-state-rename",
+        "to": "spec-anchor",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t1-parts-storage",
+        "to": "spec-anchor",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t2-part-writes",
+        "to": "t1-parts-storage",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t3-typed-refs",
+        "to": "t2-part-writes",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t4-freezing",
+        "to": "t0-state-rename",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t4-freezing",
+        "to": "t2-part-writes",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t5-projections",
+        "to": "r-deferred-amendment-order",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t5-projections",
+        "to": "t3-typed-refs",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t6-migration",
+        "to": "t4-freezing",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t6-migration",
+        "to": "t5-projections",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t7-viewer",
+        "to": "r-deferred-viewer-ux",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t7-viewer",
+        "to": "t5-projections",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t8-guidance",
+        "to": "t4-freezing",
+        "kind": "depends-on"
+      },
+      {
+        "from": "t8-guidance",
+        "to": "t5-projections",
+        "kind": "depends-on"
+      },
+      {
+        "from": "v-migration-dryrun",
+        "to": "t6-migration",
+        "kind": "depends-on"
+      },
+      {
+        "from": "v-viewer-e2e",
+        "to": "t7-viewer",
+        "kind": "depends-on"
+      },
+      {
+        "from": "v-workspace-build",
+        "to": "t5-projections",
+        "kind": "depends-on"
+      }
+    ]
+  }
 }

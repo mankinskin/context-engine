@@ -13,5 +13,104 @@
     "vscode_version": "1.130.0",
     "protocol_version": 1
   },
-  "links": {}
+  "links": {},
+  "active_run_id": "a7c5a4a1-c86c-4cd6-83cf-8cd9dbde58b7",
+  "runs": [
+    {
+      "run_id": "9146c9e4-a38d-4087-827a-93c5ca3c4a38",
+      "started_at": "2026-07-26T23:57:58.065514800Z"
+    },
+    {
+      "run_id": "5bb19c77-c62b-43d8-ba6c-4b26b66a3799",
+      "predecessor_run_id": "9146c9e4-a38d-4087-827a-93c5ca3c4a38",
+      "captured_session_id": "0101b7ef-e717-4c94-bebd-c8d55f6aaa82",
+      "started_at": "2026-07-27T20:32:56.804066500Z"
+    },
+    {
+      "run_id": "a7c5a4a1-c86c-4cd6-83cf-8cd9dbde58b7",
+      "predecessor_run_id": "5bb19c77-c62b-43d8-ba6c-4b26b66a3799",
+      "captured_session_id": "0101b7ef-e717-4c94-bebd-c8d55f6aaa82",
+      "started_at": "2026-07-27T21:04:51.806417700Z"
+    }
+  ],
+  "pinned_entities": [
+    {
+      "urn": "ce://default/spec/43b9a6ac-89d6-479a-876b-3d1a5e2d39e6",
+      "kind": "spec",
+      "pinned_at": "2026-07-27T21:03:13.030979800Z",
+      "last_used_at": "2026-07-27T21:03:13.030979800Z"
+    },
+    {
+      "urn": "ce://default/ticket/9c1de000-0000-4000-8000-000000000000",
+      "kind": "ticket",
+      "reason": "Epic: multi-client guidance rendering + install-time materialization",
+      "pinned_at": "2026-07-27T21:03:19.165021600Z",
+      "last_used_at": "2026-07-27T21:03:19.165021600Z"
+    },
+    {
+      "urn": "ce://default/ticket/b0d6bb1c-1a74-478a-aac1-1943b5454e96",
+      "kind": "ticket",
+      "reason": "Under review: Extend sync_model_prices.py with GitHub Copilot pricing source",
+      "pinned_at": "2026-07-27T20:27:56.051147200Z",
+      "last_used_at": "2026-07-27T20:27:56.051147200Z"
+    }
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "node_id": "123213da-1465-4777-822b-e056f5f0ffb2",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "done",
+        "title": "AC4: test_cost_gate.py passes",
+        "created_at": "2026-07-27T20:27:56.072962300Z",
+        "updated_at": "2026-07-27T21:04:27.586774400Z",
+        "anchor_urn": "ce://default/ticket/b0d6bb1c-1a74-478a-aac1-1943b5454e96",
+        "validation_spec_id": "vt-model-prices-cost-gate"
+      },
+      {
+        "node_id": "12975a73-4ae8-4012-bcfb-1ac4c319976d",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "done",
+        "title": "AC1: --check round-trips with both sources",
+        "created_at": "2026-07-27T20:27:56.072962300Z",
+        "updated_at": "2026-07-27T20:28:07.776579500Z",
+        "anchor_urn": "ce://default/ticket/b0d6bb1c-1a74-478a-aac1-1943b5454e96",
+        "validation_spec_id": "vt-model-prices-check-roundtrip"
+      },
+      {
+        "node_id": "671a2d6b-f509-4882-ad95-fc1366bbe6c1",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "done",
+        "title": "AC3: precedence documented and deterministic (doc + code)",
+        "created_at": "2026-07-27T20:27:56.072962300Z",
+        "updated_at": "2026-07-27T20:28:14.279762900Z",
+        "anchor_urn": "ce://default/ticket/b0d6bb1c-1a74-478a-aac1-1943b5454e96",
+        "validation_spec_id": "vt-model-prices-precedence-doc"
+      },
+      {
+        "node_id": "851ab3fa-1275-4530-b533-0a164bba9680",
+        "kind": "validation",
+        "requirement": "required",
+        "status": "done",
+        "title": "AC2: MAI-Code-1-Flash resolves to real price via --query",
+        "created_at": "2026-07-27T20:27:56.072962300Z",
+        "updated_at": "2026-07-27T20:28:07.696401700Z",
+        "anchor_urn": "ce://default/ticket/b0d6bb1c-1a74-478a-aac1-1943b5454e96",
+        "validation_spec_id": "vt-model-prices-query-resolves"
+      },
+      {
+        "node_id": "a01ea2b6-c4e6-4189-a753-01cf5f7e90d5",
+        "kind": "task",
+        "requirement": "optional",
+        "status": "done",
+        "title": "Stale MAI-Code-1-Flash claim in model-routing.instructions.md line 50 contradicts AC2 evidence",
+        "created_at": "2026-07-27T20:27:56.072962300Z",
+        "updated_at": "2026-07-27T20:49:22.178057500Z",
+        "category": "finding"
+      }
+    ]
+  }
 }

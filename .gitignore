@@ -43,8 +43,6 @@ tools/log-viewer/demo-logs/
 
 # Capture logs and large event payloads stay local; durable transcript/handoff/finish files stay tracked.
 .session/sessions/**/session-capture-stop.log
-.session/sessions/**/events.json
-.session/sessions/**/runs/**/events.json
 # Raw hook-stdin capture artifact left by the retired `tee ./session.log` hook command.
 /session.log
 packages/
