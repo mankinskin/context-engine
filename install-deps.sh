@@ -18,6 +18,7 @@ dependency_names=(
     rtk
   trunk
   cargo-llvm-cov
+    cargo-make
 )
 
 print_supported_dependencies() {
@@ -88,6 +89,7 @@ Supported dependencies:
   rtk
   trunk
   cargo-llvm-cov
+    cargo-make
 
 Environment:
   INSTALL_DEPS             Comma-separated dependency list used when none are passed.
@@ -96,7 +98,7 @@ Examples:
   ./install-deps.sh
   ./install-deps.sh ripgrep rtk trunk
   ./install-deps.sh --dependency ripgrep
-  ./install-deps.sh --dependencies "ripgrep,rtk,trunk,cargo-llvm-cov"
+    ./install-deps.sh --dependencies "ripgrep,rtk,trunk,cargo-llvm-cov,cargo-make"
   ./install-deps.sh --dry-run
 EOF
 }
@@ -126,7 +128,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --all)
             selected_dependencies=()
-            append_csv_dependencies "ripgrep,rtk,trunk,cargo-llvm-cov"
+            append_csv_dependencies "ripgrep,rtk,trunk,cargo-llvm-cov,cargo-make"
             shift
             ;;
         --list)
@@ -165,7 +167,7 @@ if [[ ${#selected_dependencies[@]} -eq 0 && -n "${INSTALL_DEPS:-}" ]]; then
 fi
 
 if [[ ${#selected_dependencies[@]} -eq 0 ]]; then
-    append_csv_dependencies "ripgrep,rtk,trunk,cargo-llvm-cov"
+    append_csv_dependencies "ripgrep,rtk,trunk,cargo-llvm-cov,cargo-make"
 fi
 
 install_one() {
@@ -187,6 +189,9 @@ install_one() {
         cargo-llvm-cov)
             command=(cargo install cargo-llvm-cov --quiet --force)
             post_command=(rustup component add llvm-tools-preview)
+            ;;
+        cargo-make)
+            command=(cargo install cargo-make --quiet --force)
             ;;
         *)
             printf 'error: unsupported dependency: %s\n' "$dependency" >&2

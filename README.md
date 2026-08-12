@@ -2,6 +2,18 @@
 
 context-engine is the top-level workspace that coordinates the graph crates in `context-stack`, the viewer and operator tooling in `memory-viewers`, and the repo-local configuration and install surfaces that bind them together.
 
+## Getting Started
+
+From a fresh clone, run the bootstrap commands in order:
+
+```bash
+bash setup_git.sh
+./install-deps.sh
+./install-tools.sh --mcp
+bash init.sh
+bash tools/verify-bootstrap.sh
+```
+
 ## Repository Map
 
 The root-level `repo_map.toon` file is the compact structural index for this repository.
@@ -62,14 +74,9 @@ The companion installer in [install-extensions.sh](install-extensions.sh) packag
 
 ## Working With Submodules
 
-```bash
-git submodule update --init --recursive
-bash tools/checkout-submodule-branches.sh
-```
-
-- `git submodule update --init --recursive` follows the Git submodule workflow documented in [Git Tools - Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
-- [tools/checkout-submodule-branches.sh](tools/checkout-submodule-branches.sh) attaches initialized submodules to their configured tracking branches when you need to edit them.
-- Once the submodules are attached, continue from [context-stack/README.md](context-stack/README.md) and [memory-viewers/README.md](memory-viewers/README.md) for repository-local commands.
+[Getting Started](#getting-started) initializes submodules and attaches them to
+their configured tracking branches. Once initialization completes, continue from
+[context-stack/README.md](context-stack/README.md) and [memory-viewers/README.md](memory-viewers/README.md) for repository-local commands.
 
 ### Development-Only Submodules
 

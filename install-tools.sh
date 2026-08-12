@@ -35,12 +35,19 @@ tool_names=(
     spec-viewer
     ticket-viewer
     session-capture-hook
+    install-ctl
+    worktree-ctl
     ticket-cli
     spec-cli
     audit-cli
     rule-cli
     feedback-cli
     session-cli
+    peek-cli
+    test-cli
+    fs-cli
+    compact-terminal-cli
+    context-cli
     context-mcp
     ticket-mcp
     spec-mcp
@@ -167,7 +174,7 @@ append_csv_tools() {
 append_mcp_tools() {
     local tool
 
-    for tool in "${mcp_tool_names[@]}"; do
+    for tool in "${tool_names[@]}"; do
         append_tool "$tool"
     done
 }
@@ -257,21 +264,63 @@ resolve_install_ctl
 install_one() {
     local tool=$1
     local failed=0
+    local direct_path=
+    local direct_binary=
     local -a subcommand_args=(install "$tool")
     local -a full_args=("${install_ctl_cmd[@]}")
 
-    if [[ $force_install -eq 0 ]]; then
-        subcommand_args+=(--no-force)
+    case "$tool" in
+        install-ctl)
+            direct_path=tools/install/install-ctl
+            direct_binary=install-ctl
+            ;;
+        peek-cli)
+            direct_path=memory-api/tools/cli/peek-cli
+            direct_binary=peek
+            ;;
+        test-cli)
+            direct_path=memory-api/tools/cli/test-cli
+            direct_binary=test
+            ;;
+        fs-cli)
+            direct_path=memory-api/tools/cli/fs-cli
+            direct_binary=fs
+            ;;
+        compact-terminal-cli)
+            direct_path=memory-api/tools/cli/compact-terminal-cli
+            direct_binary=compact-terminal
+            ;;
+        context-cli)
+            direct_path=context-stack/tools/cli/context-cli
+            direct_binary=context-cli
+            ;;
+    esac
+
+    if [[ -n "$direct_path" ]]; then
+        full_args=(cargo install --path "$direct_path" --bin "$direct_binary")
+        if [[ $force_install -eq 1 ]]; then
+            full_args+=(--force)
+        fi
+    else
+        if [[ $force_install -eq 0 ]]; then
+            subcommand_args+=(--no-force)
+        fi
+        if [[ $dry_run -eq 1 ]]; then
+            full_args+=(--dry-run)
+        fi
+        full_args+=("${subcommand_args[@]}")
     fi
-    if [[ $dry_run -eq 1 ]]; then
-        full_args+=(--dry-run)
-    fi
-    full_args+=("${subcommand_args[@]}")
 
     printf '==> %s\n' "$tool"
 
     if [[ $dry_run -eq 1 ]]; then
-        (cd "$repo_root" && "${full_args[@]}")
+        if [[ -n "$direct_path" ]]; then
+            printf '    '
+            printf '%q ' "${full_args[@]}"
+            printf '\n'
+        else
+            (cd "$repo_root" && "${full_args[@]}")
+        fi
         installed_tools+=("$tool")
         return 0
     fi

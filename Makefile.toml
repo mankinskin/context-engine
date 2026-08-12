@@ -9,6 +9,11 @@ DOC_VIEWER_PORT    = "3001"
 TICKET_VIEWER_PORT = "3002"
 SPEC_VIEWER_PORT   = "4002"
 
+[tasks.verify]
+description = "Verify fresh-clone bootstrap prerequisites"
+command = "bash"
+args = ["tools/verify-bootstrap.sh"]
+
 # ─────────────────────────────────────────────────────────────────────────────
 # build-all — single target that compiles every deployable tool binary and
 # every viewer frontend artifact.  Use this to verify nothing is broken after
