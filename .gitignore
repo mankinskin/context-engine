@@ -45,6 +45,8 @@ tools/log-viewer/demo-logs/
 .session/sessions/**/session-capture-stop.log
 .session/sessions/**/events.json
 .session/sessions/**/runs/**/events.json
+# Raw hook-stdin capture artifact left by the retired `tee ./session.log` hook command.
+/session.log
 packages/
 
 # Spec/ticket store binary indexes (only the spec/ticket folders are tracked)

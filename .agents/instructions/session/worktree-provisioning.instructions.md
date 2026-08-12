@@ -7,7 +7,7 @@ applyTo: "**"
 
 The capture hook can provision a session worktree before the session's first tool call. VS Code loads [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) through the `.chat.hookFilesLocations` setting in [.vscode/settings.json](../../../.vscode/settings.json). The registered binary is `session-capture-hook`, installed on `PATH` at `~/.cargo/bin/session-capture-hook`.
 
-`UserPromptSubmit` is the only registered event that runs before any tool call. Eager provisioning is attached to that event so a session receives an isolated worktree before implementation begins. The event timeout is 300 seconds to allow a cold provision.
+`UserPromptSubmit` is the event eager provisioning is attached to, so a session receives an isolated worktree before implementation begins. `SessionStart` also fires before the first tool call but is capture-only; provisioning deliberately waits for a prompt. The `UserPromptSubmit` timeout is 300 seconds to allow a cold provision.
 
 The binary usage is:
 
@@ -21,13 +21,37 @@ The hook writes `{}` to stdout for both success and early skip, with diagnostics
 
 | Event | Registered command | Timeout |
 |---|---|---:|
-| `UserPromptSubmit` | `session-capture-hook --from-hook-stdin` | 300s |
+| `SessionStart` | `bash tools/agent-hooks/capture-hook-stdin.sh` | 300s |
+| `UserPromptSubmit` | `bash tools/agent-hooks/capture-hook-stdin.sh` | 300s |
 | `PreToolUse` | `bash tools/agent-hooks/rtk-hook-copilot.sh`, then `bash tools/agent-hooks/preflight-write.sh` | 5s, 30s |
-| `PostToolUse` | `bash tools/agent-hooks/validate-docs.sh`, `bash tools/agent-hooks/terminal-pwd.sh`, then `session-capture-hook --from-hook-stdin` | 30s, 5s, 120s |
-| `Stop` | `session-capture-hook --from-hook-stdin` | 120s |
-| `SessionEnd` | `session-capture-hook --from-hook-stdin` | 120s |
+| `PostToolUse` | `bash tools/agent-hooks/validate-docs.sh`, `bash tools/agent-hooks/terminal-pwd.sh`, then `bash tools/agent-hooks/capture-hook-stdin.sh` | 30s, 5s, 120s |
+| `Stop` | `bash tools/agent-hooks/capture-hook-stdin.sh` | 120s |
 
-Hook stdin accepts `transcript_path`, `workspace_slug`, `hook_event_name`, `tool_use_id`, `session_id`, and `tool_response`. `hook_event_name` supplies the trigger. A blank or unknown trigger normalizes to `stop`.
+[capture-hook-stdin.sh](../../../tools/agent-hooks/capture-hook-stdin.sh) records the raw hook stdin payload to `.session/local/hook-captures/<event>.json` (gitignored, one file per event, latest write wins) and then forwards the identical bytes to `session-capture-hook --from-hook-stdin`. It replaced a bare `tee ./session.log | session-capture-hook --from-hook-stdin` command: hook commands are not run through a POSIX shell on Windows, so `tee` resolved to PowerShell's `Tee-Object` and wrote a UTF-16LE BOM with zero payload bytes. Set `SESSION_HOOK_CAPTURE=0` to suppress the capture while still forwarding.
+
+`SessionEnd` is **not** a Copilot hook event and is no longer registered. The eight events are `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, and `Stop`; `Stop` is the end-of-session event. See the [hooks reference](https://code.visualstudio.com/docs/agents/reference/hooks-reference).
+
+Every event's stdin carries `timestamp`, `hook_event_name`, `session_id`, `cwd`, and `transcript_path`, plus per-event fields: `source` (`SessionStart`), `prompt` (`UserPromptSubmit`), `tool_name`/`tool_input`/`tool_use_id` (`PreToolUse`, and `tool_response` additionally on `PostToolUse`), `trigger` (`PreCompact`), `agent_id`/`agent_type` (`SubagentStart`, plus `stop_hook_active` on `SubagentStop`), and `stop_hook_active` (`Stop`). `hook_event_name` supplies the trigger, and a blank or unknown trigger normalizes to `stop`.
+
+`session-capture-hook` also accepts a `workspace_slug` field. That field is a repository-specific extension used by the crate's own fixtures; Copilot never sends it, so in a live session the slug always falls back to its `default` value.
+
+## Verifying Hook Payloads
+
+Two layers verify that hooks fire and that their payloads still match the documented schema.
+
+Passive: every live session writes `.session/local/hook-captures/<event>.json` through the capture wrapper. Inspect the current shape without leaking prompt or tool content:
+
+```bash
+for f in .session/local/hook-captures/*.json; do echo "$f: $(jq -c 'keys' "$f")"; done
+```
+
+Active: [hook-capture-e2e.sh](../../../tools/agent-hooks/hook-capture-e2e.sh) drives a real headless session with the GitHub Copilot CLI, which reads the same hook schema as VS Code (`copilot help config`, key `hooks`). The script builds a throwaway repository whose hooks record each event, runs `copilot -p` with a prompt that forces a tool call, then asserts the captured payloads against the documented field sets:
+
+```bash
+bash tools/agent-hooks/hook-capture-e2e.sh
+```
+
+Exit codes are `0` for pass, `1` for schema drift or a missing required event, and `77` for skip. The script skips when `copilot` or `jq` is absent, and when the Copilot CLI is unauthenticated — authentication requires `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` in the environment, or a completed `/login` inside `copilot`.
 
 ## Provisioning Decision Flow
 

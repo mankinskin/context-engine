@@ -1,9 +1,17 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "cwd": ".",
+        "timeout": 300
+      }
+    ],
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "session-capture-hook --from-hook-stdin",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
         "cwd": ".",
         "timeout": 300
       }
@@ -37,7 +45,7 @@
       },
       {
         "type": "command",
-        "command": "session-capture-hook --from-hook-stdin",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
         "cwd": ".",
         "timeout": 120
       }
@@ -45,15 +53,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "session-capture-hook --from-hook-stdin",
-        "cwd": ".",
-        "timeout": 120
-      }
-    ],
-    "SessionEnd": [
-      {
-        "type": "command",
-        "command": "session-capture-hook --from-hook-stdin",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
         "cwd": ".",
         "timeout": 120
       }
