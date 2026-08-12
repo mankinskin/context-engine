@@ -39,7 +39,20 @@ command -v copilot >/dev/null 2>&1 || skip "copilot CLI not on PATH"
 command -v jq >/dev/null 2>&1 || skip "jq not on PATH"
 
 workdir=$(mktemp -d)
-trap 'rm -rf "$workdir"' EXIT
+
+cleanup() {
+    # Capture the triggering exit status before cleanup commands change it.
+    local exit_status=$?
+
+    if [[ "${HOOK_E2E_KEEP_WORKDIR:-}" == "1" || "$exit_status" -ne 0 && "$exit_status" -ne 77 ]]; then
+        echo "KEEP: preserving diagnostic workdir $workdir (captures and run log kept for inspection)" >&2
+    else
+        rm -rf "$workdir"
+    fi
+
+    return "$exit_status"
+}
+trap cleanup EXIT
 
 mkdir -p "$workdir/.github/hooks" "$workdir/captures"
 
@@ -47,9 +60,24 @@ mkdir -p "$workdir/.github/hooks" "$workdir/captures"
 # and returns the empty success object so the session is never blocked.
 cat > "$workdir/record.sh" <<'RECORDER'
 #!/usr/bin/env bash
+event=$1
 mkdir -p captures
-cat > "captures/$1.json"
-echo '{}'
+stderr_path="captures/$event.stderr"
+exit_path="captures/$event.exit"
+
+exec 3>&2
+{
+    cat > "captures/$event.json"
+    echo '{}'
+} 2>"$stderr_path"
+hook_status=$?
+printf '%s\n' "$hook_status" > "$exit_path"
+
+if [[ -s "$stderr_path" ]]; then
+    cat "$stderr_path" >&3
+fi
+
+exit "$hook_status"
 RECORDER
 
 cat > "$workdir/.github/hooks/hooks.json" <<'HOOKS'
@@ -103,7 +131,10 @@ fi
 
 if (( run_status != 0 )); then
     echo "note: copilot exited with status $run_status" >&2
-    sed -n '1,20p' "$run_log" >&2
+    echo "--- Copilot run log ---" >&2
+    cat "$run_log" >&2
+    echo >&2
+    echo "--- end Copilot run log ---" >&2
 fi
 
 # ---------------------------------------------------------------------------
@@ -128,12 +159,37 @@ required_events=(SessionStart UserPromptSubmit Stop)
 
 status=0
 
+print_hook_diagnostics() {
+    local event=$1
+    local exit_record="$workdir/captures/$event.exit"
+    local stderr_record="$workdir/captures/$event.stderr"
+    local have_diagnostics=0
+
+    if [[ -f "$exit_record" ]]; then
+        echo "EXIT: $event hook exited with status $(<"$exit_record")" >&2
+        have_diagnostics=1
+    fi
+
+    if [[ -s "$stderr_record" ]]; then
+        echo "--- $event stderr ---" >&2
+        cat "$stderr_record" >&2
+        echo >&2
+        echo "--- end $event stderr ---" >&2
+        have_diagnostics=1
+    fi
+
+    if (( have_diagnostics == 0 )); then
+        echo "NO-DIAGNOSTICS: $event produced no stderr or exit-code record" >&2
+    fi
+}
+
 for event in "${!event_fields[@]}"; do
     capture="$workdir/captures/$event.json"
 
     if [[ ! -s "$capture" ]]; then
         if [[ " ${required_events[*]} " == *" $event "* ]]; then
             echo "MISSING: $event did not fire (or captured no payload)" >&2
+            print_hook_diagnostics "$event"
             status=1
         else
             echo "note: $event did not fire in this run" >&2
@@ -143,14 +199,17 @@ for event in "${!event_fields[@]}"; do
 
     if ! jq -e . "$capture" >/dev/null 2>&1; then
         echo "INVALID: $event payload is not valid JSON" >&2
+        print_hook_diagnostics "$event"
         status=1
         continue
     fi
 
+    event_failed=0
     actual_event=$(jq -r '.hook_event_name // .hookEventName // ""' "$capture")
     if [[ "$actual_event" != "$event" ]]; then
         echo "MISMATCH: $event payload reports hook_event_name='$actual_event'" >&2
         status=1
+        event_failed=1
     fi
 
     missing=()
@@ -165,6 +224,11 @@ for event in "${!event_fields[@]}"; do
         echo "DRIFT: $event is missing documented field(s): ${missing[*]}" >&2
         echo "       observed keys: $(jq -r 'keys | join(", ")' "$capture")" >&2
         status=1
+        event_failed=1
+    fi
+
+    if (( event_failed == 1 )); then
+        print_hook_diagnostics "$event"
     else
         echo "OK: $event ($(jq -r 'keys | length' "$capture") keys)" >&2
     fi
