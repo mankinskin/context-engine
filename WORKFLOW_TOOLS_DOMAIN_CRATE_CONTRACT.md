@@ -13,7 +13,7 @@ only transport-agnostic composition.
     {domain}-api/              # internal domain API
     {domain}/                  # public library and transport binaries
       src/lib.rs
-      src/bin/{domain}-cli.rs
+      src/bin/{domain}.rs
       src/bin/{domain}-mcp.rs
       src/bin/{domain}-http.rs
   frontend/                    # optional, separate consumer crates
@@ -21,7 +21,8 @@ only transport-agnostic composition.
 
 The public crate must declare `[lib]` and a `[[bin]]` target for every supported
 transport. It depends on `{domain}-api`, re-exports that API from `src/lib.rs`,
-and preserves current executable names: `{domain}-cli`, `{domain}-mcp`, and
+and uses the generic executable naming rule: the CLI binary is the bare
+`{domain}` name, while MCP and HTTP binaries remain `{domain}-mcp` and
 `{domain}-http`.
 
 ```toml
@@ -32,8 +33,8 @@ mcp = ["dep:transport-harness"]
 http = ["dep:transport-harness"]
 
 [[bin]]
-name = "{domain}-cli"
-path = "src/bin/{domain}-cli.rs"
+name = "{domain}"
+path = "src/bin/{domain}.rs"
 required-features = ["cli"]
 ```
 

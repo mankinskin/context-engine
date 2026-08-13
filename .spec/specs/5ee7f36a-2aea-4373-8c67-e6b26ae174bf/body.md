@@ -8,7 +8,12 @@ A domain repository contains an internal `{domain}-api` crate, a public `{domain
 
 # Manifest Contract
 
-The domain crate declares a `[lib]` target and features `cli`, `mcp`, and `http`. Each `[[bin]]` has `required-features` for its one transport feature and keeps the established binary name (`{domain}-cli`, `{domain}-mcp`, or `{domain}-http`). The default feature set is empty, so `cargo build -p {domain}` builds the library without transport dependencies.
+The domain crate declares a `[lib]` target and features `cli`, `mcp`, and
+`http`. Each `[[bin]]` has `required-features` for its one transport feature and
+uses the generic binary naming rule: the CLI binary is always the bare
+`{domain}` name, while the MCP and HTTP binaries remain `{domain}-mcp` and
+`{domain}-http`. The default feature set is empty, so `cargo build -p {domain}`
+builds the library without transport dependencies.
 
 # Harness Contract
 
