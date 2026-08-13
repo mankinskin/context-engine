@@ -25,5 +25,8 @@ rule init --index-root "$repo_root/.rule"
 mkdir -p "$repo_root/.doc"
 
 # Regenerate the .github/{agents,prompts,instructions} directories Copilot
-# CLI auto-discovers, from the canonical .agents/ sources.
-bash "$repo_root/tools/install/sync-copilot-surfaces.sh"
+# CLI auto-discovers, from the canonical .agents/ sources. Pass --mode=auto
+# explicitly so this automated bootstrap step never blocks on the script's
+# interactive install-mode prompt (run sync-copilot-surfaces.sh directly,
+# with no --mode, to be asked and to opt into --mode=symlink or --mode=copy).
+bash "$repo_root/tools/install/sync-copilot-surfaces.sh" --mode=auto
