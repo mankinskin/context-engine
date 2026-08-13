@@ -591,7 +591,7 @@ dependencies = [
  "cargo_metadata",
  "chrono",
  "ignore",
- "memory-api",
+ "memory-kernel",
  "proc-macro2",
  "rule-api",
  "rusqlite",
@@ -616,7 +616,7 @@ dependencies = [
  "audit-api",
  "chrono",
  "clap",
- "memory-api",
+ "memory-kernel",
  "predicates",
  "rusqlite",
  "serde_json",
@@ -632,7 +632,7 @@ name = "audit-mcp"
 version = "0.1.0"
 dependencies = [
  "audit-api",
- "memory-api",
+ "memory-kernel",
  "rmcp",
  "serde",
  "serde_json",
@@ -3705,7 +3705,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "doc-api",
- "memory-api",
+ "memory-kernel",
  "serde",
  "serde_json",
  "tempfile",
@@ -4125,7 +4125,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "feedback-api",
- "memory-api",
+ "memory-kernel",
  "serde",
  "serde_json",
  "tokio",
@@ -4138,7 +4138,7 @@ name = "feedback-mcp"
 version = "0.1.0"
 dependencies = [
  "feedback-api",
- "memory-api",
+ "memory-kernel",
  "rmcp",
  "serde",
  "serde_json",
@@ -5919,6 +5919,7 @@ name = "log-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "memory-kernel",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -6144,33 +6145,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "memory-api"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "chrono",
- "fs4 0.11.1",
- "globset",
- "notify",
- "pretty_assertions",
- "regex",
- "rusqlite",
- "serde",
- "serde_json",
- "sha2",
- "tantivy",
- "tempfile",
- "test-api",
- "thiserror 2.0.18",
- "toml 0.8.23",
- "toon-format",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "memory-fixtures"
 version = "0.1.0"
 dependencies = [
@@ -6194,6 +6168,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "memory-kernel"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "chrono",
+ "fs4 0.11.1",
+ "globset",
+ "notify",
+ "regex",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tantivy",
+ "tempfile",
+ "thiserror 2.0.18",
+ "toml 0.8.23",
+ "toon-format",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "memory-matrix"
 version = "0.1.0"
 dependencies = [
@@ -6202,8 +6201,8 @@ dependencies = [
  "chrono",
  "criterion",
  "log-api",
- "memory-api",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-kernel",
  "pretty_assertions",
  "rmcp",
  "rule-api",
@@ -8292,7 +8291,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "feedback-api",
- "memory-api",
+ "memory-kernel",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -8310,8 +8309,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "feedback-api",
- "memory-api",
  "memory-fixtures 0.1.0",
+ "memory-kernel",
  "rule-api",
  "serde_json",
  "spec-api",
@@ -8326,7 +8325,7 @@ dependencies = [
 name = "rule-mcp"
 version = "0.1.0"
 dependencies = [
- "memory-api",
+ "memory-kernel",
  "rmcp",
  "rule-api",
  "serde",
@@ -8802,7 +8801,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "feedback-api",
- "memory-api",
+ "memory-kernel",
  "pretty_assertions",
  "rule-api",
  "serde",
@@ -8819,7 +8818,7 @@ dependencies = [
 name = "session-capture-hook"
 version = "0.1.0"
 dependencies = [
- "memory-api",
+ "memory-kernel",
  "serde_json",
  "session-api",
  "session-workspace-resolver",
@@ -8834,7 +8833,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
- "memory-api",
+ "memory-kernel",
  "pretty_assertions",
  "rule-api",
  "serde",
@@ -8851,7 +8850,7 @@ name = "session-mcp"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "memory-api",
+ "memory-kernel",
  "rmcp",
  "rule-api",
  "serde",
@@ -8868,7 +8867,7 @@ dependencies = [
 name = "session-workspace-resolver"
 version = "0.1.0"
 dependencies = [
- "memory-api",
+ "memory-kernel",
  "serde_json",
  "session-api",
  "tempfile",
@@ -9343,8 +9342,8 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "feedback-api",
- "memory-api",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-kernel",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -9362,7 +9361,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
- "memory-api",
+ "memory-kernel",
  "pretty_assertions",
  "proc-macro2",
  "rule-api",
@@ -9385,7 +9384,7 @@ dependencies = [
  "axum",
  "chrono",
  "futures-util",
- "memory-api",
+ "memory-kernel",
  "serde",
  "serde_json",
  "spec-api",
@@ -9404,7 +9403,7 @@ name = "spec-mcp"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "memory-api",
+ "memory-kernel",
  "rmcp",
  "serde",
  "serde_json",
@@ -9896,6 +9895,7 @@ name = "test-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "memory-kernel",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -9912,7 +9912,7 @@ dependencies = [
  "chrono",
  "clap",
  "log-api",
- "memory-api",
+ "memory-kernel",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -9928,7 +9928,7 @@ name = "test-mcp"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "memory-api",
+ "memory-kernel",
  "rmcp",
  "serde",
  "serde_json",
@@ -9997,8 +9997,8 @@ dependencies = [
  "chrono",
  "clap",
  "futures-util",
- "memory-api",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-kernel",
  "pretty_assertions",
  "rmcp",
  "serde",
@@ -10027,11 +10027,12 @@ dependencies = [
  "criterion",
  "feedback-api",
  "fs4 0.11.1",
- "memory-api",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-kernel",
  "notify",
  "pretty_assertions",
  "reqwest",
+ "rusqlite",
  "serde",
  "serde_json",
  "tempfile",
@@ -10665,7 +10666,6 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
  "tokio",
- "tower 0.5.3",
  "tracing",
  "tracing-subscriber",
 ]

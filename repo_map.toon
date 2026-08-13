@@ -3,7 +3,7 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/context-engine/.worktrees/99e040a2-session-worktree-registry"
+  root: "//?/C:/Users/linus/git/2/context-engine/.worktrees/b9020ba2-df5d-426a-b1b9-228ef159cad1/workflow-tools-restructure"
 top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
@@ -74,14 +74,13 @@ crates:
         - name: crates
           kind: dir
           path: "crates/memory-api/crates"
-          children[20]{name,kind,path,note}:
+          children[19]{name,kind,path,note}:
             "audit-api",dir,"crates/memory-api/crates/audit-api","crate=audit-api"
             "compact-terminal-api",dir,"crates/memory-api/crates/compact-terminal-api","crate=compact-terminal-api"
             "doc-api",dir,"crates/memory-api/crates/doc-api","crate=doc-api"
             "feedback-api",dir,"crates/memory-api/crates/feedback-api","crate=feedback-api"
             "fs-api",dir,"crates/memory-api/crates/fs-api","crate=fs-api"
             "log-api",dir,"crates/memory-api/crates/log-api","crate=log-api"
-            "memory-api",dir,"crates/memory-api/crates/memory-api","crate=memory-api"
             "memory-fixtures",dir,"crates/memory-api/crates/memory-fixtures","crate=memory-fixtures"
             "memory-matrix",dir,"crates/memory-api/crates/memory-matrix","crate=memory-matrix"
             "peek-api",dir,"crates/memory-api/crates/peek-api","crate=peek-api"
@@ -102,7 +101,7 @@ crates:
             - name: cli
               kind: dir
               path: "crates/memory-api/tools/cli"
-              children[10]{name,kind,path,note}:
+              children[9]{name,kind,path,note}:
                 "audit-cli",dir,"crates/memory-api/tools/cli/audit-cli","crate=audit-cli"
                 "compact-terminal-cli",dir,"crates/memory-api/tools/cli/compact-terminal-cli","crate=compact-terminal-cli"
                 "feedback-cli",dir,"crates/memory-api/tools/cli/feedback-cli","crate=feedback-cli"
@@ -112,19 +111,17 @@ crates:
                 "session-cli",dir,"crates/memory-api/tools/cli/session-cli","crate=session-cli"
                 "spec-cli",dir,"crates/memory-api/tools/cli/spec-cli","crate=spec-cli"
                 "test-cli",dir,"crates/memory-api/tools/cli/test-cli","crate=test-cli"
-                "ticket-cli",dir,"crates/memory-api/tools/cli/ticket-cli","crate=ticket-cli"
             - name: http
               kind: dir
               path: "crates/memory-api/tools/http"
-              children[4]{name,kind,path,note}:
+              children[3]{name,kind,path,note}:
                 "doc-http",dir,"crates/memory-api/tools/http/doc-http","crate=doc-http"
                 "feedback-http",dir,"crates/memory-api/tools/http/feedback-http","crate=feedback-http"
                 "spec-http",dir,"crates/memory-api/tools/http/spec-http","crate=spec-http"
-                "ticket-http",dir,"crates/memory-api/tools/http/ticket-http","crate=ticket-http"
             - name: mcp
               kind: dir
               path: "crates/memory-api/tools/mcp"
-              children[13]{name,kind,path,note}:
+              children[12]{name,kind,path,note}:
                 "audit-mcp",dir,"crates/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
                 "compact-terminal-mcp",dir,"crates/memory-api/tools/mcp/compact-terminal-mcp","crate=compact-terminal-mcp"
                 "feedback-mcp",dir,"crates/memory-api/tools/mcp/feedback-mcp","crate=feedback-mcp"
@@ -135,7 +132,6 @@ crates:
                 "session-mcp",dir,"crates/memory-api/tools/mcp/session-mcp","crate=session-mcp"
                 "spec-mcp",dir,"crates/memory-api/tools/mcp/spec-mcp","crate=spec-mcp"
                 "test-mcp",dir,"crates/memory-api/tools/mcp/test-mcp","crate=test-mcp"
-                "ticket-mcp",dir,"crates/memory-api/tools/mcp/ticket-mcp","crate=ticket-mcp"
                 "toolmon-costgate",dir,"crates/memory-api/tools/mcp/toolmon-costgate","crate=toolmon-costgate"
                 "toolmon-policy-api",dir,"crates/memory-api/tools/mcp/toolmon-policy-api","crate=toolmon-policy-api"
     - name: "memory-viewers"
