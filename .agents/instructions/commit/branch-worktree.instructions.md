@@ -1,5 +1,5 @@
 ---
-description: "Use when starting, committing, or integrating any implementation task. Covers the one-worktree-one-branch isolation protocol, session and board check-in, the rebase-then-ready-to-merge handoff, and the root-orchestrator merge monopoly."
+description: "Use when starting, committing, or integrating any implementation task. Covers the one-worktree-one-branch isolation protocol, session and board check-in, and the rebase-then-merge-into-main workflow the implementation session completes itself."
 ---
 
 ## Why
@@ -18,9 +18,9 @@ One implementation task, start to merge:
 4. **Commit** — commits land on the feature branch, never on `main`.
 5. **Rebase** — in every affected submodule first, then in the superproject, the feature branch rebases onto that repository's updated `main` and resolves every conflict on its own side.
 6. **Mark ready** — the agent checks out of the board with a `ready-to-merge:` reason and moves the ticket to `in-review`.
-7. **Merge** — the root orchestrator session, and only it, fast-forwards `main` and tears the worktree down.
+7. **Merge** — the implementation session itself fast-forwards every affected `main` (submodules first, superproject last) and tears its own worktree down.
 
-Steps 1 and 7 belong to the root orchestrator session. Steps 2 through 6 belong to the implementation session.
+Step 1 belongs to the root orchestrator session. Steps 2 through 7 belong to the implementation session — the same session that did the work also finishes the merge, since it is the one holding the rebased, validated branch.
 
 ## Naming
 
@@ -176,7 +176,7 @@ After the rebase completes, re-run the validation commands from the handoff pack
 
 If the rebase cannot be completed — a semantic conflict the agent cannot resolve — abort it with `git rebase --abort`, leave the branch as it was, and escalate with the conflicting paths named. Do not mark the branch ready.
 
-## 6. Mark ready to merge
+## 6. Mark ready, then merge (implementation session)
 
 Only after the rebase is clean and validation passes:
 
@@ -189,11 +189,13 @@ board_check_out {
 }
 ```
 
-Then move the ticket to `in-review`. The `ready-to-merge:` prefix is the marker the root orchestrator greps in `board_history` to find integrable branches. A branch without that marker is not ready, however finished it looks.
+Then move the ticket to `in-review`. The `ready-to-merge:` prefix is the marker recorded in `board_history` documenting that the branch was integrable at that point, even though this same session now proceeds to merge it immediately rather than waiting for a separate session to pick it up.
 
-## 7. Merge (root orchestrator only)
+Immediately continue into step 7 (Merge) in the same session — do not stop after marking ready. There is no handoff to a different orchestrator session for the merge itself; the implementation session that produced and validated the branch is also the one that integrates it, precisely because it is the only session that has seen the rebase resolve cleanly and the validation pass.
 
-**No implementation session ever merges into `main`.** The root orchestrator session holds the merge monopoly, because merge order across concurrent branches is a global decision and no worker session sees the other branches.
+## 7. Merge (same implementation session)
+
+**The implementation session merges its own branch into `main`.** Do not wait for or delegate to a separate root-orchestrator session to perform this step — do it directly, right after step 6, while validation is still fresh.
 
 ### Bottom-up integration sequence (canonical)
 
@@ -263,4 +265,4 @@ Stop and escalate rather than improvising when:
 - The board shows the ticket actively held by another `agent_id`.
 - `git branch --show-current` prints `main` inside an implementation session.
 - A rebase conflict is semantic rather than textual.
-- `git merge --ff-only` fails during integration.
+- `git merge --ff-only` fails during integration — `main` moved after the branch rebased; rebase again (step 5) and retry the merge yourself rather than treating it as someone else's problem.

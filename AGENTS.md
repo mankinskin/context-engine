@@ -40,7 +40,7 @@ Use static references as support:
 ## Task Routing
 
 - Any requested implementation or behavior change: create or update the tracking ticket(s) first, then create or update the relevant spec before editing files.
-- Any implementation work runs in its own git worktree on its own branch cut from `main`, claimed with `session_check_in` and `board_check_in` before the first edit; `./target/debug/worktree-ctl.exe` partially automates bootstrap, rebase, merge, and teardown. Rebase and integrate affected submodules before the superproject; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
+- Any implementation work runs in its own git worktree on its own branch cut from `main`, claimed with `session_check_in` and `board_check_in` before the first edit; `./target/debug/worktree-ctl.exe` partially automates bootstrap, rebase, merge, and teardown. Rebase and integrate affected submodules before the superproject; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Once work is finished, validated, and committed, the same session always finishes the loop by merging into `main` itself (see the same section) — it does not leave the merge for a separate orchestrator session.
 - Simple fix (1-2 files): after the ticket/spec setup when requirements or behavior change, gather context, implement, validate, update docs, verify spec links, and move the ticket to `in-review`.
 - Bug fix: after the ticket/spec setup, follow `.agents/prompts/debug-test.prompt.md` when available.
 - Feature or refactor (>5 files, >100 LOC, or unclear scope): use `.agents/prompts/tickets.prompt.md` to establish the ticket set, then `.agents/prompts/spec.prompt.md` to update the spec before implementation.
@@ -73,7 +73,7 @@ let _tracing = init_test_tracing!(&graph);
 - Scratch notes belong in temporary files only; do not commit ephemeral notes.
 - Follow the closed-loop iteration workflow: Review→Interview→Commit→Handoff. See [loop-closure.instructions.md](.agents/instructions/orchestration/loop-closure.instructions.md).
 - When a handoff package is incomplete or requirements are ambiguous, escalate rather than clarifying inline during implementation. See [escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md).
-- Never commit to `main` from an implementation session and never merge a feature branch yourself: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on feature branches, mark ready to merge, and leave bottom-up integration to the root orchestrator. See [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
+- Never commit directly to `main` from an implementation session — all commits land on the feature branch. After the branch is rebased clean and validation passes, the session merges its own feature branch into `main` (bottom-up: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on the feature branch, then fast-forward each `main`). See [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
 
 ## Feedback Workflow
 
