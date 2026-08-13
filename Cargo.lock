@@ -6216,10 +6216,8 @@ dependencies = [
  "spec-mcp",
  "tempfile",
  "test-api",
+ "ticket",
  "ticket-api",
- "ticket-cli",
- "ticket-http",
- "ticket-mcp",
  "tokio",
  "tower 0.5.3",
  "uuid",
@@ -9994,15 +9992,29 @@ dependencies = [
 name = "ticket"
 version = "0.1.0"
 dependencies = [
+ "arc-swap",
+ "axum",
+ "chrono",
+ "clap",
+ "futures-util",
+ "memory-api",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
  "pretty_assertions",
+ "rmcp",
  "serde",
  "serde_json",
+ "shell-words",
+ "spec-api",
  "tempfile",
+ "thiserror 2.0.18",
  "ticket-api",
  "tokio",
+ "toml 0.9.12+spec-1.1.0",
+ "toon-format",
  "tower 0.5.3",
+ "tracing",
  "transport-harness",
+ "trybuild",
  "urlencoding",
  "uuid",
 ]
@@ -10033,70 +10045,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ticket-cli"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "memory-api",
- "pretty_assertions",
- "serde",
- "serde_json",
- "shell-words",
- "spec-api",
- "tempfile",
- "thiserror 2.0.18",
- "ticket-api",
- "ticket-http",
- "tokio",
- "toml 0.8.23",
- "toon-format",
- "tracing",
- "trybuild",
- "uuid",
-]
-
-[[package]]
-name = "ticket-http"
-version = "0.1.0"
-dependencies = [
- "arc-swap",
- "axum",
- "chrono",
- "futures-util",
- "memory-api",
- "rmcp",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "ticket-api",
- "ticket-mcp",
- "tokio",
- "tower 0.5.3",
- "tracing",
- "trybuild",
- "uuid",
-]
-
-[[package]]
-name = "ticket-mcp"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "memory-api",
- "rmcp",
- "serde",
- "serde_json",
- "tempfile",
- "ticket-api",
- "tokio",
- "tracing",
- "trybuild",
- "uuid",
-]
-
-[[package]]
 name = "ticket-viewer"
 version = "0.1.0"
 dependencies = [
@@ -10105,8 +10053,8 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "ticket",
  "ticket-api",
- "ticket-http",
  "tokio",
  "tower 0.5.3",
  "tracing",
@@ -10350,6 +10298,21 @@ dependencies = [
  "serde_spanned 0.6.9",
  "toml_datetime 0.6.11",
  "toml_edit 0.22.27",
+]
+
+[[package]]
+name = "toml"
+version = "0.9.12+spec-1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf92845e79fc2e2def6a5d828f0801e29a2f8acc037becc5ab08595c7d5e9863"
+dependencies = [
+ "indexmap 2.13.0",
+ "serde_core",
+ "serde_spanned 1.1.0",
+ "toml_datetime 0.7.5+spec-1.1.0",
+ "toml_parser",
+ "toml_writer",
+ "winnow 0.7.15",
 ]
 
 [[package]]
@@ -10694,7 +10657,6 @@ dependencies = [
 [[package]]
 name = "transport-harness"
 version = "0.1.0"
-source = "git+https://github.com/mankinskin/memory-kernel?branch=main#59dff48382b03bdb332700436d1125fc4cd919ef"
 dependencies = [
  "axum",
  "clap",
@@ -10703,6 +10665,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.18",
  "tokio",
+ "tower 0.5.3",
  "tracing",
  "tracing-subscriber",
 ]
@@ -10715,9 +10678,9 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "trybuild"
-version = "1.0.118"
+version = "1.0.120"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06649c6f63d86604ba0c8950d5a1829fc9a17afd70fc6629f481d75b6a624c78"
+checksum = "1e605bf6b39357663d8ba4e984f8be8da8df6bb32e81031d6889024ea8fd68e4"
 dependencies = [
  "glob",
  "serde",
