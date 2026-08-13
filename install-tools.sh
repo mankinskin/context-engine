@@ -319,7 +319,11 @@ install_one() {
             printf '%q ' "${full_args[@]}"
             printf '\n'
         else
-            (cd "$repo_root" && "${full_args[@]}")
+            if ! (cd "$repo_root" && "${full_args[@]}"); then
+                failed_tools+=("$tool")
+                printf 'error: dry-run failed for %s\n' "$tool" >&2
+                return 1
+            fi
         fi
         installed_tools+=("$tool")
         return 0

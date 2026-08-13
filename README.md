@@ -9,7 +9,22 @@ Bash shell (Git Bash on Windows). Node/npm are not required for this bootstrap
 or the Trunk-based viewer frontends. `install-deps.sh` installs `ripgrep`,
 `rtk`, `trunk`, `cargo-llvm-cov` (and `llvm-tools-preview`), and `cargo-make`.
 
-From a fresh clone, run the bootstrap commands in order:
+From a fresh clone, bootstrap everything with a single script:
+
+```bash
+bash bootstrap.sh
+```
+
+This also regenerates `.github/agents/`, `.github/prompts/`, and
+`.github/instructions/` from this repo's canonical `.agents/` sources, so a
+Copilot CLI session opened in this repo automatically sees the repository's
+custom agents, prompt templates, and path-scoped instructions with no extra
+setup step. If a step fails, `bootstrap.sh` stops immediately and prints
+which step failed and the exact command to re-run once the reported problem
+is fixed; every step is safe to re-run, including `bootstrap.sh` itself.
+
+`bootstrap.sh` runs the following steps in order; each is documented and can
+also be run standalone for partial/advanced setups:
 
 ```bash
 bash setup_git.sh
