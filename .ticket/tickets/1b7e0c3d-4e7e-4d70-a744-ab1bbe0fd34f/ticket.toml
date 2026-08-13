@@ -1,0 +1,10 @@
+id = "1b7e0c3d-4e7e-4d70-a744-ab1bbe0fd34f"
+created_at = "2026-08-13T15:15:54.103240+00:00"
+title = "[workflow-tools][foundations] Cut over legacy memory-api consumers to memory-kernel"
+state = "open"
+component = "workflow-tools"
+effort = "7600"
+linked = ["2b1279bd-c42f-4b0e-8835-d0d645a733ab", "37e07148-c327-4530-8251-599c14dca04e", "e12d8343-24f2-4b5d-8023-5a071238904a"]
+parts = [{ id = "2021ec9a-7ced-4f3c-bd83-b5339884fd59", kind = "design", path = "parts/2021ec9a-7ced-4f3c-bd83-b5339884fd59.md", frozen = false, created_at = "2026-08-13T15:23:55.499623400Z" }, { id = "3c5b7084-8dfc-4aef-97dd-84efa59e80e7", kind = "design", path = "parts/3c5b7084-8dfc-4aef-97dd-84efa59e80e7.md", frozen = false, created_at = "2026-08-13T15:43:49.007430600Z" }, { id = "45d008c0-143c-45e7-8131-eeef84827144", kind = "design", path = "parts/45d008c0-143c-45e7-8131-eeef84827144.md", frozen = false, created_at = "2026-08-13T15:58:28.706859900Z" }]
+priority = "high"
+type = "tracker-improvement"
