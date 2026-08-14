@@ -142,7 +142,9 @@ For each unit of work, spawn a sub-agent with:
    sub-agent the whole task.
 3. **A compact return contract.** Ask for exactly the facts/edits/results you
    need back — file paths, line ranges, a diff summary, a decision, or a short
-   findings list — not a transcript.
+   findings list — not a transcript. Require
+   [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md)
+   for the terminal delivery.
 4. **The context it needs, and no more.** Pass the minimum anchors (paths,
    ticket/spec ids, prior findings) so the sub-agent does not re-discover them.
    **Every crate, module, or file you name must carry its resolved physical

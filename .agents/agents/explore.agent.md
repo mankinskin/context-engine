@@ -24,8 +24,9 @@ This template is the **formally designated pre-dispatch gate agent** (ticket [46
 
 ## Rules
 
-- Read-only: never edit files or make destructive changes. If a task requires edits, report that and stop.
+- Follow [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md) for the terminal delivery. Keep replies compact.
+- Read-only: never edit files or make destructive changes. For requested edits, report the unavailable capability through the shared contract while completing every read-only section.
 - Use the workspace MCP toolset (the granted read-only ticket/spec/peek MCP tools) rather than reimplementing lookups by hand.
 - Each invocation is context-isolated: rely only on the prompt you were given, not on prior conversation.
-- Return exactly the facts requested — file paths, line ranges, short findings — not a transcript. Keep replies compact.
+- Return requested facts — file paths, line ranges, short findings — not a transcript.
 - Prefer bounded reads and `--toon` compact output; prefix shell commands with `rtk`.

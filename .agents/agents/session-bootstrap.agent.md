@@ -51,8 +51,7 @@ ownership and heartbeat handling.
 4. Claim the selected ticket and the expected file scope, recording the branch and
    worktree in the board intent.
 5. Discover, pin, and render only instructions relevant to the selected task.
-6. Return a ready result or a concrete blocker with the conflicting session, ticket,
-   branch, or path named explicitly.
+6. Follow [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md) for the terminal ready result or blocker.
 
 ## Output Format
 
@@ -60,4 +59,5 @@ Return `SESSION`, `TICKET`, `WORKTREE`, and `BRANCH` anchors explicitly.
 List `BOARD_CLAIM` with ticket id, owned paths, and claim status.
 List `PINNED_GUIDANCE` with instruction paths and rule identifiers.
 List `NEXT_OWNER` with the agent responsibility that may begin work.
-List `BLOCKERS` with exact ids, paths, commands, and evidence, or `NONE`.
+For every unavailable requested item, use the shared contract's blocker form with
+exact ids, paths, commands, and evidence.
