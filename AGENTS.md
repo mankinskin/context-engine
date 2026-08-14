@@ -33,9 +33,9 @@ Use live sources first:
 
 Use static references as support:
 
-1. `CHEAT_SHEET.md` for type-level gotchas and common patterns.
-2. crate `README.md` and `HIGH_LEVEL_GUIDE.md` for design context.
-3. existing tests for usage examples and assertions.
+1. Relevant crate `README.md` and `HIGH_LEVEL_GUIDE.md` for design context and
+  API patterns.
+2. Existing tests for usage examples, assertions, and type-level behavior.
 
 ## Task Routing
 
@@ -104,7 +104,6 @@ let _tracing = init_test_tracing!(&graph);
 
 ## Canonical Sources
 
-- API patterns and gotchas: `CHEAT_SHEET.md`
 - Ticket workflow details: `.agents/prompts/tickets.prompt.md`
 - Path-specific rules: `.agents/instructions/*.instructions.md`
 

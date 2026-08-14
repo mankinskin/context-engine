@@ -17,7 +17,7 @@ Run pre-dispatch gates for EVERY delegation, regardless of delegation class. Eac
 
 **Gate contract (explicit input/output)**:
 
-- **Receives**: the delegation class (Implement/Review/Testing/Commit), the candidate ticket/spec ids or handoff package draft, and the specific gate set below for that class. Nothing else — the gate agent is context-isolated like any sub-agent.
+- **Receives**: the delegation class (Implement/Review/Testing/Commit/Research-Explore), the candidate ticket/spec ids or handoff package draft, and the specific gate set below for that class. Nothing else — the gate agent is context-isolated like any sub-agent.
 - **Must return exactly one of**:
   - `{pass: true, bundle: {...}}` — the resolved context bundle (ticket, specs, paths, validation commands per the gate set's "Output" line below), ready to hand to the real delegation's sub-agent unmodified.
    - `{pass: false, blocker: "<single exact reason>"}` — one concrete, actionable blocker (not a list, not a hedge). Template: `"ticket <ticket-short-id> is in state 'blocked', not dispatchable"`, not "there might be an issue with the ticket."
@@ -99,6 +99,24 @@ Re-dispatching the same blocked unit without resolving the blocker is the exact 
 
 **Output**: `{pass: true, specs: [<resolved-specs>], commands: [<validated-commands>]}` OR `{pass: false, blocker: "<exact-reason>"}`
 
+### Research/Explore Delegation
+
+**Purpose**: Verify that a read-only investigation has a bounded question and no capability/mode mismatch. This completes the every-delegation gate mandate for [ticket 46d8b25d](../../../.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml) and applies the Implement delegation checks from [ticket 84aa1d3e](../../../.ticket/tickets/84aa1d3e-d98c-4c7c-8352-9ccecb2ca93e/ticket.toml) to read-only work.
+
+**Gates**:
+
+1. **Target mode and requested operations agree**
+   - Tool: read the dispatch prompt and target agent contract
+   - Block if: the target mode is absent, or a read-only target receives an edit, state-store mutation, or mutating command such as `git submodule update --init --recursive`
+   - Pass: declared `read-only` mode and a command list containing only allowed read-only operations
+
+2. **Research scope is bounded and evidence-backed**
+   - Tool: read the dispatch prompt
+   - Block if: no concrete question, target surface, or requested evidence is provided
+   - Pass: research question, target paths or entities, and requested evidence shape
+
+**Output**: `{pass: true, mode: "read-only", question: "<question>", targets: [<paths-or-entities>], commands: [<verified-read-only-commands>]}` OR `{pass: false, blocker: "<exact-reason>"}`
+
 ### Commit Delegation
 
 **Purpose**: Verify working tree state is known and ticket is committable.
@@ -144,7 +162,7 @@ Add before the "Required Workflow" section:
 ```markdown
 ## Pre-Dispatch Quality Gates
 
-Run pre-dispatch gates for EVERY delegation by dispatching the Explore Agent template (`.agents/agents/explore.agent.md`, `"GPT-5 mini (copilot)"`) as the mandated gate mechanism. Each delegation class (Implement, Review, Testing, Commit) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.
+Run pre-dispatch gates for EVERY delegation by dispatching the Explore Agent template (`.agents/agents/explore.agent.md`, `"GPT-5 mini (copilot)"`) as the mandated gate mechanism. Each delegation class (Implement, Review, Testing, Commit, Research/Explore) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.
 
 Gate failures (`pass: false`) mean the delegation is NOT dispatched: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works.
 ```

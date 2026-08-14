@@ -53,6 +53,7 @@ If the handoff package is incomplete or ambiguous, **escalate immediately** to t
 
 ## Required Workflow
 
+0. Before a bulk relocation, inventory every source, test, and referencing surface; verify every source and test path exists. Include install/configuration files, scripts, documentation, descriptions, and generated maps that name a moved path. If the inventory is incomplete or any enumerated relocation path is missing, stop before any move. Execute the relocation and reference updates in validated phases; validate after each phase before starting the next.
 1. Confirm the assigned worktree and branch: `git -C <worktree> branch --show-current` must print `agent/<ticket-short-id>-<slug>`, not `main`. Claim it with `session_check_in`, then claim the ticket and file scope with `board_check_in`.
 2. Anchor on a concrete ticket, failing behavior, file, symbol, or generated target.
 3. Check the nearest owning code path, related ticket/spec context, and one neighboring test or call site.

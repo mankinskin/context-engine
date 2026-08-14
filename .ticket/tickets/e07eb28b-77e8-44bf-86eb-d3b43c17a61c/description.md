@@ -1,0 +1,1 @@
+Align ticket CLI/MCP graph output, session Mermaid and terminal workflow renderers, and the ticket-viewer dependency graph with the rendering contract: typed labels, label-safe presentation, legend or equivalent key, and documented dependency direction.

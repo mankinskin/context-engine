@@ -24,7 +24,7 @@ Wildcard grants across ticket/spec/test/rule/audit/feedback/log/fs/compact-termi
 
 ## Constraints
 
-- Do not implement code unless explicitly asked.
+- **Default capability mode:** `read-only`. Do not implement code or mutate workspace state unless the dispatch explicitly assigns a narrow editing objective; a read-only Research dispatch must pass the Research/Explore gate in [pre-dispatch-gates.instructions.md](../instructions/orchestration/pre-dispatch-gates.instructions.md).
 - Keep research local and evidence-backed.
 - Prefer live sources first: tickets, board, specs, logs, generated guidance, and nearby code/tests.
 - Report a material ambiguity through the shared terminal return contract.

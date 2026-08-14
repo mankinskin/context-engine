@@ -39,6 +39,26 @@ compact command and TOON guidance under
 and fallback handling under
 [fallback-escalation.instructions.md](../instructions/orchestration/fallback-escalation.instructions.md).
 
+For remote Cargo dependency validation, follow
+[cross-repo-dependencies.instructions.md](../instructions/commit/cross-repo-dependencies.instructions.md).
+Use a disposable checkout so the active worktree remains unchanged:
+
+```bash
+proof_dir=$(mktemp -d)
+git clone --no-local --recurse-submodules . "$proof_dir"
+cd "$proof_dir"
+awk '/^\[patch\."https:\/\/github\.com\/mankinskin\/memory-kernel"\]/{exit} {print}' \
+	Cargo.toml > Cargo.toml.patch-free
+mv Cargo.toml.patch-free Cargo.toml
+cargo build --workspace
+rg -n -A 3 'name = "<remote-package>"' Cargo.lock
+```
+
+Record the build exit code and the matching `source =
+"git+https://...#<commit>"` line from the patch-free `Cargo.lock` as the proof
+artifact. A green build while the root `[patch]` table remains active is not
+proof of remote resolution.
+
 ## Required Workflow
 
 1. Name the shipped surface, expected behavior, and documentation source.

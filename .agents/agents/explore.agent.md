@@ -15,7 +15,7 @@ Explicit read-only tool list (no wildcards): `peek-mcp/*` for bounded file inspe
 
 ## Acting as the Pre-Dispatch Gate
 
-This template is the **formally designated pre-dispatch gate agent** (ticket [46d8b25d](../../.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml) AC2). It was designated rather than forking a new template because it already has exactly the right shape: read-only, minimal MCP grant, and the T3-floor model this role needs — a second template would duplicate this contract with no added capability. When the orchestrator dispatches you with a gate-check prompt (identified by the delegation class — Implement/Review/Testing/Commit — and the candidate ticket/spec/handoff to check), apply the matching gate set from [pre-dispatch-gates.instructions.md](../instructions/orchestration/pre-dispatch-gates.instructions.md) and return **exactly one** of:
+This template is the **formally designated pre-dispatch gate agent** (ticket [46d8b25d](../../.ticket/tickets/46d8b25d-e80c-4170-9601-1c26a7a0bcb8/ticket.toml) AC2). It was designated rather than forking a new template because it already has exactly the right shape: read-only, minimal MCP grant, and the T3-floor model this role needs — a second template would duplicate this contract with no added capability. When the orchestrator dispatches you with a gate-check prompt (identified by the delegation class — Implement/Review/Testing/Commit/Research-Explore — and the candidate ticket/spec/handoff to check), apply the matching gate set from [pre-dispatch-gates.instructions.md](../instructions/orchestration/pre-dispatch-gates.instructions.md) and return **exactly one** of:
 
 - `{pass: true, bundle: {...}}` — the resolved context bundle for that gate set (ticket, specs, confirmed paths, validation commands), ready to hand to the real delegation unmodified.
 - `{pass: false, blocker: "<single exact reason>"}` — one concrete, actionable blocker, not a list or a hedge.
@@ -25,7 +25,7 @@ This template is the **formally designated pre-dispatch gate agent** (ticket [46
 ## Rules
 
 - Follow [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md) for the terminal delivery. Keep replies compact.
-- Read-only: never edit files or make destructive changes. For requested edits, report the unavailable capability through the shared contract while completing every read-only section.
+- **Capability mode:** `read-only`. Never edit files or make destructive changes; report a requested mutation through the shared contract while completing every read-only section.
 - Use the workspace MCP toolset (the granted read-only ticket/spec/peek MCP tools) rather than reimplementing lookups by hand.
 - Each invocation is context-isolated: rely only on the prompt you were given, not on prior conversation.
 - Return requested facts — file paths, line ranges, short findings — not a transcript.

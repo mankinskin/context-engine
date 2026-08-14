@@ -20,25 +20,29 @@ buildable workspace:
   `context-api`. Each layer only depends on layers below it; check assumptions in
   lower layers before changing upper ones.
 - `memory-api/` — generic entity-store infrastructure (`memory-api` crate) plus
-  domain crates built on it: `ticket-api`, `spec-api`, `rule-api`, `audit-api`,
-  `test-api`, `session-api`, `feedback-api`, `doc-api`, `log-api`. Each domain crate
-  exposes a CLI (`tools/cli/*`), an MCP server (`tools/mcp/*`), and sometimes an HTTP
-  adapter (`tools/http/*`) that are thin transports over the domain crate — keep
-  business logic in the `-api` crate, not the adapter.
-- **Domain binary names.** Name a domain CLI binary with the bare public domain
-  name (`ticket`), and retain `-mcp` and `-http` for transport binaries
-  (`ticket-mcp`, `ticket-http`). Package names do not define command names:
-  the live `spec-cli` package builds the `spec` binary. The public `ticket`
-  crate is the precedent: gate each binary behind only its required feature.
-  [07a3eb2d ticket tooling cutover](../.ticket/tickets/07a3eb2d-8868-4c36-a60a-e93cc787c065/ticket.toml)
-  removed stale `ticket-cli` build and install references.
+  internal domain APIs such as `ticket-api`, `spec-api`, `rule-api`, `audit-api`,
+  `test-api`, `session-api`, `feedback-api`, `doc-api`, and `log-api`.
+- **Domain-tool architecture.** Pair each internal `{domain}-api` crate with one
+  public `{domain}` crate that re-exports the API and solely owns opt-in `cli`,
+  `mcp`, and `http` features plus the corresponding binaries. The public CLI uses
+  the bare domain name; MCP and HTTP binaries use `-mcp` and `-http`. The reference
+  implementation is `memory-api/crates/ticket`: `ticket` (`cli`), `ticket-mcp`
+  (`mcp`), and `ticket-http` (`http`). The remaining `tools/cli/*`, `tools/mcp/*`,
+  and `tools/http/*` paths are legacy layouts for unmigrated tools; see
+  [0da6894c Single domain crate per tool](../.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml).
 - `viewer-api/` — shared viewer runtime (tracing, CORS, static-file serving, SSE,
   dev proxy) reused by every viewer binary.
 - `memory-viewers/` — viewer binaries (`ticket-viewer`, `spec-viewer`, `doc-viewer`,
   `log-viewer`), each a single-process server embedding its domain HTTP router plus
   an SPA frontend (Preact/Vite or Dioxus/Trunk depending on the viewer).
-- `memory-kernel/` — development-only submodule for the `transport-harness` crate;
-  not needed for ordinary work (see root README).
+- `memory-kernel/` — required neutral shared base layer beneath domain repositories.
+  Its `memory_kernel` crate owns generic primitives and its sibling
+  `transport-harness` crate owns transport-generic startup; domain-specific
+  extension traits, command dispatch, server handlers, and router registration
+  remain domain-owned. The submodule tracks `github.com/mankinskin/memory-kernel`
+  and has a separate push cycle; the root Cargo patch substitutes the checked-out
+  kernel and harness only for this development workspace. See
+  [kernel layering guidance](../.agents/instructions/engine/kernel-layering.instructions.md).
 
 All of the above are registered as workspace members in the root [Cargo.toml](../Cargo.toml),
 so `cargo build`/`cargo test` from the repo root builds/tests everything unless scoped

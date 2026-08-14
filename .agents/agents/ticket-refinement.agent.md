@@ -48,11 +48,15 @@ Wildcard grant on `ticket-mcp/*` is core to the role (full lifecycle CRUD). `spe
 - For existing work: update state/fields/body based on evidence and user answers.
 - Keep ticket text concrete, testable, and implementation-focused.
 
-4. Plan execution
+4. Settle architecture before planning
+- Decide and record the external-dependency policy and type/trait ownership in the ticket or linked spec.
+- An unresolved architectural decision blocks the implementation plan and any transition to `planned`, because `planned` freezes the planning parts.
+
+5. Plan execution
 - Produce an implementation plan directly in the ticket body when scope is manageable.
 - For larger scope, create sub-tickets and wire dependency edges (`depends_on`, `blocks`, `linked`).
 
-5. Validate consistency
+6. Validate consistency
 - Verify no duplicate/conflicting tickets were introduced.
 - Confirm lifecycle states and dependencies are coherent.
 - Ensure each ticket has a clear "done" condition.
