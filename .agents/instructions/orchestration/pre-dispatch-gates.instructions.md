@@ -22,6 +22,8 @@ Run pre-dispatch gates for EVERY delegation, regardless of delegation class. Eac
   - `{pass: true, bundle: {...}}` — the resolved context bundle (ticket, specs, paths, validation commands per the gate set's "Output" line below), ready to hand to the real delegation's sub-agent unmodified.
    - `{pass: false, blocker: "<single exact reason>"}` — one concrete, actionable blocker (not a list, not a hedge). Template: `"ticket <ticket-short-id> is in state 'blocked', not dispatchable"`, not "there might be an issue with the ticket."
 
+**Dispatch verification (binding)**: The gate input MUST include the target agent's capability mode and every exact command in the dispatch prompt. The gate MUST block a command that the target mode forbids, including a mutating command sent to a read-only agent. Each command MUST have same-session probe output or the literal marker `VERIFY BEFORE RELYING ON THIS COMMAND: <command>`; an unmarked, untested command is an orchestrator fault. A passing bundle preserves each marker so the target verifies the command before relying on it.
+
 **Fail-fast semantics (binding)**: `pass: false` means the delegation is **NOT dispatched**, full stop. The orchestrator MUST do exactly one of:
 
 1. **Resolve** the precondition itself (create the missing spec, update the ticket state, fix the handoff package), then re-run the gate once, or

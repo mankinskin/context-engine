@@ -1,0 +1,7 @@
+{
+  "id": "ticket-07a3eb2d-install-tools-dryrun",
+  "title": "Install-tools dry-run validates relocated ticket crate",
+  "command": "./install-tools.sh --dry-run --tool ticket --tool ticket-mcp",
+  "detail": "Confirm that install tooling installs relocated `ticket` and `ticket-mcp` crates after fix in commit 717c3329 on branch agent/b9020ba2-df5d-426a-b1b9-228ef159cad1/guidance-learnings-impl",
+  "links": {}
+}

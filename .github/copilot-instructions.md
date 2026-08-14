@@ -25,6 +25,13 @@ buildable workspace:
   exposes a CLI (`tools/cli/*`), an MCP server (`tools/mcp/*`), and sometimes an HTTP
   adapter (`tools/http/*`) that are thin transports over the domain crate — keep
   business logic in the `-api` crate, not the adapter.
+- **Domain binary names.** Name a domain CLI binary with the bare public domain
+  name (`ticket`), and retain `-mcp` and `-http` for transport binaries
+  (`ticket-mcp`, `ticket-http`). Package names do not define command names:
+  the live `spec-cli` package builds the `spec` binary. The public `ticket`
+  crate is the precedent: gate each binary behind only its required feature.
+  [07a3eb2d ticket tooling cutover](../.ticket/tickets/07a3eb2d-8868-4c36-a60a-e93cc787c065/ticket.toml)
+  removed stale `ticket-cli` build and install references.
 - `viewer-api/` — shared viewer runtime (tracing, CORS, static-file serving, SSE,
   dev proxy) reused by every viewer binary.
 - `memory-viewers/` — viewer binaries (`ticket-viewer`, `spec-viewer`, `doc-viewer`,

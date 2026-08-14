@@ -117,12 +117,11 @@ This is the canonical contract for the `model:` frontmatter field on every `.age
 
 **Override-audit rule (AC4).** An explicit `model` argument that names a model *more expensive* than the template's declared tier (i.e., higher on the ladder) is an override. Every such override MUST be recorded with a one-line reason in the session record (the handoff/session-workflow entry for that dispatch) — e.g. "escalated ticket-refinement.agent.md from Claude Sonnet 5 to GPT-5.6 Terra: prior T2 attempt under-specified acceptance criteria on a cross-cutting spec." Overrides *downward* (cheaper than declared) do not require a recorded reason — the ladder already treats dropping a tier as the safe default direction; only climbing needs justification. This mirrors the existing "Climb to T1 only after..." and "Escalate a subtask up a tier only for quality insufficiency, and record why" rules elsewhere in this file — the override-audit rule generalizes those to *any* declared-tier override, not just T2→T1.
 
-**Class-to-tier mapping applied to the current 33 templates:**
+**Class-to-tier mapping applied to the current 32 templates:**
 
 | Template | Declared `model:` | Tier | Rationale |
 |---|---|---|---|
 | `orchestrator.agent.md` | Claude Opus 5 | T0 | Sole planning/delegation entry point; no direct execution tools |
-| `default.agent.md` | Claude Sonnet 5 | T2 | Generic scaffold; T2 is the stated ladder default |
 | `implement.agent.md` | Claude Sonnet 5 | T2 | Default implementation class |
 | `audit.agent.md` | Claude Sonnet 5 | T2 | Findings-first review needs judgement over checks |
 | `handoff.agent.md` | Claude Sonnet 5 | T2 | Synthesizes session state into a coherent handoff, not pure extraction |
@@ -177,7 +176,7 @@ This satisfies AC3: Explore, Research, and Commit all route to GPT-5 mini, cheap
 ## Verify Subagent Output Before Acting
 
 - Treat every subagent summary as an **unverified claim**. Subagents hallucinate like any model.
-- Spot-check load-bearing findings against ground truth (a real grep, a `--check` run, a bounded read) **before** any finding drives an edit or a decision.
+- Before acting on a claimed workspace, branch, file state, command result, or external effect, verify the claim against same-session ground truth (for example, a real grep, `--check` run, bounded read, or status command). A contradictory claim is a sub-agent fault, not state to infer around.
 - Reasoning over a summary is fine; trusting it blindly is how a hallucinated refactor ships.
 
 ## Parallel Fan-Out (Highest-Throughput Pattern)

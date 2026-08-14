@@ -3,8 +3,8 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/2/context-engine/.worktrees/b9020ba2-df5d-426a-b1b9-228ef159cad1/workflow-tools-restructure"
-top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
+  root: "//?/C:/Users/linus/git/2/context-engine/.worktrees/b9020ba2-df5d-426a-b1b9-228ef159cad1/guidance-learnings-impl"
+top_level_dirs[10]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tmp,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
   kind: dir
@@ -292,7 +292,7 @@ hooks:
             hooks.json,file,hooks/.github/hooks/hooks.json
             "rtk-rewrite.json",file,"hooks/.github/hooks/rtk-rewrite.json"
 key_tools[4]{path,description}:
-  target/debug/ticket.exe,"ticket-cli (state machine, board, deps)"
+  target/debug/ticket.exe,"ticket (state machine, board, deps)"
   target/debug/spec.exe,"spec-cli"
   target/debug/peek,"bounded inspection + repo-map generation"
   rtk <cmd>,"token-optimized CLI proxy (auto-compress output)"

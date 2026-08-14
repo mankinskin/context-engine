@@ -1,0 +1,21 @@
+{
+  "id": "exec-dc13ffb4-20260814",
+  "validation_spec_id": "spec-dc13ffb4-subagent-return-inspection",
+  "outcome": "passed",
+  "executed_at": "2026-08-14T00:00:00Z",
+  "duration_ms": 120000,
+  "detail": "Inspected .agents instruction file (exists), mirrored file in .github (exists), and five agent templates linking to it. See transcript entries for grep output and file headers.",
+  "links": {
+    "spec_ids": [
+      "spec-dc13ffb4-subagent-return-inspection"
+    ],
+    "ticket_ids": [
+      "dc13ffb4"
+    ]
+  },
+  "provenance": {
+    "domain": "inspection",
+    "operation": "manual-inspection",
+    "run_id": "run-1"
+  }
+}

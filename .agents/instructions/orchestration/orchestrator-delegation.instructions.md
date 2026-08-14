@@ -153,4 +153,10 @@ See "Parallel Fan-Out" in [model-routing.instructions.md](model-routing.instruct
 
 ## Failure Path
 
-See "Failure Path" in [model-routing.instructions.md](model-routing.instructions.md). Short version: retry once with a more self-contained prompt, then do the subtask inline; escalate up exactly one tier only for quality insufficiency, and record why.
+Classify every failed delegation before retrying:
+
+- **Orchestrator fault**: the prompt contains an unverified command, omits its required verification marker, or assigns work outside the target agent's capability mode. Correct the dispatch and re-run the pre-dispatch gate.
+- **Sub-agent fault**: the response violates [subagent-return-contract.instructions.md](subagent-return-contract.instructions.md), fabricates a successful result, or declares an item impossible without reporting an attempted alternative probe and its output. Correct the target contract before retrying.
+- **Tooling fault**: the same command or tool fails after a bounded reproduction with captured output. Record the command and output; do not restate the ticket CLI broken-pipe defect, which is owned by ticket `2e07430b`.
+
+Retries of mechanical units MUST retain the same or a cheaper tier. Escalate exactly one tier only for demonstrated quality insufficiency, and record the reason. See "Failure Path" in [model-routing.instructions.md](model-routing.instructions.md) for the retry limit.
