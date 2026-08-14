@@ -47,6 +47,7 @@ If the handoff package is incomplete or ambiguous, **escalate immediately** to t
 - Keep status output brief and implementation-focused.
 - Report a material product or architecture ambiguity through the shared terminal return contract.
 - Work only inside the git worktree assigned to this task. Never edit, build, or commit in the repository root checkout, and never commit to `main`.
+- Mutate `.ticket/`, `.spec/`, `.rule/`, `.test/`, and `.session/` only through their CLI or MCP API with `workspace` set to the assigned worktree; never hand-edit store records. `worktree_path` does not redirect the resolved workspace. If a planned part is frozen, write the appropriate non-frozen review or validation record instead of forcing or reverting it.
 - Claim the worktree with `session_check_in` and the ticket and file scope with `board_check_in` before the first edit; a conflict on either is an escalation, not something to work around. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
 - The worktree is provisioned FOR this agent by the orchestrator via `./target/debug/worktree-ctl.exe new`, and its path arrives in this task's context bundle. This agent never runs `worktree-ctl new`, `merge`, or `remove` itself, and never merges into `main`.
 

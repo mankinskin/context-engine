@@ -59,14 +59,15 @@ Examples:
 ## Required Workflow
 
 1. Confirm the checkout: `git branch --show-current` must print the task's `agent/<ticket-short-id>-<slug>` branch. If it prints `main`, stop and escalate — the session is in the wrong checkout.
-2. Survey changes: `git status --short` and `git submodule foreach --recursive 'git status --short'`.
-3. Identify dirty submodules and plan bottom-up commit order.
-4. Check for generated-output drift and regenerate before staging.
-5. Stage and commit each logical batch with a focused message, staging only board-claimed files.
-6. Update submodule pointers deepest-first.
-7. Rebase the feature branch onto local `main` (`./target/debug/worktree-ctl.exe rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here rather than on `main`, and re-run validation.
-8. Check out of the board with a `ready-to-merge: <branch> @ <sha>` reason and move the ticket to `in-review`.
-9. Verify clean state: `git status --short`.
+2. Detect accidental `.ticket/`, `.spec/`, `.rule/`, `.test/`, or `.session/` records in the root checkout. Recreate or migrate each record through the store's CLI or MCP API with `workspace` set to the assigned worktree, then restore only the accidental root paths. Never hand-edit TOML or JSON records; `worktree_path` does not redirect the resolved workspace.
+3. Survey changes: `git status --short` and `git submodule foreach --recursive 'git status --short'`.
+4. Identify dirty submodules and plan bottom-up commit order.
+5. Check for generated-output drift and regenerate before staging.
+6. Stage and commit each logical batch with a focused message, staging only board-claimed files.
+7. Update submodule pointers deepest-first.
+8. Rebase the feature branch onto local `main` (`./target/debug/worktree-ctl.exe rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here rather than on `main`, and re-run validation.
+9. Check out of the board with a `ready-to-merge: <branch> @ <sha>` reason and move the ticket to `in-review`.
+10. Verify clean state: `git status --short`.
 
 ## Output Format
 

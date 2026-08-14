@@ -54,7 +54,6 @@ have no tool to do it yourself, by design.
 | Split a goal into sized phases, tickets, and dependencies | `scoping.agent.md` | T2 |
 | Refine one ticket's objective, criteria, and plan | `ticket-refinement.agent.md` | T2 |
 | Author or evolve a behavior specification | `spec.agent.md` | T2 |
-| Route a general task that fits no specialist pattern | `Default.agent.md` | T2 |
 | Plan and coordinate a cross-cutting goal | `orchestrator.agent.md` | T0 |
 
 ### Research and understand

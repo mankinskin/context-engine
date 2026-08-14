@@ -7,6 +7,19 @@ applyTo: "**/*.rs,**/*.ts,**/tests/**"
 
 Resolves Open Question 2 ("Mid-execution failure handling") from spec [1b654f30 Two-tier Planner/Worker model routing architecture](../../../.spec/specs/1b654f30-d1a4-4cb4-ab2e-8355dfe5a758/body.md): *when a Worker's step fails `done_criteria`, does the whole Plan invalidate back to the Planner, or can the Step be patched in place?* This instruction is that answer: **a Worker gets exactly one self-fix retry after a failing test; a second failure on the same step escalates instead of retrying again.**
 
+## Classify Compile Failures Before Applying the Cap
+
+Compile/build failures are not test failures and do not consume the test
+self-fix retry. Run a separate compile command when needed (for example,
+`cargo test -p <crate> --no-run`), persist its output to a log, and make local
+mechanical repairs until the test executable can be built or a concrete blocker
+requires escalation. An interrupt, timeout, or empty result before tests run is
+a compile/execution diagnostic, not a failed test; do not abandon partially
+applied work merely because that diagnostic occurred twice.
+
+Only a test that actually runs and fails enters the one-self-fix-retry rule
+below.
+
 ## The Rule (exact)
 
 **A Worker (or any worker-tier sub-agent) that fails a test on a step gets exactly one self-fix retry. If the retried attempt also fails a test on that same step, the Worker MUST stop and escalate — it must not attempt a third fix.**

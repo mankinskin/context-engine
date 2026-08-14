@@ -42,6 +42,6 @@ Wildcard grants across ticket/spec/test/rule/audit/feedback/log/fs/compact-termi
 Return:
 - research question and anchor
 - sources checked
-- key findings
-- remaining ambiguity, if any
+- findings, each as `fact | inference | stale-or-pending | evidence`
+- remaining ambiguity, if any, separated from verified findings
 - single recommended next action

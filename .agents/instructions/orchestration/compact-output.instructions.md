@@ -15,6 +15,9 @@ All CLI commands that support it should produce **compact output by default**. V
 
 Rules:
 - Prefer `rtk <cmd>` over bare `<cmd>` — rtk filters/compresses output automatically.
+- When a command emits a stream of file paths for a downstream command, run that
+  producer bare so filtering cannot alter pipeline filenames; otherwise keep the
+  normal `rtk` preference.
 - `rtk` is an optional proxy. If `command -v rtk` fails, run the bare command and note the missing proxy in the status summary; never block work waiting on it.
 - When a CLI supports `--toon`, prefer `--toon` over `--json` for compact machine-readable output.
 - Never request `--json` output and then discard most of it; use a targeted filter (jq, toon-rust) instead.
