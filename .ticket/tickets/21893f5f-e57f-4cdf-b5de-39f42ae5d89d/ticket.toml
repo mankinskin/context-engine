@@ -5,6 +5,7 @@ state = "open"
 component = "rule"
 depends_on = ["0da6894c-dcbb-4196-8ac7-b6fae7c40ec9", "1c452ff1-6edc-47c8-a73d-d07ce9b4d473", "dbe0e955-c1b4-414d-820c-10c3fbbb5d3d"]
 effort = "1200"
+parts = [{ id = "8e847acb-a98d-431d-9cf6-5295e0a93e46", kind = "implementation_plan", path = "parts/8e847acb-a98d-431d-9cf6-5295e0a93e46.md", frozen = false, created_at = "2026-08-13T17:28:27.406362400Z" }]
 priority = "high"
 risk_level = "medium"
 type = "task"

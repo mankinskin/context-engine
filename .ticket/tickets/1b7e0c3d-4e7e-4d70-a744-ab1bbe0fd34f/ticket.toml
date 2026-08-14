@@ -1,10 +1,11 @@
 id = "1b7e0c3d-4e7e-4d70-a744-ab1bbe0fd34f"
 created_at = "2026-08-13T15:15:54.103240+00:00"
 title = "[workflow-tools][foundations] Cut over legacy memory-api consumers to memory-kernel"
-state = "open"
+state = "in-review"
 component = "workflow-tools"
 effort = "7600"
 linked = ["2b1279bd-c42f-4b0e-8835-d0d645a733ab", "37e07148-c327-4530-8251-599c14dca04e", "e12d8343-24f2-4b5d-8023-5a071238904a"]
-parts = [{ id = "2021ec9a-7ced-4f3c-bd83-b5339884fd59", kind = "design", path = "parts/2021ec9a-7ced-4f3c-bd83-b5339884fd59.md", frozen = false, created_at = "2026-08-13T15:23:55.499623400Z" }, { id = "3c5b7084-8dfc-4aef-97dd-84efa59e80e7", kind = "design", path = "parts/3c5b7084-8dfc-4aef-97dd-84efa59e80e7.md", frozen = false, created_at = "2026-08-13T15:43:49.007430600Z" }, { id = "45d008c0-143c-45e7-8131-eeef84827144", kind = "design", path = "parts/45d008c0-143c-45e7-8131-eeef84827144.md", frozen = false, created_at = "2026-08-13T15:58:28.706859900Z" }]
+parts = [{ id = "2021ec9a-7ced-4f3c-bd83-b5339884fd59", kind = "design", path = "parts/2021ec9a-7ced-4f3c-bd83-b5339884fd59.md", frozen = true, created_at = "2026-08-13T15:23:55.499623400Z" }, { id = "3c5b7084-8dfc-4aef-97dd-84efa59e80e7", kind = "design", path = "parts/3c5b7084-8dfc-4aef-97dd-84efa59e80e7.md", frozen = false, created_at = "2026-08-13T15:43:49.007430600Z" }, { id = "45d008c0-143c-45e7-8131-eeef84827144", kind = "design", path = "parts/45d008c0-143c-45e7-8131-eeef84827144.md", frozen = false, created_at = "2026-08-13T15:58:28.706859900Z" }, { id = "549d7a6a-825d-430f-ad22-9b4e8dc7d33a", kind = "objective", path = "parts/549d7a6a-825d-430f-ad22-9b4e8dc7d33a.md", frozen = true, created_at = "2026-08-13T16:40:28.040502200Z" }, { id = "28134999-1d30-4634-9a89-3065b771b5f5", kind = "requirements", path = "parts/28134999-1d30-4634-9a89-3065b771b5f5.md", frozen = true, created_at = "2026-08-13T16:40:28.040680300Z" }, { id = "ed123c54-e28a-454a-9489-5034851039b7", kind = "examples", path = "parts/ed123c54-e28a-454a-9489-5034851039b7.md", frozen = true, created_at = "2026-08-13T16:40:28.040949100Z" }, { id = "df7548a8-a685-4195-bbcd-f14ef9471b5c", kind = "acceptance_criteria", path = "parts/df7548a8-a685-4195-bbcd-f14ef9471b5c.md", frozen = true, created_at = "2026-08-13T16:40:28.041262100Z" }]
+plan_revision = 1
 priority = "high"
 type = "tracker-improvement"
