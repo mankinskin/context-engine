@@ -22,11 +22,11 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 - Bin: `session-capture-hook`
 - Lifecycle: Install, Inspect
 
-## ticket-cli
+## ticket
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/tools/cli/ticket-cli`
+- Source: `memory-api/crates/ticket`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `ticket`
@@ -96,7 +96,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/ticket-mcp`
+- Source: `memory-api/crates/ticket`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `ticket-mcp`

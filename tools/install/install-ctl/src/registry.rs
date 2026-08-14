@@ -17,6 +17,8 @@ pub struct Artifact {
     #[serde(default)]
     pub bin: Option<String>,
     #[serde(default)]
+    pub features: Vec<String>,
+    #[serde(default)]
     pub npm_script: Option<String>,
     // Not read yet: installation for vscode-extension artifacts is not wired up in this unit.
     #[serde(default)]
@@ -115,6 +117,7 @@ fn adapt_registry_v2(registry: RegistryV2) -> Registry {
                 kind,
                 path: entry.source_path,
                 bin: entry.bin,
+                features: entry.features,
                 npm_script: entry.npm_script,
                 extension_id: None,
             })
@@ -194,6 +197,8 @@ pub struct RegistryEntryV2 {
     pub safety: Safety,
     #[serde(default)]
     pub bin: Option<String>,
+    #[serde(default)]
+    pub features: Vec<String>,
     #[serde(default)]
     pub npm_script: Option<String>,
 }
@@ -390,6 +395,7 @@ bin = "example-service"
                     lifecycle: vec![LifecycleAction::Inspect],
                     safety: Safety::Safe,
                     bin: Some("example".into()),
+                    features: vec![],
                     npm_script: None,
                 },
                 RegistryEntryV2 {
@@ -401,6 +407,7 @@ bin = "example-service"
                     lifecycle: vec![LifecycleAction::Inspect],
                     safety: Safety::ApprovalRequired,
                     bin: None,
+                    features: vec![],
                     npm_script: None,
                 },
             ],

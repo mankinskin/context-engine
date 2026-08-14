@@ -186,10 +186,15 @@ fn print_plan(selected: &[Artifact], force: bool) {
             ArtifactKind::RustBinary => {
                 let bin = artifact.bin.as_deref().unwrap_or(&artifact.id);
                 let force_flag = if force { " --force" } else { "" };
+                let features = if artifact.features.is_empty() {
+                    String::new()
+                } else {
+                    format!(" --features {}", artifact.features.join(","))
+                };
                 println!("==> {}", artifact.id);
                 println!(
-                    "    cargo install --path \"{}\" --bin {}{}",
-                    artifact.path, bin, force_flag
+                    "    cargo install --path \"{}\" --bin {}{}{}",
+                    artifact.path, bin, features, force_flag
                 );
             }
             ArtifactKind::VscodeExtension => {
@@ -242,7 +247,12 @@ fn install_rust_binary(artifact: &Artifact, repo_root: &Path, force: bool) {
 
     let full_path = repo_root.join(&artifact.path);
     let full_path = full_path.to_string_lossy().to_string();
+    let features = artifact.features.join(",");
     let mut args = vec!["install", "--path", full_path.as_str(), "--bin", bin];
+    if !features.is_empty() {
+        args.push("--features");
+        args.push(&features);
+    }
     if force {
         args.push("--force");
     }

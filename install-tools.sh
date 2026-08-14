@@ -37,7 +37,7 @@ tool_names=(
     session-capture-hook
     install-ctl
     worktree-ctl
-    ticket-cli
+    ticket
     spec-cli
     audit-cli
     rule-cli
@@ -104,8 +104,8 @@ Environment:
 
 Examples:
   ./install-tools.sh
-  ./install-tools.sh spec-cli ticket-cli
-  ./install-tools.sh --tool viewer-ctl --tool ticket-cli
+    ./install-tools.sh spec-cli ticket
+    ./install-tools.sh --tool viewer-ctl --tool ticket
   ./install-tools.sh --tool doc-viewer --tool log-viewer --tool spec-viewer --tool ticket-viewer
   ./install-tools.sh --tool audit-cli --tool rule-cli
   ./install-tools.sh --tool mcp-toolmon

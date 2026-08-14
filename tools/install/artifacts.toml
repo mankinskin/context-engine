@@ -28,14 +28,15 @@ safety = "approval-required"
 bin = "session-capture-hook"
 
 [[artifact]]
-id = "ticket-cli"
+id = "ticket"
 category = "cli"
 kind = "rust-binary"
-source_path = "memory-api/tools/cli/ticket-cli"
+source_path = "memory-api/crates/ticket"
 owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "ticket"
+features = ["cli"]
 
 [[artifact]]
 id = "spec-cli"
@@ -101,11 +102,12 @@ bin = "context-mcp"
 id = "ticket-mcp"
 category = "mcp"
 kind = "rust-binary"
-source_path = "memory-api/tools/mcp/ticket-mcp"
+source_path = "memory-api/crates/ticket"
 owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "ticket-mcp"
+features = ["mcp"]
 
 [[artifact]]
 id = "spec-mcp"

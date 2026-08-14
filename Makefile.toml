@@ -47,19 +47,19 @@ dependencies = [
 ]
 
 [tasks.build-cli-tools]
-description = "Build context-cli, spec-cli, ticket-cli, and audit-cli (release)"
+description = "Build context-cli, spec-cli, ticket, and audit-cli (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "context-cli", "-p", "spec-cli", "-p", "ticket-cli", "-p", "audit-cli"]
+args = ["build", "--release", "-p", "context-cli", "-p", "spec-cli", "-p", "ticket", "-p", "audit-cli", "--features", "ticket/cli"]
 
 [tasks.build-http-tools]
-description = "Build context-http, spec-http, and ticket-http (release)"
+description = "Build context-http, spec-http, and ticket (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "context-http", "-p", "spec-http", "-p", "ticket-http"]
+args = ["build", "--release", "-p", "context-http", "-p", "spec-http", "-p", "ticket", "--features", "ticket/http"]
 
 [tasks.build-mcp-tools]
-description = "Build context-mcp, spec-mcp, ticket-mcp, and audit-mcp (release)"
+description = "Build context-mcp, spec-mcp, ticket, and audit-mcp (release)"
 command = "cargo"
-args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket-mcp", "-p", "audit-mcp"]
+args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket", "-p", "audit-mcp", "--features", "ticket/mcp"]
 
 [tasks.build-install-ctl]
 description = "Build the install-ctl lifecycle manager binary (release)"

@@ -5172,7 +5172,7 @@ dependencies = [
  "js-sys",
  "log",
  "wasm-bindgen",
- "windows-core 0.57.0",
+ "windows-core 0.61.2",
 ]
 
 [[package]]
@@ -6170,7 +6170,6 @@ dependencies = [
 [[package]]
 name = "memory-kernel"
 version = "0.1.0"
-source = "git+https://github.com/mankinskin/memory-kernel?branch=main#38a12e98b272fd9b0a459fa5ae0cb6be79a543c5"
 dependencies = [
  "bincode",
  "chrono",
@@ -10659,7 +10658,6 @@ dependencies = [
 [[package]]
 name = "transport-harness"
 version = "0.1.0"
-source = "git+https://github.com/mankinskin/memory-kernel?branch=main#38a12e98b272fd9b0a459fa5ae0cb6be79a543c5"
 dependencies = [
  "axum",
  "clap",
