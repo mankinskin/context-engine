@@ -1,0 +1,3 @@
+- `.github/copilot-instructions.md` contains an explicit normative rule for bare CLI binary names and retained `-mcp`/`-http` transport suffixes.
+- The rule distinguishes package names from binary names and identifies `spec-cli` as a live package-name example.
+- The change references `07a3eb2d` for stale `ticket-cli` build/install references.
