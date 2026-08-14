@@ -1,0 +1,65 @@
+{
+  "handoff_id": "153f0732-02f7-40e4-90d2-0de51febd44e",
+  "session_id": "b9020ba2-df5d-426a-b1b9-228ef159cad1",
+  "outgoing_run_id": "15950a31-3ceb-4a53-a421-b0f3dcec3093",
+  "created_at": "2026-08-14T11:33:33.037580500Z",
+  "resume_command": "session-cli resume --session-id b9020ba2-df5d-426a-b1b9-228ef159cad1 --predecessor-run-id 15950a31-3ceb-4a53-a421-b0f3dcec3093",
+  "workflow": {
+    "workflow": {}
+  },
+  "validation": [
+    {
+      "validation_spec_id": "ticket-plan-only",
+      "required": false,
+      "outcome": "not run: no source-code changes; planning commit only"
+    }
+  ],
+  "objective": "Hand off the ticket-only plan for repository guidance, architecture policy, agent-template, observability, tooling, and graph-rendering follow-up work discovered during the workflow-tools restructuring review.",
+  "target_tickets": [
+    {
+      "id": "07a3eb2d",
+      "why": "Repair real build/install breakage caused by tooling that still references the removed ticket-cli package.",
+      "state": "open"
+    },
+    {
+      "id": "dc13ffb4",
+      "why": "Establish a shared terminal return contract after four wasted sub-agent dispatches returned clarifying questions or false-impossibility claims.",
+      "state": "open"
+    },
+    {
+      "id": "7063311c",
+      "why": "Author the root architecture/dependency specification that unblocks five downstream tickets.",
+      "state": "open"
+    }
+  ],
+  "higher_level_objective": "Safely complete the workflow-tools repository restructure by repairing stale guidance and tooling, recording durable architecture and delegation policy, and addressing verified follow-up defects without touching unrelated in-progress submodule changes.",
+  "upward_context": [
+    {
+      "entity_urn": "ce://default/ticket/7bc328d7",
+      "title": "Repository guidance and agent-template learnings from the workflow-tools restructuring",
+      "role": "epic"
+    }
+  ],
+  "target_files": [
+    "AGENTS.md"
+  ],
+  "decisions": [
+    "This session produced only the ticket plan; no source-code files changed and no tests were run.",
+    "The planning commit is fb91ca73 (chore(ticket): plan repository-guidance and agent-template learnings epic) on agent/b9020ba2-df5d-426a-b1b9-228ef159cad1/workflow-tools-restructure.",
+    "Ticket dependency semantics were verified: link --from A --to B --kind depends_on writes B into A's depends_on list; B is the prerequisite that blocks A.",
+    "The epic has 30 open child tickets, with 19 depends_on and 5 linked edges and no detected cycles.",
+    "Recommended implementation order: 07a3eb2d, then dc13ffb4, then 7063311c."
+  ],
+  "non_goals": [
+    "Do not modify source code as part of this handoff.",
+    "Do not touch the uncommitted memory-api/crates/log-api/Cargo.toml or memory-api/crates/test-api/Cargo.toml changes, or the dirty memory-api submodule, until provenance is established.",
+    "Do not rebase or merge the branch until the next session makes that decision."
+  ],
+  "context_anchors": [
+    "memory-api/crates/ticket-api/src/storage/store.rs",
+    "memory-api/crates/log-api/Cargo.toml",
+    "memory-api/crates/test-api/Cargo.toml",
+    "AGENTS.md"
+  ],
+  "risk_notes": "Open items: graph audit flagged the a74f09cf -> 7063311c depends_on edge as dubious; user must decide whether to remove the edge or change the relation to linked. Ticket-store integrity is suspected because the CLI reports 2763 global edges while ticket.toml manifests expose only 1867 depends_on/linked entries; no ticket exists and user input is pending. Two observations remain unverified and unticketed: intermittently cancelled/interleaved terminal output and worktree-local checkouts missing target/debug binaries. The branch is neither rebased onto main nor merged."
+}
