@@ -1,11 +1,12 @@
 id = "659a39a4-8c84-470b-8a3f-9fff3dd86acb"
 created_at = "2026-08-13T20:48:35.063103400+00:00"
 title = "Delegation-quality failure taxonomy and orchestrator pre-dispatch command verification"
-state = "open"
+state = "in-review"
 component = "agent-guidance"
 depends_on = ["dc13ffb4-f172-469c-a0ad-454354aa4f28"]
 linked = ["2e07430b-5ade-4384-8b4f-93dd6de73203"]
-parts = [{ id = "8f3d620f-fdd6-424c-a030-34b6a312c617", kind = "acceptance_criteria", path = "parts/8f3d620f-fdd6-424c-a030-34b6a312c617.md", frozen = false, created_at = "2026-08-13T20:48:46.368103700Z" }]
+parts = [{ id = "8f3d620f-fdd6-424c-a030-34b6a312c617", kind = "acceptance_criteria", path = "parts/8f3d620f-fdd6-424c-a030-34b6a312c617.md", frozen = true, created_at = "2026-08-13T20:48:46.368103700Z" }, { id = "2c6ec169-0707-48c1-98af-f1885a1855b9", kind = "objective", path = "parts/2c6ec169-0707-48c1-98af-f1885a1855b9.md", frozen = true, created_at = "2026-08-14T15:32:42.891963Z" }, { id = "2209741f-14d8-4906-a74e-9beb3ea91d03", kind = "requirements", path = "parts/2209741f-14d8-4906-a74e-9beb3ea91d03.md", frozen = true, created_at = "2026-08-14T15:32:42.892374300Z" }, { id = "4f591ed5-04bc-4934-a0a8-29fae3ad15ce", kind = "design", path = "parts/4f591ed5-04bc-4934-a0a8-29fae3ad15ce.md", frozen = true, created_at = "2026-08-14T15:32:42.892627200Z" }, { id = "d5de4a1f-1198-409b-b31f-cc2589e5bf22", kind = "examples", path = "parts/d5de4a1f-1198-409b-b31f-cc2589e5bf22.md", frozen = true, created_at = "2026-08-14T15:32:42.892839100Z" }]
+plan_revision = 1
 priority = "medium"
 risk_level = "low"
 type = "task"

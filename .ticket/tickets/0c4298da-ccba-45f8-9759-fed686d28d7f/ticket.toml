@@ -1,10 +1,11 @@
 id = "0c4298da-ccba-45f8-9759-fed686d28d7f"
 created_at = "2026-08-13T19:05:34.060087100+00:00"
 title = "Update ticket-cli references in COMMANDS.md and memory-api README"
-state = "open"
+state = "in-review"
 component = "documentation"
 depends_on = ["07a3eb2d-8868-4c36-a60a-e93cc787c065"]
-parts = [{ id = "65fedb2c-a1ad-4c39-ad29-516e7190e64e", kind = "acceptance_criteria", path = "parts/65fedb2c-a1ad-4c39-ad29-516e7190e64e.md", frozen = false, created_at = "2026-08-13T19:05:41.604105200Z" }]
+parts = [{ id = "65fedb2c-a1ad-4c39-ad29-516e7190e64e", kind = "acceptance_criteria", path = "parts/65fedb2c-a1ad-4c39-ad29-516e7190e64e.md", frozen = true, created_at = "2026-08-13T19:05:41.604105200Z" }, { id = "ecd449e6-a961-4c16-b9ae-f7a9b3135744", kind = "objective", path = "parts/ecd449e6-a961-4c16-b9ae-f7a9b3135744.md", frozen = true, created_at = "2026-08-14T15:32:46.442055200Z" }, { id = "5ce905f4-5350-4072-8b0c-c0c088ff831e", kind = "requirements", path = "parts/5ce905f4-5350-4072-8b0c-c0c088ff831e.md", frozen = true, created_at = "2026-08-14T15:32:46.443164800Z" }, { id = "9a905926-30b1-467b-b59e-79fd188c3d82", kind = "design", path = "parts/9a905926-30b1-467b-b59e-79fd188c3d82.md", frozen = true, created_at = "2026-08-14T15:32:46.443378900Z" }, { id = "5da5c5c4-22cb-4bf5-8398-8f2615095e26", kind = "examples", path = "parts/5da5c5c4-22cb-4bf5-8398-8f2615095e26.md", frozen = true, created_at = "2026-08-14T15:32:46.443539400Z" }]
+plan_revision = 1
 priority = "medium"
 risk_level = "low"
 type = "task"
