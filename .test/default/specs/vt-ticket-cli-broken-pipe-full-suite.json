@@ -1,0 +1,11 @@
+{
+  "id": "vt-ticket-cli-broken-pipe-full-suite",
+  "title": "Ticket CLI BrokenPipe regression and full suite",
+  "command": "cargo test -p ticket --all-features",
+  "detail": "The full suite completes with 128 passed and only the two pre-existing fixture failures tracked by ticket 887f5059; the BrokenPipe regression test passes.",
+  "links": {
+    "ticket_ids": [
+      "2e07430b-5ade-4384-8b4f-93dd6de73203"
+    ]
+  }
+}

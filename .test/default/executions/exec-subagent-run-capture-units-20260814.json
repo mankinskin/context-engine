@@ -1,0 +1,20 @@
+{
+  "id": "exec-subagent-run-capture-units-20260814",
+  "validation_spec_id": "vt-subagent-run-capture-units",
+  "outcome": "passed",
+  "executed_at": "2026-08-14T16:09:32.088764400Z",
+  "detail": "session-api: 232 passed, 0 failed. session-capture-hook targets: 11 passed, 14 passed, and 4 passed; all zero failed. E2E harness limitation is pre-existing drift plus a fixture that does not dispatch a subagent.",
+  "links": {
+    "ticket_ids": [
+      "85bfbb06-bf3a-4ea4-b57d-a829b8cd2545"
+    ]
+  },
+  "provenance": {
+    "source_path": "tools/agent-hooks/hook-capture-e2e.sh",
+    "test_id": "subagent-lifecycle-unit-validation",
+    "domain": "session",
+    "operation": "subagent-run-capture",
+    "transport": "cli",
+    "run_id": "validation-20260814"
+  }
+}
