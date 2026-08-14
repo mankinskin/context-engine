@@ -1,33 +1,76 @@
 ## Symptom
 
-- `serve::routes::tests::ancestor_graph_ref_from_child_workspace_is_followable` ([memory-api/tools/http/ticket-http/src/serve/routes/tests.rs](memory-api/tools/http/ticket-http/src/serve/routes/tests.rs#L439))
-- `serve::routes::tests::workspace_graph_includes_isolated_local_and_cross_workspace_nodes` ([memory-api/tools/http/ticket-http/src/serve/routes/tests.rs](memory-api/tools/http/ticket-http/src/serve/routes/tests.rs#L541))
+- `serve::routes::tests::ancestor_graph_ref_from_child_workspace_is_followable` ([memory-api/crates/ticket/src/serve/routes/tests.rs](memory-api/crates/ticket/src/serve/routes/tests.rs#L448))
+- `serve::routes::tests::workspace_graph_includes_isolated_local_and_cross_workspace_nodes` ([memory-api/crates/ticket/src/serve/routes/tests.rs](memory-api/crates/ticket/src/serve/routes/tests.rs#L550))
 
-Both panic at the edge-add step with `NotFound(<uuid>)`:
+Both tests fail during fixture setup, before either HTTP graph route runs. The shared `cargo test -p ticket --all-features` result was:
 
 ```text
-add mixed-workspace edge: NotFound(048c6f0e-e976-4ec4-a1fe-6cab8f72ea21)
-add mixed-workspace edge: NotFound(42384740-5677-4275-b05e-2ea94d26274f)
+test result: FAILED. 128 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.44s
 ```
 
-## Root cause evidence
+Each test panics at the mixed-workspace edge-add step with `NotFound`:
 
-- The failure originates in `TicketStore::add_edge` at [memory-api/crates/ticket-api/src/storage/store/query.rs](memory-api/crates/ticket-api/src/storage/ticket-api/src/storage/store/query.rs#L136) line 144, where `self.get_indexed(&edge.to)?.ok_or(StorageError::NotFound(edge.to))?` rejects the target UUID before any edge write happens.
-- `get_indexed()` only reads the current store index: [memory-api/crates/ticket-api/src/storage/store.rs](memory-api/crates/ticket-api/src/storage/store.rs#L445).
-- The route test fixture opens two independent stores: `open_workspace_store(dir)` and `open_workspace_store(&child_dir)`, and each only adds its own `dir.join("tickets")` scan root ([memory-api/tools/http/ticket-http/src/serve/routes/tests.rs](memory-api/tools/http/ticket-http/src/serve/routes/tests.rs#L294)). The parent ticket is created in `parent_store`, not in `child_store`, so the child store has no indexed copy of the parent UUID.
-- `visible_scan_roots()` in the store only admits scan roots owned by the current store, so the parent UUID is outside the lookup domain even before the visibility check.
+```text
+add mixed-workspace edge: NotFound(c16f0b57-17b9-48f5-9570-9a5a57f4b641)
+add mixed-workspace edge: NotFound(3876562b-b5c3-4de0-9243-1b21e1635555)
+```
 
-## Verdict
+The relevant fixture setup lines are:
 
-- This is a fixture/product-boundary issue, not workspace-id serialization. The test is constructing the parent in a different `TicketStore` instance than the one used for `add_edge`, so the target genuinely is not present in the lookup domain the store consults.
-- If the intended product contract is cross-workspace edge creation across separately registered workspaces, then the product gap is that `TicketStore::add_edge` is store-local and does not resolve endpoints through the workspace registry.
+```rust
+let parent_store = open_workspace_store(dir.path());
+let child_store = open_workspace_store(&child_dir);
 
-## History
+let parent_id = parent_store
+    .create(
+        None,
+        "tracker-improvement",
+        Some("Parent ticket"),
+        None,
+        BTreeMap::new(),
+        None,
+        None,
+    )
+    .expect("create parent ticket");
+let child_id = child_store
+    .create(
+        None,
+        "tracker-improvement",
+        Some("Child ticket"),
+        None,
+        BTreeMap::new(),
+        None,
+        None,
+    )
+    .expect("create child ticket");
 
-- `git log --oneline -- memory-api/tools/http/ticket-http/src/serve/routes/tests.rs` shows these tests were introduced in `d285297` (`refactor(ticket-http): extract routes test module`).
-- `git show 3103297` and `git show 3471427` do not touch `TicketStore::add_edge`; they are not the direct cause of this NotFound.
-- The behavior change that introduced the rejecting guard is `7a92a11` (`test(ticket-api): add test for edge addition rejection under ignored scan roots`), which added the `visible_scan_roots` check in [memory-api/crates/ticket-api/src/storage/store/query.rs](memory-api/crates/ticket-api/src/storage/store/query.rs#L140).
+child_store
+    .add_edge(ticket_api::model::edge::EdgeRecord {
+        from: child_id,
+        to: parent_id,
+        kind: "depends_on".into(),
+        created_at: chrono::Utc::now(),
+    })
+    .expect("add mixed-workspace edge");
+```
 
-## Minimal fix direction
+## Provenance
 
-- Either adjust the test fixture to use a shared workspace/store setup that actually contains the ancestor ticket in the active lookup domain, or move cross-workspace edge creation to a layer that resolves both endpoints through the registry before calling the store.
+- `git log` attributes the crate move to `68026dcf`, the extraction of the ticket tool into `memory-api/crates/ticket`.
+- `git blame` attributes the original test definitions to `d2852972e`, when the tests lived under the legacy `ticket-http` layout.
+- None of the commits on this branch (`717c3329`, `7ad02b3b`, `986d6c1a`, `30375247`, `547548da`, `77d32466`) touch ticket crate source.
+
+## Open question
+
+The diagnosis calls this a stale test assumption, but that is not settled. Two hypotheses remain:
+
+- **(A) Stale test.** The tests encode a cross-workspace edge-creation capability that the store intentionally no longer permits after the extraction, so the fixture is invalid and the tests should be rewritten or removed.
+- **(B) Product regression.** Cross-workspace edge creation is still a supported capability, and the extraction broke the child store's ability to resolve a parent-store UUID, so the tests are correct and the store is wrong.
+
+The ticket should record that deciding between those hypotheses requires knowing whether mixed-workspace edges are an intended product capability.
+
+## Acceptance criteria
+
+- `cargo test -p ticket --all-features` is green.
+- The resolution explicitly states whether mixed-workspace edges are a supported capability, so the fix cannot be a silent test deletion.
