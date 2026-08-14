@@ -14,7 +14,7 @@ Use this workflow when module behavior is unclear or the task requires non-trivi
 
 2. Collect documentation context
 - Search project docs and crate-level guides for relevant APIs and invariants.
-- Check `CHEAT_SHEET.md` for known gotchas.
+- Read crate-level `README.md` and `HIGH_LEVEL_GUIDE.md` for known gotchas.
 
 3. Check issue history
 - Review ticket history for related bugs, plans, or design notes.

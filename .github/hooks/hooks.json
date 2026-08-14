@@ -16,6 +16,22 @@
         "timeout": 300
       }
     ],
+    "SubagentStart": [
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "cwd": ".",
+        "timeout": 120
+      }
+    ],
+    "SubagentStop": [
+      {
+        "type": "command",
+        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "cwd": ".",
+        "timeout": 120
+      }
+    ],
     "PreToolUse": [
       {
         "type": "command",

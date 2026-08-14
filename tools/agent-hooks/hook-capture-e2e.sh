@@ -89,6 +89,12 @@ cat > "$workdir/.github/hooks/hooks.json" <<'HOOKS'
     "UserPromptSubmit": [
       { "type": "command", "command": "bash record.sh UserPromptSubmit", "cwd": ".", "timeout": 30 }
     ],
+        "SubagentStart": [
+            { "type": "command", "command": "bash record.sh SubagentStart", "cwd": ".", "timeout": 30 }
+        ],
+        "SubagentStop": [
+            { "type": "command", "command": "bash record.sh SubagentStop", "cwd": ".", "timeout": 30 }
+        ],
     "PreToolUse": [
       { "type": "command", "command": "bash record.sh PreToolUse", "cwd": ".", "timeout": 30 }
     ],
@@ -111,9 +117,9 @@ HOOKS
     git commit --quiet --allow-empty -m init
 )
 
-# The prompt deliberately forces a tool call so PreToolUse and PostToolUse fire
-# in addition to the session-lifecycle events.
-prompt='Run the shell command `echo hook-fixture-probe` and then reply with only the word done.'
+# The prompt deliberately forces a sub-agent delegation and a tool call so all
+# registered lifecycle and tool hooks have an opportunity to fire.
+prompt='Delegate the shell command `echo hook-fixture-probe` to a sub-agent, then reply with only the word done.'
 
 echo "running headless Copilot session in $workdir ..." >&2
 run_log="$workdir/copilot-run.log"
@@ -149,6 +155,8 @@ common_fields=(timestamp hook_event_name session_id cwd transcript_path)
 declare -A event_fields=(
     [SessionStart]="source"
     [UserPromptSubmit]="prompt"
+    [SubagentStart]="agent_id agent_type"
+    [SubagentStop]="agent_id agent_type stop_hook_active"
     [PreToolUse]="tool_name tool_input tool_use_id"
     [PostToolUse]="tool_name tool_input tool_use_id tool_response"
     [Stop]="stop_hook_active"

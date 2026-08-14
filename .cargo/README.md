@@ -74,4 +74,4 @@ LOG_FILTER=debug cargo test -- --nocapture
 For more details on tracing configuration, see:
 - `config/tracing.toml.example` - All available options
 - `context-trace/src/logging/tracing_utils/mod.rs`
-- `CHEAT_SHEET.md` debugging section
+- `config/tracing.toml`

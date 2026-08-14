@@ -27,8 +27,7 @@ Before running exploratory searches or broad file reads, consult compact structu
 1. **`repo_map.toon`** — compact workspace map at the repository root. Read this first for directory/crate layout.
   Refresh with `cargo run -p peek-cli -- . --repo-map --output repo_map.toon` when crates or agent files change.
 2. **Interface skeletons** — stripped function/type signatures without bodies (when available).
-3. **`CHEAT_SHEET.md`** — API patterns, common gotchas.
-4. **Crate `README.md`** and `HIGH_LEVEL_GUIDE.md`** — design context.
+3. **Crate `README.md`** and `HIGH_LEVEL_GUIDE.md`** — API patterns, common gotchas, and design context.
 
 Only fall back to broad `semantic_search` or exploratory file listing when the compact sources are insufficient.
 
