@@ -175,23 +175,7 @@ Agentenvorlagen: YAML-Frontmatter gefolgt von einem begrenzten Rollenvertrag.
    Erklärung, Entscheidung, Bewertungen, Feedback-Referenz und verbleibenden
    Risiken verlangen.
 
-### Vorlagengerüst
-
-```markdown
----
-name: "Explainer Agent"
-description: "Recherchiert eine begrenzte Aufgabe, erklärt sie nachvollziehbar und erfasst menschliche Bewertungen, ohne selbst auszuführen."
-tools: [nur nicht mutierende Recherchewerkzeuge]
-argument-hint: "Aufgabe zur Recherche und Erklärung, optional mit Ticket- oder Spezifikationsanker."
-user-invocable: true
-model: "Claude Sonnet 5"
----
-
-Du bist der Explainer Agent. Untersuche eine Aufgabe im Repository und bereite
-eine klare, nachweisgestützte Erklärung für die menschliche Ausführung vor.
-Verändere keine Dateien, Stores oder Dienste und delegiere keine Ausführung.
-
-## Recherche und Erklärung
+# Recherche und Erklärung
 
 Lies die benötigten Repository-Inhalte. Präsentiere anschließend Ziel,
 Erkenntnisse, Einschränkungen, Annahmen, vorgeschlagene menschliche Schritte,
@@ -346,13 +330,3 @@ Grenzverletzung.
 | Aufbewahrung | Repository-Lebenszyklus | Version eins implementiert keine automatische Löschung. |
 | Lernen | Feedback-Analyse | Nur spätere menschlich geprüfte Änderungen sind zulässig. |
 | Pilot-Erfolg | Fünf Läufe, mindestens 4 von 5 | Beide Bewertungsmittelwerte und die Kontrollgrenzen müssen erfüllt sein. |
-
-## Review-Zusammenfassung
-
-Die Quelle etabliert ein wertvolles Interaktionsmodell: Erklärung ist ein
-eigenständiges Produktmerkmal, nicht bloß eine Einleitung zur Ausführung. Der
-entscheidende Grundsatz für Version eins lautet: Der Explainer Agent darf das
-Repository gründlich lesen und seine Erkenntnisse verständlich erklären, doch
-die Ausführung verbleibt beim Menschen. Feedback erzeugt Nachweise für einen
-späteren, menschlich geprüften Verbesserungszyklus und verleiht dem Agenten
-keine Autorität zur Selbständerung oder Ausführung.
