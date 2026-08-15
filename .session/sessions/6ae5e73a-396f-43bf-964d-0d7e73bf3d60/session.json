@@ -1,23 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60",
-<<<<<<< HEAD
-  "source": "session-runtime-init",
   "started_at": "2026-08-15T16:30:59.948954500Z",
-  "captured_at": "2026-08-15T16:44:58.169873300Z",
-  "metadata": {
-    "workspace_slug": "default",
-    "trigger": "session-runtime-init"
-  },
-  "links": {},
-  "active_run_id": "844ae9ad-7316-4cf3-a90a-b7026f765f8e",
-  "runs": [
-    {
-      "run_id": "844ae9ad-7316-4cf3-a90a-b7026f765f8e",
-      "captured_session_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60",
-      "started_at": "2026-08-15T16:30:59.948954500Z"
-    }
-  ],
   "workflow": {
     "nodes": [
       {
@@ -111,10 +95,8 @@
         "category": "review-criterion"
       }
     ]
-  }
-=======
+  },
   "source": "session-worktree-check-in",
-  "started_at": "2026-08-15T16:53:50.454572Z",
   "captured_at": "2026-08-15T16:54:03.859441200Z",
   "metadata": {
     "workspace_slug": "default",
@@ -135,7 +117,11 @@
       "run_id": "80c7658d-c4d1-476b-920b-6f78652a5f4e",
       "captured_session_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60",
       "started_at": "2026-08-15T16:53:50.454572Z"
+    },
+    {
+      "run_id": "844ae9ad-7316-4cf3-a90a-b7026f765f8e",
+      "captured_session_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60",
+      "started_at": "2026-08-15T16:30:59.948954500Z"
     }
   ]
->>>>>>> 77cb9b1e (feat(session-management): add session and transcript JSON files for explainer agent)
 }
