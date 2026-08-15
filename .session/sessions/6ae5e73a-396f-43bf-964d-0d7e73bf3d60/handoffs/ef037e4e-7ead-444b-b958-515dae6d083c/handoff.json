@@ -1,0 +1,121 @@
+{
+  "handoff_id": "ef037e4e-7ead-444b-b958-515dae6d083c",
+  "session_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60",
+  "outgoing_run_id": "80c7658d-c4d1-476b-920b-6f78652a5f4e",
+  "created_at": "2026-08-15T23:31:21.914653200Z",
+  "resume_command": "session-cli resume --session-id 6ae5e73a-396f-43bf-964d-0d7e73bf3d60 --predecessor-run-id 80c7658d-c4d1-476b-920b-6f78652a5f4e",
+  "workflow": {
+    "workflow": {
+      "nodes": [
+        {
+          "node_id": "explainer-approval-granularity",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent approval: one bounded read-only research plan",
+          "created_at": "2026-08-15T16:31:57.565907400Z",
+          "updated_at": "2026-08-15T16:31:57.629284100Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-feedback-retention",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent feedback retention: repository lifecycle",
+          "created_at": "2026-08-15T16:42:05.720535900Z",
+          "updated_at": "2026-08-15T16:42:05.782054900Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-feedback-visibility",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent feedback visibility: team-visible",
+          "created_at": "2026-08-15T16:34:26.095928400Z",
+          "updated_at": "2026-08-15T16:34:26.157270700Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-learning-boundary",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent learning: feedback analysis only",
+          "created_at": "2026-08-15T16:39:50.395404900Z",
+          "updated_at": "2026-08-15T16:39:50.460574300Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-pilot-threshold",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent pilot: 5 runs, mean ratings >= 4/5, zero boundary violations",
+          "created_at": "2026-08-15T16:41:31.072039300Z",
+          "updated_at": "2026-08-15T16:41:31.137900800Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-preapproval-reading",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent may fully read repository content before initial explanation",
+          "created_at": "2026-08-15T16:44:21.625837Z",
+          "updated_at": "2026-08-15T16:44:21.688951200Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-reapproval-boundary",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent re-approval: new target or changed outcome",
+          "created_at": "2026-08-15T16:38:44.288938500Z",
+          "updated_at": "2026-08-15T16:38:44.353556400Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-v1-executor",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent v1 executor: human",
+          "created_at": "2026-08-15T16:44:58.108843200Z",
+          "updated_at": "2026-08-15T16:44:58.169873300Z",
+          "category": "review-criterion"
+        },
+        {
+          "node_id": "explainer-v1-scope",
+          "kind": "task",
+          "requirement": "required",
+          "status": "done",
+          "title": "Explainer Agent v1 scope: read-only research",
+          "created_at": "2026-08-15T16:31:11.470897300Z",
+          "updated_at": "2026-08-15T16:31:11.533138Z",
+          "category": "review-criterion"
+        }
+      ]
+    }
+  },
+  "objective": "Verify session-mcp launched from main checkout writes the selected worktree handoff",
+  "higher_level_objective": "Exercise main-checkout server and worktree selector divergence",
+  "target_files": [
+    ".agents/agents/explainer.agent.md"
+  ],
+  "decisions": [
+    "Use the explicitly selected active session worktree for path validation"
+  ],
+  "non_goals": [
+    "No implementation-ready handoff is created"
+  ],
+  "context_anchors": [
+    "ce://default/ticket/79449c3f-2f49-4925-b8fd-3751face53b5"
+  ],
+  "open_escalations": [
+    "Live main-checkout routing verification only"
+  ],
+  "risk_notes": "The broader proxy session-id enforcement remains open"
+}

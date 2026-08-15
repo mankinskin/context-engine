@@ -1,0 +1,24 @@
+{
+  "id": "exec-session-handoff-main-checkout-live-20260816",
+  "validation_spec_id": "vt-session-handoff-worktree-path",
+  "outcome": "passed",
+  "executed_at": "2026-08-15T23:31:47.304679Z",
+  "duration_ms": 0,
+  "detail": "Live read-back: installed session-mcp launched from C:/Users/linus/git/2/context-engine (main checkout store) accepted workspace=C:/Users/linus/git/2/context-engine/.worktrees/6ae5e73a-396f-43bf-964d-0d7e73bf3d60/explainer-plan and persisted handoff ef037e4e-7ead-444b-b958-515dae6d083c in the assigned worktree. The handoff target_files contains .agents/agents/explainer.agent.md, absent from the main checkout at the original failure point.",
+  "links": {
+    "spec_ids": [
+      "aff42efb-422b-4abc-8a6c-cd176a3d0d5d"
+    ],
+    "ticket_ids": [
+      "fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3"
+    ]
+  },
+  "provenance": {
+    "source_path": ".session/sessions/6ae5e73a-396f-43bf-964d-0d7e73bf3d60/handoffs/ef037e4e-7ead-444b-b958-515dae6d083c/handoff.json",
+    "test_id": "session-mcp-main-checkout-live-handoff",
+    "domain": "session-api",
+    "operation": "session-handoff",
+    "transport": "mcp",
+    "run_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60"
+  }
+}
