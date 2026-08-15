@@ -1,8 +1,10 @@
 id = "79449c3f-2f49-4925-b8fd-3751face53b5"
 created_at = "2026-08-15T16:45:18.269020300+00:00"
 title = "Define Explainer Agent version-one contract"
-state = "open"
+state = "planned"
 component = "agent-workflow"
-parts = [{ id = "40fc4214-05d9-40a3-bae2-e3ede2acf44a", kind = "requirements", path = "parts/40fc4214-05d9-40a3-bae2-e3ede2acf44a.md", frozen = false, created_at = "2026-08-15T16:45:30.720364600Z" }, { id = "6137b8d1-b5e6-46f6-9bec-b439e34cabbf", kind = "notes", path = "parts/6137b8d1-b5e6-46f6-9bec-b439e34cabbf.md", frozen = false, created_at = "2026-08-15T16:45:51.417633500Z" }, { id = "dbdeb338-14e1-485d-9a50-fb8a8e64f4fa", kind = "notes", path = "parts/dbdeb338-14e1-485d-9a50-fb8a8e64f4fa.md", frozen = false, created_at = "2026-08-15T16:45:58.444041800Z" }]
+parts = [{ id = "40fc4214-05d9-40a3-bae2-e3ede2acf44a", kind = "requirements", path = "parts/40fc4214-05d9-40a3-bae2-e3ede2acf44a.md", frozen = true, created_at = "2026-08-15T16:45:30.720364600Z" }, { id = "6137b8d1-b5e6-46f6-9bec-b439e34cabbf", kind = "notes", path = "parts/6137b8d1-b5e6-46f6-9bec-b439e34cabbf.md", frozen = false, created_at = "2026-08-15T16:45:51.417633500Z" }, { id = "dbdeb338-14e1-485d-9a50-fb8a8e64f4fa", kind = "notes", path = "parts/dbdeb338-14e1-485d-9a50-fb8a8e64f4fa.md", frozen = false, created_at = "2026-08-15T16:45:58.444041800Z" }, { id = "1717bdb9-6ae1-4685-9d23-de1ec16e57b5", kind = "objective", path = "parts/1717bdb9-6ae1-4685-9d23-de1ec16e57b5.md", frozen = true, created_at = "2026-08-15T18:58:39.754307900Z" }, { id = "16909041-307c-4dea-80e3-ae4f089750cb", kind = "design", path = "parts/16909041-307c-4dea-80e3-ae4f089750cb.md", frozen = true, created_at = "2026-08-15T18:58:39.754478100Z" }, { id = "57343274-1436-4f67-9f7c-7b425cc3aa95", kind = "examples", path = "parts/57343274-1436-4f67-9f7c-7b425cc3aa95.md", frozen = true, created_at = "2026-08-15T18:58:39.754743200Z" }, { id = "ee092c9a-5f3d-46f9-ae99-f32726d05070", kind = "acceptance_criteria", path = "parts/ee092c9a-5f3d-46f9-ae99-f32726d05070.md", frozen = true, created_at = "2026-08-15T18:58:39.754907100Z" }]
+plan_revision = 1
 priority = "high"
+related_specs = "0a38b1a5-f752-4368-8ec6-d11e6621177f"
 type = "task"
