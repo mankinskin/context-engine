@@ -8,7 +8,7 @@ use transport_harness::{
 };
 
 #[derive(Parser)]
-#[command(name = "example-cli")]
+#[command(name = "example")]
 struct ExampleCommand {}
 
 fn main() -> Result<(), HarnessError> {

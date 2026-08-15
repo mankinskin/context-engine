@@ -14,8 +14,8 @@ mcp = ["dep:transport-harness", "transport-harness/mcp"]
 http = ["dep:transport-harness", "transport-harness/http"]
 
 [[bin]]
-name = "example-cli"
-path = "src/bin/example-cli.rs"
+name = "example"
+path = "src/bin/example.rs"
 required-features = ["cli"]
 
 [[bin]]
