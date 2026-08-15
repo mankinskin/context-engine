@@ -1,0 +1,7 @@
+- `memory-api/crates/log-api/Cargo.toml` has no `test-api` dependency, and `grep -rn "test_api" memory-api/crates/log-api/` returns nothing (source and tests).
+- `ValidationLogLinks` and `ValidationLogCapture` are constructible from plain id collections, without any test-domain type.
+- The execution-to-log adapters exist on the test side and are exercised by at least one test asserting the same field mapping the removed `From` impls performed (`spec_ids`, `acceptance_criterion_ids`, `ticket_ids`, `doc_evidence_ids`, execution id).
+- `cargo test -p log-api -p test-api -p test-cli` passes, and `cargo build --workspace` passes at the superproject root.
+- The `test` CLI still records a validation execution together with its log capture end-to-end (one live command run, output captured).
+- A dependency-graph check shows no path from `log-api` to `test-api`, satisfying the gate defined by ticket `e8a5c061`.
+- Neither the on-disk `.test` nor `.log` record format changed: an existing stored record still round-trips.
