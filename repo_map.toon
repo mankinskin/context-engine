@@ -3,8 +3,8 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/2/context-engine/.worktrees/b9020ba2-df5d-426a-b1b9-228ef159cad1/guidance-learnings-impl"
-top_level_dirs[10]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tmp,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
+  root: "//?/C:/Users/linus/git/2/context-engine/.worktrees/6ae5e73a-396f-43bf-964d-0d7e73bf3d60/explainer-plan"
+top_level_dirs[9]: config,"context-stack","memory-api","memory-kernel","memory-viewers",tools,transcripts,"viewer-api","workflow-tools-contract-reference"
 crates:
   name: crates
   kind: dir
@@ -241,7 +241,7 @@ agent_files:
         - name: prompts
           kind: dir
           path: "agent-files/.agents/prompts"
-          children[23]{name,kind,path}:
+          children[24]{name,kind,path}:
             audit.prompt.md,file,"agent-files/.agents/prompts/audit.prompt.md"
             "build-validate-tools.prompt.md",file,"agent-files/.agents/prompts/build-validate-tools.prompt.md"
             commit.prompt.md,file,"agent-files/.agents/prompts/commit.prompt.md"
@@ -254,6 +254,7 @@ agent_files:
             iteration.prompt.md,file,"agent-files/.agents/prompts/iteration.prompt.md"
             "memory-setup.prompt.md",file,"agent-files/.agents/prompts/memory-setup.prompt.md"
             next.prompt.md,file,"agent-files/.agents/prompts/next.prompt.md"
+            "refine-request.prompt.md",file,"agent-files/.agents/prompts/refine-request.prompt.md"
             research.prompt.md,file,"agent-files/.agents/prompts/research.prompt.md"
             reviews.prompt.md,file,"agent-files/.agents/prompts/reviews.prompt.md"
             spec.prompt.md,file,"agent-files/.agents/prompts/spec.prompt.md"
