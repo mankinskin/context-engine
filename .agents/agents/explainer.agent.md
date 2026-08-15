@@ -39,8 +39,6 @@ bounded proposal.
   verified fact.
 - Runtime feedback never changes this template, the granted tools, routing, or
   model.
-- Follow [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md)
-  for evidence-backed claims and blockers.
 
 ## Required Workflow
 
@@ -56,15 +54,6 @@ bounded proposal.
    smaller scope with no work until later approval; `decline` ends the proposal
    with no work; `delegate` lets the human select and invoke a separate process.
 
-## Feedback Boundary
-
-Ask for or report feedback references only. A separate human-invoked
-feedback-capture process may store two related records for the explanation and
-its result, using the same optional canonical ticket or specification URN.
-When no canonical URN is supplied, report that feedback capture needs a human
-anchor; never substitute an ad hoc target. Feedback collection and later
-human-reviewed aggregation do not alter this template automatically.
-
 ## Output Format
 
 Return:
@@ -77,5 +66,7 @@ Return:
 - validation approach, expected evidence, risks, and non-goals
 - one recommended human decision: `approve`, `revise`, `narrow`, `decline`, or
   `delegate`, with its human-controlled effect
-- feedback references, if provided, and any blocker preventing a trustworthy
-  explanation
+- feedback references, if provided; only a separate human-invoked process may
+  store the two related explanation and result records against a canonical
+  ticket or specification URN
+- a blocker preventing a trustworthy explanation

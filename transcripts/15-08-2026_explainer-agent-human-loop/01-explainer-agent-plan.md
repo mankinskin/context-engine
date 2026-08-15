@@ -79,8 +79,9 @@ Der Explainer Agent muss:
    außerhalb des Explainer Agents.
 6. **Bewerten.** Der Mensch bewertet Erklärung und Ergebnis und kann eine kurze
    Freitext-Rückmeldung geben.
-7. **Nachweise erfassen.** Der Explainer Agent speichert Erklärung, Entscheidung,
-   Bewertungen, Rückmeldung und Interaktionskategorie in den dauerhaften Stores.
+7. **Nachweise erfassen.** Ein separater, menschlich ausgelöster
+   Feedback-Capture-Prozess speichert Erklärung, Entscheidung, Bewertungen,
+   Rückmeldung und Interaktionskategorie in den dauerhaften Stores.
 8. **Spätere Erklärungen verbessern.** Eine getrennte
    Vorlagenwartungsüberprüfung darf aggregierte Rückmeldungen für Vorschläge
    nutzen. Kein einzelner Lauf darf seine eigene Vorlage oder sein Verhalten
@@ -206,7 +207,8 @@ eigenständig gewählten Prozess aus.
 ## Bewertung und Nachweise
 
 Bitte nach der menschlichen Ausführung um Bewertungen von Erklärung und Ergebnis
-sowie optionales Feedback. Speichere den Nachweis mit dem Aufgaben- und
+sowie optionales Feedback. Ein separater, menschlich ausgelöster
+Feedback-Capture-Prozess speichert den Nachweis mit dem Aufgaben- und
 Ticket-/Spezifikationsanker. Ändere die Vorlage, Berechtigungen oder das Routing
 nicht auf Grundlage dieses Feedbacks.
 ```

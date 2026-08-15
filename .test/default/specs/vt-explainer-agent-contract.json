@@ -1,0 +1,14 @@
+{
+  "id": "vt-explainer-agent-contract",
+  "title": "Explainer Agent static contract",
+  "command": "bash -lc '<run the repository static contract check for .agents/agents/explainer.agent.md and transcripts/15-08-2026_explainer-agent-human-loop/01-explainer-agent-plan.md>'",
+  "detail": "Validates required frontmatter, six body sections, read-only tool grants, feedback-capture boundary, aligned German plan wording, and diff whitespace.",
+  "links": {
+    "spec_ids": [
+      "0a38b1a5-f752-4368-8ec6-d11e6621177f"
+    ],
+    "ticket_ids": [
+      "79449c3f-2f49-4925-b8fd-3751face53b5"
+    ]
+  }
+}

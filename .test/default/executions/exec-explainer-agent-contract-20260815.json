@@ -1,0 +1,24 @@
+{
+  "id": "exec-explainer-agent-contract-20260815",
+  "validation_spec_id": "vt-explainer-agent-contract",
+  "outcome": "passed",
+  "executed_at": "2026-08-15T21:47:20.604050900Z",
+  "duration_ms": 0,
+  "detail": "Passed: six required frontmatter keys; six body sections; no execute/write/feedback/session/context MCP grants; read-only and human feedback-capture boundary present; plan assigns persistence to a separate human-invoked process; git diff --check passed.",
+  "links": {
+    "spec_ids": [
+      "0a38b1a5-f752-4368-8ec6-d11e6621177f"
+    ],
+    "ticket_ids": [
+      "79449c3f-2f49-4925-b8fd-3751face53b5"
+    ]
+  },
+  "provenance": {
+    "source_path": ".agents/agents/explainer.agent.md",
+    "test_id": "explainer-contract-static",
+    "domain": "agent-workflow",
+    "operation": "explainer-contract-static",
+    "transport": "cli",
+    "run_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60"
+  }
+}
