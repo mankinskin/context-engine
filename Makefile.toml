@@ -292,7 +292,9 @@ args = ["viewer", "install", "ticket-vscode"]
 [tasks.e2e-install]
 description = "Install npm dependencies for the spec/doc/log viewer E2E suites"
 command = "cmd"
-args = ["/c", "pushd memory-viewers\\spec-viewer\\frontend\\dioxus && npm install && popd && pushd tools\\viewer\\doc-viewer\\e2e && npm install && popd && pushd tools\\viewer\\log-viewer\\e2e && npm install && popd"]
+args = ["/c", "pushd memory-viewers/spec-viewer/frontend/dioxus && npm install
+&& popd && pushd tools/viewer/doc-viewer/e2e && npm install && popd && pushd
+tools/viewer/log-viewer/e2e && npm install && popd"]
 
 [tasks.e2e-install.linux]
 command = "bash"
@@ -305,7 +307,7 @@ args = ["-lc", "pushd memory-viewers/spec-viewer/frontend/dioxus >/dev/null && n
 [tasks.test-e2e]
 description = "Run Playwright E2E tests for spec-viewer plus shared doc/log smoke suites"
 command = "cmd"
-args = ["/c", "pushd memory-viewers\\spec-viewer\\frontend\\dioxus && npm run test:e2e:release && popd && pushd tools\\viewer\\doc-viewer\\e2e && npm test && popd && pushd tools\\viewer\\log-viewer\\e2e && npm run test:managed && popd"]
+args = ["/c", "pushd memory-viewers/spec-viewer/frontend/dioxus && npm run test:e2e:release && popd && pushd tools/viewer/doc-viewer/e2e && npm test && popd && pushd tools/viewer/log-viewer/e2e && npm run test:managed && popd"]
 
 [tasks.test-e2e.linux]
 command = "bash"
