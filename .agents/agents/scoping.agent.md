@@ -1,7 +1,7 @@
 ---
 name: "Scoping Agent"
 description: "Use when estimating work and structuring it into independently executable tickets, phases, and dependencies."
-tools: [read, search, vscodeGeneral/toolSearch, vscode/askQuestions, 'ticket-mcp/*', 'spec-mcp/*', 'session-mcp/*', 'peek-mcp/*', todo, agent]
+tools: [vscode/askQuestions, execute, read, agent, search, 'peek-mcp/*', 'session-mcp/*', 'spec-mcp/*', 'ticket-mcp/*', todo]
 argument-hint: "Body of work, goal, existing ticket or spec ids, and known constraints."
 user-invocable: true
 model: "GPT-5.6 Terra"
