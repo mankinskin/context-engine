@@ -54,6 +54,14 @@ enum Command {
         #[arg(long)]
         preserve_main_changes: bool,
     },
+    Bootstrap {
+        session_uuid: String,
+        slug: String,
+        #[arg(long)]
+        dry_run: bool,
+        #[arg(long)]
+        preserve_main_changes: bool,
+    },
     List {
         #[arg(long)]
         dry_run: bool,
@@ -108,6 +116,17 @@ fn dispatch(command: Command) -> Result<(), String> {
             dry_run,
             preserve_main_changes,
         } => handle_new(
+            &session_uuid,
+            &slug,
+            dry_run,
+            preserve_main_changes,
+        ),
+        Command::Bootstrap {
+            session_uuid,
+            slug,
+            dry_run,
+            preserve_main_changes,
+        } => handle_bootstrap(
             &session_uuid,
             &slug,
             dry_run,
@@ -245,6 +264,60 @@ fn handle_new(
         .map_err(|error| error.to_string())?;
     println!("{WORKTREE_PATH_OUTPUT_PREFIX}{}", worktree.path.display());
     Ok(())
+}
+
+fn handle_bootstrap(
+    session_uuid: &str,
+    slug: &str,
+    dry_run: bool,
+    preserve_main_changes: bool,
+) -> Result<(), String> {
+    handle_new(session_uuid, slug, dry_run, preserve_main_changes)?;
+
+    let main_checkout =
+        env::current_dir().map_err(|error| error.to_string())?;
+    let git =
+        WorktreeGit::open(main_checkout).map_err(|error| error.to_string())?;
+    let worktree_path = git
+        .main_checkout()
+        .join(".worktrees")
+        .join(session_uuid)
+        .join(slug);
+
+    if dry_run {
+        println!(
+            "[dry-run] initialize repository stores and Copilot surfaces in {} with init.sh",
+            worktree_path.display()
+        );
+        return Ok(());
+    }
+
+    let init_script = worktree_path.join("init.sh");
+    if !init_script.is_file() {
+        return Err(format!(
+            "worktree initializer is missing at {}; repair the worktree and rerun bootstrap",
+            init_script.display()
+        ));
+    }
+
+    let status = ProcessCommand::new("bash")
+        .arg("init.sh")
+        .current_dir(&worktree_path)
+        .status()
+        .map_err(|error| {
+            format!(
+                "could not run {}: {error}",
+                init_script.display()
+            )
+        })?;
+    if status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "worktree initializer failed in {}; repair the worktree and rerun bootstrap",
+            worktree_path.display()
+        ))
+    }
 }
 
 fn handle_list(_dry_run: bool) -> Result<(), String> {

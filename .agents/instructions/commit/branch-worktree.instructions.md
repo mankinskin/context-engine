@@ -49,6 +49,19 @@ Run from the repository root, on `main`, before dispatching the implementation a
 ./target/debug/worktree-ctl.exe new <full-session-uuid> <slug>
 ```
 
+For a worktree that also needs the repository-local stores and generated
+Copilot surfaces initialized, use the one-line bootstrap command instead:
+
+```bash
+./target/debug/worktree-ctl.exe bootstrap <full-session-uuid> <slug>
+```
+
+`bootstrap` creates or reuses the same worktree as `new`, then runs the
+worktree's `init.sh`. `new` remains Git/submodule-only for callers that need
+to defer repository initialization. Re-running `bootstrap` safely retries a
+failed initializer without creating a second worktree; `--dry-run` reports
+both actions without modifying either checkout.
+
 This is the canonical invocation — it is the single source of truth for the exact git sequence, so hand-typed variants cannot drift from it. The CLI requires a full UUID and runs: `git worktree add .worktrees/<full-session-uuid>/<slug> -b agent/<full-session-uuid>/<slug> main` (branching directly from LOCAL `main`, no fetch and no origin dependency), then populates every submodule OFFLINE by giving each one its own linked worktree — `git -C <main-checkout>/<submodule> worktree add --detach .worktrees/<full-session-uuid>/<slug>/<submodule> <recorded-sha>` — rolling back the partial worktree on persistent failure. Local `main` is authoritative here, not `origin/main`: this repo's local `main` and its recorded submodule commits are routinely ahead of, or entirely absent from, `origin`, so origin is never a valid source for either. Pass `--dry-run` to print the exact commands without running them.
 
 The branch is always cut from `main`, never from another feature branch. If the branch already exists, the worktree is being re-created for an interrupted task — use `git worktree add .worktrees/<full-session-uuid>/<slug> agent/<full-session-uuid>/<slug>` without `-b`.
