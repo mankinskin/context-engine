@@ -1,0 +1,14 @@
+{
+  "id": "vt-session-handoff-worktree-path",
+  "title": "Session handoff validates active worktree paths",
+  "command": "cargo test -p session-api handoff_package_ -- --nocapture && cargo test -p session-mcp handoff_validates_target_file_in_selected_worktree -- --nocapture",
+  "detail": "Proves handoff target files resolve against an active session worktree rather than the server/build checkout, and preserves rejected non-existent paths.",
+  "links": {
+    "spec_ids": [
+      "aff42efb-422b-4abc-8a6c-cd176a3d0d5d"
+    ],
+    "ticket_ids": [
+      "fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3"
+    ]
+  }
+}

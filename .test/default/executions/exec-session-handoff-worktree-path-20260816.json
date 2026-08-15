@@ -1,0 +1,24 @@
+{
+  "id": "exec-session-handoff-worktree-path-20260816",
+  "validation_spec_id": "vt-session-handoff-worktree-path",
+  "outcome": "passed",
+  "executed_at": "2026-08-15T23:26:13.430623Z",
+  "duration_ms": 0,
+  "detail": "Passed: session-api handoff_package_ group (7 tests) plus session-mcp handoff_validates_target_file_in_selected_worktree. Existing nonexistent-path rejection and active-worktree target acceptance both verified.",
+  "links": {
+    "spec_ids": [
+      "aff42efb-422b-4abc-8a6c-cd176a3d0d5d"
+    ],
+    "ticket_ids": [
+      "fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3"
+    ]
+  },
+  "provenance": {
+    "source_path": "memory-api/crates/session-api/src/store/config/handoff_finish.rs",
+    "test_id": "handoff-worktree-path",
+    "domain": "session-api",
+    "operation": "session-handoff",
+    "transport": "mcp",
+    "run_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60"
+  }
+}
