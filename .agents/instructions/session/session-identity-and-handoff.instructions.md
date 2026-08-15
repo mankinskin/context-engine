@@ -26,11 +26,11 @@ Resolve the positionally discovered worktree for any session:
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. Lookup discovers the worktree positionally: exactly one nested `.worktrees/<session-uuid>/<slug>` directory wins over a valid legacy flat candidate. No candidate returns `MissingSessionWorktree`; multiple valid candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. On either error, inspect the layouts described in [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) and repair or create the worktree before running mutations; do not proceed in the main checkout. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
+The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. Lookup discovers the worktree positionally: exactly one nested `.worktrees/<session-uuid>/<slug>` directory wins over a valid legacy flat candidate. No candidate returns `MissingSessionWorktree`; multiple valid candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. On either error, inspect the layouts described in [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) and repair or create the worktree before running worktree-backed mutations. A small, self-contained main-checkout change may proceed without a session-to-worktree assignment and must not call worktree-scoped session or board mutations. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
 
 ## Opening Declaration
 
-The first substantive response must begin with the session declaration before any other content. Use this exact template:
+The first substantive response for a worktree-backed task must begin with the session declaration before any other content. Use this exact template:
 
 ```text
 session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug>
@@ -38,9 +38,11 @@ session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slu
 
 Resolve every placeholder from the current session; never copy an identifier, worktree, or branch from a previous transcript.
 
+For a small main-checkout change without a session-worktree assignment, declare `session: none | worktree: main checkout | branch: main | scope: small` instead. Do not create a session or board record solely to make that declaration possible.
+
 ## Claim Order
 
-Checklist: bootstrap worktree, rename to the topic slug, `session_check_in`, `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is the canonical owner of the commands. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<uuid>/session` placeholder.
+For a worktree-backed task, bootstrap the worktree, rename to the topic slug, run `session_check_in` and `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is the canonical owner of the commands. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<uuid>/session` placeholder. A small main-checkout change skips those worktree-specific claims after checking that no active board entry owns the path.
 
 ### Check-in targets the worktree, not the main checkout
 

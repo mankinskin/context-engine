@@ -108,10 +108,13 @@ live under `viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
   in-review → done`); entering `planned` freezes the planning parts
   (objective/requirements/design/examples/acceptance_criteria) — corrections go
   through `write-amendment`, not direct edits.
-- **Worktree-per-task isolation.** Implementation work happens in its own git
-  worktree (`.worktrees/<session-uuid>/<slug>`) on its own branch
-  (`agent/<session-uuid>/<slug>`) cut from `main`; never commit to `main` or merge
-  your own branch — see AGENTS.md and `.agents/instructions/commit/branch-worktree.instructions.md`.
+- **Worktree isolation for broad work.** Changes spanning multiple files or
+  components, submodules, active concurrent work, or risky behavior belong in a
+  git worktree (`.worktrees/<session-uuid>/<slug>`) on a branch
+  (`agent/<session-uuid>/<slug>`) cut from `main`.
+- **Small main-checkout changes.** A single self-contained file change or one new
+  file may use the main checkout after checking that no board entry owns the path.
+  See AGENTS.md and `.agents/instructions/commit/branch-worktree.instructions.md`.
 - **`--toon` output.** Repo CLIs support a compact `--toon` format in addition to
   `--json`; prefer `--toon` for machine-readable output and the `rtk` proxy
   (`rtk <cmd> --toon ...`) to reduce token cost of shell command output.

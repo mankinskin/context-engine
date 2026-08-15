@@ -40,7 +40,8 @@ Use static references as support:
 ## Task Routing
 
 - Any requested implementation or behavior change: create or update the tracking ticket(s) first, then create or update the relevant spec before editing files.
-- Any implementation work runs in its own git worktree on its own branch cut from `main`, claimed with `session_check_in` and `board_check_in` before the first edit; `./target/debug/worktree-ctl.exe` partially automates bootstrap, rebase, merge, and teardown. Rebase and integrate affected submodules before the superproject; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Once work is finished, validated, and committed, the same session always finishes the loop by merging into `main` itself (see the same section) — it does not leave the merge for a separate orchestrator session.
+- Worktree-backed work is required for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. Create a worktree branch, claim the session and board, and use `./target/debug/worktree-ctl.exe` for bootstrap, rebase, merge, and teardown; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Rebase and integrate affected submodules before the superproject.
+- A small, self-contained change to one existing file or the addition of one new file may be made in the main checkout. Verify that no active board entry owns the path, stage only the changed path, and validate before committing. A small main-checkout change does not require worktree provisioning, `session_check_in`, or `board_check_in`.
 - Simple fix (1-2 files): after the ticket/spec setup when requirements or behavior change, gather context, implement, validate, update docs, verify spec links, and move the ticket to `in-review`.
 - Bug fix: after the ticket/spec setup, follow `.agents/prompts/debug-test.prompt.md` when available.
 - Feature or refactor (>5 files, >100 LOC, or unclear scope): use `.agents/prompts/tickets.prompt.md` to establish the ticket set, then `.agents/prompts/spec.prompt.md` to update the spec before implementation.
@@ -73,7 +74,7 @@ let _tracing = init_test_tracing!(&graph);
 - Scratch notes belong in temporary files only; do not commit ephemeral notes.
 - Follow the closed-loop iteration workflow: Review→Interview→Commit→Handoff. See [loop-closure.instructions.md](.agents/instructions/orchestration/loop-closure.instructions.md).
 - When a handoff package is incomplete or requirements are ambiguous, escalate rather than clarifying inline during implementation. See [escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md).
-- Never commit directly to `main` from an implementation session — all commits land on the feature branch. After the branch is rebased clean and validation passes, the session merges its own feature branch into `main` (bottom-up: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on the feature branch, then fast-forward each `main`). See [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
+- Never commit directly to `main` for worktree-backed work — all such commits land on the feature branch. After the branch is rebased clean and validation passes, the session merges its own feature branch into `main` (bottom-up: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on the feature branch, then fast-forward each `main`). A validated small main-checkout change may commit its explicitly staged path directly to `main`. See [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
 
 ## Feedback Workflow
 
@@ -90,7 +91,7 @@ let _tracing = init_test_tracing!(&graph);
 - If blocked by ambiguity after focused research (10-15 minutes), ask the user.
 - If evidence conflicts or architecture tradeoffs are required, ask before committing to a direction.
 - In multi-agent workspaces, treat unrelated workspace changes as expected background activity and continue.
-- Before editing, claim ownership of the files you will touch; commit only your owned changes, and release ownership when done.
+- Before worktree-backed editing, claim ownership of the files you will touch; commit only your owned changes, and release ownership when done. Before a small main-checkout change, inspect the board and do not touch a path actively owned by another agent.
 - Ignore unrelated changes by default; do not interrupt work solely because they exist.
 - Escalate only when unrelated changes create a real conflict with your owned scope (for example merge conflicts, overlapping owned paths, or failures directly caused by those changes).
 - Never revert, stage, or commit unrelated changes created by other agents.

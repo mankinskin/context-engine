@@ -8,13 +8,17 @@ A worktree may already have been provisioned automatically by the capture hook b
 
 Multiple agents editing the same checkout at the same time is the failure mode this protocol exists to prevent: one agent's `cargo fmt`, revert, or `git add -A` silently swallows another agent's in-progress work, and the resulting commit cannot be attributed to either session. Isolation is structural — each implementation session gets its own git worktree on its own branch, so two agents physically cannot write the same file.
 
+## When This Applies
+
+Use this protocol for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. A small, self-contained change to one existing file or the addition of one new file may be made in the main checkout after checking that no active board entry owns the path. The small main-checkout path does not require worktree provisioning, session check-in, or board check-in; stage only the changed path and validate before committing.
+
 ## The Loop
 
-One implementation task, start to merge:
+One worktree-backed implementation task, start to merge:
 
 1. **Bootstrap** — the root orchestrator creates the worktree and branch from `main`.
 2. **Claim** — the implementation agent checks in on the session store and the ticket board.
-3. **Work** — all edits, builds, and tests happen inside the worktree only.
+3. **Work** — all edits, builds, and tests for the worktree-backed task happen inside the worktree.
 4. **Commit** — commits land on the feature branch, never on `main`.
 5. **Rebase** — in every affected submodule first, then in the superproject, the feature branch rebases onto that repository's updated `main` and resolves every conflict on its own side.
 6. **Mark ready** — the agent checks out of the board with a `ready-to-merge:` reason and moves the ticket to `in-review`.
@@ -119,12 +123,14 @@ If `session_check_in` reports a worktree conflict, or the board shows the ticket
 
 ## 3. Work
 
-- Every read, edit, build, and test runs with the worktree as the working directory. A command run from the repository root is a bug — it touches the wrong checkout.
+- For a worktree-backed task, every read, edit, build, and test runs with the worktree as the working directory. A command run from the repository root is a bug — it touches the wrong checkout.
 - Never run `git checkout`, `git switch`, or `git stash` in the repository root from inside an implementation session.
 - Keep the claimed file list current with `board_update_files` when scope shifts.
 - Refresh `board_heartbeat` before the TTL elapses on long tasks.
 
 ### Entity stores are worktree-local
+
+These store rules apply to worktree-backed tasks. A small main-checkout change does not create or mutate session or board records, because the worktree guard intentionally rejects those main-checkout mutations.
 
 The active-session marker no longer exists. The assigned worktree's `.session/sessions/<session-uuid>/session.json` manifest carries runtime state, and agents supply the Copilot session UUID explicitly from the hook payload.
 
@@ -143,7 +149,7 @@ git -C <repo-root> status --porcelain -- .ticket .spec .session
 
 ## 4. Commit
 
-Commits land on the feature branch inside the worktree. [workflow.instructions.md](workflow.instructions.md) still governs staging batches, generated outputs, and message conventions, and [submodule.instructions.md](submodule.instructions.md) still governs deepest-first submodule ordering. Two additions:
+Worktree-backed commits land on the feature branch inside the worktree. [workflow.instructions.md](workflow.instructions.md) still governs staging batches, generated outputs, and message conventions, and [submodule.instructions.md](submodule.instructions.md) still governs deepest-first submodule ordering. A small main-checkout change may commit directly to `main` after validation when only its explicit path is staged. Two additions for worktree-backed commits:
 
 - Verify the branch before staging. `git -C <worktree> branch --show-current` must print `agent/<full-session-uuid>/<slug>`. If it prints `main`, stop — the session is in the wrong checkout.
 - Stage only files the board entry claims. `git add -A` from an implementation session is forbidden; it is exactly how an unrelated agent's work gets swallowed.
