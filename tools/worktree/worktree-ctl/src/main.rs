@@ -434,7 +434,15 @@ fn handle_merge(
     let mut plan = LifecyclePlan::default();
 
     let preflight = verify_gitlink_containment(git.main_checkout())?;
-    reject_gitlink_violations(&preflight)?;
+    let (fixable, blocking) =
+        partition_gitlink_statuses(git.main_checkout(), preflight)?;
+    reject_gitlink_violations(&blocking)?;
+    for status in &fixable {
+        plan.add(format!(
+            "auto-fix gitlink: fast-forward submodule {} local main to recorded commit {} (only one possible resolution)",
+            status.submodule_path, status.recorded_sha
+        ));
+    }
 
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
         let nested_worktree = worktree.path.join(&submodule);
@@ -462,6 +470,20 @@ fn handle_merge(
     if dry_run {
         plan.emit();
         return Ok(());
+    }
+
+    for status in &fixable {
+        let submodule_path = git.main_checkout().join(&status.submodule_path);
+        run_git(&submodule_path, ["checkout", "main"])?;
+        run_git(&submodule_path, [
+            "merge",
+            "--ff-only",
+            &status.recorded_sha.to_string(),
+        ])?;
+        println!(
+            "auto-fixed gitlink: {} local main fast-forwarded to {}",
+            status.submodule_path, status.recorded_sha
+        );
     }
 
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
@@ -888,13 +910,14 @@ fn reject_gitlink_violations(statuses: &[GitlinkStatus]) -> Result<(), String> {
                 status.submodule_path,
             ),
             _ => format!(
-                "submodule {} recorded {} is {:?}; local main is {}; run `git -C {} checkout main && git -C {} merge --ff-only <feature-branch>`, then bump the gitlink",
+                "submodule {} recorded {} is {:?}; local main is {}; run `git -C {} checkout main && git -C {} merge --ff-only {}` (a named feature branch, or the recorded commit sha itself if no branch points at it), then bump the gitlink",
                 status.submodule_path,
                 status.recorded_sha,
                 status.state,
                 status.main_sha,
                 status.submodule_path,
                 status.submodule_path,
+                status.recorded_sha,
             ),
         })
         .collect::<Vec<_>>();
@@ -906,6 +929,43 @@ fn reject_gitlink_violations(statuses: &[GitlinkStatus]) -> Result<(), String> {
             violations.join("\n")
         ))
     }
+}
+
+// Split gitlink violations into the ones with exactly one safe resolution
+// (recorded commit is a strict fast-forward ahead of local main, so
+// fast-forwarding main to it is the only possible fix) versus everything
+// else, which needs a human to pick a side (true divergence or a missing
+// commit).
+fn partition_gitlink_statuses(
+    repo_root: &Path,
+    statuses: Vec<GitlinkStatus>,
+) -> Result<(Vec<GitlinkStatus>, Vec<GitlinkStatus>), String> {
+    let mut fixable = Vec::new();
+    let mut blocking = Vec::new();
+    for status in statuses {
+        if status.state == GitlinkState::Unresolvable {
+            blocking.push(status);
+            continue;
+        }
+        if !matches!(
+            status.state,
+            GitlinkState::Orphan | GitlinkState::NotContained
+        ) {
+            continue;
+        }
+        let submodule = Repository::open(repo_root.join(&status.submodule_path))
+            .map_err(|error| error.to_string())?;
+        let fast_forwardable = status.main_sha == status.recorded_sha
+            || submodule
+                .graph_descendant_of(status.recorded_sha, status.main_sha)
+                .map_err(|error| error.to_string())?;
+        if fast_forwardable {
+            fixable.push(status);
+        } else {
+            blocking.push(status);
+        }
+    }
+    Ok((fixable, blocking))
 }
 
 fn repository_has_branch(

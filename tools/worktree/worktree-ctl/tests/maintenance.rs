@@ -435,6 +435,57 @@ fn merge_rejects_orphan_gitlink_before_mutation() {
 }
 
 #[test]
+fn merge_auto_fixes_fast_forwardable_orphan_gitlink() {
+    let fixture = fixture_repo();
+    let submodule = fixture.main.join("modules/example");
+    let submodule_main_before =
+        git_revision(&submodule, &["rev-parse", "main"]);
+    git(&submodule, &["checkout", "--detach", "main"]);
+    fs::write(submodule.join("ahead.txt"), "ahead\n").expect("write ahead");
+    git(&submodule, &["add", "ahead.txt"]);
+    git(&submodule, &["commit", "-m", "ahead of submodule main, no branch"]);
+    let recorded_sha = git_revision(&submodule, &["rev-parse", "HEAD"]);
+    git(&fixture.main, &["add", "modules/example"]);
+    git(&fixture.main, &["commit", "-m", "bump gitlink ahead of main"]);
+    assert_ne!(submodule_main_before, recorded_sha);
+
+    create(&fixture, "autofix");
+    let worktree = fixture.worktree("autofix");
+    fs::write(worktree.join("feature.txt"), "feature\n")
+        .expect("write feature");
+    git(&worktree, &["add", "feature.txt"]);
+    git(&worktree, &["commit", "-m", "feature"]);
+
+    let dry_run = fixture.run([
+        "merge",
+        "12345678-1234-1234-1234-123456789abc/autofix",
+        "--dry-run",
+    ]);
+    assert!(
+        dry_run.status.success(),
+        "dry-run failed: {}",
+        all(&dry_run)
+    );
+    assert!(all(&dry_run).contains("auto-fix gitlink"), "{}", all(&dry_run));
+    assert_eq!(
+        submodule_main_before,
+        git_revision(&submodule, &["rev-parse", "main"]),
+        "dry-run must not mutate the submodule branch"
+    );
+
+    let output = fixture
+        .run(["merge", "12345678-1234-1234-1234-123456789abc/autofix"]);
+
+    assert!(output.status.success(), "merge failed: {}", all(&output));
+    assert!(all(&output).contains("auto-fixed gitlink"), "{}", all(&output));
+    assert_eq!(
+        recorded_sha,
+        git_revision(&submodule, &["rev-parse", "main"]),
+        "submodule main must fast-forward to the recorded gitlink commit"
+    );
+}
+
+#[test]
 fn merge_rejects_unresolvable_gitlink_before_mutation() {
     let fixture = fixture_repo();
     create(&fixture, "unresolvable");
