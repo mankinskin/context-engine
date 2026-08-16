@@ -8,7 +8,7 @@ cd "$repo_root"
 # Keep index normalization independent of machine-wide Windows Git defaults.
 git config core.autocrlf false
 git config core.eol lf
-git config core.safecrlf true
+git config core.safecrlf warn
 git config merge.renormalize true
 git config core.hooksPath .githooks
 

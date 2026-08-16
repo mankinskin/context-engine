@@ -7,7 +7,7 @@ bash setup_git.sh
 ```
 
 The setup also pins `core.autocrlf=false`, `core.eol=lf`,
-`core.safecrlf=true`, and `merge.renormalize=true` for this clone. The
+`core.safecrlf=warn`, and `merge.renormalize=true` for this clone. The
 repository's `.gitattributes` then normalizes detected text to LF in the index,
 so CRLF written by an editor or generator does not become a content diff after
 the one-time index normalization has been committed.
