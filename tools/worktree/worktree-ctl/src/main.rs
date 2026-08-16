@@ -76,6 +76,11 @@ enum Command {
         #[arg(long)]
         dry_run: bool,
     },
+    Sync {
+        name: String,
+        #[arg(long)]
+        dry_run: bool,
+    },
     Remove {
         name: String,
         #[arg(long)]
@@ -116,9 +121,21 @@ fn dispatch(command: Command) -> Result<(), String> {
             dry_run,
             preserve_main_changes,
         } => handle_new(&session_uuid, &slug, dry_run, preserve_main_changes),
+        Command::Bootstrap {
+            session_uuid,
+            slug,
+            dry_run,
+            preserve_main_changes,
+        } => handle_bootstrap(
+            &session_uuid,
+            &slug,
+            dry_run,
+            preserve_main_changes,
+        ),
         Command::List { dry_run } => handle_list(dry_run),
         Command::Rebase { name, dry_run } => handle_rebase(&name, dry_run),
         Command::Merge { name, dry_run } => handle_merge(&name, dry_run),
+        Command::Sync { name, dry_run } => handle_sync(&name, dry_run),
         Command::Remove {
             name,
             force,
@@ -457,6 +474,16 @@ fn handle_merge(
     merge_ff_only(git.main_checkout(), branch)?;
     let postflight = verify_gitlink_containment(git.main_checkout())?;
     reject_gitlink_violations(&postflight)
+}
+
+// Rebase then merge behind one command; a rebase conflict stops before any
+// merge so the user resolves it and reruns sync to finish and merge to main.
+fn handle_sync(
+    name: &str,
+    dry_run: bool,
+) -> Result<(), String> {
+    handle_rebase(name, dry_run)?;
+    handle_merge(name, dry_run)
 }
 
 fn handle_remove(
@@ -1280,6 +1307,25 @@ mod tests {
     }
 
     #[test]
+    fn parses_sync_with_dry_run() {
+        let cli = Cli::try_parse_from([
+            "worktree-ctl",
+            "sync",
+            "example",
+            "--dry-run",
+        ])
+        .unwrap();
+
+        assert_eq!(
+            cli.command,
+            Command::Sync {
+                name: "example".to_owned(),
+                dry_run: true,
+            }
+        );
+    }
+
+    #[test]
     fn parses_remove_with_force_and_dry_run() {
         let cli = Cli::try_parse_from([
             "worktree-ctl",
@@ -1359,6 +1405,7 @@ mod tests {
             ],
             vec!["rebase", "example", "--dry-run"],
             vec!["merge", "example", "--dry-run"],
+            vec!["sync", "example", "--dry-run"],
             vec!["remove", "example", "--dry-run"],
             vec!["rename", "old", "new", "--dry-run"],
             vec!["finish", "example", "--dry-run"],

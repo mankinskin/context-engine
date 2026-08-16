@@ -182,20 +182,13 @@ Worktree-backed commits land on the feature branch inside the worktree. [workflo
 
 ## 5. Rebase onto main
 
-Conflicts are resolved by the feature branch, never by the integrator. `worktree-ctl rebase` runs only the superproject's `git rebase main`; it is not submodule-aware. For every affected submodule, first run this manual sequence from the superproject root:
-
-```bash
-git -C <sm> checkout agent/<full-session-uuid>/<slug>
-git -C <sm> rebase main
-```
-
-Resolve each conflict on `agent/<full-session-uuid>/<slug>`, validate the submodule, and do not mark the change ready until every affected submodule rebase is clean. Then rebase the superproject feature branch:
+Conflicts are resolved by the feature branch, never by the integrator. `worktree-ctl rebase` is submodule-aware: it iterates every affected submodule first (checking out `<name>`'s branch and rebasing it onto that submodule's local `main`, then committing the rebased gitlink), and only then rebases the superproject worktree itself:
 
 ```bash
 ./target/debug/worktree-ctl.exe rebase <name>
 ```
 
-This rebases `<name>`'s branch onto LOCAL `main`; it never fetches `origin`, and it stops on conflict and never auto-resolves or aborts, so conflict resolution still happens by hand inside the worktree:
+This rebases `<name>`'s branch (submodules, then the superproject) onto LOCAL `main`; it never fetches `origin`, and it stops on the first conflict and never auto-resolves or aborts, so conflict resolution still happens by hand inside the worktree:
 
 ```bash
 git -C <worktree> status
@@ -255,7 +248,11 @@ done
 
 `git submodule status` prefixes `+` when the checked-out submodule HEAD differs from the recorded gitlink and `-` when the submodule is uninitialized. A clean integration shows neither marker for any of the five submodules.
 
-`worktree-ctl merge` partially automates nested fast-forwards, but the manual sequence above is authoritative: neither `worktree-ctl rebase` nor `worktree-ctl merge` enforces the containment invariant.
+`worktree-ctl merge` automates the nested fast-forwards and enforces the containment invariant itself (it checks gitlink containment before and after, and refuses an unmerged submodule branch), but the manual sequence above remains authoritative for the rescue-branch pinning step, which no `worktree-ctl` subcommand performs.
+
+### One-command shorthand: `worktree-ctl sync`
+
+For the common case — no rescue-branch pinning needed — `worktree-ctl sync <name>` composes step 5 (rebase) and step 7 (merge) behind one command: it rebases every affected submodule then the superproject worktree onto local `main`, and only if that rebase succeeds does it fast-forward every affected submodule `main` then the superproject `main`. A rebase conflict stops `sync` before any merge is attempted — resolve the conflict by hand inside the worktree (`git -C <path> add <resolved files> && git -C <path> rebase --continue`), then rerun `worktree-ctl sync <name>` to finish the remaining rebase steps and merge. `--dry-run` prints the full combined plan (every submodule rebase/skip, the superproject rebase, every submodule fast-forward/skip, and the superproject fast-forward) without mutating anything.
 
 Because every affected branch has rebased onto its repository's `main`, each integration is a fast-forward and must be asserted as one:
 
@@ -276,7 +273,7 @@ This runs `git worktree remove --force .worktrees/<full-session-uuid>/<slug>`, `
 
 `worktree-ctl remove` refuses a dirty worktree unless `--force` is explicit. Its successful force path uses `git worktree remove --force`, which bypasses Git's refusal to remove initialized submodules once the branch is confirmed merged (the fast-forward above already proves it) and needs no prior deinit step. The CLI uses `-d`, never `-D`, so git refuses to delete a branch that was not actually merged.
 
-One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration. `worktree-ctl doctor` diagnoses and repairs exactly this state. Every mutating `worktree-ctl` subcommand (`new`, `rebase`, `merge`, `remove`, `rename`, `finish`, `doctor`) must be run from the main checkout, never from inside a linked worktree.
+One sharp edge to avoid, not perform: never run `git submodule deinit` inside a linked worktree. It rewrites `submodule.*` in `.git/config`, which is **shared by every worktree of the repository**, so deinitializing inside the worktree silently deinitializes the main checkout too. `--force` on `git worktree remove` handles initialized submodules directly and makes that deinit step both unnecessary and harmful — do not add it back. If a submodule deinit ever happens by accident (a hand-typed command, another tool), repair with `git submodule init && git submodule update --init --recursive` in the main checkout and confirm with `git submodule status` that no entry carries a `-` prefix; working-tree files are not lost when this happens, only the config registration. `worktree-ctl doctor` diagnoses and repairs exactly this state. Every mutating `worktree-ctl` subcommand (`new`, `rebase`, `merge`, `sync`, `remove`, `rename`, `finish`, `doctor`) must be run from the main checkout, never from inside a linked worktree.
 
 ## Submodules
 
