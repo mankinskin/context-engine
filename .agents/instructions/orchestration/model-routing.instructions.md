@@ -130,6 +130,7 @@ This is the canonical contract for the `model:` frontmatter field on every `.age
 | `review.agent.md` | Claude Sonnet 5 | T2 | Verifies acceptance criteria against evidence |
 | `roast.agent.md` | Claude Sonnet 5 | T2 | Critique requires judgement, not just extraction |
 | `spec.agent.md` | Claude Sonnet 5 | T2 | Spec authoring/traceability needs judgement |
+| `brainstorm.agent.md` | Claude Sonnet 5 | T2 | Generates distinct, grounded opportunity directions and compares tradeoffs |
 | `testing.agent.md` | Claude Sonnet 5 | T2 | Validation slice selection needs judgement |
 | `ticket-refinement.agent.md` | Claude Sonnet 5 | T2 | Ticket authoring/planning needs judgement |
 | `explore.agent.md` | GPT-5 mini | T3 | Read-only, judgement-free bounded probes (AC3) |
