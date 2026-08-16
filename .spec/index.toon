@@ -2,7 +2,7 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[251]:
+entries[252]:
   - id: "012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6"
     kind: spec
     source_path: "viewer-api/.spec/specs/012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6/spec.toml"
@@ -43,6 +43,16 @@ entries[251]:
         digest: ""
     digest: ee375c67578ef65d2423453f09710979f668945239e63103dc122677886a4506
     tags[3]: draft,"scope:public","ticket-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "03d93adb-59a8-44be-af95-3b4b208e7e9a"
+    kind: spec
+    source_path: ".spec/specs/03d93adb-59a8-44be-af95-3b4b208e7e9a/spec.toml"
+    title: Interactive human learning guidance
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: guidance,human,interactive,learning
+    non_goals: "Autonomous terminal, UI, file, or store mutation by Explainer or Teacher. Agent-side terminal input in a human-owned observer session. Automatic person-level grading, certification, or scoring. Automatic changes to templates, routing, or permissions based on lesson feedback. Rep…"
+    digest: 512e3e027aaea3ad506c0e35a7a77ede4b582fd9a97449e6033a23be659d2b11
+    tags[4]: "agent-workflow",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "04a264ca-5dd6-44d4-ab5a-165822d85079"
     kind: spec

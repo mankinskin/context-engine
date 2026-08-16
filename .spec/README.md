@@ -32,6 +32,7 @@
 ## agent-workflow
 - [agent-workflow/delegation-quality-gates](./tree/delegation-quality-gates/7be68a48/README.md)
 - [agent-workflow/explainer-agent-v1](./tree/explainer-agent-v1/0a38b1a5/README.md)
+- [agent-workflow/interactive-human-learning-guidance](./tree/interactive-human-learning-guidance/03d93adb/README.md)
 - [agent-workflow/model-cost-routing](./tree/model-cost-routing/a4d61b8c/README.md)
 - [agent-workflow/session-context-packing](./tree/session-context-packing/f5e0df47/README.md)
 - [agent-workflow/spec-system-guidance](./tree/spec-system-guidance/e101aa4a/README.md)
