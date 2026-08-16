@@ -5,6 +5,13 @@ set -x
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 cd "$repo_root"
 
+# Keep index normalization independent of machine-wide Windows Git defaults.
+git config core.autocrlf false
+git config core.eol lf
+git config core.safecrlf true
+git config merge.renormalize true
+git config core.hooksPath .githooks
+
 # `git submodule update --init --recursive` aborts the whole command the
 # instant one submodule fails (e.g. a stale/unreachable pinned commit), and
 # a failure partway through can also leave a later submodule with an
