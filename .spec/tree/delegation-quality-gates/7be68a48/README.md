@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=7be68a48-f4e5-49a2-b9a5-118f07b48b90 slug=agent-workflow/delegation-quality-gates digest=64445e44f4ec -->
+<!-- spec-index:entry id=7be68a48-f4e5-49a2-b9a5-118f07b48b90 slug=agent-workflow/delegation-quality-gates digest=095407fbf56a -->
 
 # Quality gates and session data collection for delegated sessions
 

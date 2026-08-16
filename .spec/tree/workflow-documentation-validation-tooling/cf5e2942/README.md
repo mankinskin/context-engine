@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=cf5e2942-1a47-43cc-a0ee-14e5774680a6 slug=context-engine/workflow-documentation-validation-tooling digest=961467fa93c6 -->
+<!-- spec-index:entry id=cf5e2942-1a47-43cc-a0ee-14e5774680a6 slug=context-engine/workflow-documentation-validation-tooling digest=5df73ef6853b -->
 
 # workflow documentation validation via doc-api and doc-cli
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-<!-- spec-api:file generated=true -->
+Make documentation validation first-class behavior in the memory-system doc layer rather than a separate wrapper command path.
 
 ## Acceptance Criteria Excerpt
 

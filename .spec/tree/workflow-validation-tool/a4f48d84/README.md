@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=a4f48d84-50ed-4769-a42f-38321ea9600c slug=context-engine/workflow-validation-tool digest=68b0fc7e6c0d -->
+<!-- spec-index:entry id=a4f48d84-50ed-4769-a42f-38321ea9600c slug=context-engine/workflow-validation-tool digest=4f05f7bc8b22 -->
 
 # workflow validation metadata and default tool behavior
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-<!-- spec-api:file generated=true -->
+Define workflow validation as default behavior of the memory-system tool stack rather than as a separate wrapper tool path.
 
 ## Acceptance Criteria Excerpt
 

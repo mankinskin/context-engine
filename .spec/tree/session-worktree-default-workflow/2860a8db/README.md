@@ -20,4 +20,4 @@
 ## Navigation
 
 - Parent: _(root)_
-- Children: _(none)_
+- Children: [context-engine/mcp/session-anchored-workspace-resolution](session-anchored-workspace-resolution/aff42efb/README.md)

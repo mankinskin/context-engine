@@ -1,17 +1,17 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=351389c0-0873-4c3c-bc46-3551459ba1cd slug=spec-api/store digest=6e26ba5cbce0 -->
+<!-- spec-index:entry id=351389c0-0873-4c3c-bc46-3551459ba1cd slug=spec-api/store digest=03d2f5b8a8b2 -->
 
 # store
 
 - slug: `spec-api/store`
 - component: spec-api
 - scope: public
-- state: draft
+- state: reviewed
 - index_ref: `memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml`
 
 ## Summary
 
-<!-- aligned-structure:v1 -->
+`SpecStore::update_body` previously accepted any content unconditionally, including an accidental empty write or a byte-identical no-op write that silently discarded intent. This spec documents the i…
 
 ## Navigation
 

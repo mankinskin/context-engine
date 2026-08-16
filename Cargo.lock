@@ -2320,16 +2320,16 @@ dependencies = [
  "ascii-dag",
  "bincode",
  "chrono",
- "context-insert",
- "context-read",
- "context-search",
- "context-trace",
+ "context-insert 0.1.0",
+ "context-read 0.1.0",
+ "context-search 0.1.0",
+ "context-trace 0.1.0",
  "fs2",
  "jaq-core",
  "jaq-interpret",
  "jaq-std",
  "jaq-syn",
- "ngrams",
+ "ngrams 0.1.0",
  "once_cell",
  "pretty_assertions",
  "regex",
@@ -2343,13 +2343,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "context-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
+dependencies = [
+ "ascii-dag",
+ "bincode",
+ "chrono",
+ "context-insert 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "context-read 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "context-search 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "context-trace 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "fs2",
+ "jaq-core",
+ "jaq-interpret",
+ "jaq-std",
+ "jaq-syn",
+ "ngrams 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "once_cell",
+ "regex",
+ "schemars 1.2.1",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tracing",
+ "ts-rs",
+]
+
+[[package]]
 name = "context-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
- "context-api",
- "context-trace",
- "ngrams",
+ "context-api 0.1.0",
+ "context-trace 0.1.0",
+ "ngrams 0.1.0",
  "rustyline",
  "serde_json",
  "tempfile",
@@ -2379,7 +2407,7 @@ dependencies = [
  "async-graphql-axum",
  "axum",
  "axum-test",
- "context-api",
+ "context-api 0.1.0",
  "serde",
  "serde_json",
  "tempfile",
@@ -2395,8 +2423,27 @@ dependencies = [
 name = "context-insert"
 version = "0.1.0"
 dependencies = [
- "context-search",
- "context-trace",
+ "context-search 0.1.0",
+ "context-trace 0.1.0",
+ "derivative",
+ "derive-new",
+ "derive_more 2.0.1",
+ "itertools 0.14.0",
+ "linked-hash-map",
+ "linked_hash_set",
+ "maplit",
+ "pretty_assertions",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "context-insert"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
+dependencies = [
+ "context-search 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "context-trace 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
  "derivative",
  "derive-new",
  "derive_more 2.0.1",
@@ -2413,7 +2460,7 @@ dependencies = [
 name = "context-mcp"
 version = "0.1.0"
 dependencies = [
- "context-api",
+ "context-api 0.1.0",
  "rmcp",
  "serde",
  "serde_json",
@@ -2429,9 +2476,9 @@ version = "0.1.0"
 dependencies = [
  "auto_impl",
  "charify",
- "context-insert",
- "context-search",
- "context-trace",
+ "context-insert 0.1.0",
+ "context-search 0.1.0",
+ "context-trace 0.1.0",
  "criterion",
  "csv",
  "derivative",
@@ -2451,7 +2498,7 @@ dependencies = [
  "maplit",
  "nalgebra",
  "ngram",
- "ngrams",
+ "ngrams 0.1.0",
  "nrfind",
  "num-traits",
  "one-of",
@@ -2472,11 +2519,86 @@ dependencies = [
 ]
 
 [[package]]
+name = "context-read"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
+dependencies = [
+ "auto_impl",
+ "charify",
+ "context-insert 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "context-search 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "context-trace 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "csv",
+ "derivative",
+ "derive-into-owned",
+ "derive-new",
+ "derive_builder",
+ "derive_more 2.0.1",
+ "either",
+ "function_name",
+ "histo",
+ "indexmap 2.13.0",
+ "indicatif",
+ "itertools 0.14.0",
+ "lazy_static",
+ "linked-hash-map",
+ "linked_hash_set",
+ "maplit",
+ "nalgebra",
+ "ngram",
+ "nrfind",
+ "num-traits",
+ "one-of",
+ "petgraph 0.8.2",
+ "pretty_assertions",
+ "rand 0.9.2",
+ "rand_distr 0.5.1",
+ "rayon",
+ "replace_with",
+ "serde",
+ "serde_json",
+ "tap",
+ "tracing",
+ "uuid",
+ "valuable",
+]
+
+[[package]]
 name = "context-search"
 version = "0.1.0"
 dependencies = [
  "auto_impl",
- "context-trace",
+ "context-trace 0.1.0",
+ "derivative",
+ "derive-new",
+ "derive_builder",
+ "derive_more 2.0.1",
+ "either",
+ "indexmap 2.13.0",
+ "itertools 0.14.0",
+ "lazy_static",
+ "linked-hash-map",
+ "linked_hash_set",
+ "maplit",
+ "nrfind",
+ "one-of",
+ "petgraph 0.8.2",
+ "pretty_assertions",
+ "serde",
+ "strum 0.27.2",
+ "tap",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
+name = "context-search"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
+dependencies = [
+ "auto_impl",
+ "context-trace 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
  "derivative",
  "derive-new",
  "derive_builder",
@@ -2506,7 +2628,43 @@ version = "0.1.0"
 dependencies = [
  "auto_impl",
  "charify",
- "context-trace-macros",
+ "context-trace-macros 0.1.0",
+ "dashmap",
+ "derivative",
+ "derive-new",
+ "derive_builder",
+ "derive_more 2.0.1",
+ "either",
+ "indexmap 2.13.0",
+ "itertools 0.14.0",
+ "lazy_static",
+ "linked-hash-map",
+ "linked_hash_set",
+ "maplit",
+ "nrfind",
+ "once_cell",
+ "one-of",
+ "petgraph 0.8.2",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "syntect",
+ "tap",
+ "toml 0.8.23",
+ "tracing",
+ "tracing-subscriber",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
+name = "context-trace"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
+dependencies = [
+ "auto_impl",
+ "charify",
+ "context-trace-macros 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
  "dashmap",
  "derivative",
  "derive-new",
@@ -2538,6 +2696,17 @@ dependencies = [
 [[package]]
 name = "context-trace-macros"
 version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
+ "tracing-attributes",
+]
+
+[[package]]
+name = "context-trace-macros"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3771,7 +3940,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 name = "dungeon-crawler"
 version = "0.1.0"
 dependencies = [
- "context-api",
+ "context-api 0.1.0",
  "rand 0.8.5",
 ]
 
@@ -6489,7 +6658,36 @@ name = "ngrams"
 version = "0.1.0"
 dependencies = [
  "ciborium",
- "context-trace",
+ "context-trace 0.1.0",
+ "csv",
+ "derivative",
+ "derive-getters",
+ "derive-new",
+ "derive_builder",
+ "derive_more 2.0.1",
+ "getrandom 0.3.3",
+ "itertools 0.14.0",
+ "lazy_static",
+ "maplit",
+ "ngram",
+ "pretty_assertions",
+ "range-ext",
+ "serde",
+ "strum 0.27.2",
+ "strum_macros 0.27.2",
+ "tap",
+ "tokio",
+ "tokio-util",
+ "web-sys",
+]
+
+[[package]]
+name = "ngrams"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/context-stack?branch=main#9da28661dd8b2dbae555f2a24e9db29b53759379"
+dependencies = [
+ "ciborium",
+ "context-trace 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
  "csv",
  "derivative",
  "derive-getters",
@@ -10995,7 +11193,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-test",
- "context-api",
+ "context-api 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
  "http-body-util",
  "hyper",
  "hyper-util",

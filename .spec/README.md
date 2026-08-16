@@ -1,18 +1,29 @@
 <!-- spec-index:file generated=true -->
 
+## agent-guidance
+- [agent-guidance/branch-worktree-isolation](./tree/branch-worktree-isolation/2a710b29/README.md)
+- [agent-guidance/main-checkout-scope](./tree/main-checkout-scope/b041df3f/README.md)
+- [agents/minimal-terminal-command-agent](./tree/minimal-terminal-command-agent/874b62fb/README.md)
+- [transcript-multi-artifact-refinement](./tree/transcript-multi-artifact-refinement/4bcdde40/README.md)
+
 ## agent-harness
 - [agent-harness/interactive-chat-ui](./tree/interactive-chat-ui/3e9d967e/README.md)
 - [agent-harness/unified-operator-interface](./tree/unified-operator-interface/6f286eee/README.md)
+
+## agent-orchestration
+- [agent-orchestration/planner-worker-two-tier](./tree/planner-worker-two-tier/1b654f30/README.md)
 
 ## agent-rules
 - [agent-rules/browser-frontend-playwright-mcp](./tree/browser-frontend-playwright-mcp/347b6f97/README.md)
 
 ## agent-tooling
+- [agent-tooling/agent-template-roster-authoring-contract](./tree/agent-template-roster-authoring-contract/88413517/README.md)
 - [agent-tooling/default-tool-suite](./tree/default-tool-suite/7c9757a7/README.md)
   - [agent-tooling/compact-terminal](./tree/default-tool-suite/7c9757a7/compact-terminal/63c60c9d/README.md)
   - [agent-tooling/file-editing](./tree/default-tool-suite/7c9757a7/file-editing/4f5ad264/README.md)
   - [agent-tooling/filesystem-operations](./tree/default-tool-suite/7c9757a7/filesystem-operations/58a1d32c/README.md)
   - [agent-tooling/repo-wide-search](./tree/default-tool-suite/7c9757a7/repo-wide-search/af9ebba9/README.md)
+- [agent-tooling/mcp-tool-grants](./tree/mcp-tool-grants/ec3b13f1/README.md)
 - [agent-tooling/peek-api](./tree/peek-api/3ccdde3a/README.md)
 - [agent-workflow/handoff-package-schema](./tree/handoff-package-schema/5e52039d/README.md)
 - [agent-workflow/iteration-loop](./tree/iteration-loop/b71658f1/README.md)
@@ -20,6 +31,7 @@
 
 ## agent-workflow
 - [agent-workflow/delegation-quality-gates](./tree/delegation-quality-gates/7be68a48/README.md)
+- [agent-workflow/explainer-agent-v1](./tree/explainer-agent-v1/0a38b1a5/README.md)
 - [agent-workflow/model-cost-routing](./tree/model-cost-routing/a4d61b8c/README.md)
 - [agent-workflow/session-context-packing](./tree/session-context-packing/f5e0df47/README.md)
 - [agent-workflow/spec-system-guidance](./tree/spec-system-guidance/e101aa4a/README.md)
@@ -42,6 +54,7 @@
 - [context-engine/recurring-principles](./tree/recurring-principles/954d9807/README.md)
 - [context-engine/repository-workflow-guidance](./tree/repository-workflow-guidance/47465a64/README.md)
 - [context-engine/session-worktree-default-workflow](./tree/session-worktree-default-workflow/2860a8db/README.md)
+  - [context-engine/mcp/session-anchored-workspace-resolution](./tree/session-worktree-default-workflow/2860a8db/session-anchored-workspace-resolution/aff42efb/README.md)
 - [context-engine/smooth-repository-readme-surfaces](./tree/smooth-repository-readme-surfaces/bcea435e/README.md)
 - [context-engine/specification-contract/behavior-first-spec-contract-and-validation-triangulation](./tree/behavior-first-spec-contract-and-validation-triangulation/298f2f92/README.md)
 - [context-engine/submodule-branch-tracking](./tree/submodule-branch-tracking/9983b865/README.md)
@@ -59,6 +72,9 @@
 - [program/store-expansion-and-operational-health](./tree/store-expansion-and-operational-health/9c3ec5a5/README.md)
 - [repo/workspace/root-level-context-stack-layout](./tree/root-level-context-stack-layout/4aa3cbc9/README.md)
 - [sandbox-orchestration-v1-functional](./tree/sandbox-orchestration-v1-functional/fb968dea/README.md)
+
+## context-enrichment
+- [context-enrichment/session-ticket-relation-query](./tree/session-ticket-relation-query/e5f8a2c1/README.md)
 
 ## context-stack
 - [context-stack](./tree/context-stack/c6feacef/README.md)
@@ -78,13 +94,14 @@
 - [feedback-api/contract/v2](./tree/v2/17fc536c/README.md)
 - [feedback-api/structured-feedback-inbox-and-deep-reconciliation-search](./tree/structured-feedback-inbox-and-deep-reconciliation-search/e4ac6ae2/README.md)
 
-## fixture
-- [fixture/root](./tree/root/00000000/README.md)
-- [fixture/submodule-a](./tree/submodule-a/00000000/README.md)
-- [fixture/submodule-b](./tree/submodule-b/00000000/README.md)
-
 ## interview-api
 - [interview-api/persistent-interview-sessions-and-survey-synthesis](./tree/persistent-interview-sessions-and-survey-synthesis/7e9131d1/README.md)
+
+## mcp-cost-gate
+- [mcp-cost-gate/caller-model-resolution](./tree/caller-model-resolution/9f0b9e30/README.md)
+
+## mcp-toolmon
+- [mcp-toolmon/reload/proxy](./tree/proxy/1bef7b3d/README.md)
 
 ## memory-api
 - [architecture/cross-store-workspace-interaction](./tree/cross-store-workspace-interaction/6571abcf/README.md)
@@ -117,6 +134,7 @@
 - [memory-api/observability/runtime-logging](./tree/runtime-logging/aa769a27/README.md)
 - [memory-api/recurring-principles](./tree/recurring-principles/f9c32554/README.md)
 - [memory-api/store-scan-move-hot-path-performance](./tree/store-scan-move-hot-path-performance/0adfbd09/README.md)
+- [memory-api/workspace-store-resolution-anchoring](./tree/workspace-store-resolution-anchoring/5d9e5a99/README.md)
 - [test/transport-layer-e2e-matrix](./tree/transport-layer-e2e-matrix/76da5f2d/README.md)
 
 ## memory-fixtures
@@ -125,8 +143,20 @@
 ## memory-kernel
 - [workflow-tools/memory-kernel-extraction](./tree/memory-kernel-extraction/66538d9e/README.md)
 
+## memory-tools
+- [memory-tools/storeless-workspace-startup-side-effects](./tree/storeless-workspace-startup-side-effects/939d066a/README.md)
+
 ## model-prices
 - [model-prices/price-awareness-orchestration](./tree/price-awareness-orchestration/39983ddf/README.md)
+
+## onboarding
+- [onboarding/unified-bootstrap](./tree/unified-bootstrap/1ef841f2/README.md)
+
+## pdf
+- [pdf-tooling](./tree/pdf-tooling/83f05962/README.md)
+
+## presentation
+- [presentation-system](./tree/presentation-system/2ccde9ee/README.md)
 
 ## probe
 - [probe/spec](./tree/spec/a67fdd95/README.md)
@@ -143,6 +173,7 @@
     - [repo-guidance/readmes/context-engine-root](./tree/shared-schema-rollout/b9bf7713/manual-repos/59216a24/context-engine-root/6d73975e/README.md)
     - [repo-guidance/readmes/context-stack](./tree/shared-schema-rollout/b9bf7713/manual-repos/59216a24/context-stack/b8ddb54c/README.md)
   - [repo-guidance/readmes/shared-schema](./tree/shared-schema-rollout/b9bf7713/shared-schema/cde871d1/README.md)
+- [repo-guidance/repository-architecture-dependency-policies](./tree/repository-architecture-dependency-policies/182940eb/README.md)
 
 ## rule-api
 - [memory-api/rule-api/rule-introduces-spec](./tree/rule-introduces-spec/51ee3a34/README.md)
@@ -150,6 +181,7 @@
 - [rule-api/workspaces](./tree/workspaces/e815f261/README.md)
   - [rule-api/workspaces/memory-api-readme-generation](./tree/workspaces/e815f261/memory-api-readme-generation/3b96ec1c/README.md)
   - [rule-api/workspaces/nested-resolution](./tree/workspaces/e815f261/nested-resolution/5de125ad/README.md)
+- [rule-system/multi-client-guidance-rendering](./tree/multi-client-guidance-rendering/43b9a6ac/README.md)
 
 ## rule-cli
 - [rule-cli/sync-targets/incremental-and-normalized-paths](./tree/incremental-and-normalized-paths/9c7c0655/README.md)
@@ -159,17 +191,24 @@
 - [scaffold/rule-generated-domain-store-bootstrap-instructions-and-slash-skill](./tree/rule-generated-domain-store-bootstrap-instructions-and-slash-skill/9ee9387f/README.md)
 
 ## session-api
+- [c737328d-session-merge-pickup](./tree/c737328d-session-merge-pickup/da89c1b5/README.md)
 - [context-engine/session-api/session-audit-unified-interface](./tree/session-audit-unified-interface/34d5f1cd/README.md)
+- [context-engine/session-api/session-worktree-positional-discovery](./tree/session-worktree-positional-discovery/22298b0d/README.md)
+- [context-engine/session-api/session-worktree-routing](./tree/session-worktree-routing/0f5acbfe/README.md)
 - [context-engine/session-api/vscode-copilot-capture-hook-sync](./tree/vscode-copilot-capture-hook-sync/09f96d83/README.md)
 - [memory-api/session-api/dynamic-session-bootstrapping](./tree/dynamic-session-bootstrapping/8c880efc/README.md)
   - [memory-api/curation/entity-usage-and-feedback](./tree/dynamic-session-bootstrapping/8c880efc/entity-usage-and-feedback/71b81a55/README.md)
   - [memory-api/session-api/cascade-context-gathering](./tree/dynamic-session-bootstrapping/8c880efc/cascade-context-gathering/fda5c915/README.md)
   - [memory-api/session-api/durable-session-workflow](./tree/dynamic-session-bootstrapping/8c880efc/durable-session-workflow/c677182e/README.md)
+    - [memory-api/session-api/handoff-provenance-and-tracks](./tree/dynamic-session-bootstrapping/8c880efc/durable-session-workflow/c677182e/handoff-provenance-and-tracks/c737328d/README.md)
   - [memory-api/session-api/minimal-bootstrapper-selective-loading](./tree/dynamic-session-bootstrapping/8c880efc/minimal-bootstrapper-selective-loading/a28a88db/README.md)
   - [memory-api/session-api/runtime-session-context](./tree/dynamic-session-bootstrapping/8c880efc/runtime-session-context/709f067a/README.md)
+  - [session-api/execution-track](./tree/dynamic-session-bootstrapping/8c880efc/execution-track/7b277ba4/README.md)
 - [memory-api/session-api/hook-ingestion-read-query](./tree/hook-ingestion-read-query/36fd7849/README.md)
 - [memory-api/session-api/persistence-writer](./tree/persistence-writer/823b22cf/README.md)
+- [session-api/session-ticket-attribution](./tree/session-ticket-attribution/1f652236/README.md)
 - [session-api/tool-metrics/cost-gate-classification](./tree/cost-gate-classification/29ae5f6e/README.md)
+  - [session-api/tool-metrics/output-size-capture-attribution](./tree/cost-gate-classification/29ae5f6e/output-size-capture-attribution/97f25cf8/README.md)
 - [session-api/workflow/flexible-authoring](./tree/flexible-authoring/96bc688a/README.md)
 
 ## spec-api
@@ -182,6 +221,9 @@
   - [spec-api/manifest](./tree/spec-api/86877b97/manifest/226ff55f/README.md)
   - [spec-api/slug](./tree/spec-api/86877b97/slug/b0b3c0c6/README.md)
   - [spec-api/store](./tree/spec-api/86877b97/store/351389c0/README.md)
+
+## spec-api,ticket-api
+- [memory-api/traceability/structured-ticket-spec-links](./tree/structured-ticket-spec-links/eeaf5479/README.md)
 
 ## spec-cli
 - [spec-cli](./tree/spec-cli/1d6481ff/README.md)
@@ -220,11 +262,15 @@
 - [test-api/browser-result-ingestion](./tree/browser-result-ingestion/9e823b76/README.md)
 
 ## ticket-api
+- [ticket-api/board/session-worktree-binding](./tree/session-worktree-binding/10dee1dc/README.md)
 - [ticket-api/cross-workspace-move-contract](./tree/cross-workspace-move-contract/afcaccc9/README.md)
+- [ticket-api/entity/structured-ticket-entities](./tree/structured-ticket-entities/24b3d22b/README.md)
 - [ticket-api/model/tracker-improvement-effort-field](./tree/tracker-improvement-effort-field/fa5265cc/README.md)
 - [ticket-api/move-planner/invisible-reference-fixture-visibility](./tree/invisible-reference-fixture-visibility/2b0ce814/README.md)
 - [ticket-api/performance/move-health-characterization](./tree/move-health-characterization/af0ae2a0/README.md)
+- [ticket-api/schema-modernization](./tree/schema-modernization/e9c38d24/README.md)
 - [ticket-api/state-transition-path-unification](./tree/state-transition-path-unification/1d62442b/README.md)
+- [ticket-api/storage/description-update-modes](./tree/description-update-modes/1f77f652/README.md)
 - [ticket-api/storage/file-backed-edge-persistence](./tree/file-backed-edge-persistence/e09cb882/README.md)
 - [ticket-api/validation-aware-dependency-requirements-and-health](./tree/validation-aware-dependency-requirements-and-health/b4d038e0/README.md)
 - [ticket-api/workflow/cross-surface-contract-parity-and-validation](./tree/cross-surface-contract-parity-and-validation/9074b2ef/README.md)
@@ -252,6 +298,10 @@
 ## ticket-vscode
 - [ticket-vscode](./tree/ticket-vscode/5d17db06/README.md)
 - [ticket-vscode/rust-wasm-port](./tree/rust-wasm-port/a592900c/README.md)
+
+## tooling
+- [tooling/executable-hook-registry](./tree/executable-hook-registry/97322185/README.md)
+- [worktree/unregistered-debris-removal](./tree/unregistered-debris-removal/ac101b1c/README.md)
 
 ## transport-harness
 - [transport-harness](./tree/transport-harness/e5294ae5/README.md)
@@ -305,3 +355,6 @@
 
 ## workspace-tooling
 - [workspace/vscode-copilot-mcp-servers](./tree/vscode-copilot-mcp-servers/1a62c7f7/README.md)
+
+## worktree-lifecycle
+- [worktree-lifecycle/local-repository-bootstrap](./tree/local-repository-bootstrap/50cbb762/README.md)

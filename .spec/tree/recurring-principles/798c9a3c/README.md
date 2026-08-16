@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=798c9a3c-404a-4842-874d-484edb4209ef slug=viewer-api/recurring-principles digest=72b789665d6b -->
+<!-- spec-index:entry id=798c9a3c-404a-4842-874d-484edb4209ef slug=viewer-api/recurring-principles digest=8dfb62af8653 -->
 
 # viewer-api recurring principles
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-<!-- spec-api:file generated=true -->
+This spec captures the cross-cutting design principles that recur across `viewer-api` and the managed viewers (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). They are the canonical auth…
 
 ## Navigation
 

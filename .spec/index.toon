@@ -2,34 +2,7 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[220]:
-  - id: "00000000-0000-0000-0000-0000000000a2"
-    kind: spec
-    source_path: "./memory-api/test-fixtures/memory-workspace-fixture/submodule-a/.spec/specs/00000000-0000-0000-0000-0000000000a2/spec.toml"
-    title: Submodule A fixture spec
-    summary: "<!-- aligned-structure:v1 -->"
-    keywords[3]: fixture,spec,submodule
-    digest: f9c22ea3f5a9ef52f4663ccc8d2e44b78dbc32909cb1f8b59bf035a94533378a
-    tags[4]: draft,fixture,root,"scope:internal"
-    generated_at: "1970-01-01T00:00:00Z"
-  - id: "00000000-0000-0000-0000-0000000000b1"
-    kind: spec
-    source_path: "./memory-api/test-fixtures/memory-workspace-fixture/.spec/specs/00000000-0000-0000-0000-0000000000b1/spec.toml"
-    title: Root fixture spec
-    summary: "<!-- aligned-structure:v1 -->"
-    keywords[3]: fixture,root,spec
-    digest: ba5530d1bfbe1d5ea06d247eaf26ba99b39ee173b77914be5190dc15bd3eeaf6
-    tags[4]: draft,fixture,root,"scope:internal"
-    generated_at: "1970-01-01T00:00:00Z"
-  - id: "00000000-0000-0000-0000-0000000000b2"
-    kind: spec
-    source_path: "./memory-api/test-fixtures/memory-workspace-fixture/submodule-b/.spec/specs/00000000-0000-0000-0000-0000000000b2/spec.toml"
-    title: Submodule B fixture spec
-    summary: "<!-- aligned-structure:v1 -->"
-    keywords[3]: fixture,spec,submodule
-    digest: 7167e2f2c929ea6a797f100e7862f84c7dc1955d817174932756307fc2288791
-    tags[4]: draft,fixture,root,"scope:internal"
-    generated_at: "1970-01-01T00:00:00Z"
+entries[251]:
   - id: "012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6"
     kind: spec
     source_path: "viewer-api/.spec/specs/012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6/spec.toml"
@@ -130,6 +103,15 @@ entries[220]:
     non_goals: "replacing existing non-capture reminder hooks introducing new query, MCP, or HTTP surfaces beyond the current `session-api` store API changing the on-disk session directory structure under `.session/sessions/<session-id>/`"
     digest: cbff8dcb64e204c5bd6a990f5356305ba3abe302ff326999f2590827ba02ae1a
     tags[4]: "in-review",root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "0a38b1a5-f752-4368-8ec6-d11e6621177f"
+    kind: spec
+    source_path: ".spec/specs/0a38b1a5-f752-4368-8ec6-d11e6621177f/spec.toml"
+    title: "Explainer Agent version-one contract"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: agent,contract,explainer,"version-one"
+    digest: a55af0bc77647be1993e32488cecd5229654328f1ffcdc2cfd02968176044a7c
+    tags[4]: "agent-workflow",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0adfbd09-15c7-46ee-be24-03da0564833d"
     kind: spec
@@ -235,6 +217,15 @@ entries[220]:
     digest: a9175204497cd57c9195e46d24379af3bcbbd25fac7d7c518b582bfdbcdfbb74
     tags[4]: draft,root,"rule-api","scope:public"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "0f5acbfe-743b-4f1e-abfd-54628e49fb5f"
+    kind: spec
+    source_path: ".spec/specs/0f5acbfe-743b-4f1e-abfd-54628e49fb5f/spec.toml"
+    title: "Session-id worktree routing: discovery resolver, capture-hook self-heal, and terminal stdio isolation"
+    summary: Legacy content intentionally omitted; body written via sections below plus a concise summary.
+    keywords[11]: "capture-hook",discovery,isolation,resolver,routing,"self-heal",session,"session-id",stdio,terminal,worktree
+    digest: 7980406e1c7b26b0689efa5bcd118c7a64fef86acb8764e5c9421337c25b5f28
+    tags[3]: reviewed,root,"session-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "0f684a90-6abe-4028-a9f1-5d2d6322f1b9"
     kind: spec
     source_path: "memory-api/.spec/specs/0f684a90-6abe-4028-a9f1-5d2d6322f1b9/spec.toml"
@@ -250,6 +241,16 @@ entries[220]:
         digest: ""
     digest: 2a2e1934cf95a5784a7656b65606a702f06d06880cfa2b0fb3038b41e2a8e214
     tags[3]: draft,"scope:public","spec-http"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "10dee1dc-ab34-4e16-810b-b0c20a7677b7"
+    kind: spec
+    source_path: ".spec/specs/10dee1dc-ab34-4e16-810b-b0c20a7677b7/spec.toml"
+    title: "Board-to-session worktree binding and active-worktree discovery"
+    summary: "The board-and-worktree isolation protocol (spec `2a710b29-13e9-40b8-8a53-c0ea366bd0bf`, ticket `e38c258e-4502-4a92-95c7-1dac38fd24b7`) requires each implementation session to run in its own git workt…"
+    keywords[6]: "active-worktree",binding,"board-to-session",discovery,session,worktree
+    non_goals: "Automatically creating or removing git worktrees on disk. Verifying that a recorded `worktree_path` exists on the filesystem. Reconciling the board against the session store as a background job. CI enforcement of the branch-and-worktree protocol."
+    digest: 15ff28f8d06f77c26013f5b422e440a5aa2871202e99d11be27ee3c65b7efc49
+    tags[3]: draft,root,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "12045379-ce22-416b-8a5e-31d560c35992"
     kind: spec
@@ -313,6 +314,17 @@ entries[220]:
     digest: 181e325008180a750d28734293bc27e401aa26310a5cbe965c6b9de164395623
     tags[3]: draft,"feedback-api",root
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "182940eb-0df3-4fa0-8aff-2abce6095708"
+    kind: spec
+    source_path: ".spec/specs/182940eb-0df3-4fa0-8aff-2abce6095708/spec.toml"
+    title: Repository architecture and dependency policies
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: architecture,dependency,policies,repository
+    scope: "This contract covers dependency source identity, local patch limits, the neutral-kernel boundary, the domain extension-trait ownership rule, public domain-crate layout, and binary names. It governs durable repository guidance, not a migration plan for each existing tool."
+    non_goals: "This spec does not migrate any additional workflow tool or publish a crate. This spec does not change Cargo's dependency resolver or alter existing remote source URLs. This spec does not make `967c3cf6`'s planning-process requirement an architecture policy. This spec does not re…"
+    digest: 9bb94086d856bbda561122606b33fedb315f7f3c6e71c0b5d1d36ad17cac624d
+    tags[4]: draft,"repo-guidance",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "18b6a9c5-7d9c-483c-a228-113903ed495f"
     kind: spec
     source_path: ".spec/specs/18b6a9c5-7d9c-483c-a228-113903ed495f/spec.toml"
@@ -355,11 +367,32 @@ entries[220]:
     digest: 678a6cff05f123f55517cf9f6632f4ff6f3c45415f82e7aa9d68fe8aa71f079e
     tags[4]: draft,root,"scope:internal","workspace-tooling"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "1b654f30-d1a4-4cb4-ab2e-8355dfe5a758"
+    kind: spec
+    source_path: ".spec/specs/1b654f30-d1a4-4cb4-ab2e-8355dfe5a758/spec.toml"
+    title: "Two-tier Planner/Worker model routing architecture"
+    summary: "Flattened two-tier orchestration: **Planner/Architect** (frontier model, plans once) and **Worker** (fast/cheap model, executes exactly one isolated step), replacing the multi-hop chain (T0 orchestra…"
+    keywords[8]: architecture,model,planner,planner/worker,routing,tier,"two-tier",worker
+    scope: "Define the Planner/Architect role: reads the ticket and repo schema/context, and outputs one immutable, rigid, structured (JSON) execution plan intended for **direct execution**, not further re-planning by an intermediate agent. Define the Worker role: executes exactly one isola…"
+    non_goals: "Implementing the Planner/Worker dispatch mechanism, plan schema validator, or any change to `.agents/agents/orchestrator.agent.md`, `model-routing.instructions.md`, or `orchestrator-delegation.instructions.md` — tracked separately under tickets 1a240fdc, 7563ce30, 44c6cc5c (epic…"
+    digest: 31f51192944afef480bae5fdfa00925746c661042e6c995e3010ac683512bbfc
+    tags[4]: "agent-orchestration",approved,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1bef7b3d-8d2f-4719-8dbe-d2861a456145"
+    kind: spec
+    source_path: ".spec/specs/1bef7b3d-8d2f-4719-8dbe-d2861a456145/spec.toml"
+    title: "mcp-toolmon: pluggable-policy proxy with live binary reload"
+    summary: "A bug fix landed in `memory-api/crates/ticket-api/src/storage/store.rs` and all 207 ticket-api tests passed, but every ticket-mcp caller kept receiving the OLD behavior: the MCP server runs a prebuil…"
+    keywords[7]: binary,live,"mcp-toolmon","pluggable-policy",proxy,reload,with
+    non_goals: "No new MCP tool is injected into `tools/list` to trigger restarts. Rejected explicitly: 12 duplicate tool schemas would cost context on every request across every wrapped server. No supervision of HTTP viewer servers (doc-viewer, log-viewer, ticket-viewer, spec-viewer, etc.) — t…"
+    digest: dc244a56d3ddeb044d7d243aba5d1dde802c91461ec5ac6b509eec2cdb5c2171
+    tags[4]: draft,"mcp-toolmon",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "1cf68c36-7f64-4d81-b553-1947b978fbe3"
     kind: spec
     source_path: "memory-api/.spec/specs/1cf68c36-7f64-4d81-b553-1947b978fbe3/spec.toml"
     title: generated documents
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "`spec-api` should be able to generate spec document files from canonical snippet records the same way `rule-api` already generates markdown outputs from target configurations. The generation mechanis…"
     keywords[2]: documents,generated
     non_goals: "Replacing authored `spec.toml` metadata with generated content. Moving all `rule-api` target configuration into `spec-api` in the first slice. Requiring `spec-api` to understand every `rule-api` filter or explain feature before generated spec documents are possible."
     relations:
@@ -369,7 +402,7 @@ entries[220]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: e7c6893727490877e0c52c906a2ab17a9d45778ec07d23fc40b83aa884c722e4
+    digest: 39fcd22fd8097e509ac41ef474e8cd2e12cdc36704f36a7e4d21c98ad5715946
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "1d62442b-61dc-4eeb-9b7c-e933f84470f2"
@@ -395,6 +428,46 @@ entries[220]:
     digest: ec38d94a1931d010c5a15a079ad3de36b8cd9b9b51a7d460a65090fccd72bf5b
     tags[4]: draft,root,"scope:public","spec-cli"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "1ef841f2-620c-428f-86da-167fd11bae25"
+    kind: spec
+    source_path: ".spec/specs/1ef841f2-620c-428f-86da-167fd11bae25/spec.toml"
+    title: "Unified bootstrap and Copilot CLI agent-surface wiring"
+    summary: "Reduce fresh-clone onboarding to a single script invocation, and make this"
+    keywords[5]: "agent-surface",bootstrap,copilot,unified,wiring
+    non_goals: "Do not change the underlying MCP binaries, agent template content, or prompt template content — this work only wires up discovery paths. Do not attempt symlink-based sharing on Windows; copy-based generation is the portable default for all platforms. Do not change `.vscode/mcp.j…"
+    digest: 8aaedc1676b6dc24fd916b8bd5e25c1563dc62dd79e330529d9c512b46ae58ed
+    tags[4]: onboarding,reviewed,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1f652236-d39e-44a2-97c4-50264de6a574"
+    kind: spec
+    source_path: ".spec/specs/1f652236-d39e-44a2-97c4-50264de6a574/spec.toml"
+    title: "Session-to-ticket attribution evidence tiers and transcript backfill"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[8]: attribution,backfill,evidence,session,"session-to-ticket",ticket,tiers,transcript
+    non_goals: "Changing capture-time branch inference for root-checkout sessions on `main`. Passing session context into ticket-API calls for prospective self-attribution. Writing transcript-mined evidence into `metadata.ticket_id`. Treating unresolved 8-hex candidates as ticket associations."
+    digest: 5f1f404c632e674a69e90dc5d2b9cfa6842120af278ec141824141a0b7f728ba
+    tags[4]: draft,root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1f77f652-f883-4782-940a-39874dfe1382"
+    kind: spec
+    source_path: ".spec/specs/1f77f652-f883-4782-940a-39874dfe1382/spec.toml"
+    title: Description update modes (replace/append) with mandatory history capture
+    summary: "`update_ticket` previously always overwrote `description.md` on any description write, with no way to append and no guarantee the prior text was recoverable. This spec documents the implemented contr…"
+    keywords[8]: capture,description,history,mandatory,modes,replace/append,update,with
+    non_goals: "Does not change the shape or format of `description.md` beyond simple concatenation with `\\n`. Does not add a third merge/diff mode; only `Replace` and `Append` are supported."
+    digest: a9dc77f839d9d20f899e6598fda6ea80dbde38516b94a562def5252613293fb4
+    tags[4]: reviewed,root,"scope:public","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "22298b0d-a91a-4ec9-84b6-3ba0db1d47e9"
+    kind: spec
+    source_path: ".spec/specs/22298b0d-a91a-4ec9-84b6-3ba0db1d47e9/spec.toml"
+    title: Session worktree positional discovery
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: discovery,positional,session,worktree
+    non_goals: "Migrating existing flat worktrees. Removing `.session/` from git tracking. Pushing any branch or artifact to a remote. Repairing the pre-existing unowned `context-read` (7) or `memory-matrix`/`memory-kernel` (2) test failures. Changing ticket-board ownership semantics beyond con…"
+    digest: 1c76f3b09f4c87ad21d939a788b4137f4b60f2a37988b297323bd94d4f0c909b
+    tags[4]: draft,root,"scope:internal","session-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "226ff55f-eebf-43b8-aa1e-5abf81b99101"
     kind: spec
     source_path: "memory-api/.spec/specs/226ff55f-eebf-43b8-aa1e-5abf81b99101/spec.toml"
@@ -410,6 +483,16 @@ entries[220]:
         digest: ""
     digest: d953581147e6dc085f3e07814c5d18bb0167ec699dc9e111d5a743031c1160dc
     tags[3]: draft,"scope:public","spec-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "24b3d22b-e235-4c4f-b53c-75fb819ea95b"
+    kind: spec
+    source_path: ".spec/specs/24b3d22b-e235-4c4f-b53c-75fb819ea95b/spec.toml"
+    title: "Structured Ticket Entities: multi-file parts, plan freezing, typed refs, and projected reads"
+    summary: "A ticket entity today is a single mutable blob. Its directory holds `ticket.toml`, one `description.md`, `history.ndjson`, and an unused empty `assets/` scaffold (memory-api/crates/ticket-api/src/mod…"
+    keywords[11]: entities,freezing,"multi-file",parts,plan,projected,reads,refs,structured,ticket,typed
+    non_goals: "Reworking the edge model or migrating existing free-form edge kinds. A general query expression language over tickets. Profiles plus an explicit part list are the whole projection surface for this spec. Retention limits or compaction of `history.ndjson`."
+    digest: 8d30ce46228a1950df53b735ffd7911d323839ed5b76957764ac521ee2bfbed9
+    tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "24baf686-38fd-417d-9528-bebc02a556d0"
     kind: spec
@@ -477,6 +560,9 @@ entries[220]:
     keywords[5]: default,session,workflow,worktree,"worktree-backed"
     scope: "require new sessions to check into the session tool before implementation begins assign each checked-in session an authoritative worktree working directory expose that working directory through targeted `session-api` CLI, MCP, hook, or startup surfaces define how ticket-board ow…"
     non_goals: "reviving the cancelled AOH sandbox-manager implementation as-is changing the existing append-only `session-api` transcript persistence contract designing full merge automation or PR orchestration in this slice"
+    relations:
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/aff42efb-422b-4abc-8a6c-cd176a3d0d5d/spec.toml","aff42efb-422b-4abc-8a6c-cd176a3d0d5d",child,spec,""
     digest: d7a93ae3323b22a73e8043e102f4d7f5a14058aa1bddde7fffc0f8d28ca36893
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
@@ -495,8 +581,21 @@ entries[220]:
     title: "Empirical tool-metrics driven cost-gate classification"
     summary: "Replace the hardcoded, guess-based `TOKEN_HEAVY_TOOL_SUBSTRINGS` classification in `mcp-cost-gate` and `tools/model-prices/cost_gate.py` with an **empirically-derived** classification computed from o…"
     keywords[7]: classification,cost,"cost-gate",driven,empirical,gate,"tool-metrics"
-    digest: 2874789d77f2231207edb95c2584ddba24efdd174c62e1b0bea854f5120644e2
-    tags[3]: draft,root,"session-api"
+    relations:
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/97f25cf8-f869-48d8-a48d-49d02badd188/spec.toml","97f25cf8-f869-48d8-a48d-49d02badd188",child,spec,""
+    digest: 5a1efa3608587b3966a9540e878057c4f97c4f303f5b036d0cf72abd3b0458e9
+    tags[3]: reviewed,root,"session-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2a710b29-13e9-40b8-8a53-c0ea366bd0bf"
+    kind: spec
+    source_path: ".spec/specs/2a710b29-13e9-40b8-8a53-c0ea366bd0bf/spec.toml"
+    title: Branch and worktree isolation for concurrent implementation agents
+    summary: "Every implementation agent session MUST operate in isolation from every other concurrent session: one implementation session, one git worktree, one branch, cut from `main`. This closes the failure mo…"
+    keywords[6]: agents,branch,concurrent,implementation,isolation,worktree
+    non_goals: "The following are explicitly out of scope for this requirement:"
+    digest: b24a889b9f2eab65218948e057211a14418e38ca6685d7ceeb0b52c9e89d64ac
+    tags[3]: "agent-guidance",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2b0ce814-0c22-42fa-8a89-f123660690e8"
     kind: spec
@@ -506,6 +605,16 @@ entries[220]:
     keywords[7]: fixture,invisible,"invisible-reference","move-planner",reference,ticket,visibility
     digest: ed80626807201bc9a56e735e7d05a5a30a149d0ac0158b68931dd9658aff030c
     tags[4]: draft,root,"scope:internal","ticket-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "2ccde9ee-85ac-4c87-9601-f6099f5be01c"
+    kind: spec
+    source_path: ".spec/specs/2ccde9ee-85ac-4c87-9601-f6099f5be01c/spec.toml"
+    title: Presentation System
+    summary: "A repository-native system that turns a text script into an interactive, web-native"
+    keywords[2]: presentation,system
+    non_goals: "PPTX/PowerPoint generation. PDF export (explicitly not selected for v1). Real-time multi-user collaborative editing of decks. Replacing the doc-viewer or spec-viewer surfaces. A bespoke Slidev theme in Phase 1."
+    digest: e1e2409663fcfe712301746b32ad611426384593d507eb57cc0dcdb8080f0cd5
+    tags[3]: presentation,reviewed,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "2e56d63e-c53a-45a0-a984-088b3f9da19a"
     kind: spec
@@ -604,8 +713,9 @@ entries[220]:
     kind: spec
     source_path: "memory-api/.spec/specs/351389c0-0873-4c3c-bc46-3551459ba1cd/spec.toml"
     title: store
-    summary: "<!-- aligned-structure:v1 -->"
+    summary: "`SpecStore::update_body` previously accepted any content unconditionally, including an accidental empty write or a byte-identical no-op write that silently discarded intent. This spec documents the i…"
     keywords[1]: store
+    non_goals: "Does not add a diff/merge mode for body updates; a change is still a full-content replace, only gated against empty/no-op writes. Does not change slug, manifest field, or section update semantics — only `body.md` content writes."
     relations:
       parent:
         canonical_path: "memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
@@ -613,8 +723,8 @@ entries[220]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 6e26ba5cbce084dd32a1c0458f77a1f02f0141f7ac03692fd0e1c43817bf10cd
-    tags[3]: draft,"scope:public","spec-api"
+    digest: "03d2f5b8a8b2c524ac1e6d1e04b97a99c898d6aaa44de0360c5f14920f1e0561"
+    tags[3]: reviewed,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "351e65fe-0629-4a0f-9c19-27dabb36b72f"
     kind: spec
@@ -656,11 +766,11 @@ entries[220]:
     kind: spec
     source_path: ".spec/specs/38e337c2-cdda-4488-9aa7-b47a300563b0/spec.toml"
     title: "cross-store workflow traceability metadata"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "Define first-class, reversible workflow traceability metadata across tickets, specs, documentation, validation specifications and results, and validation logs."
     keywords[7]: cross,"cross-store",links,metadata,store,traceability,workflow
     scope: "Rewrite the first cross-store traceability slice around first-class metadata rather than wrapper-owned artifacts."
     non_goals: "migrating every historic markdown path reference in one pass preserving a wrapper-owned link registry as the canonical source of truth solving every frontend visualization or query UX in the same change introducing a cross-product object model broader than the workflow-linked ti…"
-    digest: a405e78fb70754759d6ad9bc6745ccead5e0359dbff8f2d9964892a803bccd6c
+    digest: bf2e5db5bd6bb9f7dba8b7aa26765a7a9e5c6165e1ba08d458e398b25e15f6e6
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "39983ddf-1f7e-4081-a060-6b8258eb4c41"
@@ -777,6 +887,17 @@ entries[220]:
     digest: 3ee1a7b858073b37297dd07463f4b2e568f23132e6c5a5094a909879071b390a
     tags[3]: draft,root,"ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "43b9a6ac-89d6-479a-876b-3d1a5e2d39e6"
+    kind: spec
+    source_path: ".spec/specs/43b9a6ac-89d6-479a-876b-3d1a5e2d39e6/spec.toml"
+    title: "Multi-Client Guidance Rendering"
+    summary: "The repository maintains agent-facing guidance (instructions, agent definitions, prompts, skills, root guidance) as hand-owned markdown under `.agents/**`, `AGENTS.md`, and `.github/copilot-instructi…"
+    keywords[5]: client,guidance,multi,"multi-client",rendering
+    scope: "Generated surfaces in v1:"
+    non_goals: "Reverting the deleted rule-target configs. The track re-imports from current files instead. Supporting clients beyond Copilot, Cline, and OpenCode in v1. Replacing `skills-lock.json` as the vendoring mechanism; it is invoked by the installer, not superseded. Machine-specific abs…"
+    digest: f4087c45ec000ea84be97b347dd6676670e8c1b2bf6423d1984cbc227aa4d8a8
+    tags[3]: draft,root,"rule-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "4482f2d0-131c-4ea0-91c0-f0bde198eedd"
     kind: spec
     source_path: "memory-api/.spec/specs/4482f2d0-131c-4ea0-91c0-f0bde198eedd/spec.toml"
@@ -860,6 +981,15 @@ entries[220]:
     keywords[8]: context,"context-stack",layout,level,root,"root-level",stack,workspace
     digest: cd6a015c46011a0d38a448925bb11084d81db72e619c4265bc230c8d920a81ed
     tags[4]: "context-engine",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "4bcdde40-6889-476f-bbb2-5880c083fe12"
+    kind: spec
+    source_path: ".spec/specs/4bcdde40-6889-476f-bbb2-5880c083fe12/spec.toml"
+    title: "Multi-transcript refinement workflow"
+    summary: "Define how transcript refinement maintains numbered raw and clean source pairs, then composes those clean artifacts into one maintained merged artifact."
+    keywords[6]: artifact,multi,"multi-transcript",refinement,transcript,workflow
+    digest: 5e44b5240db2b2c348baf916018c4906ee56393ea8458412aec9e41fadca8acc
+    tags[3]: "agent-guidance",draft,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "4bd3cd3f-5851-4d9e-b499-978cb7b53275"
     kind: spec
@@ -968,6 +1098,15 @@ entries[220]:
         digest: ""
     digest: b197a6309f06c53fbc8dbe49c7e97d2f65730cfa860d71b1701e17708d1faf6c
     tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "50cbb762-5d8e-4b0a-b699-dc1ab45e15a9"
+    kind: spec
+    source_path: ".spec/specs/50cbb762-5d8e-4b0a-b699-dc1ab45e15a9/spec.toml"
+    title: "Worktree-local repository bootstrap"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: bootstrap,local,repository,"worktree-local"
+    digest: "07592394416761a219ce95d0ae4ecdc96d1903375e5f9332e82b40273c9fff90"
+    tags[4]: draft,root,"scope:internal","worktree-lifecycle"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "51c69e48-c8a1-4d45-b050-e06671fe7d71"
     kind: spec
@@ -1186,6 +1325,17 @@ entries[220]:
     digest: 4dda9019029ce44a9fa361322f1875c1d3551f1ae6be659232e8460863929b47
     tags[4]: reviewed,root,"scope:component","ticket-vscode"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "5d9e5a99-74b5-4f4e-9e6f-0a6cc3741ddf"
+    kind: spec
+    source_path: ".spec/specs/5d9e5a99-74b5-4f4e-9e6f-0a6cc3741ddf/spec.toml"
+    title: Workspace store resolution anchoring
+    summary: "`ticket-api` and `session-api` resolve a store from one authoritative checkout"
+    keywords[4]: anchoring,resolution,store,workspace
+    scope: "This contract applies to ticket and session store resolution for CLI, API, and MCP entry points that accept a workspace selector or infer one from the invocation environment. It covers `.ticket`, `.session`, and their associated index roots where applicable."
+    non_goals: "Changing worktree provisioning policy. Changing `worktree.sh`, `worktree-ctl`, or any worktree lifecycle behavior. Changing unrelated work in epic `db6980d1` beyond deterministic store resolution and the `session_check_in` bootstrap exemption."
+    digest: 6a3f33ae520cd5118143cd6ffd880502717898801fc61dbe6e522dacd3cef806
+    tags[4]: draft,"memory-api",root,"scope:component"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "5de125ad-eb0c-4bcb-8e6d-175df1ba33a6"
     kind: spec
     source_path: "memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml"
@@ -1305,9 +1455,9 @@ entries[220]:
     kind: spec
     source_path: "memory-viewers/.spec/specs/6cf1685d-dc05-4022-abbb-efdd8e94af22/spec.toml"
     title: "ticket-viewer: theme settings"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "The ticket-viewer's theme settings panel **MUST** conform to the canonical spec"
     keywords[3]: settings,theme,"ticket-viewer"
-    digest: 8806f1315f5be7a5f8868eee39a677394acb138d4e77bef5f40c9182246d6d9a
+    digest: 5a1fc2ea902673571773807ebf2f0417d61aad9b15751fb4c78d29a2dc3f7b89
     tags[4]: draft,root,"scope:component","ticket-viewer"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6d73975e-5af4-4ac6-b732-33c381bf768d"
@@ -1442,9 +1592,9 @@ entries[220]:
     kind: spec
     source_path: "viewer-api/.spec/specs/798c9a3c-404a-4842-874d-484edb4209ef/spec.toml"
     title: "viewer-api recurring principles"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "This spec captures the cross-cutting design principles that recur across `viewer-api` and the managed viewers (`doc-viewer`, `log-viewer`, `ticket-viewer`, `spec-viewer`). They are the canonical auth…"
     keywords[3]: principles,recurring,"viewer-api"
-    digest: 72b789665d6b384551bd7f2b3c1520b03325398476129a06d421dc99e4a637fa
+    digest: 8dfb62af86530242cecad7d83513b3825dd7e45f8a8e680966e6da41886af172
     tags[4]: draft,root,"scope:public","viewer-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7b0ad285-c7df-4b19-a9d7-a11e71bab2ba"
@@ -1455,6 +1605,23 @@ entries[220]:
     keywords[8]: agent,agents,client,"client-agnostic",cline,integration,standard,with
     digest: b73f2a34e187873a1cc3430a1ebd2be0fcbe8f3325bcf37d2e996867e166400b
     tags[4]: draft,"repo-guidance",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f"
+    kind: spec
+    source_path: ".spec/specs/7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f/spec.toml"
+    title: "Track-scoped multi-session execution"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: execution,"multi-session",track,"track-scoped"
+    non_goals: "No track entity, no new store, no track status field. No parallel sessions within a track (deferred to ticket 25dd26cb). No weighted board budget yet. No response post-processing to force session ids. No reimplementation of the existing iteration loop or handoff package schema."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/8c880efc-7083-4e1d-bf06-96b8254be913/spec.toml"
+        entry_id: "8c880efc-7083-4e1d-bf06-96b8254be913"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c8664e14a04a95ffd4975183e42f7cae9c5f043be2cc07bd7f7893918e97b2ef
+    tags[3]: draft,"scope:public","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7b43dfd1-39aa-4585-b5fe-dc57c6d57eba"
     kind: spec
@@ -1480,8 +1647,8 @@ entries[220]:
     keywords[8]: collection,data,delegated,delegation,gates,quality,session,sessions
     scope: "Quality gate schema**: define what a quality gate is, when it is evaluated (pre- and post-delegation), and where gate outcomes are recorded. Data collection points** across existing infrastructure: `session-api` for session and delegated-session records (including per-turn token…"
     non_goals: "Fixing the capture hook that populates `data_json.usage` (that is ticket [9d527ad1](.ticket/tickets/9d527ad1-616b-45fb-b67c-64e0396841fe/ticket.toml)). Changing model routing or cost policy (that is spec [a4d61b8c Model cost routing](../.spec/specs/a4d61b8c-df1c-454d-ab56-4bce57…"
-    digest: 64445e44f4ec1bce4434e93bb83d9109da8e5a1321c478cbef839e6a808aa383
-    tags[3]: "agent-workflow",draft,root
+    digest: "095407fbf56a67a2abdc2a45a4cac037e1687f7dca83ff3676e4f52f8bd508d8"
+    tags[3]: "agent-workflow",reviewed,root
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7c9757a7-739f-4dfe-a4de-26f187f3b5aa"
     kind: spec
@@ -1584,6 +1751,16 @@ entries[220]:
     digest: 90413d1893abceacf351344fae5fa74cba2950af99f4da9d070151098981118a
     tags[3]: draft,"scope:public","spec-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "83f05962-bae4-4e82-981a-18558030e34e"
+    kind: spec
+    source_path: ".spec/specs/83f05962-bae4-4e82-981a-18558030e34e/spec.toml"
+    title: PDF Domain Tooling
+    summary: "Give agents a first-class, safe way to work with PDF files: extract text and"
+    keywords[2]: domain,tooling
+    non_goals: "HTTP transport in v1 (deferred, tracked separately). Native/C++ bindings. Viewer or frontend crate. OCR. Form filling, digital signatures, encryption. Accepting a password, decrypting, or encrypting output are all out of scope; only error classification for encrypted inputs is i…"
+    digest: 3aa0a827bd53db597d96fd91d26f2fa8c80c810afa4a48689a6382df9495c57f
+    tags[3]: draft,pdf,root
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "86877b97-2df6-46b5-923d-a9e608655fed"
     kind: spec
     source_path: "memory-api/.spec/specs/86877b97-2df6-46b5-923d-a9e608655fed/spec.toml"
@@ -1634,6 +1811,26 @@ entries[220]:
     digest: 9c14a980989c1212756ad06a52a387ed987b85cd002a1f58731eb098c65ef81e
     tags[3]: draft,"scope:internal","viewer-ctl"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "874b62fb-f1ba-4291-92af-64d7f3c50a27"
+    kind: spec
+    source_path: ".spec/specs/874b62fb-f1ba-4291-92af-64d7f3c50a27/spec.toml"
+    title: Minimal terminal command agent
+    summary: ""
+    keywords[4]: agent,command,minimal,terminal
+    digest: 2cf0743cf0ef5b09935a5da371fe1a29590e39837a5f1177c46d01b05bf9d4ab
+    tags[4]: "agent-guidance",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "88413517-1d93-4582-8328-71a417dde3a1"
+    kind: spec
+    source_path: ".spec/specs/88413517-1d93-4582-8328-71a417dde3a1/spec.toml"
+    title: Agent template roster and authoring contract
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[5]: agent,authoring,contract,roster,template
+    scope: "Add the 15 templates in the target roster below. Rewrite `orchestrator.agent.md` to route work across the complete roster and retain the red thread across tasks, sessions, and goals. Extend `simplify.agent.md` with rule-steward responsibilities for instruction files and agent te…"
+    non_goals: "Implementing, deleting, or editing any agent template in this specification unit. Creating a dedicated Search Agent; `explore.agent.md` remains the owner of bounded read-only probing. Replacing the model-routing contract or the per-template MCP-grant contract. Making templates p…"
+    digest: 5f683d9b72324e4130c0ab58b3780b7fb6f4b237159e8618971c0cfc6eb759b2
+    tags[4]: "agent-tooling",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "8c2bbb42-4ca0-43a3-8196-334218bf543e"
     kind: spec
     source_path: "memory-viewers/.spec/specs/8c2bbb42-4ca0-43a3-8196-334218bf543e/spec.toml"
@@ -1667,9 +1864,10 @@ entries[220]:
     keywords[6]: bootstrapping,context,dynamic,"just-in-time",routing,session
     non_goals: "Replacing ticket-api as workflow authority. Copying ticket lifecycle state into session files. Gating core session functionality on the full feedback program. Semantic auto-pinning from vague text matches. Claiming stronger cross-platform replacement or power-loss durability tha…"
     relations:
-      children[5]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+      children[6]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/709f067a-21b6-41b6-8879-3cacef4bacaf/spec.toml","709f067a-21b6-41b6-8879-3cacef4bacaf",child,spec,""
         ".spec/specs/71b81a55-f5dd-4cbd-b739-40df6bc5d3fc/spec.toml","71b81a55-f5dd-4cbd-b739-40df6bc5d3fc",child,spec,""
+        ".spec/specs/7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f/spec.toml","7b277ba4-7deb-4f24-a3c4-88ea0d8e0a4f",child,spec,""
         ".spec/specs/a28a88db-2b41-49d2-897c-6dbcdb313255/spec.toml","a28a88db-2b41-49d2-897c-6dbcdb313255",child,spec,""
         ".spec/specs/c677182e-90da-4ac3-8b94-9e2e97c825cf/spec.toml","c677182e-90da-4ac3-8b94-9e2e97c825cf",child,spec,""
         ".spec/specs/fda5c915-5c37-432f-acf1-8b20c6219fdc/spec.toml","fda5c915-5c37-432f-acf1-8b20c6219fdc",child,spec,""
@@ -1752,13 +1950,24 @@ entries[220]:
     digest: b3c0c6dc7a49a4428153ad40bf7a4c779515b0131e69d9e7b6a1a4ead789cfc8
     tags[3]: "context-stack",draft,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d"
+    kind: spec
+    source_path: ".spec/specs/939d066a-aeaa-41aa-a2f9-9fdb14fc1b3d/spec.toml"
+    title: "Storeless workspace startup side-effect contract"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[7]: contract,effects,side,"side-effect",startup,storeless,workspace
+    scope: "Covers startup-time behavior of every installed MCP server and viewer binary, discovered by direct investigation rather than assumed, including at minimum:"
+    non_goals: Does not ban or restrict intentional explicit initialization (`init`) or explicit configured writes — those must keep creating their artifacts. Does not change the contents of a log file/store once filesystem logging or store creation is legitimately configured/enabled. Does not…
+    digest: f8251bdb1a67df12d14e93555df1efa8d4ddea0d3e6373646a8f3f09df78cf89
+    tags[4]: "memory-tools",reviewed,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "954d9807-f357-41e5-9fd4-b1da39e0933d"
     kind: spec
     source_path: ".spec/specs/954d9807-f357-41e5-9fd4-b1da39e0933d/spec.toml"
     title: "Recurring cross-cutting principles"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "This spec captures cross-cutting design principles that appear repeatedly across context-engine workspace specs and agent guidance. Each principle has its own section so it can be referenced individu…"
     keywords[3]: "cross-cutting",principles,recurring
-    digest: 9b971158b2c9bab2f53b966bce3b5d86ae80c95abb875de437fca93b77df7bf4
+    digest: 6734b92717e246810d084847deba4c940315d8e0610f5c899cda95549609af31
     tags[4]: "context-engine",draft,root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "95562129-87d8-4d86-9cd3-c8a09473a6d0"
@@ -1805,6 +2014,35 @@ entries[220]:
         ".spec/specs/9e04ff58-9160-4766-b307-74c0fb32a92c/spec.toml","9e04ff58-9160-4766-b307-74c0fb32a92c",child,spec,""
     digest: 25bd308ca39ed875cc373003c99b028e74996b5848355a383812a648083bfe27
     tags[3]: "context-engine",draft,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "97322185-2bda-4f25-85f7-f975a0b3fbad"
+    kind: spec
+    source_path: ".spec/specs/97322185-2bda-4f25-85f7-f975a0b3fbad/spec.toml"
+    title: Executable and hook command registry contract
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[5]: command,contract,executable,hook,registry
+    scope: "Extend `tools/install/artifacts.toml` in place with the versioned schema and full entry coverage described above. Generate and commit root `COMMANDS.md` from the registry, with a freshness check that fails when the committed file no longer matches generator output. Cover Cargo b…"
+    non_goals: "No external (non-repository) tool discovery of any kind. No hook lifecycle operations beyond `inspect` (no install/enable/disable/uninstall for hooks) in this contract. No change to the Terminal Command Agent's fixed VS Code client tool allowlist beyond the execution tools requi…"
+    digest: 2c8359567b91de08ee8af55ff595ac939a4f179caf6843d2239eb934a829f4c2
+    tags[3]: draft,root,tooling
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "97f25cf8-f869-48d8-a48d-49d02badd188"
+    kind: spec
+    source_path: ".spec/specs/97f25cf8-f869-48d8-a48d-49d02badd188/spec.toml"
+    title: "Tool output size capture with per-call source attribution"
+    summary: "Capture per-tool-call output size (`output_char_sizes`) at capture time in `session-api`, with an explicit per-call source attribution (`output_source`), so downstream cost-gate classification and ro…"
+    keywords[8]: attribution,capture,output,"per-call",size,source,tool,with
+    scope: "Per-tool-call `output_char_sizes` capture at capture time in `memory-api/crates/session-api/src/tool_metrics.rs`. `output_source` attribution enum (`hook_payload` | `spill_file` | `transcript_turn` | `unspecified`) on `ToolCallSummary`, propagated through `ToolAggregation` into …"
+    non_goals: "Changing the `ToolTokenStats` percentile math or the cost-gate classification policy itself (owned by parent spec 29ae5f6e). Introducing a new tokenizer or token-estimation algorithm. Redesigning the hook registration/trigger model in `tools/agent-hooks/session-capture-stop.sh` …"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/29ae5f6e-c202-41f1-ba88-a446aa872993/spec.toml"
+        entry_id: "29ae5f6e-c202-41f1-ba88-a446aa872993"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: a1ba263ea17a3edd1ce04ffc6b57e146676567c40cd069f19dd1159409d8ebe4
+    tags[2]: draft,"session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "98b4f75d-3628-470d-a5cc-c91b6cc9811a"
     kind: spec
@@ -1906,6 +2144,15 @@ entries[220]:
     digest: 7f1ba36162d3327e5c6f4c4b89da82434081bd8c17a2d2e8896a8620000028b8
     tags[3]: draft,root,scaffold
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "9f0b9e30-e32c-4092-b2a2-68179141cfc4"
+    kind: spec
+    source_path: ".spec/specs/9f0b9e30-e32c-4092-b2a2-68179141cfc4/spec.toml"
+    title: caller_model resolution semantics for MCP cost gate
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[7]: caller,caller_model,cost,gate,model,resolution,semantics
+    digest: eae1ca2c9069164135a074b63eaff23c20c2e1dbd01ca93b3164c1e5172b5c90
+    tags[4]: draft,"mcp-cost-gate",root,"scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6"
     kind: spec
     source_path: "viewer-api/.spec/specs/a20a0395-4f3b-4b55-ba7a-a0c38ba9f7a6/spec.toml"
@@ -1954,14 +2201,14 @@ entries[220]:
     kind: spec
     source_path: ".spec/specs/a4f48d84-50ed-4769-a42f-38321ea9600c/spec.toml"
     title: workflow validation metadata and default tool behavior
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "Define workflow validation as default behavior of the memory-system tool stack rather than as a separate wrapper tool path."
     keywords[6]: behavior,default,metadata,tool,validation,workflow
     scope: Rewrite the target architecture for the first embedded workflow slice.
     non_goals: "preserving a dedicated wrapper validation CLI as the long-term public interface keeping validation state in a separate path-only JSON artifact store implementing every `test-api`, `log-api`, `doc-cli`, HTTP, and MCP surface in the same change migrating every existing prototype a…"
     relations:
       children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
         ".spec/specs/96dc0068-d05d-4e61-b785-144272119fa9/spec.toml","96dc0068-d05d-4e61-b785-144272119fa9",child,spec,""
-    digest: 68b0fc7e6c0d9ca422317710ed2e1147b1c176e4b1a7d0ea36aa6733eab8125f
+    digest: 4f05f7bc8b222f2474a6e07f98a1478139db1d9b896beac97dcd4bcee67d3571
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a592900c-f513-4ec2-8dd2-53dbd04aac7b"
@@ -2028,6 +2275,15 @@ entries[220]:
     non_goals: "Replacing `tracing` with a custom logging facade. Duplicating separate tracing initialization code in every binary. Requiring the unfinished `log-api` store before file logging provides value. Treating trace logs as the durable source of truth for reversible state changes. Captu…"
     digest: 3f723b6990823f9cacc1cdad91f96180abfb799f73226b3342902762fb4f4293
     tags[4]: draft,"memory-api",root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ac101b1c-6b7b-4884-be0f-0639bf5eae7d"
+    kind: spec
+    source_path: ".spec/specs/ac101b1c-6b7b-4884-be0f-0639bf5eae7d/spec.toml"
+    title: Unregistered Worktree Debris Removal
+    summary: "Ticket: 2b657154-df78-4bb3-807a-66c9ff811ceb"
+    keywords[4]: debris,removal,unregistered,worktree
+    digest: 326b1daf85004c1cc134ccb5180f5f89a0b55f418439dfb3b2861d1f64c236c1
+    tags[4]: draft,root,"scope:internal",tooling
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ae5ef697-0ee5-4f74-9dca-2cb268290dae"
     kind: spec
@@ -2105,6 +2361,32 @@ entries[220]:
         digest: ""
     digest: fecbf9cd7dd7d30a50f41b844a47668553f0a3a7305708c398b6101ea97aa329
     tags[3]: draft,"scope:public","viewer-ctl"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "aff42efb-422b-4abc-8a6c-cd176a3d0d5d"
+    kind: spec
+    source_path: ".spec/specs/aff42efb-422b-4abc-8a6c-cd176a3d0d5d/spec.toml"
+    title: "Session-anchored MCP workspace resolution"
+    summary: "Every MCP tool call resolves its target workspace from the calling SESSION's active worktree assignment, not from the server process working directory. The anchor is enforced once, in the `mcp-toolmo…"
+    keywords[5]: anchored,resolution,session,"session-anchored",workspace
+    non_goals: "Creating, renaming, or removing git worktrees. That lifecycle is specified in the parent spec and implemented by ticket `ff83caf7-059b-4f2e-a0fb-eaa7757096a8`. Index freshness against external store writes. `ticket-mcp` never starts the reconciler (`memory-api/tools/mcp/ticket-m…"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/2860a8db-0c4e-4e94-984a-c10a72a67ffc/spec.toml"
+        entry_id: "2860a8db-0c4e-4e94-984a-c10a72a67ffc"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: b676bd23122d824de48294c84931b6247f4851fa322f5c5e00bd28c6fd54326b
+    tags[3]: draft,"memory-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b041df3f-85b6-4655-bbf3-47fe3b422013"
+    kind: spec
+    source_path: ".spec/specs/b041df3f-85b6-4655-bbf3-47fe3b422013/spec.toml"
+    title: "Small main-checkout changes"
+    summary: ""
+    keywords[6]: changes,checkout,main,"main-checkout",scope,small
+    digest: 36aeab1e2c97913ddc4157d51687596255581f91b6879829b4e3f1bb518bdbef
+    tags[4]: "agent-guidance",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b06c9df8-2866-433a-af73-ae9b1f4a0f0a"
     kind: spec
@@ -2466,7 +2748,7 @@ entries[220]:
     kind: spec
     source_path: "memory-viewers/.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/spec.toml"
     title: "spec-viewer: theme settings"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "The spec-viewer's theme settings panel **MUST** conform to the canonical spec"
     keywords[3]: settings,"spec-viewer",theme
     relations:
       parent:
@@ -2475,7 +2757,7 @@ entries[220]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: 92338d7d792b383279f2b1759536496583a874eb6927d701d6b37f42b0c45da9
+    digest: 4b21336a6922a8b1749c1c0dc50a0b241061fe2e29aba627c30ffe66722c453e
     tags[3]: draft,"scope:component","spec-viewer"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c677182e-90da-4ac3-8b94-9e2e97c825cf"
@@ -2492,6 +2774,8 @@ entries[220]:
         relation_kind: parent
         content_kind: spec
         digest: ""
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/c737328d-a97e-4250-bf9a-390224ab57fd/spec.toml","c737328d-a97e-4250-bf9a-390224ab57fd",child,spec,""
     digest: 67b481cdabec2690f266efd966ef7a63e9a9831ca8cdc1d36492d235715025b2
     tags[3]: reviewed,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
@@ -2523,6 +2807,24 @@ entries[220]:
         ".spec/specs/16c3ad95-451d-4c09-a118-ca90bcefed9a/spec.toml","16c3ad95-451d-4c09-a118-ca90bcefed9a",child,spec,""
     digest: 1373b779253e5f05d29ff870c57356c923c5aa0ba345d085708804de4ca772b3
     tags[4]: "context-stack",draft,root,"scope:system"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "c737328d-a97e-4250-bf9a-390224ab57fd"
+    kind: spec
+    source_path: ".spec/specs/c737328d-a97e-4250-bf9a-390224ab57fd/spec.toml"
+    title: "Session merge and pickup: handoff-edge provenance graph and first-class tracks"
+    summary: "Promote the session handoff record to be the literal provenance edge of the cross-session"
+    keywords[9]: "first-class",graph,handoff,"handoff-edge",merge,pickup,provenance,session,tracks
+    scope: "Handoff record becomes the provenance edge (source + target), with target bound at pickup. `SessionRecord` gains `emitted_handoff_ids` and `picked_up_handoff_ids`. Canonical vocabulary: `handoff` (1→1), `fan_out` (1→N), `merge` (N→1), `pickup` (consume any handoff) — CLI verb na…"
+    non_goals: "Changing `SessionRunLineage.predecessor_run_id` or intra-session resume behavior. That field is explicitly kept (decision 13); `run_lineage_init_resume_creates_distinct_linked_run` must keep passing unmodified. Making the ticket mirror of a handoff (`mirror_handoff_to_tickets`) …"
+    relations:
+      parent:
+        canonical_path: ".spec/specs/c677182e-90da-4ac3-8b94-9e2e97c825cf/spec.toml"
+        entry_id: "c677182e-90da-4ac3-8b94-9e2e97c825cf"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: 0fe57951fe9b37272635c4aab48231989dbc44bc2ef0d1e220b8bb45b77bcce9
+    tags[3]: draft,"scope:internal","session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "c8590004-1532-4559-91a0-8c9065ffa58c"
     kind: spec
@@ -2586,11 +2888,11 @@ entries[220]:
     kind: spec
     source_path: ".spec/specs/cf5e2942-1a47-43cc-a0ee-14e5774680a6/spec.toml"
     title: "workflow documentation validation via doc-api and doc-cli"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "Make documentation validation first-class behavior in the memory-system doc layer rather than a separate wrapper command path."
     keywords[6]: "doc-api","doc-cli",documentation,tooling,validation,workflow
     scope: "Rewrite the first workflow-facing documentation validation slice around `doc-api` and a future `doc-cli`."
     non_goals: "complete parsing or linting coverage for every markdown/doc surface in one pass replacing existing doc generation flows keeping a dedicated wrapper documentation command path as the long-term public interface solving every documentation ownership and rendering problem in the sam…"
-    digest: 961467fa93c66e770dc23358d4b155808efbc0b952b54277c76006e393254267
+    digest: 5df73ef6853b86f8bbcb91a0ec714f38a1e387d6459510f819546e12f7cab155
     tags[4]: "context-engine",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "cfbb4500-4632-4a95-96a1-838dc4dccfd5"
@@ -2671,6 +2973,15 @@ entries[220]:
         "memory-viewers/.spec/specs/c5b11920-6ae8-4686-ae07-b8e9f8100bf8/spec.toml","c5b11920-6ae8-4686-ae07-b8e9f8100bf8",child,spec,""
     digest: 9c7c22f86c735ff6a33d78eca5452be8a8a7126d1fc08cfd91220f0e3798302f
     tags[4]: draft,root,"scope:system","spec-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "da89c1b5-3237-4e58-a71b-d729990adf35"
+    kind: spec
+    source_path: ".spec/specs/da89c1b5-3237-4e58-a71b-d729990adf35/spec.toml"
+    title: Session merge and pickup
+    summary: Spec placeholder for handoff edges.
+    keywords[4]: c737328d,merge,pickup,session
+    digest: db4fc1ca6d6c9cb8fd4c6b540db849feee4be482a3cbf151bfede8367a9995d4
+    tags[3]: draft,root,"session-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "db5c02e5-31f5-4a40-bf9c-2227eab412b2"
     kind: spec
@@ -2800,6 +3111,16 @@ entries[220]:
     digest: 7a6d626b7cc6673109ab86754f753bcc642c21a19617810075c174ce8179d839
     tags[4]: draft,root,"scope:public","transport-harness"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "e5f8a2c1-4b3d-4a91-9c7e-2d6f1a8b3c5d"
+    kind: spec
+    source_path: ".spec/specs/e5f8a2c1-4b3d-4a91-9c7e-2d6f1a8b3c5d/spec.toml"
+    title: "Context-enrichment workflow for review tickets: session-ticket relation query"
+    summary: "39 tickets sit in `in-review` today, on unrelated topics, with no reliable way to reconstruct"
+    keywords[9]: "context-enrichment",query,relation,review,session,"session-ticket",ticket,tickets,workflow
+    non_goals: "The Ticket API inverse query is not implemented by this spec's tickets (see decision 5). Querying `.rule`, `.doc`, or `.log` stores is out of scope — those stores do not exist on disk today. Bare transcript-text matching as a relation signal is explicitly rejected, not deferred."
+    digest: 3378249639dc644b32c349fc7833a9bcafbc323885cb32abe66b92c5b8c5b1d8
+    tags[4]: "context-enrichment",draft,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "e631e914-1840-4fec-9df5-b50a85c6cf00"
     kind: spec
     source_path: ".spec/specs/e631e914-1840-4fec-9df5-b50a85c6cf00/spec.toml"
@@ -2829,6 +3150,15 @@ entries[220]:
         "memory-api/.spec/specs/5de125ad-eb0c-4bcb-8e6d-175df1ba33a6/spec.toml","5de125ad-eb0c-4bcb-8e6d-175df1ba33a6",child,spec,""
     digest: 901ecfa4c72849b3938f27fa16504e4e9d0952c6a52615b6713a5c68b51faad0
     tags[4]: draft,root,"rule-api","scope:public"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "e9c38d24-42cc-4044-8b2c-6811b918530f"
+    kind: spec
+    source_path: ".spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml"
+    title: Schema modernization lifecycle and migration
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[4]: lifecycle,migration,modernization,schema
+    digest: 9cff38dbd79e457dc803147e9bcb16d67298b2223b70672eaa7e1601f0f63197
+    tags[4]: draft,root,"scope:internal","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec1013ff-2d5f-4860-8d25-64acb6c60587"
     kind: spec
@@ -2862,6 +3192,17 @@ entries[220]:
     digest: 9d25949e469e3f6b07840436cc948684364501f8652f2c9c147184ccac9a9beb
     tags[3]: draft,"scope:public","ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "ec3b13f1-ae9f-4f11-b3f9-e8fa3877afbd"
+    kind: spec
+    source_path: ".spec/specs/ec3b13f1-ae9f-4f11-b3f9-e8fa3877afbd/spec.toml"
+    title: "Per-template MCP tool grants: scoped tool sets and lazy discovery for sub-agents"
+    summary: "Specify a per-template MCP tool-grant contract so each agent template in"
+    keywords[8]: discovery,grants,lazy,"per-template",scoped,sets,"sub-agents",tool
+    scope: "A tool-grant schema for the agent template format: for each template, an explicit MCP tool set (not a blanket `server/*` wildcard) or a wildcard grant paired with a one-line role justification recorded in the template. A capability-to-tool mapping: which existing MCP servers/too…"
+    non_goals: "New tool categories or new MCP servers for filesystem editing, filesystem operations, or repo-wide search. Those are tracked independently by epic `.ticket/tickets/e342cc4c-a7a4-42de-81fc-572d0497d12b` and already have draft specs (`agent-tooling/file-editing`, `agent-tooling/fi…"
+    digest: 970ff420f8346c9cf504aa84dce40314d731e227b5ae2d95db71fe26e07ffce6
+    tags[4]: "agent-tooling",reviewed,root,"scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "ee36710b-1725-436a-a5fc-1e5a7d27f6bb"
     kind: spec
     source_path: "memory-api/.spec/specs/ee36710b-1725-436a-a5fc-1e5a7d27f6bb/spec.toml"
@@ -2878,6 +3219,16 @@ entries[220]:
         "memory-api/.spec/specs/91b5b5fe-0046-424c-b5e5-3fb961f4d940/spec.toml","91b5b5fe-0046-424c-b5e5-3fb961f4d940",child,spec,""
     digest: 54818feff2ff47b8e8faf70e099043f3f388bffbdaff185f36368d3141a81102
     tags[3]: draft,"scope:public","spec-cli"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "eeaf5479-624b-45b0-8293-530b925c1192"
+    kind: spec
+    source_path: ".spec/specs/eeaf5479-624b-45b0-8293-530b925c1192/spec.toml"
+    title: Structured ticket↔spec linking with validation
+    summary: "Ticket↔spec traceability is currently prose-only: `spec.toml` files carry an"
+    keywords[8]: linking,links,spec,structured,ticket,ticket↔spec,validation,with
+    scope: "In scope: A `TicketRef` struct (spec-api) and `SpecRef` struct (ticket-api/memory-api) that each carry an explicit store identifier alongside the entity id. A typed `related_tickets: Vec<TicketRef>` field on `SpecManifest`. A typed `related_specs: Vec<SpecRef>` field on `TicketM…"
+    digest: c277a37a3962875939c60004288bd3aec85199c35d4c8b954296984849345846
+    tags[4]: reviewed,root,"scope:public","spec-api,ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f081e8f4-7d28-4505-9faf-85c65b033b44"
     kind: spec
@@ -2942,9 +3293,9 @@ entries[220]:
     kind: spec
     source_path: "memory-api/.spec/specs/f9c32554-9884-41c4-8b5b-d1d32b37e341/spec.toml"
     title: "memory-api recurring principles"
-    summary: "<!-- spec-api:file generated=true -->"
+    summary: "This spec captures the cross-cutting design principles that recur across `memory-api` specs (`rule-api`, `spec-api`, `ticket-api`, `doc-api`, `audit-api`, `mem-api`). They are the canonical authority…"
     keywords[3]: "memory-api",principles,recurring
-    digest: 29c136ad9068b8d734a0af8ee82c2c8cd548304f46ec665c1020754c7e617036
+    digest: c0fb1e91db23b5c5e4253500241ed3bf99eb01bc5c88f985382ba62aae4452ce
     tags[4]: draft,"memory-api",root,"scope:public"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "fa5265cc-e82f-4bbe-b1b5-dad7e6672d06"

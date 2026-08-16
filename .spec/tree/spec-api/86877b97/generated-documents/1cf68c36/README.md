@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=1cf68c36-7f64-4d81-b553-1947b978fbe3 slug=spec-api/generated-documents digest=e7c689372749 -->
+<!-- spec-index:entry id=1cf68c36-7f64-4d81-b553-1947b978fbe3 slug=spec-api/generated-documents digest=39fcd22fd809 -->
 
 # generated documents
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-<!-- spec-api:file generated=true -->
+`spec-api` should be able to generate spec document files from canonical snippet records the same way `rule-api` already generates markdown outputs from target configurations. The generation mechanis…
 
 ## Acceptance Criteria Excerpt
 

@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=c5b11920-6ae8-4686-ae07-b8e9f8100bf8 slug=spec-viewer/theme-settings digest=92338d7d792b -->
+<!-- spec-index:entry id=c5b11920-6ae8-4686-ae07-b8e9f8100bf8 slug=spec-viewer/theme-settings digest=4b21336a6922 -->
 
 # spec-viewer: theme settings
 
@@ -11,7 +11,7 @@
 
 ## Summary
 
-<!-- spec-api:file generated=true -->
+The spec-viewer's theme settings panel **MUST** conform to the canonical spec
 
 ## Navigation
 
