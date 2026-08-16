@@ -2,7 +2,10 @@ use crate::registry::Artifact;
 
 /// Mirrors install-tools.sh's selection semantics: `all`, a single artifact
 /// id, or a whole category name; comma-separated tokens are also accepted.
-pub fn resolve_selection(artifacts: &[Artifact], tokens: &[String]) -> Result<Vec<Artifact>, String> {
+pub fn resolve_selection(
+    artifacts: &[Artifact],
+    tokens: &[String],
+) -> Result<Vec<Artifact>, String> {
     let mut selected: Vec<Artifact> = Vec::new();
 
     let push = |artifact: &Artifact, selected: &mut Vec<Artifact>| {

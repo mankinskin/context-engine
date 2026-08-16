@@ -1,0 +1,23 @@
+{
+  "id": "exec-workflow-tools-domain-crate-contract-20260815",
+  "validation_spec_id": "workflow-tools-domain-crate-contract",
+  "outcome": "passed",
+  "executed_at": "2026-08-15T14:58:38.726049400Z",
+  "detail": "Ran the ticket-supplied command in workflow-tools-contract-reference. cargo build -p example passed; cargo build -p example --features cli,mcp,http passed; cargo test --workspace --all-features reported 1 passed across 7 suites; cargo fmt --check passed. Only existing rustfmt deprecation warnings were emitted.",
+  "links": {
+    "spec_ids": [
+      "5ee7f36a-2aea-4373-8c67-e6b26ae174bf"
+    ],
+    "ticket_ids": [
+      "0da6894c-dcbb-4196-8ac7-b6fae7c40ec9"
+    ]
+  },
+  "provenance": {
+    "source_path": "workflow-tools-contract-reference/Cargo.toml",
+    "test_id": "workflow-tools-domain-crate-contract",
+    "domain": "workflow-tools-contract-reference",
+    "operation": "contract-validation",
+    "transport": "cli",
+    "run_id": "c8ebe499-682c-4f3d-86ea-209b78a8af3b"
+  }
+}

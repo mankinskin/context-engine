@@ -2,27 +2,79 @@
   "schema_version": 1,
   "session_id": "c8ebe499-682c-4f3d-86ea-209b78a8af3b",
   "source": "session-worktree-check-in",
-  "started_at": "2026-08-15T13:42:50.946192300Z",
-  "captured_at": "2026-08-15T16:25:59.144529600Z",
+  "started_at": "2026-08-15T15:08:59.585252200Z",
+  "captured_at": "2026-08-15T17:53:09.957823300Z",
   "metadata": {
     "workspace_slug": "default",
-    "agent_id": "session-bootstrap-agent",
-    "ticket_id": "ba4aaa9c-d270-4cfc-a1e2-395634608371",
+    "agent_id": "implement-agent",
+    "ticket_id": "53b14bf8-3243-4cd6-909e-17c431812441",
     "trigger": "session-check-in",
     "worktree": {
-      "path": ".worktrees/c8ebe499-682c-4f3d-86ea-209b78a8af3b/ticket-extraction",
+      "path": "C:/Users/linus/git/2/context-engine/.worktrees/c8ebe499-682c-4f3d-86ea-209b78a8af3b/ticket-extraction",
       "branch": "agent/c8ebe499-682c-4f3d-86ea-209b78a8af3b/ticket-extraction",
       "allocation_mode": "new",
       "status": "active"
     }
   },
   "links": {},
-  "active_run_id": "6bf0d158-a24a-4339-9fd5-a337596d5431",
+  "active_run_id": "e9028566-b1b5-4215-a663-d0ff5b0bfc46",
   "runs": [
     {
-      "run_id": "6bf0d158-a24a-4339-9fd5-a337596d5431",
+      "run_id": "e9028566-b1b5-4215-a663-d0ff5b0bfc46",
       "captured_session_id": "c8ebe499-682c-4f3d-86ea-209b78a8af3b",
-      "started_at": "2026-08-15T13:42:50.946192300Z"
+      "started_at": "2026-08-15T15:21:24.442042700Z"
     }
-  ]
+  ],
+  "pinned_entities": [
+    {
+      "urn": "ce://default/spec/5ee7f36a-2aea-4373-8c67-e6b26ae174bf",
+      "kind": "spec",
+      "relation": "governing-spec",
+      "reason": "Review evidence aligns with the domain-crate contract",
+      "pinned_at": "2026-08-15T15:25:35.575883700Z",
+      "last_used_at": "2026-08-15T15:25:35.575883700Z"
+    },
+    {
+      "urn": "ce://default/ticket/379ac56a-4580-4ed6-a571-eb76282ef375",
+      "kind": "ticket",
+      "relation": "review-anchor",
+      "reason": "Superseding review verifies clean-clone validation evidence and manifest/gitlink readback.",
+      "pinned_at": "2026-08-15T17:51:05.481386400Z",
+      "last_used_at": "2026-08-15T17:51:05.481386400Z"
+    },
+    {
+      "urn": "ce://default/ticket/53b14bf8-3243-4cd6-909e-17c431812441",
+      "kind": "ticket",
+      "relation": "review-anchor",
+      "reason": "Reviewer-approved verdict recorded",
+      "pinned_at": "2026-08-15T15:25:35.514855800Z",
+      "last_used_at": "2026-08-15T15:25:35.514855800Z"
+    }
+  ],
+  "workflow": {
+    "nodes": [
+      {
+        "node_id": "review-379ac56a",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Review: Standalone manifest resolves context-api",
+        "created_at": "2026-08-15T17:51:05.569507500Z",
+        "updated_at": "2026-08-15T17:53:09.957823300Z",
+        "ticket_urn": "ce://default/ticket/379ac56a-4580-4ed6-a571-eb76282ef375",
+        "cached_ticket_title": "[viewer-api][bug] Standalone manifest cannot resolve context-api"
+      },
+      {
+        "node_id": "review-53b14bf8",
+        "kind": "ticket",
+        "requirement": "required",
+        "status": "done",
+        "title": "Review: Rename reference CLI binary to bare domain name",
+        "created_at": "2026-08-15T15:25:41.371995100Z",
+        "updated_at": "2026-08-15T15:25:41.433424Z",
+        "ticket_urn": "ce://default/ticket/53b14bf8-3243-4cd6-909e-17c431812441",
+        "cached_ticket_title": "[workflow-tools] Rename reference CLI binary to bare domain name"
+      }
+    ]
+  }
 }

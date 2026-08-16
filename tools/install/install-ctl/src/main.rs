@@ -13,10 +13,17 @@ use std::{
     time::Duration,
 };
 
-use clap::{Parser, Subcommand};
+use clap::{
+    Parser,
+    Subcommand,
+};
 use cli::ViewerCmd;
 use config::Config;
-use registry::{Artifact, ArtifactKind, load_registry};
+use registry::{
+    Artifact,
+    ArtifactKind,
+    load_registry,
+};
 use selection::resolve_selection;
 use sysinfo::Pid;
 
@@ -82,7 +89,10 @@ fn main() {
     }
 
     match cli.command {
-        Some(Command::Install { selection, no_force }) => {
+        Some(Command::Install {
+            selection,
+            no_force,
+        }) => {
             let reg = match load_registry() {
                 Ok(reg) => reg,
                 Err(e) => fail(&e),
@@ -100,20 +110,24 @@ fn main() {
             } else {
                 run_install(&selected, force);
             }
-        }
-        Some(Command::Start { server, foreground, extra }) => run_viewer(|cfg, root| {
+        },
+        Some(Command::Start {
+            server,
+            foreground,
+            extra,
+        }) => run_viewer(|cfg, root| {
             commands::cmd_start(cfg, root, &server, foreground, extra)
         }),
-        Some(Command::Prepare { server }) => {
-            run_viewer(|cfg, root| commands::cmd_prepare(cfg, root, &server))
-        }
-        Some(Command::Viewer { command }) => {
-            run_viewer(|cfg, root| dispatch_viewer(cfg, root, command))
-        }
+        Some(Command::Prepare { server }) =>
+            run_viewer(|cfg, root| commands::cmd_prepare(cfg, root, &server)),
+        Some(Command::Viewer { command }) =>
+            run_viewer(|cfg, root| dispatch_viewer(cfg, root, command)),
         None => {
-            eprintln!("error: no command given; try --list or `install <selection>`");
+            eprintln!(
+                "error: no command given; try --list or `install <selection>`"
+            );
             std::process::exit(1);
-        }
+        },
     }
 }
 
@@ -136,22 +150,35 @@ where
     }
 }
 
-fn dispatch_viewer(cfg: &Config, root: &Path, command: ViewerCmd) -> Result<(), String> {
+fn dispatch_viewer(
+    cfg: &Config,
+    root: &Path,
+    command: ViewerCmd,
+) -> Result<(), String> {
     match command {
         ViewerCmd::List => commands::cmd_list(cfg),
-        ViewerCmd::Status { name } => commands::cmd_status(cfg, name.as_deref()),
-        ViewerCmd::Build { name, kind } => commands::cmd_build(cfg, root, &name, kind),
-        ViewerCmd::Install { name, kind } => commands::cmd_install(cfg, root, &name, kind),
-        ViewerCmd::Start { server, foreground, extra } => {
-            commands::cmd_start(cfg, root, &server, foreground, extra)
-        }
+        ViewerCmd::Status { name } =>
+            commands::cmd_status(cfg, name.as_deref()),
+        ViewerCmd::Build { name, kind } =>
+            commands::cmd_build(cfg, root, &name, kind),
+        ViewerCmd::Install { name, kind } =>
+            commands::cmd_install(cfg, root, &name, kind),
+        ViewerCmd::Start {
+            server,
+            foreground,
+            extra,
+        } => commands::cmd_start(cfg, root, &server, foreground, extra),
         ViewerCmd::Stop { server } => commands::cmd_stop(cfg, &server),
-        ViewerCmd::Restart { server, foreground, extra } => {
-            restart_server(cfg, root, &server, foreground, extra)
-        }
+        ViewerCmd::Restart {
+            server,
+            foreground,
+            extra,
+        } => restart_server(cfg, root, &server, foreground, extra),
         ViewerCmd::Task { name } => commands::cmd_task(cfg, root, &name),
-        ViewerCmd::Prepare { server } => commands::cmd_prepare(cfg, root, &server),
-        ViewerCmd::StaticDir { server } => commands::cmd_static_dir(cfg, &server),
+        ViewerCmd::Prepare { server } =>
+            commands::cmd_prepare(cfg, root, &server),
+        ViewerCmd::StaticDir { server } =>
+            commands::cmd_static_dir(cfg, &server),
     }
 }
 
@@ -168,7 +195,8 @@ fn restart_server(
 }
 
 fn print_list(artifacts: &[Artifact]) {
-    let mut categories: Vec<&str> = artifacts.iter().map(|a| a.category.as_str()).collect();
+    let mut categories: Vec<&str> =
+        artifacts.iter().map(|a| a.category.as_str()).collect();
     categories.sort();
     categories.dedup();
 
@@ -180,7 +208,10 @@ fn print_list(artifacts: &[Artifact]) {
     }
 }
 
-fn print_plan(selected: &[Artifact], force: bool) {
+fn print_plan(
+    selected: &[Artifact],
+    force: bool,
+) {
     for artifact in selected {
         match artifact.kind {
             ArtifactKind::RustBinary => {
@@ -196,17 +227,24 @@ fn print_plan(selected: &[Artifact], force: bool) {
                     "    cargo install --path \"{}\" --bin {}{}{}",
                     artifact.path, bin, features, force_flag
                 );
-            }
+            },
             ArtifactKind::VscodeExtension => {
-                let script = artifact.npm_script.as_deref().unwrap_or("install:vsix");
+                let script =
+                    artifact.npm_script.as_deref().unwrap_or("install:vsix");
                 println!("==> {}", artifact.id);
-                println!("    (cd \"{}\" && npm ci && npm run {})", artifact.path, script);
-            }
+                println!(
+                    "    (cd \"{}\" && npm ci && npm run {})",
+                    artifact.path, script
+                );
+            },
         }
     }
 }
 
-fn run_install(selected: &[Artifact], force: bool) {
+fn run_install(
+    selected: &[Artifact],
+    force: bool,
+) {
     let repo_root = match registry::resolve_repo_root() {
         Ok(root) => root,
         Err(e) => fail(&e),
@@ -215,18 +253,27 @@ fn run_install(selected: &[Artifact], force: bool) {
     // Match install-tools.sh: isolate build artifacts from the dev target dir
     // so a running debug binary's file lock doesn't block the build itself.
     unsafe {
-        std::env::set_var("CARGO_TARGET_DIR", repo_root.join("target/install-tools"));
+        std::env::set_var(
+            "CARGO_TARGET_DIR",
+            repo_root.join("target/install-tools"),
+        );
     }
 
     for artifact in selected {
         match artifact.kind {
-            ArtifactKind::RustBinary => install_rust_binary(artifact, &repo_root, force),
-            ArtifactKind::VscodeExtension => install_vscode_extension(artifact, &repo_root),
+            ArtifactKind::RustBinary =>
+                install_rust_binary(artifact, &repo_root, force),
+            ArtifactKind::VscodeExtension =>
+                install_vscode_extension(artifact, &repo_root),
         }
     }
 }
 
-fn install_rust_binary(artifact: &Artifact, repo_root: &Path, force: bool) {
+fn install_rust_binary(
+    artifact: &Artifact,
+    repo_root: &Path,
+    force: bool,
+) {
     let bin = artifact.bin.as_deref().unwrap_or(&artifact.id);
     println!("==> {}", artifact.id);
 
@@ -256,7 +303,8 @@ fn install_rust_binary(artifact: &Artifact, repo_root: &Path, force: bool) {
     if force {
         args.push("--force");
     }
-    if let Err(e) = shell::run_cmd_args("cargo", &args, repo_root, &artifact.id) {
+    if let Err(e) = shell::run_cmd_args("cargo", &args, repo_root, &artifact.id)
+    {
         fail(&e);
     }
 
@@ -272,18 +320,24 @@ fn install_rust_binary(artifact: &Artifact, repo_root: &Path, force: bool) {
     }
 }
 
-fn install_vscode_extension(artifact: &Artifact, repo_root: &Path) {
+fn install_vscode_extension(
+    artifact: &Artifact,
+    repo_root: &Path,
+) {
     println!("==> {}", artifact.id);
     let script = artifact.npm_script.as_deref().unwrap_or("install:vsix");
     let ext_dir = repo_root.join(&artifact.path);
 
     if !ext_dir.join("node_modules").is_dir()
-        && let Err(e) = shell::run_cmd_args("npm", &["ci"], &ext_dir, &artifact.id)
+        && let Err(e) =
+            shell::run_cmd_args("npm", &["ci"], &ext_dir, &artifact.id)
     {
         fail(&e);
     }
 
-    if let Err(e) = shell::run_cmd_args("npm", &["run", script], &ext_dir, &artifact.id) {
+    if let Err(e) =
+        shell::run_cmd_args("npm", &["run", script], &ext_dir, &artifact.id)
+    {
         fail(&e);
     }
 }

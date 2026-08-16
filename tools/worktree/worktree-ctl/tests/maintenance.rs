@@ -22,11 +22,17 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn worktree(&self, slug: &str) -> PathBuf {
+    fn worktree(
+        &self,
+        slug: &str,
+    ) -> PathBuf {
         self.main.join(".worktrees").join(SESSION_UUID).join(slug)
     }
 
-    fn legacy_worktree(&self, name: &str) -> PathBuf {
+    fn legacy_worktree(
+        &self,
+        name: &str,
+    ) -> PathBuf {
         self.main.join(".worktrees").join(name)
     }
 
@@ -227,12 +233,7 @@ fn nested_new_dry_run_preserves_status() {
     let fixture = fixture_repo();
     let before = git_revision(&fixture.main, &["status", "--short"]);
 
-    let output = fixture.run([
-        "new",
-        SESSION_UUID,
-        "dry-run",
-        "--dry-run",
-    ]);
+    let output = fixture.run(["new", SESSION_UUID, "dry-run", "--dry-run"]);
 
     assert!(output.status.success(), "dry-run failed: {}", all(&output));
     assert!(!fixture.worktree("dry-run").exists());
@@ -260,7 +261,12 @@ fn list_reports_lifecycle_state_and_rejection_reason() {
 
     assert!(output.status.success(), "list failed: {}", all(&output));
     let report = all(&output);
-    assert!(report.contains("branch=agent/12345678-1234-1234-1234-123456789abc/state"), "{report}");
+    assert!(
+        report.contains(
+            "branch=agent/12345678-1234-1234-1234-123456789abc/state"
+        ),
+        "{report}"
+    );
     assert!(report.contains("branch=agent/legacy-state"), "{report}");
     assert!(report.contains("submodules=initialized"), "{report}");
     assert!(
@@ -282,7 +288,8 @@ fn merge_refuses_non_fast_forward() {
     git(&fixture.main, &["add", "main.txt"]);
     git(&fixture.main, &["commit", "-m", "main advanced"]);
 
-    let output = fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/non-ff"]);
+    let output =
+        fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/non-ff"]);
 
     assert!(
         !output.status.success(),
@@ -359,18 +366,30 @@ fn merge_accepts_bottom_up_gitlink_integration() {
     create(&fixture, "bottom-up");
     let worktree = fixture.worktree("bottom-up");
     let nested = worktree.join("modules/example");
-    git(&nested, &["checkout", "-b", "agent/12345678-1234-1234-1234-123456789abc/bottom-up"]);
+    git(
+        &nested,
+        &[
+            "checkout",
+            "-b",
+            "agent/12345678-1234-1234-1234-123456789abc/bottom-up",
+        ],
+    );
     fs::write(nested.join("file.txt"), "initial\nbottom-up\n")
         .expect("write nested change");
     git(&nested, &["commit", "-am", "nested feature"]);
     git(
         &fixture.main.join("modules/example"),
-        &["merge", "--ff-only", "agent/12345678-1234-1234-1234-123456789abc/bottom-up"],
+        &[
+            "merge",
+            "--ff-only",
+            "agent/12345678-1234-1234-1234-123456789abc/bottom-up",
+        ],
     );
     git(&worktree, &["add", "modules/example"]);
     git(&worktree, &["commit", "-m", "bump nested gitlink"]);
 
-    let output = fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/bottom-up"]);
+    let output = fixture
+        .run(["merge", "12345678-1234-1234-1234-123456789abc/bottom-up"]);
 
     assert!(output.status.success(), "merge failed: {}", all(&output));
     assert_eq!(
@@ -403,7 +422,8 @@ fn merge_rejects_orphan_gitlink_before_mutation() {
     git(&submodule, &["branch", "-D", "replacement"]);
     let before = git_revision(&fixture.main, &["rev-parse", "main"]);
 
-    let output = fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/orphan"]);
+    let output =
+        fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/orphan"]);
 
     assert!(
         !output.status.success(),
@@ -436,7 +456,8 @@ fn merge_rejects_unresolvable_gitlink_before_mutation() {
     git(&fixture.main, &["commit", "-m", "record missing gitlink"]);
     let before = git_revision(&fixture.main, &["rev-parse", "main"]);
 
-    let output = fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/unresolvable"]);
+    let output = fixture
+        .run(["merge", "12345678-1234-1234-1234-123456789abc/unresolvable"]);
 
     assert!(
         !output.status.success(),
@@ -465,7 +486,11 @@ fn merge_allows_backward_gitlink_and_dry_run_mutates_nothing() {
     git(&worktree, &["commit", "-m", "feature"]);
     let before = git_revision(&fixture.main, &["rev-parse", "main"]);
 
-    let dry_run = fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/behind", "--dry-run"]);
+    let dry_run = fixture.run([
+        "merge",
+        "12345678-1234-1234-1234-123456789abc/behind",
+        "--dry-run",
+    ]);
     assert!(
         dry_run.status.success(),
         "dry-run failed: {}",
@@ -477,7 +502,8 @@ fn merge_allows_backward_gitlink_and_dry_run_mutates_nothing() {
         all(&dry_run)
     );
     assert_eq!(before, git_revision(&fixture.main, &["rev-parse", "main"]));
-    let merge = fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/behind"]);
+    let merge =
+        fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/behind"]);
     assert!(merge.status.success(), "merge failed: {}", all(&merge));
 }
 
@@ -506,16 +532,26 @@ fn rebase_rebases_submodule_before_superproject() {
     git(&fixture.main, &["add", "main.txt"]);
     git(&fixture.main, &["commit", "-m", "superproject main"]);
 
-    let dry_run = fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/ordered", "--dry-run"]);
-    assert!(dry_run.status.success(), "dry-run failed: {}", all(&dry_run));
+    let dry_run = fixture.run([
+        "rebase",
+        "12345678-1234-1234-1234-123456789abc/ordered",
+        "--dry-run",
+    ]);
+    assert!(
+        dry_run.status.success(),
+        "dry-run failed: {}",
+        all(&dry_run)
+    );
     let plan = all(&dry_run);
     assert!(
-        plan.find("checkout agent/12345678-1234-1234-1234-123456789abc/ordered")
-            < plan.find("rebase ").filter(|_| plan.contains("/ordered")),
+        plan.find(
+            "checkout agent/12345678-1234-1234-1234-123456789abc/ordered"
+        ) < plan.find("rebase ").filter(|_| plan.contains("/ordered")),
         "{plan}"
     );
 
-    let output = fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/ordered"]);
+    let output =
+        fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/ordered"]);
     assert!(output.status.success(), "rebase failed: {}", all(&output));
     git(&submodule, &["merge-base", "--is-ancestor", "main", branch]);
     assert_eq!(
@@ -529,7 +565,8 @@ fn rebase_reports_missing_submodule_branch_as_skipped() {
     let fixture = fixture_repo();
     create(&fixture, "skipped");
 
-    let output = fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/skipped"]);
+    let output =
+        fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/skipped"]);
 
     assert!(output.status.success(), "rebase failed: {}", all(&output));
     assert!(
@@ -545,7 +582,14 @@ fn rebase_conflict_stops_before_superproject_rebase() {
     create(&fixture, "conflict");
     let worktree = fixture.worktree("conflict");
     let submodule = worktree.join("modules/example");
-    git(&submodule, &["checkout", "-b", "agent/12345678-1234-1234-1234-123456789abc/conflict"]);
+    git(
+        &submodule,
+        &[
+            "checkout",
+            "-b",
+            "agent/12345678-1234-1234-1234-123456789abc/conflict",
+        ],
+    );
     fs::write(submodule.join("file.txt"), "agent\n")
         .expect("write nested feature");
     git(&submodule, &["commit", "-am", "nested feature"]);
@@ -563,7 +607,8 @@ fn rebase_conflict_stops_before_superproject_rebase() {
     git(&fixture.main, &["commit", "-m", "superproject main"]);
     let before = git_revision(&worktree, &["rev-parse", "HEAD"]);
 
-    let output = fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/conflict"]);
+    let output = fixture
+        .run(["rebase", "12345678-1234-1234-1234-123456789abc/conflict"]);
 
     assert!(
         !output.status.success(),

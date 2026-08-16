@@ -1,0 +1,23 @@
+{
+  "id": "exec-workflow-tools-example-bare-cli-20260815",
+  "validation_spec_id": "workflow-tools-example-bare-cli",
+  "outcome": "passed",
+  "executed_at": "2026-08-15T15:16:32.013567800Z",
+  "detail": "cargo run -q -p example --bin example --features cli printed example-cli; cargo build -p example and cargo build -p example --all-features passed; cargo test --workspace --all-features reported 1 passed across 7 suites; example, example-mcp, and example-http builds passed; cargo fmt --check passed. Existing rustfmt deprecation warnings only.",
+  "links": {
+    "spec_ids": [
+      "5ee7f36a-2aea-4373-8c67-e6b26ae174bf"
+    ],
+    "ticket_ids": [
+      "53b14bf8-3243-4cd6-909e-17c431812441"
+    ]
+  },
+  "provenance": {
+    "source_path": "workflow-tools-contract-reference/crates/example/Cargo.toml",
+    "test_id": "example-bare-cli",
+    "domain": "workflow-tools-contract-reference",
+    "operation": "binary-contract",
+    "transport": "cli",
+    "run_id": "c8ebe499-682c-4f3d-86ea-209b78a8af3b"
+  }
+}

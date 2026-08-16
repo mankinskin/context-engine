@@ -1,0 +1,14 @@
+{
+  "id": "workflow-tools-example-bare-cli",
+  "title": "Reference example CLI uses bare domain target",
+  "command": "cd workflow-tools-contract-reference && cargo run -q -p example --bin example --features cli && cargo build -p example && cargo build -p example --all-features && cargo test --workspace --all-features && cargo build -p example --bin example --features cli && cargo build -p example --bin example-mcp --features mcp && cargo build -p example --bin example-http --features http && cargo fmt --check",
+  "detail": "Validates the reference CLI target rename required by the workflow-tools domain-crate contract.",
+  "links": {
+    "spec_ids": [
+      "5ee7f36a-2aea-4373-8c67-e6b26ae174bf"
+    ],
+    "ticket_ids": [
+      "53b14bf8-3243-4cd6-909e-17c431812441"
+    ]
+  }
+}

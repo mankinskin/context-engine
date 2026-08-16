@@ -17,12 +17,12 @@ use git2::{
     Repository,
 };
 use session_worktree_provision::{
-    evaluate_reclaim_candidate,
-    policy::ProvisionPolicy,
     ReclaimEligibility,
     ReclaimRejectionReason,
     SessionStoreActivity,
     WorktreeGit,
+    evaluate_reclaim_candidate,
+    policy::ProvisionPolicy,
 };
 
 const WORKTREE_PATH_OUTPUT_PREFIX: &str = "WORKTREE_PATH=";
@@ -115,23 +115,7 @@ fn dispatch(command: Command) -> Result<(), String> {
             slug,
             dry_run,
             preserve_main_changes,
-        } => handle_new(
-            &session_uuid,
-            &slug,
-            dry_run,
-            preserve_main_changes,
-        ),
-        Command::Bootstrap {
-            session_uuid,
-            slug,
-            dry_run,
-            preserve_main_changes,
-        } => handle_bootstrap(
-            &session_uuid,
-            &slug,
-            dry_run,
-            preserve_main_changes,
-        ),
+        } => handle_new(&session_uuid, &slug, dry_run, preserve_main_changes),
         Command::List { dry_run } => handle_list(dry_run),
         Command::Rebase { name, dry_run } => handle_rebase(&name, dry_run),
         Command::Merge { name, dry_run } => handle_merge(&name, dry_run),
@@ -183,10 +167,8 @@ fn handle_new(
         WorktreeGit::open(&main_checkout).map_err(|error| error.to_string())?;
     let relative_path = Path::new(session_uuid).join(slug);
     let branch = format!("agent/{session_uuid}/{slug}");
-    let worktree_path = git
-        .main_checkout()
-        .join(".worktrees")
-        .join(&relative_path);
+    let worktree_path =
+        git.main_checkout().join(".worktrees").join(&relative_path);
     let worktrees = git.list_worktrees().map_err(|error| error.to_string())?;
 
     if let Some(worktree) = worktrees
@@ -197,7 +179,8 @@ fn handle_new(
         return Ok(());
     }
 
-    let nested_slugs = nested_slug_directories(git.main_checkout(), session_uuid)?;
+    let nested_slugs =
+        nested_slug_directories(git.main_checkout(), session_uuid)?;
     if !nested_slugs.is_empty() {
         return Err(format!(
             "ambiguous session worktree for {session_uuid}: nested slug directories already exist: {}; exactly one active slug is allowed",
@@ -413,9 +396,7 @@ fn handle_rebase(
             })?;
             commit_rebased_gitlink(&worktree.path, &submodule)?;
         } else {
-            println!(
-                "skip {submodule} because branch {branch} does not exist"
-            );
+            println!("skip {submodule} because branch {branch} does not exist");
         }
     }
     rebase_onto_local_main(&worktree.path)
@@ -508,7 +489,11 @@ fn handle_remove(
     if nested_worktree_parent(git.main_checkout(), &worktree.path).is_some() {
         plan.add(format!(
             "remove the session directory if {} is empty",
-            worktree.path.parent().expect("worktree has a parent").display()
+            worktree
+                .path
+                .parent()
+                .expect("worktree has a parent")
+                .display()
         ));
     }
     if dry_run {
@@ -534,7 +519,10 @@ fn handle_rename(
     let source = find_worktree(&git, source_name)?;
     let source_relative = worktree_relative_path(&git, &source)?;
     let target_relative = rename_target_path(&source_relative, target_name)?;
-    let target_path = git.main_checkout().join(".worktrees").join(&target_relative);
+    let target_path = git
+        .main_checkout()
+        .join(".worktrees")
+        .join(&target_relative);
     let target_branch = branch_for_relative_path(&target_relative)?;
     let mut plan = LifecyclePlan::default();
     plan.add(format!(
@@ -613,13 +601,11 @@ fn find_worktree(
 
 fn validate_full_session_uuid(session_uuid: &str) -> Result<(), String> {
     let valid = session_uuid.len() == 36
-        && session_uuid
-            .chars()
-            .enumerate()
-            .all(|(index, character)| {
-                matches!(index, 8 | 13 | 18 | 23) && character == '-'
-                    || !matches!(index, 8 | 13 | 18 | 23) && character.is_ascii_hexdigit()
-            });
+        && session_uuid.chars().enumerate().all(|(index, character)| {
+            matches!(index, 8 | 13 | 18 | 23) && character == '-'
+                || !matches!(index, 8 | 13 | 18 | 23)
+                    && character.is_ascii_hexdigit()
+        });
     if valid {
         Ok(())
     } else {
@@ -650,7 +636,12 @@ fn worktree_relative_path(
         .path
         .strip_prefix(git.main_checkout().join(".worktrees"))
         .map(Path::to_path_buf)
-        .map_err(|_| format!("worktree {} is outside .worktrees", worktree.path.display()))
+        .map_err(|_| {
+            format!(
+                "worktree {} is outside .worktrees",
+                worktree.path.display()
+            )
+        })
 }
 
 fn rename_target_path(
@@ -660,12 +651,17 @@ fn rename_target_path(
     if source_relative.components().count() == 2 {
         let target_relative = nested_relative_path(target_name)?;
         if target_relative.parent() != source_relative.parent() {
-            return Err("nested worktree rename must keep the same full session UUID".to_owned());
+            return Err(
+                "nested worktree rename must keep the same full session UUID"
+                    .to_owned(),
+            );
         }
         return Ok(target_relative);
     }
     if target_name.contains('/') {
-        return Err("legacy worktree rename target must be a flat name".to_owned());
+        return Err(
+            "legacy worktree rename target must be a flat name".to_owned()
+        );
     }
     Ok(PathBuf::from(target_name))
 }
@@ -688,7 +684,13 @@ fn nested_slug_directories(
     let mut slugs = std::fs::read_dir(parent)
         .map_err(|error| error.to_string())?
         .filter_map(|entry| entry.ok())
-        .filter_map(|entry| entry.file_type().ok().filter(|kind| kind.is_dir()).map(|_| entry))
+        .filter_map(|entry| {
+            entry
+                .file_type()
+                .ok()
+                .filter(|kind| kind.is_dir())
+                .map(|_| entry)
+        })
         .filter_map(|entry| entry.file_name().into_string().ok())
         .collect::<Vec<_>>();
     slugs.sort();
@@ -699,7 +701,9 @@ fn nested_worktree_parent(
     main_checkout: &Path,
     worktree_path: &Path,
 ) -> Option<PathBuf> {
-    let relative = worktree_path.strip_prefix(main_checkout.join(".worktrees")).ok()?;
+    let relative = worktree_path
+        .strip_prefix(main_checkout.join(".worktrees"))
+        .ok()?;
     if relative.components().count() == 2 {
         worktree_path.parent().map(Path::to_path_buf)
     } else {
@@ -711,7 +715,8 @@ fn remove_empty_nested_parent(
     main_checkout: &Path,
     worktree_path: &Path,
 ) -> Result<(), String> {
-    let Some(parent) = nested_worktree_parent(main_checkout, worktree_path) else {
+    let Some(parent) = nested_worktree_parent(main_checkout, worktree_path)
+    else {
         return Ok(());
     };
     if parent.is_dir()
@@ -957,7 +962,8 @@ fn commit_rebased_gitlink(
         return Ok(());
     }
     index.write().map_err(|error| error.to_string())?;
-    let signature = repository.signature().map_err(|error| error.to_string())?;
+    let signature =
+        repository.signature().map_err(|error| error.to_string())?;
     repository
         .commit(
             Some("HEAD"),
@@ -1179,9 +1185,9 @@ mod tests {
     use clap::Parser;
 
     use super::{
+        BRANCH_TEMPLATE,
         Cli,
         Command,
-        BRANCH_TEMPLATE,
         DIRTY_MAIN_UNCOMMITTED_CHANGES_MESSAGE,
         FINISH_READY_TO_MERGE_MARKER,
         PRESERVE_MAIN_CHANGES_HINT,
@@ -1202,10 +1208,7 @@ mod tests {
             WORKTREE_PATH_TEMPLATE,
             ".worktrees/<full-session-uuid>/<slug>"
         );
-        assert_eq!(
-            BRANCH_TEMPLATE,
-            "agent/<full-session-uuid>/<slug>"
-        );
+        assert_eq!(BRANCH_TEMPLATE, "agent/<full-session-uuid>/<slug>");
     }
 
     #[test]
@@ -1348,7 +1351,12 @@ mod tests {
     #[test]
     fn accepts_dry_run_for_every_mutating_subcommand() {
         for args in [
-            vec!["new", "12345678-1234-1234-1234-123456789abc", "slug", "--dry-run"],
+            vec![
+                "new",
+                "12345678-1234-1234-1234-123456789abc",
+                "slug",
+                "--dry-run",
+            ],
             vec!["rebase", "example", "--dry-run"],
             vec!["merge", "example", "--dry-run"],
             vec!["remove", "example", "--dry-run"],

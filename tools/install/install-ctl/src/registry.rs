@@ -1,4 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::path::{
+    Path,
+    PathBuf,
+};
 
 use serde::Deserialize;
 
@@ -91,8 +94,9 @@ pub fn load_registry() -> Result<Registry, String> {
     let path = resolve_registry_path()?;
     let text = std::fs::read_to_string(&path)
         .map_err(|e| format!("failed to read {}: {e}", path.display()))?;
-    let registry_v2 = parse_registry_v2(&text)
-        .map_err(|errors| format!("failed to parse {}: {errors:?}", path.display()))?;
+    let registry_v2 = parse_registry_v2(&text).map_err(|errors| {
+        format!("failed to parse {}: {errors:?}", path.display())
+    })?;
     Ok(adapt_registry_v2(registry_v2))
 }
 
@@ -109,7 +113,9 @@ fn adapt_registry_v2(registry: RegistryV2) -> Registry {
             let kind = match entry.kind {
                 EntryKind::RustBinary => ArtifactKind::RustBinary,
                 EntryKind::VscodeExtension => ArtifactKind::VscodeExtension,
-                EntryKind::Script | EntryKind::ManagedService | EntryKind::Hook => return None,
+                EntryKind::Script
+                | EntryKind::ManagedService
+                | EntryKind::Hook => return None,
             };
             Some(Artifact {
                 id: entry.id,
@@ -133,7 +139,12 @@ pub fn resolve_repo_root() -> Result<PathBuf, String> {
         .ancestors()
         .nth(3)
         .map(Path::to_path_buf)
-        .ok_or_else(|| format!("could not derive repo root from {}", registry_path.display()))
+        .ok_or_else(|| {
+            format!(
+                "could not derive repo root from {}",
+                registry_path.display()
+            )
+        })
 }
 
 // ===========================================================================
@@ -226,14 +237,19 @@ pub enum RegistryValidationError {
 
 /// Parse and fully validate the v2 registry schema against spec
 /// 97322185-2bda-4f25-85f7-f975a0b3fbad's acceptance criteria.
-pub fn parse_registry_v2(text: &str) -> Result<RegistryV2, Vec<RegistryValidationError>> {
-    let registry: RegistryV2 =
-        toml::from_str(text).map_err(|e| vec![RegistryValidationError::MalformedToml(e.to_string())])?;
+pub fn parse_registry_v2(
+    text: &str
+) -> Result<RegistryV2, Vec<RegistryValidationError>> {
+    let registry: RegistryV2 = toml::from_str(text).map_err(|e| {
+        vec![RegistryValidationError::MalformedToml(e.to_string())]
+    })?;
 
     let mut errors = Vec::new();
 
     if registry.version != REGISTRY_SCHEMA_VERSION {
-        errors.push(RegistryValidationError::UnsupportedVersion(registry.version));
+        errors.push(RegistryValidationError::UnsupportedVersion(
+            registry.version,
+        ));
     }
 
     let mut seen_ids = std::collections::HashSet::new();
@@ -250,36 +266,53 @@ pub fn parse_registry_v2(text: &str) -> Result<RegistryV2, Vec<RegistryValidatio
         }
 
         if entry.bin.is_none() && entry.npm_script.is_none() {
-            errors.push(RegistryValidationError::MissingCommandMetadata { id: entry.id.clone() });
+            errors.push(RegistryValidationError::MissingCommandMetadata {
+                id: entry.id.clone(),
+            });
         }
 
         if entry.owner.trim().is_empty() {
-            errors.push(RegistryValidationError::EmptyOwner { id: entry.id.clone() });
+            errors.push(RegistryValidationError::EmptyOwner {
+                id: entry.id.clone(),
+            });
         }
 
         if entry.lifecycle.is_empty() {
-            errors.push(RegistryValidationError::EmptyLifecycle { id: entry.id.clone() });
+            errors.push(RegistryValidationError::EmptyLifecycle {
+                id: entry.id.clone(),
+            });
         }
 
         for action in &entry.lifecycle {
-            if entry.safety == Safety::Safe && *action != LifecycleAction::Inspect {
-                errors.push(RegistryValidationError::SafeEntryHasMutatingAction {
-                    id: entry.id.clone(),
-                    action: *action,
-                });
-            }
-            if (entry.kind == EntryKind::Hook || entry.category == EntryCategory::Hook)
+            if entry.safety == Safety::Safe
                 && *action != LifecycleAction::Inspect
             {
-                errors.push(RegistryValidationError::HookEntryHasNonInspectAction {
-                    id: entry.id.clone(),
-                    action: *action,
-                });
+                errors.push(
+                    RegistryValidationError::SafeEntryHasMutatingAction {
+                        id: entry.id.clone(),
+                        action: *action,
+                    },
+                );
+            }
+            if (entry.kind == EntryKind::Hook
+                || entry.category == EntryCategory::Hook)
+                && *action != LifecycleAction::Inspect
+            {
+                errors.push(
+                    RegistryValidationError::HookEntryHasNonInspectAction {
+                        id: entry.id.clone(),
+                        action: *action,
+                    },
+                );
             }
         }
     }
 
-    if errors.is_empty() { Ok(registry) } else { Err(errors) }
+    if errors.is_empty() {
+        Ok(registry)
+    } else {
+        Err(errors)
+    }
 }
 
 /// A `source_path` is repository-local: relative, non-empty, and free of any
@@ -418,7 +451,8 @@ bin = "example-service"
 
     #[test]
     fn registry_schema_parses_valid_v1_registry() {
-        let registry = parse_registry_v2(&valid_registry_toml()).expect("valid registry parses");
+        let registry = parse_registry_v2(&valid_registry_toml())
+            .expect("valid registry parses");
         assert_eq!(registry.version, 1);
         assert_eq!(registry.entries.len(), 2);
         assert!(registry.entries.iter().any(|e| e.id == "example-cli"));
@@ -426,9 +460,13 @@ bin = "example-service"
 
     #[test]
     fn registry_schema_rejects_unsupported_version() {
-        let text = valid_registry_toml().replacen("version = 1", "version = 2", 1);
-        let errors = parse_registry_v2(&text).expect_err("unsupported version must be rejected");
-        assert!(errors.contains(&RegistryValidationError::UnsupportedVersion(2)));
+        let text =
+            valid_registry_toml().replacen("version = 1", "version = 2", 1);
+        let errors = parse_registry_v2(&text)
+            .expect_err("unsupported version must be rejected");
+        assert!(
+            errors.contains(&RegistryValidationError::UnsupportedVersion(2))
+        );
     }
 
     #[test]
@@ -447,43 +485,82 @@ safety = "safe"
 bin = "other"
 "#,
         );
-        let errors = parse_registry_v2(&text).expect_err("duplicate id must be rejected");
-        assert!(errors.contains(&RegistryValidationError::DuplicateId("example-cli".into())));
+        let errors = parse_registry_v2(&text)
+            .expect_err("duplicate id must be rejected");
+        assert!(errors.contains(&RegistryValidationError::DuplicateId(
+            "example-cli".into()
+        )));
     }
 
     #[test]
     fn registry_schema_rejects_unsupported_category() {
-        let text = valid_registry_toml().replacen(r#"category = "cli""#, r#"category = "not-a-real-category""#, 1);
-        let errors = parse_registry_v2(&text).expect_err("unsupported category must be rejected");
-        assert!(matches!(errors[0], RegistryValidationError::MalformedToml(_)));
+        let text = valid_registry_toml().replacen(
+            r#"category = "cli""#,
+            r#"category = "not-a-real-category""#,
+            1,
+        );
+        let errors = parse_registry_v2(&text)
+            .expect_err("unsupported category must be rejected");
+        assert!(matches!(
+            errors[0],
+            RegistryValidationError::MalformedToml(_)
+        ));
     }
 
     #[test]
     fn registry_schema_rejects_unsupported_kind() {
-        let text = valid_registry_toml().replacen(r#"kind = "rust-binary""#, r#"kind = "not-a-real-kind""#, 1);
-        let errors = parse_registry_v2(&text).expect_err("unsupported kind must be rejected");
-        assert!(matches!(errors[0], RegistryValidationError::MalformedToml(_)));
+        let text = valid_registry_toml().replacen(
+            r#"kind = "rust-binary""#,
+            r#"kind = "not-a-real-kind""#,
+            1,
+        );
+        let errors = parse_registry_v2(&text)
+            .expect_err("unsupported kind must be rejected");
+        assert!(matches!(
+            errors[0],
+            RegistryValidationError::MalformedToml(_)
+        ));
     }
 
     #[test]
     fn registry_schema_rejects_unsupported_lifecycle_action() {
-        let text = valid_registry_toml().replacen(r#"lifecycle = ["inspect"]"#, r#"lifecycle = ["obliterate"]"#, 1);
-        let errors = parse_registry_v2(&text).expect_err("unsupported lifecycle action must be rejected");
-        assert!(matches!(errors[0], RegistryValidationError::MalformedToml(_)));
+        let text = valid_registry_toml().replacen(
+            r#"lifecycle = ["inspect"]"#,
+            r#"lifecycle = ["obliterate"]"#,
+            1,
+        );
+        let errors = parse_registry_v2(&text)
+            .expect_err("unsupported lifecycle action must be rejected");
+        assert!(matches!(
+            errors[0],
+            RegistryValidationError::MalformedToml(_)
+        ));
     }
 
     #[test]
     fn registry_schema_rejects_unsupported_safety() {
-        let text = valid_registry_toml().replacen(r#"safety = "safe""#, r#"safety = "yolo""#, 1);
-        let errors = parse_registry_v2(&text).expect_err("unsupported safety value must be rejected");
-        assert!(matches!(errors[0], RegistryValidationError::MalformedToml(_)));
+        let text = valid_registry_toml().replacen(
+            r#"safety = "safe""#,
+            r#"safety = "yolo""#,
+            1,
+        );
+        let errors = parse_registry_v2(&text)
+            .expect_err("unsupported safety value must be rejected");
+        assert!(matches!(
+            errors[0],
+            RegistryValidationError::MalformedToml(_)
+        ));
     }
 
     #[test]
     fn registry_schema_rejects_absolute_path() {
-        let text = valid_registry_toml()
-            .replacen(r#"source_path = "tools/example/example-cli""#, r#"source_path = "/etc/example-cli""#, 1);
-        let errors = parse_registry_v2(&text).expect_err("absolute path must be rejected");
+        let text = valid_registry_toml().replacen(
+            r#"source_path = "tools/example/example-cli""#,
+            r#"source_path = "/etc/example-cli""#,
+            1,
+        );
+        let errors = parse_registry_v2(&text)
+            .expect_err("absolute path must be rejected");
         assert!(errors.iter().any(|e| matches!(e, RegistryValidationError::InvalidSourcePath { id, .. } if id == "example-cli")));
     }
 
@@ -494,14 +571,16 @@ bin = "other"
             r#"source_path = "../outside-repo/example-cli""#,
             1,
         );
-        let errors = parse_registry_v2(&text).expect_err("traversal path must be rejected");
+        let errors = parse_registry_v2(&text)
+            .expect_err("traversal path must be rejected");
         assert!(errors.iter().any(|e| matches!(e, RegistryValidationError::InvalidSourcePath { id, .. } if id == "example-cli")));
     }
 
     #[test]
     fn registry_schema_rejects_missing_command_metadata() {
         let text = valid_registry_toml().replacen("bin = \"example\"\n", "", 1);
-        let errors = parse_registry_v2(&text).expect_err("absent command metadata must be rejected");
+        let errors = parse_registry_v2(&text)
+            .expect_err("absent command metadata must be rejected");
         assert!(errors
             .iter()
             .any(|e| matches!(e, RegistryValidationError::MissingCommandMetadata { id } if id == "example-cli")));
@@ -509,8 +588,13 @@ bin = "other"
 
     #[test]
     fn registry_schema_rejects_empty_owner() {
-        let text = valid_registry_toml().replacen(r#"owner = "tooling""#, r#"owner = """#, 1);
-        let errors = parse_registry_v2(&text).expect_err("empty owner must be rejected");
+        let text = valid_registry_toml().replacen(
+            r#"owner = "tooling""#,
+            r#"owner = """#,
+            1,
+        );
+        let errors =
+            parse_registry_v2(&text).expect_err("empty owner must be rejected");
         assert!(errors
             .iter()
             .any(|e| matches!(e, RegistryValidationError::EmptyOwner { id } if id == "example-cli")));
@@ -518,8 +602,13 @@ bin = "other"
 
     #[test]
     fn registry_schema_rejects_empty_lifecycle() {
-        let text = valid_registry_toml().replacen(r#"lifecycle = ["inspect"]"#, "lifecycle = []", 1);
-        let errors = parse_registry_v2(&text).expect_err("empty lifecycle must be rejected");
+        let text = valid_registry_toml().replacen(
+            r#"lifecycle = ["inspect"]"#,
+            "lifecycle = []",
+            1,
+        );
+        let errors = parse_registry_v2(&text)
+            .expect_err("empty lifecycle must be rejected");
         assert!(errors
             .iter()
             .any(|e| matches!(e, RegistryValidationError::EmptyLifecycle { id } if id == "example-cli")));
@@ -532,10 +621,17 @@ bin = "other"
         let registry = sample_registry_v2();
         let catalog = render_catalog(&registry);
         for entry in &registry.entries {
-            assert!(catalog.contains(&entry.id), "catalog missing entry id {}", entry.id);
+            assert!(
+                catalog.contains(&entry.id),
+                "catalog missing entry id {}",
+                entry.id
+            );
             for action in &entry.lifecycle {
                 assert!(
-                    catalog.contains(&format!("{action:?}")) || catalog.to_lowercase().contains(&format!("{action:?}").to_lowercase()),
+                    catalog.contains(&format!("{action:?}"))
+                        || catalog
+                            .to_lowercase()
+                            .contains(&format!("{action:?}").to_lowercase()),
                     "catalog missing action {action:?} for entry {}",
                     entry.id
                 );
@@ -548,7 +644,10 @@ bin = "other"
         let registry = sample_registry_v2();
         let first = render_catalog(&registry);
         let second = render_catalog(&registry);
-        assert_eq!(first, second, "re-rendering an unchanged registry must be byte-identical");
+        assert_eq!(
+            first, second,
+            "re-rendering an unchanged registry must be byte-identical"
+        );
     }
 
     // -- registry_catalog_freshness_* (AC3) -----------------------------------
@@ -556,13 +655,18 @@ bin = "other"
     #[test]
     fn registry_catalog_freshness_matches_committed_file() {
         let repo_root = resolve_repo_root().expect("repo root resolves");
-        let registry_text = std::fs::read_to_string(repo_root.join(REGISTRY_RELATIVE_PATH))
-            .expect("real artifacts.toml is readable");
-        let registry = parse_registry_v2(&registry_text).expect("real artifacts.toml parses under v2 schema");
+        let registry_text =
+            std::fs::read_to_string(repo_root.join(REGISTRY_RELATIVE_PATH))
+                .expect("real artifacts.toml is readable");
+        let registry = parse_registry_v2(&registry_text)
+            .expect("real artifacts.toml parses under v2 schema");
         let rendered = render_catalog(&registry);
         let committed = std::fs::read_to_string(repo_root.join("COMMANDS.md"))
             .expect("committed root COMMANDS.md must exist and be readable");
-        assert_eq!(rendered, committed, "COMMANDS.md must byte-equal the freshly rendered catalog");
+        assert_eq!(
+            rendered, committed,
+            "COMMANDS.md must byte-equal the freshly rendered catalog"
+        );
     }
 
     #[test]
@@ -584,8 +688,13 @@ bin = "other"
 
     #[test]
     fn registry_safety_safe_entry_with_inspect_only_is_valid() {
-        let registry = parse_registry_v2(&valid_registry_toml()).expect("valid registry parses");
-        let safe_entry = registry.entries.iter().find(|e| e.id == "example-cli").unwrap();
+        let registry = parse_registry_v2(&valid_registry_toml())
+            .expect("valid registry parses");
+        let safe_entry = registry
+            .entries
+            .iter()
+            .find(|e| e.id == "example-cli")
+            .unwrap();
         assert_eq!(safe_entry.safety, Safety::Safe);
         assert_eq!(safe_entry.lifecycle, vec![LifecycleAction::Inspect]);
     }
@@ -599,7 +708,8 @@ safety = "safe""#,
 safety = "safe""#,
             1,
         );
-        let errors = parse_registry_v2(&text).expect_err("safe entries may not declare mutating actions");
+        let errors = parse_registry_v2(&text)
+            .expect_err("safe entries may not declare mutating actions");
         assert!(errors.iter().any(|e| matches!(
             e,
             RegistryValidationError::SafeEntryHasMutatingAction { id, action }
@@ -608,12 +718,22 @@ safety = "safe""#,
     }
 
     #[test]
-    fn registry_safety_approval_required_entry_with_mutating_actions_is_valid() {
-        let registry = parse_registry_v2(&valid_registry_toml()).expect("valid registry parses");
-        let approval_entry = registry.entries.iter().find(|e| e.id == "example-service").unwrap();
+    fn registry_safety_approval_required_entry_with_mutating_actions_is_valid()
+    {
+        let registry = parse_registry_v2(&valid_registry_toml())
+            .expect("valid registry parses");
+        let approval_entry = registry
+            .entries
+            .iter()
+            .find(|e| e.id == "example-service")
+            .unwrap();
         assert_eq!(approval_entry.safety, Safety::ApprovalRequired);
         assert!(approval_entry.lifecycle.contains(&LifecycleAction::Install));
-        assert!(approval_entry.lifecycle.contains(&LifecycleAction::Uninstall));
+        assert!(
+            approval_entry
+                .lifecycle
+                .contains(&LifecycleAction::Uninstall)
+        );
     }
 
     // -- registry_hook_* (AC5) ---------------------------------------------------
@@ -621,13 +741,18 @@ safety = "safe""#,
     #[test]
     fn registry_hook_entry_with_inspect_only_is_valid() {
         let registry = sample_registry_v2();
-        let hook = registry.entries.iter().find(|e| e.category == EntryCategory::Hook).unwrap();
+        let hook = registry
+            .entries
+            .iter()
+            .find(|e| e.category == EntryCategory::Hook)
+            .unwrap();
         assert_eq!(hook.lifecycle, vec![LifecycleAction::Inspect]);
     }
 
     #[test]
     fn registry_hook_entry_with_install_is_rejected() {
-        let text = valid_registry_toml() + r#"
+        let text = valid_registry_toml()
+            + r#"
 [[artifact]]
 id = "example-hook"
 category = "hook"
@@ -637,7 +762,8 @@ owner = "tooling"
 lifecycle = ["install"]
 safety = "approval-required"
 "#;
-        let errors = parse_registry_v2(&text).expect_err("hook entries may not declare install");
+        let errors = parse_registry_v2(&text)
+            .expect_err("hook entries may not declare install");
         assert!(errors.iter().any(|e| matches!(
             e,
             RegistryValidationError::HookEntryHasNonInspectAction { id, action }
@@ -647,7 +773,8 @@ safety = "approval-required"
 
     #[test]
     fn registry_hook_kind_with_non_hook_category_rejects_mutating_action() {
-        let text = valid_registry_toml() + r#"
+        let text = valid_registry_toml()
+            + r#"
 [[artifact]]
 id = "hook-kind-misc-category"
 category = "misc"
@@ -657,7 +784,8 @@ owner = "tooling"
 lifecycle = ["install"]
 safety = "approval-required"
 "#;
-        let errors = parse_registry_v2(&text).expect_err("hook kinds may not declare install");
+        let errors = parse_registry_v2(&text)
+            .expect_err("hook kinds may not declare install");
         assert!(errors.iter().any(|e| matches!(
             e,
             RegistryValidationError::HookEntryHasNonInspectAction { id, action }
@@ -667,7 +795,8 @@ safety = "approval-required"
 
     #[test]
     fn registry_hook_entry_with_enable_disable_is_rejected() {
-        let text = valid_registry_toml() + r#"
+        let text = valid_registry_toml()
+            + r#"
 [[artifact]]
 id = "example-hook"
 category = "hook"
@@ -677,7 +806,8 @@ owner = "tooling"
 lifecycle = ["enable", "disable"]
 safety = "approval-required"
 "#;
-        let errors = parse_registry_v2(&text).expect_err("hook entries may not declare enable/disable");
+        let errors = parse_registry_v2(&text)
+            .expect_err("hook entries may not declare enable/disable");
         assert!(errors.iter().any(|e| matches!(
             e,
             RegistryValidationError::HookEntryHasNonInspectAction { id, .. } if id == "example-hook"
