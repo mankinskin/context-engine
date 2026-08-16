@@ -19924,13 +19924,13 @@ entries[1610]:
     source_path: ".ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml"
     title: "[agents] Add Teacher Agent lesson guidance"
     summary: "Create a user-invocable Teacher Agent that turns a problem, system, or learning"
-    keywords[133]: acceptance,action,add,agent,"agent-workflow",agents,and,asks,authoring,automatic,automatically,autonomous,but,capability,choice,command,completed,contains,create,criteria,declares,delegates,delegation,does,evidence,example,executable,executes,execution,expected,explanation,explanations,explore,fail,feedback,files,flow,focused,from,frontmatter,gives,goal,goals,grade,grading,granted,guidance,handles,has,high,human,humans,implementing,"in-implementation",inconclusive,input,interactive,internal,into,invocable,its,learning,least,lesson,limited,links,may,method,mutates,mutation,never,next,non,not,objective,observed,observer,only,open,orchestrates,ordered,ordering,output,owns,pass,path,people,permits,planning,problem,progress,proves,question,questions,records,remediation,repeat,repetition,repository,required,requirements,research,sends,signal,spec,state,static,step,stores,structure,structured,summary,synthesis,system,target,task,tasks,teacher,template,terminal,that,the,three,ticket,turns,updates,use,user,validation,verification,when,without,workspace
-    scope: "state=in-implementation, component=agent-workflow"
+    keywords[133]: acceptance,action,add,agent,"agent-workflow",agents,and,asks,authoring,automatic,automatically,autonomous,but,capability,choice,command,completed,contains,create,criteria,declares,delegates,delegation,does,done,evidence,example,executable,executes,execution,expected,explanation,explanations,explore,fail,feedback,files,flow,focused,from,frontmatter,gives,goal,goals,grade,grading,granted,guidance,handles,has,high,human,humans,implementing,inconclusive,input,interactive,internal,into,invocable,its,learning,least,lesson,limited,links,may,method,mutates,mutation,never,next,non,not,objective,observed,observer,only,open,orchestrates,ordered,ordering,output,owns,pass,path,people,permits,planning,problem,progress,proves,question,questions,records,remediation,repeat,repetition,repository,required,requirements,research,sends,signal,spec,state,static,step,stores,structure,structured,summary,synthesis,system,target,task,tasks,teacher,template,terminal,that,the,three,ticket,turns,updates,use,user,validation,verification,when,without,workspace
+    scope: "state=done, component=agent-workflow"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml","f3cc69a4-03de-4b45-8b87-a548d5669afe",related,ticket,"",f3cc69a4
-    digest: 266fc3395deb7cd550789504bbdd2b57bbcb52705874fdd64d9320c15fd827fe
-    tags[4]: "agent-workflow",high,"in-implementation",ticket
+    digest: 1beb26706446120cf66ed289284f9858571a1180fbb89c64f3d5139cabb8adb0
+    tags[4]: "agent-workflow",done,high,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f41f08a8-fad9-4a20-b3a4-58bc1cc4d6ef"
     kind: ticket

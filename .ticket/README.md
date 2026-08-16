@@ -658,6 +658,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: agent-workflow
 
+<!-- ticket-index:entry id=f3cc69a4-03de-4b45-8b87-a548d5669afe slug=done/agent-workflow digest=1beb26706446 -->
+#### [f3cc69a4] [agents] Add Teacher Agent lesson guidance
+- priority: `high`
+- summary: Create a user-invocable Teacher Agent that turns a problem, system, or learning
+- ref: `.ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml`
+
 <!-- ticket-index:entry id=9f617940-a3fd-4990-b3fd-a3fa95c10ae7 slug=done/agent-workflow digest=d62c2c9733cb -->
 #### [9f617940] [agents] Make Explainer Agent German-first and interactive
 - priority: `high`
@@ -4897,12 +4903,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [79449c3f] Define Explainer Agent version-one contract
 - priority: `high`
 - ref: `.ticket/tickets/79449c3f-2f49-4925-b8fd-3751face53b5/ticket.toml`
-
-<!-- ticket-index:entry id=f3cc69a4-03de-4b45-8b87-a548d5669afe slug=in-implementation/agent-workflow digest=266fc3395deb -->
-#### [f3cc69a4] [agents] Add Teacher Agent lesson guidance
-- priority: `high`
-- summary: Create a user-invocable Teacher Agent that turns a problem, system, or learning
-- ref: `.ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml`
 
 
 ### Component: memory-api
