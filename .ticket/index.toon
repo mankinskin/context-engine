@@ -19053,13 +19053,13 @@ entries[1610]:
     source_path: ".ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml"
     title: "[terminal] Add human-owned observer terminal sessions"
     summary: "Provide a secure observer-terminal capability in which a human enters terminal"
-    keywords[114]: 0dd23fe6,4a81584dc77a,4d21,"6892","9927",absence,acceptance,add,agent,"agent-tooling",agents,all,and,any,api,arbitrary,attach,bounded,can,capabilities,capability,carries,command,commands,compact,create,criteria,current,decision,demonstrates,directory,documents,enters,evidence,executes,execution,existing,exit,explainer,explicitly,expose,focused,follows,goals,granting,guidance,have,high,human,identity,implementation,input,integration,interactive,inventory,learning,links,must,named,never,non,not,objective,observation,observe,observer,open,operation,output,owned,ownership,owns,persisting,presented,provide,query,read,readback,records,replacing,requirements,safe,secure,selected,semantics,sending,sends,sensitive,separate,session,sessions,shot,side,single,spec,stale,state,status,teacher,terminal,terminate,test,that,the,ticket,timeout,tool,transport,used,validation,which,while,without,working
-    scope: "state=open, component=agent-tooling"
+    keywords[114]: 0dd23fe6,4a81584dc77a,4d21,"6892","9927",absence,acceptance,add,agent,"agent-tooling",agents,all,and,any,api,arbitrary,attach,bounded,can,capabilities,capability,carries,command,commands,compact,create,criteria,current,decision,demonstrates,directory,documents,enters,evidence,executes,execution,existing,exit,explainer,explicitly,expose,focused,follows,goals,granting,guidance,have,high,human,identity,implementation,"in-implementation",input,integration,interactive,inventory,learning,links,must,named,never,non,not,objective,observation,observe,observer,operation,output,owned,ownership,owns,persisting,presented,provide,query,read,readback,records,replacing,requirements,safe,secure,selected,semantics,sending,sends,sensitive,separate,session,sessions,shot,side,single,spec,stale,state,status,teacher,terminal,terminate,test,that,the,ticket,timeout,tool,transport,used,validation,which,while,without,working
+    scope: "state=in-implementation, component=agent-tooling"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml","ea52bd6f-aa48-43f5-9228-0bff7190abf8",related,ticket,"",ea52bd6f
-    digest: bd061facff77171c9daddb9885330845837ec4fc1a649b2a8d12fb641e7f6ebb
-    tags[4]: "agent-tooling",high,open,ticket
+    digest: 6f348746273b57e1dd92a925b67c2512350688fc1798c3d98f79688099d38d25
+    tags[4]: "agent-tooling",high,"in-implementation",ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ea80712b-3506-4b8f-bb36-fc2618aa7b82"
     kind: ticket

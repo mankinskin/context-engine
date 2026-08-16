@@ -21,4 +21,4 @@ Specify the token-bounded command-execution surface of the default agent tool
 
 - Parent: [agent-tooling/default-tool-suite](../../README.md)
 - Siblings: [agent-tooling/file-editing](../../file-editing/4f5ad264/README.md), [agent-tooling/filesystem-operations](../../filesystem-operations/58a1d32c/README.md), [agent-tooling/repo-wide-search](../../repo-wide-search/af9ebba9/README.md)
-- Children: _(none)_
+- Children: [agent-tooling/human-owned-observer-terminal](human-owned-observer-terminal/73dfa7f7/README.md)

@@ -20,6 +20,7 @@
 - [agent-tooling/agent-template-roster-authoring-contract](./tree/agent-template-roster-authoring-contract/88413517/README.md)
 - [agent-tooling/default-tool-suite](./tree/default-tool-suite/7c9757a7/README.md)
   - [agent-tooling/compact-terminal](./tree/default-tool-suite/7c9757a7/compact-terminal/63c60c9d/README.md)
+    - [agent-tooling/human-owned-observer-terminal](./tree/default-tool-suite/7c9757a7/compact-terminal/63c60c9d/human-owned-observer-terminal/73dfa7f7/README.md)
   - [agent-tooling/file-editing](./tree/default-tool-suite/7c9757a7/file-editing/4f5ad264/README.md)
   - [agent-tooling/filesystem-operations](./tree/default-tool-suite/7c9757a7/filesystem-operations/58a1d32c/README.md)
   - [agent-tooling/repo-wide-search](./tree/default-tool-suite/7c9757a7/repo-wide-search/af9ebba9/README.md)

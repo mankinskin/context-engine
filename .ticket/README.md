@@ -4897,6 +4897,15 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ## State: in-implementation
 
+### Component: agent-tooling
+
+<!-- ticket-index:entry id=ea52bd6f-aa48-43f5-9228-0bff7190abf8 slug=in-implementation/agent-tooling digest=6f348746273b -->
+#### [ea52bd6f] [terminal] Add human-owned observer terminal sessions
+- priority: `high`
+- summary: Provide a secure observer-terminal capability in which a human enters terminal
+- ref: `.ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml`
+
+
 ### Component: agent-workflow
 
 <!-- ticket-index:entry id=79449c3f-2f49-4925-b8fd-3751face53b5 slug=in-implementation/agent-workflow digest=28b76f0a7914 -->
@@ -5961,12 +5970,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Ticket 9d527ad1 delivered per-tool-call token-load *measurement* in `mcp-cost-gate`, but nothing ever turned collection on. Every telemetry record produced in production since it landed has been sile...
 - ref: `.ticket/tickets/4aa13ba7-5bdb-4ac6-8581-2f86427f0980/ticket.toml`
-
-<!-- ticket-index:entry id=ea52bd6f-aa48-43f5-9228-0bff7190abf8 slug=open/agent-tooling digest=bd061facff77 -->
-#### [ea52bd6f] [terminal] Add human-owned observer terminal sessions
-- priority: `high`
-- summary: Provide a secure observer-terminal capability in which a human enters terminal
-- ref: `.ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml`
 
 <!-- ticket-index:entry id=0dd23fe6-6892-4d21-9927-4a81584dc77a slug=open/agent-tooling digest=eb55a913162a -->
 #### [0dd23fe6] [token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features

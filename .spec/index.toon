@@ -2,7 +2,7 @@ version: 1
 domain: spec
 store_path: .spec
 generated_at: "1970-01-01T00:00:00Z"
-entries[252]:
+entries[253]:
   - id: "012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6"
     kind: spec
     source_path: "viewer-api/.spec/specs/012c2c1c-f33e-45d9-9ad1-aa4fc65ce7b6/spec.toml"
@@ -1428,6 +1428,8 @@ entries[252]:
         relation_kind: parent
         content_kind: spec
         digest: ""
+      children[1]{canonical_path,entry_id,relation_kind,content_kind,digest}:
+        ".spec/specs/73dfa7f7-5fb4-4c75-a6b1-8773d8a1ca30/spec.toml","73dfa7f7-5fb4-4c75-a6b1-8773d8a1ca30",child,spec,""
     digest: 66d0840b98b0ed9c63f6453c3c3a01501ebe71f5ae9ff248e1a2be2f9d66f18a
     tags[3]: "agent-tooling",approved,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
@@ -1557,6 +1559,23 @@ entries[252]:
         digest: ""
     digest: 303ae3c8cba77894c48ee3242fe849eef2edde3887aa71f561e45882556ab46f
     tags[3]: draft,"feedback-api","scope:internal"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "73dfa7f7-5fb4-4c75-a6b1-8773d8a1ca30"
+    kind: spec
+    source_path: ".spec/specs/73dfa7f7-5fb4-4c75-a6b1-8773d8a1ca30/spec.toml"
+    title: "Human-owned observer terminal"
+    summary: "<!-- aligned-structure:v2 -->"
+    keywords[5]: human,"human-owned",observer,owned,terminal
+    non_goals: "Agent-side terminal input, `sendText`, or arbitrary shell execution. Recording terminal input, secrets, or keystrokes. Replacing compact-terminal's one-shot command tooling. Web-host fallback that simulates terminal capture without the VS Code API."
+    relations:
+      parent:
+        canonical_path: ".spec/specs/63c60c9d-adbe-4ddb-8c1d-6156610d0753/spec.toml"
+        entry_id: "63c60c9d-adbe-4ddb-8c1d-6156610d0753"
+        relation_kind: parent
+        content_kind: spec
+        digest: ""
+    digest: c3138de37c01801c93ebde27904bd0f234a4f206799c3fe9c532a266013dcfa5
+    tags[3]: "agent-tooling",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "76da5f2d-cea9-49d9-b223-730a0c2a5d6b"
     kind: spec
