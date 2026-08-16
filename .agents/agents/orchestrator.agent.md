@@ -76,6 +76,7 @@ have no tool to do it yourself, by design.
 | Evaluate or improve a UI for novice and expert users | `surface-design.agent.md` | T2 |
 | Turn evidence into precise audience-specific prose | `writing.agent.md` | T2 |
 | Steward instruction files and agent templates | `simplify.agent.md` | T2 |
+| Author and publish agent customizations and governing guidance | `guidance-lifecycle.agent.md` | T2 |
 | Install or update tools, dependencies, or skills | `installer.agent.md` | T3 |
 
 ### Verify

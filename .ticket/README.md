@@ -627,6 +627,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Create a token-bounded file inspection utility that defaults to narrow line windows instead of whole-file reads.
 - ref: `.ticket/tickets/d4605cc0-5901-4b68-94d5-e7e3e6cac06f/ticket.toml`
 
+<!-- ticket-index:entry id=0dd23fe6-6892-4d21-9927-4a81584dc77a slug=done/agent-tooling digest=b459e020a41d -->
+#### [0dd23fe6] [token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features
+- priority: `medium`
+- summary: Audit the currently active execute-style MCP surfaces and adjacent terminal-execution tooling to determine whether they already support terminal reuse, follow-up input, resumable execution, or persis...
+- ref: `.ticket/tickets/0dd23fe6-6892-4d21-9927-4a81584dc77a/ticket.toml`
+
 <!-- ticket-index:entry id=72c1e92d-65e1-445b-9365-e3384d9da088 slug=done/agent-tooling digest=00ab8fe6747d -->
 #### [72c1e92d] [token-efficiency] Generate static `.agent/repo_map.toon`
 - priority: `high`
@@ -5971,12 +5977,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Ticket 9d527ad1 delivered per-tool-call token-load *measurement* in `mcp-cost-gate`, but nothing ever turned collection on. Every telemetry record produced in production since it landed has been sile...
 - ref: `.ticket/tickets/4aa13ba7-5bdb-4ac6-8581-2f86427f0980/ticket.toml`
 
-<!-- ticket-index:entry id=0dd23fe6-6892-4d21-9927-4a81584dc77a slug=open/agent-tooling digest=eb55a913162a -->
-#### [0dd23fe6] [token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features
-- priority: `medium`
-- summary: Audit the currently active execute-style MCP surfaces and adjacent terminal-execution tooling to determine whether they already support terminal reuse, follow-up input, resumable execution, or persis...
-- ref: `.ticket/tickets/0dd23fe6-6892-4d21-9927-4a81584dc77a/ticket.toml`
-
 <!-- ticket-index:entry id=9b9df133-d809-4900-b56a-afae4efcdd08 slug=open/agent-tooling digest=0bb97c55163c -->
 #### [9b9df133] [token-efficiency] Track token-efficient agent tooling rollout
 - priority: `high`
@@ -7806,6 +7806,10 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: unspecified
 
+<!-- ticket-index:entry id=409b1b32-096b-447e-b9a5-53ba46fddcc7 slug=open/unspecified digest=ca965a6edaff -->
+#### [409b1b32] Add Guidance Lifecycle Agent for repository customizations
+- ref: `.ticket/tickets/409b1b32-096b-447e-b9a5-53ba46fddcc7/ticket.toml`
+
 <!-- ticket-index:entry id=3ca6f36f-fa19-46c6-9415-7d0290371f7f slug=open/unspecified digest=dda6b02c7f37 -->
 #### [3ca6f36f] Add minimal terminal command agent
 - ref: `.ticket/tickets/3ca6f36f-fa19-46c6-9415-7d0290371f7f/ticket.toml`
@@ -8018,6 +8022,10 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [afcf2759] Project tracker: workflow traceability redesign
 - summary: Group the workflow metadata and cross-store traceability redesign tickets under a single parent so the backlog is connected into the broader dependency graph.
 - ref: `.ticket/tickets/afcf2759-9c91-433c-b62c-ae8adcb0cdd5/ticket.toml`
+
+<!-- ticket-index:entry id=8320bfa9-8ceb-4937-8763-7a8f5e273af8 slug=open/unspecified digest=60f0a33f12e4 -->
+#### [8320bfa9] Release E2E fixture
+- ref: `.ticket/tickets/8320bfa9-8ceb-4937-8763-7a8f5e273af8/ticket.toml`
 
 <!-- ticket-index:entry id=e4de2cdc-48d0-42b4-92df-900da88e156f slug=open/unspecified digest=39d6502396bf -->
 #### [e4de2cdc] Rename ticket dependency labels

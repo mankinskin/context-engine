@@ -22,6 +22,9 @@ traceable authoring surface.
 	retain the red thread across tasks, sessions, and goals.
 - Extend `simplify.agent.md` with rule-steward responsibilities for instruction
 	files and agent templates.
+- Add `guidance-lifecycle.agent.md` for authoring and publishing repository
+	customizations without taking over corpus simplification, external skill
+	installation, or committing.
 - Delete `command.agent.md`; terminal work not covered by a specialist falls
 	back to the Implement Agent.
 - Use one epic and one ticket for each thematic batch on one branch during
@@ -44,8 +47,9 @@ traceable authoring surface.
 	 Implement Agent.
 3. Deliver one specification, one epic, and one ticket per thematic batch on
 	 one branch.
-4. Absorb the Instruction Agent role into `simplify.agent.md`; no separate
-	 Instruction Agent template exists.
+4. Keep rule-corpus simplification in `simplify.agent.md`; the separate
+	Guidance Lifecycle Agent owns canonical customization authoring, generation
+	validation, and commit-ready publication handoff.
 5. Reject a dedicated Search Agent because `explore.agent.md` owns bounded
 	 read-only probing.
 
@@ -68,6 +72,7 @@ traceable authoring surface.
 | Ops & Intake | `bug-report.agent.md` | Bug Report Agent | Document a defect with reproducible evidence, create the bug ticket, and link the defect to its owning specification and component. | T3 (`GPT-5.4 mini`) |
 | Ops & Intake | `session-learning.agent.md` | Session Learning Agent | Analyze prior sessions and artifacts, extract learning and improvement opportunities, record feedback, and decide whether each finding becomes a bug or feature ticket. | T1 (`GPT-5.6 Terra`) |
 | Ops & Intake | `scoping.agent.md` | Scoping Agent | Estimate work, split work into isolated task blocks and phases, build the ticket hierarchy and dependency graph, and support later decomposition. | T1 (`GPT-5.6 Terra`) |
+| Guidance Lifecycle | `guidance-lifecycle.agent.md` | Guidance Lifecycle Agent | Author repository agent customizations and governing guidance, validate canonical and generated surfaces, and hand approved files to Commit Agent. | T2 (`Claude Sonnet 5`) |
 
 The model names in the roster are bare frontmatter values. The canonical tier
 definitions, vendor-qualified dispatch names, and override rules remain in
@@ -99,6 +104,10 @@ definitions, vendor-qualified dispatch names, and override rules remain in
 	architecture.
 - Installer Agent manages tool and skill lifecycle; Session Bootstrap Agent
 	initializes an execution session; neither role owns feature implementation.
+- Guidance Lifecycle Agent authors repository-owned customization contracts and
+	prepares their publication; Simplify Agent retains corpus consolidation,
+	Installer Agent performs external skill installation, and Commit Agent creates
+	the commit.
 
 # Authoring Contract
 
@@ -192,7 +201,7 @@ Related specifications:
 
 # Acceptance Criteria
 
-1. The implementation creates exactly the 15 new filenames listed in Target
+1. The implementation creates exactly the 16 new filenames listed in Target
 	 Roster, with the stated agent names, batches, sole responsibilities, and
 	 assigned model tiers.
 2. Each new template has one responsibility and does not take ownership of a
@@ -200,7 +209,8 @@ Related specifications:
 3. The implementation deletes `.agents/agents/command.agent.md` and directs
 	 ad-hoc terminal work to the Implement Agent.
 4. The implementation extends `.agents/agents/simplify.agent.md` as the
-	 Instruction Agent rule steward and creates no separate Instruction Agent.
+	 rule-corpus steward and creates `guidance-lifecycle.agent.md` as the
+	 non-overlapping customization-authoring lifecycle owner.
 5. The implementation creates no Search Agent and retains `explore.agent.md`
 	 as the bounded read-only probing owner.
 6. The implementation rewrites `orchestrator.agent.md` to route across the

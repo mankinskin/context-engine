@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[1610]:
+entries[1612]:
   - id: "0028f61c-e8b9-4fb4-81fd-5d1e37f7a429"
     kind: ticket
     source_path: ".ticket/tickets/0028f61c-e8b9-4fb4-81fd-5d1e37f7a429/ticket.toml"
@@ -1165,13 +1165,13 @@ entries[1610]:
     source_path: ".ticket/tickets/0dd23fe6-6892-4d21-9927-4a81584dc77a/ticket.toml"
     title: "[token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features"
     summary: "Audit the currently active execute-style MCP surfaces and adjacent terminal-execution tooling to determine whether they already support terminal reuse, follow-up input, resumable execution, or persis..."
-    keywords[214]: accept,acceptance,across,active,add,added,adding,adjacent,after,against,agent,"agent-tooling",already,analogue,and,any,are,attached,audit,audited,avoid,before,behavior,belongs,bounded,build,but,calls,can,capabilities,capability,cargo,child,clearly,code,collect,command,compact,compare,concrete,context,continuation,contract,copied,core,criteria,current,currently,cwd,data,decision,describing,description,design,desired,determine,direction,distinguishes,docs,document,documented,does,during,each,efficiency,end,ends,environment,evidence,examples,execute,execution,exist,existing,expose,extend,failure,features,file,focused,follow,for,from,gap,gaps,goal,grounded,handle,has,here,http,identified,identifiers,ids,implementation,input,inspect,interaction,interactive,inventing,inventory,keep,launch,lifetime,lookup,make,matrix,mcp,medium,minimal,model,more,need,needed,needs,new,next,not,note,notes,now,obvious,obviously,only,open,oriented,other,output,partial,persistent,plan,preserve,primarily,process,produce,propose,prototypes,rather,read,readme,reads,recommendation,record,references,refinement,relevant,repo,repository,requirements,rerunning,research,result,resumable,resume,reusable,reuse,reusing,reveals,risks,rpc,run,scope,send,sending,server,session,sessions,shot,should,signatures,single,slice,source,spill,src,stack,starting,step,style,summary,support,surface,surfaces,terminal,tests,than,that,the,they,this,ticket,tickets,timeout,tiny,token,tool,tooling,tools,treat,types,unless,validate,validation,what,where,whether,which,whose,why,with,without,work,workflow,written
-    scope: "state=open, component=agent-tooling"
+    keywords[214]: accept,acceptance,across,active,add,added,adding,adjacent,after,against,agent,"agent-tooling",already,analogue,and,any,are,attached,audit,audited,avoid,before,behavior,belongs,bounded,build,but,calls,can,capabilities,capability,cargo,child,clearly,code,collect,command,compact,compare,concrete,context,continuation,contract,copied,core,criteria,current,currently,cwd,data,decision,describing,description,design,desired,determine,direction,distinguishes,docs,document,documented,does,done,during,each,efficiency,end,ends,environment,evidence,examples,execute,execution,exist,existing,expose,extend,failure,features,file,focused,follow,for,from,gap,gaps,goal,grounded,handle,has,here,http,identified,identifiers,ids,implementation,input,inspect,interaction,interactive,inventing,inventory,keep,launch,lifetime,lookup,make,matrix,mcp,medium,minimal,model,more,need,needed,needs,new,next,not,note,notes,now,obvious,obviously,only,oriented,other,output,partial,persistent,plan,preserve,primarily,process,produce,propose,prototypes,rather,read,readme,reads,recommendation,record,references,refinement,relevant,repo,repository,requirements,rerunning,research,result,resumable,resume,reusable,reuse,reusing,reveals,risks,rpc,run,scope,send,sending,server,session,sessions,shot,should,signatures,single,slice,source,spill,src,stack,starting,step,style,summary,support,surface,surfaces,terminal,tests,than,that,the,they,this,ticket,tickets,timeout,tiny,token,tool,tooling,tools,treat,types,unless,validate,validation,what,where,whether,which,whose,why,with,without,work,workflow,written
+    scope: "state=done, component=agent-tooling"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/0dd23fe6-6892-4d21-9927-4a81584dc77a/ticket.toml","0dd23fe6-6892-4d21-9927-4a81584dc77a",related,ticket,"",0dd23fe6
-    digest: eb55a913162a86ffae3e4780997bcce6ec4a2df8b00e4140a742831e0a497071
-    tags[4]: "agent-tooling",medium,open,ticket
+    digest: b459e020a41da824949e8fb38076197a4afd5476b768440b2d52624105ee4b6b
+    tags[4]: "agent-tooling",done,medium,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0dde154a-ee4d-4f0a-af83-e0a4864d3bfb"
     kind: ticket
@@ -5189,6 +5189,19 @@ entries[1610]:
         ".ticket/tickets/409a3919-296e-4a62-bd1a-77a8212bf43f/ticket.toml","409a3919-296e-4a62-bd1a-77a8212bf43f",related,ticket,"",409a3919
     digest: 27d90b79e731367ad81499ee0e0a0a2baf084b59297de797a566bec9522c4038
     tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "409b1b32-096b-447e-b9a5-53ba46fddcc7"
+    kind: ticket
+    source_path: ".ticket/tickets/409b1b32-096b-447e-b9a5-53ba46fddcc7/ticket.toml"
+    title: Add Guidance Lifecycle Agent for repository customizations
+    summary: ""
+    keywords[10]: add,agent,customizations,for,guidance,lifecycle,open,repository,ticket,unspecified
+    scope: "state=open, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/409b1b32-096b-447e-b9a5-53ba46fddcc7/ticket.toml","409b1b32-096b-447e-b9a5-53ba46fddcc7",related,ticket,"",409b1b32
+    digest: ca965a6edaff123f2db8744b772aa05eb57c38661710fbcb319bab7db61f028e
+    tags[3]: open,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "40a4bc9e-7ecd-4fa4-b842-633891bd5cba"
     kind: ticket
@@ -10714,6 +10727,19 @@ entries[1610]:
         "memory-api/.ticket/tickets/830de529-2818-49fd-a792-3b59dd99a748/ticket.toml","830de529-2818-49fd-a792-3b59dd99a748",related,ticket,"",830de529
     digest: 50361b8570ac33a0d61c0cd61f081fed304c217fafa1b25bb4b44fd1915a369a
     tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "8320bfa9-8ceb-4937-8763-7a8f5e273af8"
+    kind: ticket
+    source_path: ".ticket/tickets/8320bfa9-8ceb-4937-8763-7a8f5e273af8/ticket.toml"
+    title: Release E2E fixture
+    summary: ""
+    keywords[6]: e2e,fixture,open,release,ticket,unspecified
+    scope: "state=open, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/8320bfa9-8ceb-4937-8763-7a8f5e273af8/ticket.toml","8320bfa9-8ceb-4937-8763-7a8f5e273af8",related,ticket,"",8320bfa9
+    digest: 60f0a33f12e4bda749c98648d4da3bc30e3e0d518c5f0a29d219a05d94398406
+    tags[3]: open,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "834632eb-7c0f-4e43-b1ca-3793141e25d8"
     kind: ticket

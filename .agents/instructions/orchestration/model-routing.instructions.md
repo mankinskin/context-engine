@@ -117,7 +117,7 @@ This is the canonical contract for the `model:` frontmatter field on every `.age
 
 **Override-audit rule (AC4).** An explicit `model` argument that names a model *more expensive* than the template's declared tier (i.e., higher on the ladder) is an override. Every such override MUST be recorded with a one-line reason in the session record (the handoff/session-workflow entry for that dispatch) — e.g. "escalated ticket-refinement.agent.md from Claude Sonnet 5 to GPT-5.6 Terra: prior T2 attempt under-specified acceptance criteria on a cross-cutting spec." Overrides *downward* (cheaper than declared) do not require a recorded reason — the ladder already treats dropping a tier as the safe default direction; only climbing needs justification. This mirrors the existing "Climb to T1 only after..." and "Escalate a subtask up a tier only for quality insufficiency, and record why" rules elsewhere in this file — the override-audit rule generalizes those to *any* declared-tier override, not just T2→T1.
 
-**Class-to-tier mapping applied to the current 32 templates:**
+**Class-to-tier mapping applied to the current templates:**
 
 | Template | Declared `model:` | Tier | Rationale |
 |---|---|---|---|
@@ -139,6 +139,7 @@ This is the canonical contract for the `model:` frontmatter field on every `.age
 | `transcription.agent.md` | GPT-5.4 mini | T3 | Bulk text transform needing real reasoning over content, not zero-judgement extraction |
 | `context-enrichment.agent.md` | GPT-5.6 Terra | T1 | Enriches context across related artifacts |
 | `simplify.agent.md` | GPT-5.6 Terra | T1 | Simplifies guidance and instruction content |
+| `guidance-lifecycle.agent.md` | Claude Sonnet 5 | T2 | Authors and publishes repository guidance through the required lifecycle |
 | `session-bootstrap.agent.md` | GPT-5 mini | T3 | Initializes session context and routine state |
 | `merge.agent.md` | GPT-5.6 Terra | T1 | Coordinates merge-ready integration work |
 | `cleanup.agent.md` | GPT-5.4 mini | T3 | Performs bounded cleanup tasks |
