@@ -201,6 +201,8 @@ After the rebase completes, re-run the validation commands from the handoff pack
 
 If the rebase cannot be completed — a semantic conflict the agent cannot resolve — abort it with `git rebase --abort`, leave the branch as it was, and escalate with the conflicting paths named. Do not mark the branch ready.
 
+`worktree-ctl rebase`, `merge`, and `sync` guard every mutation against an unclean working tree instead of failing on it. By default, an uncommitted or untracked change in the path about to be rebased/merged (a submodule, the worktree, or the main checkout) is stashed with `git stash push --include-untracked` before the operation and popped back afterward, reported as `stashed uncommitted changes in <label> (restored afterward)`. Pass `--auto-commit` to commit the dirty state instead (`worktree-ctl auto-commit before sync`) and carry it along with the rebase/merge rather than stashing it. If restoring a stash afterward genuinely conflicts with what the rebase/merge introduced at the same path, the command reports a non-zero exit naming the stash (`git -C <path> stash list`) rather than silently discarding it — treat that as a manual-resolution case, same as any other conflict.
+
 ## 6. Mark ready, then merge (implementation session)
 
 Only after the rebase is clean and validation passes:

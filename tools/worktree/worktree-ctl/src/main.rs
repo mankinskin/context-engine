@@ -70,16 +70,22 @@ enum Command {
         name: String,
         #[arg(long)]
         dry_run: bool,
+        #[arg(long)]
+        auto_commit: bool,
     },
     Merge {
         name: String,
         #[arg(long)]
         dry_run: bool,
+        #[arg(long)]
+        auto_commit: bool,
     },
     Sync {
         name: String,
         #[arg(long)]
         dry_run: bool,
+        #[arg(long)]
+        auto_commit: bool,
     },
     Remove {
         name: String,
@@ -133,9 +139,21 @@ fn dispatch(command: Command) -> Result<(), String> {
             preserve_main_changes,
         ),
         Command::List { dry_run } => handle_list(dry_run),
-        Command::Rebase { name, dry_run } => handle_rebase(&name, dry_run),
-        Command::Merge { name, dry_run } => handle_merge(&name, dry_run),
-        Command::Sync { name, dry_run } => handle_sync(&name, dry_run),
+        Command::Rebase {
+            name,
+            dry_run,
+            auto_commit,
+        } => handle_rebase(&name, dry_run, auto_commit),
+        Command::Merge {
+            name,
+            dry_run,
+            auto_commit,
+        } => handle_merge(&name, dry_run, auto_commit),
+        Command::Sync {
+            name,
+            dry_run,
+            auto_commit,
+        } => handle_sync(&name, dry_run, auto_commit),
         Command::Remove {
             name,
             force,
@@ -368,6 +386,7 @@ fn handle_list(_dry_run: bool) -> Result<(), String> {
 fn handle_rebase(
     name: &str,
     dry_run: bool,
+    auto_commit: bool,
 ) -> Result<(), String> {
     let main_checkout =
         env::current_dir().map_err(|error| error.to_string())?;
@@ -378,50 +397,73 @@ fn handle_rebase(
         format!("worktree {name} is detached and cannot be rebased")
     })?;
     let mut plan = LifecyclePlan::default();
+
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
         let nested_worktree = worktree.path.join(&submodule);
-        if repository_has_branch(&nested_worktree, branch)? {
-            plan.add(format!(
-                "checkout {branch} and rebase {} onto its local main",
-                nested_worktree.display()
-            ));
-        } else {
+        if !repository_has_branch(&nested_worktree, branch)? {
             plan.add(format!(
                 "skip {} because branch {branch} does not exist",
                 nested_worktree.display()
             ));
+            if !dry_run {
+                println!(
+                    "skip {submodule} because branch {branch} does not exist"
+                );
+            }
+            continue;
         }
-    }
-    plan.add(format!(
-        "rebase {} onto local main",
-        worktree.path.display()
-    ));
-
-    if dry_run {
-        plan.emit();
-        return Ok(());
-    }
-
-    for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
-        let nested_worktree = worktree.path.join(&submodule);
-        if repository_has_branch(&nested_worktree, branch)? {
+        plan.add(format!(
+            "checkout {branch} and rebase {} onto its local main",
+            nested_worktree.display()
+        ));
+        let stashed = guard_dirty_tree(
+            &git,
+            &nested_worktree,
+            &format!("submodule {submodule}"),
+            auto_commit,
+            dry_run,
+            &mut plan,
+        )?;
+        if dry_run {
+            continue;
+        }
+        let rebase_result =
             checkout_and_rebase(&nested_worktree, branch).map_err(|error| {
                 format!(
                     "submodule {submodule} branch {branch} could not rebase onto local main: {error}; resolve the conflict in {} and continue or abort the rebase",
                     nested_worktree.display()
                 )
-            })?;
-            commit_rebased_gitlink(&worktree.path, &submodule)?;
-        } else {
-            println!("skip {submodule} because branch {branch} does not exist");
-        }
+            });
+        let restore_result = restore_dirty_tree(&nested_worktree, stashed);
+        combine_results(rebase_result, restore_result)?;
+        commit_rebased_gitlink(&worktree.path, &submodule)?;
     }
-    rebase_onto_local_main(&worktree.path)
+
+    plan.add(format!(
+        "rebase {} onto local main",
+        worktree.path.display()
+    ));
+    let stashed = guard_dirty_tree(
+        &git,
+        &worktree.path,
+        "worktree",
+        auto_commit,
+        dry_run,
+        &mut plan,
+    )?;
+    if dry_run {
+        plan.emit();
+        return Ok(());
+    }
+    let rebase_result = rebase_onto_local_main(&worktree.path);
+    let restore_result = restore_dirty_tree(&worktree.path, stashed);
+    combine_results(rebase_result, restore_result)
 }
 
 fn handle_merge(
     name: &str,
     dry_run: bool,
+    auto_commit: bool,
 ) -> Result<(), String> {
     let main_checkout =
         env::current_dir().map_err(|error| error.to_string())?;
@@ -443,57 +485,76 @@ fn handle_merge(
             status.submodule_path, status.recorded_sha
         ));
     }
-
-    for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
-        let nested_worktree = worktree.path.join(&submodule);
-        if repository_has_branch(&nested_worktree, branch)? {
-            reject_unmerged_submodule_branch(
-                &git.main_checkout().join(&submodule),
-                branch,
-                &submodule,
-            )?;
-            let main_submodule = git.main_checkout().join(&submodule);
-            plan.add(format!(
-                "fast-forward {} local main from nested branch {branch}",
-                main_submodule.display()
-            ));
-        } else {
-            plan.add(format!(
-                "skip {} because branch {branch} does not exist",
-                submodule
-            ));
+    if !dry_run {
+        for status in &fixable {
+            let submodule_path =
+                git.main_checkout().join(&status.submodule_path);
+            run_git(&submodule_path, ["checkout", "main"])?;
+            run_git(&submodule_path, [
+                "merge",
+                "--ff-only",
+                &status.recorded_sha.to_string(),
+            ])?;
+            println!(
+                "auto-fixed gitlink: {} local main fast-forwarded to {}",
+                status.submodule_path, status.recorded_sha
+            );
         }
-    }
-    plan.add(format!(
-        "fast-forward superproject local main from {branch}"
-    ));
-    if dry_run {
-        plan.emit();
-        return Ok(());
-    }
-
-    for status in &fixable {
-        let submodule_path = git.main_checkout().join(&status.submodule_path);
-        run_git(&submodule_path, ["checkout", "main"])?;
-        run_git(&submodule_path, [
-            "merge",
-            "--ff-only",
-            &status.recorded_sha.to_string(),
-        ])?;
-        println!(
-            "auto-fixed gitlink: {} local main fast-forwarded to {}",
-            status.submodule_path, status.recorded_sha
-        );
     }
 
     for submodule in git.submodule_paths().map_err(|error| error.to_string())? {
         let nested_worktree = worktree.path.join(&submodule);
         if !repository_has_branch(&nested_worktree, branch)? {
+            plan.add(format!(
+                "skip {} because branch {branch} does not exist",
+                submodule
+            ));
             continue;
         }
-        merge_ff_only(&git.main_checkout().join(&submodule), branch)?;
+        reject_unmerged_submodule_branch(
+            &git.main_checkout().join(&submodule),
+            branch,
+            &submodule,
+        )?;
+        let main_submodule = git.main_checkout().join(&submodule);
+        plan.add(format!(
+            "fast-forward {} local main from nested branch {branch}",
+            main_submodule.display()
+        ));
+        let stashed = guard_dirty_tree(
+            &git,
+            &main_submodule,
+            &format!("submodule {submodule}"),
+            auto_commit,
+            dry_run,
+            &mut plan,
+        )?;
+        if dry_run {
+            continue;
+        }
+        let merge_result = merge_ff_only(&main_submodule, branch);
+        let restore_result = restore_dirty_tree(&main_submodule, stashed);
+        combine_results(merge_result, restore_result)?;
     }
-    merge_ff_only(git.main_checkout(), branch)?;
+    plan.add(format!(
+        "fast-forward superproject local main from {branch}"
+    ));
+    let stashed = guard_dirty_tree(
+        &git,
+        git.main_checkout(),
+        "superproject",
+        auto_commit,
+        dry_run,
+        &mut plan,
+    )?;
+    if dry_run {
+        plan.emit();
+        return Ok(());
+    }
+
+    let merge_result = merge_ff_only(git.main_checkout(), branch);
+    let restore_result = restore_dirty_tree(git.main_checkout(), stashed);
+    combine_results(merge_result, restore_result)?;
     let postflight = verify_gitlink_containment(git.main_checkout())?;
     reject_gitlink_violations(&postflight)
 }
@@ -503,10 +564,89 @@ fn handle_merge(
 fn handle_sync(
     name: &str,
     dry_run: bool,
+    auto_commit: bool,
 ) -> Result<(), String> {
-    handle_rebase(name, dry_run)?;
-    handle_merge(name, dry_run)
+    handle_rebase(name, dry_run, auto_commit)?;
+    handle_merge(name, dry_run, auto_commit)
 }
+
+const AUTOSTASH_MESSAGE: &str = "worktree-ctl autostash";
+const AUTO_COMMIT_MESSAGE: &str = "worktree-ctl auto-commit before sync";
+
+// Guards a mutating rebase/merge step against an unclean working tree.
+// Default: stash (including untracked files) and let the caller restore it
+// with restore_dirty_tree once the mutation is done. With auto_commit: commit
+// the dirty state instead, so it rides along with the rebase/merge and there
+// is nothing left to restore. Returns whether a stash was created.
+fn guard_dirty_tree(
+    git: &WorktreeGit,
+    path: &Path,
+    label: &str,
+    auto_commit: bool,
+    dry_run: bool,
+    plan: &mut LifecyclePlan,
+) -> Result<bool, String> {
+    if !git.is_dirty(path).map_err(|error| error.to_string())? {
+        return Ok(false);
+    }
+    if auto_commit {
+        plan.add(format!(
+            "auto-commit uncommitted changes in {label} before mutating"
+        ));
+        if dry_run {
+            return Ok(false);
+        }
+        run_git(path, ["add", "-A"])?;
+        run_git(path, ["commit", "-m", AUTO_COMMIT_MESSAGE])?;
+        println!("auto-committed uncommitted changes in {label}");
+        return Ok(false);
+    }
+    plan.add(format!(
+        "stash uncommitted changes in {label} before mutating (restored afterward)"
+    ));
+    if dry_run {
+        return Ok(false);
+    }
+    run_git(path, [
+        "stash",
+        "push",
+        "--include-untracked",
+        "-m",
+        AUTOSTASH_MESSAGE,
+    ])?;
+    println!("stashed uncommitted changes in {label} (restored afterward)");
+    Ok(true)
+}
+
+fn restore_dirty_tree(
+    path: &Path,
+    stashed: bool,
+) -> Result<(), String> {
+    if !stashed {
+        return Ok(());
+    }
+    run_git(path, ["stash", "pop"]).map_err(|error| {
+        format!(
+            "changes were stashed in {} before this operation but could not be restored automatically ({error}); run `git -C {} stash list` to recover them",
+            path.display(),
+            path.display()
+        )
+    })
+}
+
+fn combine_results(
+    primary: Result<(), String>,
+    secondary: Result<(), String>,
+) -> Result<(), String> {
+    match (primary, secondary) {
+        (Err(primary), Err(secondary)) =>
+            Err(format!("{primary}; additionally, {secondary}")),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Ok(()), Ok(())) => Ok(()),
+    }
+}
+
+
 
 fn handle_remove(
     name: &str,
@@ -1343,6 +1483,7 @@ mod tests {
             Command::Rebase {
                 name: "example".to_owned(),
                 dry_run: true,
+                auto_commit: false,
             }
         );
     }
@@ -1362,6 +1503,7 @@ mod tests {
             Command::Merge {
                 name: "example".to_owned(),
                 dry_run: true,
+                auto_commit: false,
             }
         );
     }
@@ -1381,6 +1523,27 @@ mod tests {
             Command::Sync {
                 name: "example".to_owned(),
                 dry_run: true,
+                auto_commit: false,
+            }
+        );
+    }
+
+    #[test]
+    fn parses_sync_with_auto_commit() {
+        let cli = Cli::try_parse_from([
+            "worktree-ctl",
+            "sync",
+            "example",
+            "--auto-commit",
+        ])
+        .unwrap();
+
+        assert_eq!(
+            cli.command,
+            Command::Sync {
+                name: "example".to_owned(),
+                dry_run: false,
+                auto_commit: true,
             }
         );
     }

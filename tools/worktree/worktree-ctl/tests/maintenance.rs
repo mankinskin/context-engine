@@ -486,6 +486,109 @@ fn merge_auto_fixes_fast_forwardable_orphan_gitlink() {
 }
 
 #[test]
+fn rebase_auto_commits_dirty_worktree_when_requested() {
+    let fixture = fixture_repo();
+    create(&fixture, "autocommit");
+    let worktree = fixture.worktree("autocommit");
+    fs::write(fixture.main.join("main.txt"), "main\n").expect("write main");
+    git(&fixture.main, &["add", "main.txt"]);
+    git(&fixture.main, &["commit", "-m", "advance main"]);
+    fs::write(worktree.join("dirty.txt"), "dirty\n").expect("write dirty");
+
+    let output = fixture.run([
+        "rebase",
+        "12345678-1234-1234-1234-123456789abc/autocommit",
+        "--auto-commit",
+    ]);
+
+    assert!(output.status.success(), "rebase failed: {}", all(&output));
+    assert!(
+        all(&output).contains("auto-committed uncommitted changes"),
+        "{}",
+        all(&output)
+    );
+    let log = git_revision(&worktree, &["log", "--oneline", "-1"]);
+    assert!(log.contains("worktree-ctl auto-commit"), "{log}");
+    let status = git_revision(&worktree, &["status", "--porcelain"]);
+    assert!(status.is_empty(), "worktree should be clean: {status}");
+}
+
+#[test]
+fn rebase_stashes_and_restores_dirty_worktree_by_default() {
+    let fixture = fixture_repo();
+    create(&fixture, "stash");
+    let worktree = fixture.worktree("stash");
+    fs::write(fixture.main.join("main.txt"), "main\n").expect("write main");
+    git(&fixture.main, &["add", "main.txt"]);
+    git(&fixture.main, &["commit", "-m", "advance main"]);
+    fs::write(worktree.join("dirty.txt"), "dirty\n").expect("write dirty");
+
+    let output =
+        fixture.run(["rebase", "12345678-1234-1234-1234-123456789abc/stash"]);
+
+    assert!(output.status.success(), "rebase failed: {}", all(&output));
+    assert!(
+        all(&output).contains("stashed uncommitted changes"),
+        "{}",
+        all(&output)
+    );
+    let status = git_revision(&worktree, &["status", "--porcelain"]);
+    assert!(
+        status.contains("dirty.txt"),
+        "expected dirty.txt restored as an uncommitted change: {status}"
+    );
+    let log = git_revision(&worktree, &["log", "--oneline", "-1"]);
+    assert!(
+        !log.contains("auto-commit"),
+        "default mode must not commit anything: {log}"
+    );
+}
+
+#[test]
+fn merge_unblocks_ff_only_merge_by_stashing_untracked_files() {
+    let fixture = fixture_repo();
+    create(&fixture, "untracked");
+    let worktree = fixture.worktree("untracked");
+    fs::write(worktree.join("colliding.txt"), "from-branch\n")
+        .expect("write branch file");
+    git(&worktree, &["add", "colliding.txt"]);
+    git(&worktree, &["commit", "-m", "add colliding file"]);
+    fs::write(fixture.main.join("colliding.txt"), "leftover\n")
+        .expect("write untracked collider");
+
+    let output = fixture
+        .run(["merge", "12345678-1234-1234-1234-123456789abc/untracked"]);
+
+    // The stash unblocks the ff-only merge itself: before this change, git
+    // refused the merge outright with "untracked working tree files would be
+    // overwritten", never reaching the fast-forward at all.
+    assert!(
+        all(&output).contains("stashed uncommitted changes"),
+        "{}",
+        all(&output)
+    );
+    assert_eq!(
+        git_revision(&fixture.main, &["rev-parse", "main"]),
+        git_revision(&worktree, &["rev-parse", "HEAD"]),
+        "superproject main must fast-forward despite the leftover untracked file"
+    );
+    // The leftover content genuinely conflicts with what the branch added at
+    // the same path, so restoring the stash is refused rather than silently
+    // discarded; the tool surfaces the leftover stash instead of losing it.
+    assert!(
+        !output.status.success(),
+        "merge should report the unresolved stash: {}",
+        all(&output)
+    );
+    assert!(all(&output).contains("stash list"), "{}", all(&output));
+    assert!(
+        git_revision(&fixture.main, &["stash", "list"])
+            .contains("worktree-ctl autostash"),
+        "leftover untracked content must remain recoverable in the stash"
+    );
+}
+
+#[test]
 fn merge_rejects_unresolvable_gitlink_before_mutation() {
     let fixture = fixture_repo();
     create(&fixture, "unresolvable");
