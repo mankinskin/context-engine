@@ -1,0 +1,12 @@
+{
+  "id": "viewer-api-tests",
+  "title": "Viewer API tests",
+  "command": "Fresh clone: viewer-api @ 5d897905\nRUSTUP_TOOLCHAIN=nightly cargo metadata --all-features\nRUSTUP_TOOLCHAIN=nightly cargo check --all-features\nRUSTUP_TOOLCHAIN=nightly cargo test --all-features",
+  "detail": "Verified against a fresh viewer-api clone at SHA 5d897905; commands are recorded verbatim from the completed validation run.",
+  "links": {
+    "ticket_ids": [
+      "379ac56a-4580-4ed6-a571-eb76282ef375",
+      "ba4aaa9c-d270-4cfc-a1e2-395634608371"
+    ]
+  }
+}

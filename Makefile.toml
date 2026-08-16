@@ -292,9 +292,7 @@ args = ["viewer", "install", "ticket-vscode"]
 [tasks.e2e-install]
 description = "Install npm dependencies for the spec/doc/log viewer E2E suites"
 command = "cmd"
-args = ["/c", "pushd memory-viewers/spec-viewer/frontend/dioxus && npm install
-&& popd && pushd tools/viewer/doc-viewer/e2e && npm install && popd && pushd
-tools/viewer/log-viewer/e2e && npm install && popd"]
+args = ["/c", "pushd memory-viewers/spec-viewer/frontend/dioxus && npm install && popd && pushd tools/viewer/doc-viewer/e2e && npm install && popd && pushd tools/viewer/log-viewer/e2e && npm install && popd"]
 
 [tasks.e2e-install.linux]
 command = "bash"

@@ -4776,11 +4776,29 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: workflow-tools
 
+<!-- ticket-index:entry id=26da8f59-5d2d-41d9-9e87-7c74f200a9ce slug=done/workflow-tools digest=367974d7e50b -->
+#### [26da8f59] [workflow-tools][consolidation] Retire legacy ticket-cli/ticket-mcp/ticket-http crates onto the pilot `ticket` crate bins
+- priority: `high`
+- summary: The `ticket` pilot crate (61ce77f9, done) **duplicated** rather than replaced the legacy ticket transports. Both surfaces exist and build today:
+- ref: `.ticket/tickets/26da8f59-5d2d-41d9-9e87-7c74f200a9ce/ticket.toml`
+
+<!-- ticket-index:entry id=0da6894c-dcbb-4196-8ac7-b6fae7c40ec9 slug=done/workflow-tools digest=9b46551fa103 -->
+#### [0da6894c] [workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets
+- priority: `high`
+- summary: Phase A design/contract. Define the canonical per-domain crate layout that every tool extraction must follow: a single domain crate (named after the domain, e.g. `ticket`) that unifies the domain API...
+- ref: `.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml`
+
 <!-- ticket-index:entry id=61ce77f9-b6be-4667-9727-ffbd6bf6b8f4 slug=done/workflow-tools digest=fafad25bacda -->
 #### [61ce77f9] [workflow-tools][extraction] Extract ticket as first per-tool {domain} crate (pilot)
 - priority: `high`
 - summary: Action 3 of the workflow-tools extraction epic (69eb4118). Reviewer selected
 - ref: `.ticket/tickets/61ce77f9-b6be-4667-9727-ffbd6bf6b8f4/ticket.toml`
+
+<!-- ticket-index:entry id=1b7e0c3d-4e7e-4d70-a744-ab1bbe0fd34f slug=done/workflow-tools digest=fa769799150a -->
+#### [1b7e0c3d] [workflow-tools][foundations] Cut over legacy memory-api consumers to memory-kernel
+- priority: `high`
+- summary: Workflow-tools repository extraction is blocked by a repository-level dependency cycle. `ticket-api` depends non-optionally on the legacy base crate at `memory-api/crates/memory-api`, while seven cra...
+- ref: `.ticket/tickets/1b7e0c3d-4e7e-4d70-a744-ab1bbe0fd34f/ticket.toml`
 
 <!-- ticket-index:entry id=60114a17-c0ad-43eb-8df6-4741a59d83ce slug=done/workflow-tools digest=5e4b7bafdc00 -->
 #### [60114a17] [workflow-tools][foundations] Design memory-kernel transport-harness reference-proof integration tests
@@ -4864,6 +4882,24 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Eliminate startup-time filesystem artifact pollution across MCP servers and viewers: no tool may create a `.ticket` store, `test-logs/`/`target/test-logs/` directories, or any other persistent artifa...
 - ref: `.ticket/tickets/52724aed-7215-471b-b2d8-7fb425f5ed61/ticket.toml`
+
+
+### Component: ticket
+
+<!-- ticket-index:entry id=ba4aaa9c-d270-4cfc-a1e2-395634608371 slug=in-implementation/ticket digest=fa7bffbfffd3 -->
+#### [ba4aaa9c] [workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends
+- priority: `high`
+- summary: Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-ap...
+- ref: `.ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml`
+
+
+### Component: ticket-api
+
+<!-- ticket-index:entry id=fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3 slug=in-implementation/ticket-api digest=84150bf41317 -->
+#### [fa2ba34b] Session-anchored MCP workspace resolution: require session_id and resolve every proxied call to the session's active worktree
+- priority: `high`
+- summary: Eliminate silent ticket-store divergence between a worktree agent's file/CLI edits and ticket-mcp MCP writes.
+- ref: `.ticket/tickets/fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3/ticket.toml`
 
 
 ### Component: viewer-api-performance
@@ -5187,18 +5223,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Document a mandatory pre-extraction dependency-cycle check that inspects cycles across repository boundaries, not only a single Cargo crate graph. The guidance must record two concrete discoveries:
 - ref: `.ticket/tickets/e8a5c061-d474-4752-b063-3a8b730f6765/ticket.toml`
-
-<!-- ticket-index:entry id=26da8f59-5d2d-41d9-9e87-7c74f200a9ce slug=in-review/workflow-tools digest=cee7d5700319 -->
-#### [26da8f59] [workflow-tools][consolidation] Retire legacy ticket-cli/ticket-mcp/ticket-http crates onto the pilot `ticket` crate bins
-- priority: `high`
-- summary: The `ticket` pilot crate (61ce77f9, done) **duplicated** rather than replaced the legacy ticket transports. Both surfaces exist and build today:
-- ref: `.ticket/tickets/26da8f59-5d2d-41d9-9e87-7c74f200a9ce/ticket.toml`
-
-<!-- ticket-index:entry id=1b7e0c3d-4e7e-4d70-a744-ab1bbe0fd34f slug=in-review/workflow-tools digest=b6cecb820908 -->
-#### [1b7e0c3d] [workflow-tools][foundations] Cut over legacy memory-api consumers to memory-kernel
-- priority: `high`
-- summary: Workflow-tools repository extraction is blocked by a repository-level dependency cycle. `ticket-api` depends non-optionally on the legacy base crate at `memory-api/crates/memory-api`, while seven cra...
-- ref: `.ticket/tickets/1b7e0c3d-4e7e-4d70-a744-ab1bbe0fd34f/ticket.toml`
 
 
 ## State: new
@@ -7413,12 +7437,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Explicit feedback was recorded against `ce://default/ticket/9e450826-60e1-437f-b236-2c8839e4ab9e` during session `82c8b373-b0ef-4e29-b449-6b48d5fbd87e` (tool call `call_wh3i0rMlXK1KPKA7SepSmivh`).
 - ref: `.ticket/tickets/0f6a812d-0fa4-5f06-93bb-b438b530e720/ticket.toml`
 
-<!-- ticket-index:entry id=ba4aaa9c-d270-4cfc-a1e2-395634608371 slug=open/ticket digest=a0abb4d39bc4 -->
-#### [ba4aaa9c] [workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends
-- priority: `high`
-- summary: Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-ap...
-- ref: `.ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml`
-
 
 ### Component: ticket-api
 
@@ -7475,12 +7493,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Implement the schema-modernization contract established in [e9c38d24 Schema modernization lifecycle and migration](.spec/specs/e9c38d24-42cc-4044-8b2c-6811b918530f/spec.toml).
 - ref: `.ticket/tickets/8fdfe135-e3b1-4876-b638-24154edcd78d/ticket.toml`
-
-<!-- ticket-index:entry id=fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3 slug=open/ticket-api digest=b3447938db71 -->
-#### [fa2ba34b] Session-anchored MCP workspace resolution: require session_id and resolve every proxied call to the session's active worktree
-- priority: `high`
-- summary: Eliminate silent ticket-store divergence between a worktree agent's file/CLI edits and ticket-mcp MCP writes.
-- ref: `.ticket/tickets/fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3/ticket.toml`
 
 <!-- ticket-index:entry id=bbb4bce9-d57c-4f85-8757-8d239f9f7cde slug=open/ticket-api digest=a1124513ff1d -->
 #### [bbb4bce9] Structured Ticket Entities (track root)
@@ -9408,15 +9420,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [e4c6d8f1] [bootstrap][T5] handle early-stop recovery and reassignment
 - summary: Agent sessions can terminate unexpectedly at any point during an assignment: stdio disconnect, heartbeat/liveness timeout, repeated auth failures, or explicit worker abort. The executor must handle a...
 - ref: `.ticket/tickets/e4c6d8f1-9a2b-4c3d-8e4f-5a6b7c8d9ea5/ticket.toml`
-
-
-### Component: workflow-tools
-
-<!-- ticket-index:entry id=0da6894c-dcbb-4196-8ac7-b6fae7c40ec9 slug=planned/workflow-tools digest=4b84c7a1327a -->
-#### [0da6894c] [workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets
-- priority: `high`
-- summary: Phase A design/contract. Define the canonical per-domain crate layout that every tool extraction must follow: a single domain crate (named after the domain, e.g. `ticket`) that unifies the domain API...
-- ref: `.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml`
 
 
 ## State: ready

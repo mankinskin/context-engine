@@ -1,7 +1,7 @@
 id = "0da6894c-dcbb-4196-8ac7-b6fae7c40ec9"
 created_at = "2026-07-25T14:17:40.684644900+00:00"
 title = "[workflow-tools][design] Single domain crate per tool: unify api + transports as one crate with transport binary targets"
-state = "planned"
+state = "done"
 component = "workflow-tools"
 effort = "1200"
 handoff_package = { handoff_id = "a2551ff6-9f9a-40ba-abf4-5fbb137a6559", objective = "Implement ticket 0da6894c-dcbb-4196-8ac7-b6fae7c40ec9: Single domain crate per tool — unify API and transports into one crate with transport binary targets.", target_tickets = ["0da6894c-dcbb-4196-8ac7-b6fae7c40ec9"], target_files = ["WORKFLOW_TOOLS_DOMAIN_CRATE_CONTRACT.md", "workflow-tools-contract-reference/Cargo.toml", "workflow-tools-contract-reference/crates/example/Cargo.toml", "tools/model-prices/sync_model_prices.py", "tools/model-prices/model_prices.json"], validation = [{ validation_spec_id = "vt-model-prices-cost-gate", required = true }], open_escalations = [] }

@@ -1,0 +1,20 @@
+{
+  "id": "exec-viewer-api-5d897905-20260815",
+  "validation_spec_id": "viewer-api-tests",
+  "outcome": "passed",
+  "executed_at": "2026-08-15T17:48:37.508426400Z",
+  "duration_ms": 25500,
+  "detail": "cargo metadata: includes dependency 'context-api' from git+https://github.com/mankinskin/context-stack?branch=main\ncargo check: finished in 24.93s (264 crates compiled)\ncargo test: 34 passed, 2 ignored",
+  "links": {
+    "ticket_ids": [
+      "379ac56a-4580-4ed6-a571-eb76282ef375",
+      "ba4aaa9c-d270-4cfc-a1e2-395634608371"
+    ]
+  },
+  "provenance": {
+    "source_path": ".worktrees/c8ebe499-682c-4f3d-86ea-209b78a8af3b/ticket-extraction/.test/default/executions/exec-viewer-api-5d897905-20260815.json",
+    "domain": "viewer-api-validation",
+    "operation": "cargo-test",
+    "run_id": "run-20260815-1"
+  }
+}
