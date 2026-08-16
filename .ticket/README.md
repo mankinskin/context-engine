@@ -658,6 +658,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: agent-workflow
 
+<!-- ticket-index:entry id=9f617940-a3fd-4990-b3fd-a3fa95c10ae7 slug=done/agent-workflow digest=d62c2c9733cb -->
+#### [9f617940] [agents] Make Explainer Agent German-first and interactive
+- priority: `high`
+- summary: Evolve the existing Explainer Agent into a German-first, language-adaptive,
+- ref: `.ticket/tickets/9f617940-a3fd-4990-b3fd-a3fa95c10ae7/ticket.toml`
+
 <!-- ticket-index:entry id=9577b114-ec11-431b-8740-c488bef05fc9 slug=done/agent-workflow digest=a435c5c2c30a -->
 #### [9577b114] [session-bootstrap][handoff] Require durable session identity and exact resume flow in /handoff
 - priority: `high`
@@ -4488,6 +4494,10 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [8d6895a5] [viewer-api][audit] Fix viewer-api-dioxus compile failure and restore llvm-cov coverage collection
 - ref: `.ticket/tickets/8d6895a5-dce8-47c1-98ce-212fd0ae2e08/ticket.toml`
 
+<!-- ticket-index:entry id=53b14bf8-3243-4cd6-909e-17c431812441 slug=done/unspecified digest=1fa590c99f59 -->
+#### [53b14bf8] [workflow-tools] Rename reference CLI binary to bare domain name
+- ref: `.ticket/tickets/53b14bf8-3243-4cd6-909e-17c431812441/ticket.toml`
+
 <!-- ticket-index:entry id=618f6ce4-e7b3-48f2-9c9e-840247a119da slug=done/unspecified digest=53fddfb5b258 -->
 #### [618f6ce4] [workflow] Bootstrap doc-api, test-api, and log-api evidence stores for spec fulfillment
 - summary: Coordinate the bounded evidence-store bootstrap across `doc-api`, `test-api`, and `log-api` so spec acceptance clauses can resolve authoritative documentation, validation, and log evidence without wr...
@@ -4653,6 +4663,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Reuse the shared toggle button contract for FileTree sort controls so explorer sort rows stop duplicating active/inactive button markup.
 - ref: `viewer-api/.ticket/tickets/9a81d3e5-82ca-4fd0-84bf-c0a54f6716e5/ticket.toml`
+
+<!-- ticket-index:entry id=379ac56a-4580-4ed6-a571-eb76282ef375 slug=done/viewer-api digest=71fd28fde1ba -->
+#### [379ac56a] [viewer-api][bug] Standalone manifest cannot resolve context-api
+- priority: `high`
+- summary: The viewer-api remote at SHA `52456b47` declares an in-tree dependency in `viewer-api/Cargo.toml` (local superproject path: `viewer-api/viewer-api/Cargo.toml`):
+- ref: `.ticket/tickets/379ac56a-4580-4ed6-a571-eb76282ef375/ticket.toml`
 
 <!-- ticket-index:entry id=322ba030-160c-41d3-8a12-42936ae92858 slug=done/viewer-api digest=d6cfcdcf59a2 -->
 #### [322ba030] [viewer-api][ticket-viewer] Add multi-level graph node detail rendering
@@ -4875,6 +4891,20 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ## State: in-implementation
 
+### Component: agent-workflow
+
+<!-- ticket-index:entry id=79449c3f-2f49-4925-b8fd-3751face53b5 slug=in-implementation/agent-workflow digest=28b76f0a7914 -->
+#### [79449c3f] Define Explainer Agent version-one contract
+- priority: `high`
+- ref: `.ticket/tickets/79449c3f-2f49-4925-b8fd-3751face53b5/ticket.toml`
+
+<!-- ticket-index:entry id=f3cc69a4-03de-4b45-8b87-a548d5669afe slug=in-implementation/agent-workflow digest=266fc3395deb -->
+#### [f3cc69a4] [agents] Add Teacher Agent lesson guidance
+- priority: `high`
+- summary: Create a user-invocable Teacher Agent that turns a problem, system, or learning
+- ref: `.ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml`
+
+
 ### Component: memory-api
 
 <!-- ticket-index:entry id=52724aed-7215-471b-b2d8-7fb425f5ed61 slug=in-implementation/memory-api digest=4590d6591c29 -->
@@ -4941,6 +4971,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Agents work in isolated Git worktrees and hand work between sessions, but repository guidance does not make session lineage legible. The implementation scope is guidance only.
 - ref: `.ticket/tickets/7be23bd8-9793-4f86-a96d-403824f8af94/ticket.toml`
+
+<!-- ticket-index:entry id=900ea258-7203-4e5a-aeef-4cfe35c7ce49 slug=in-review/agent-guidance digest=022596ef0d21 -->
+#### [900ea258] Allow small main-checkout changes in agent guidance
+- priority: `medium`
+- ref: `.ticket/tickets/900ea258-7203-4e5a-aeef-4cfe35c7ce49/ticket.toml`
 
 <!-- ticket-index:entry id=dc13ffb4-f172-469c-a0ad-454354aa4f28 slug=in-review/agent-guidance digest=c28ac0633e60 -->
 #### [dc13ffb4] Define a shared terminal return contract for all sub-agents
@@ -5223,6 +5258,15 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Document a mandatory pre-extraction dependency-cycle check that inspects cycles across repository boundaries, not only a single Cargo crate graph. The guidance must record two concrete discoveries:
 - ref: `.ticket/tickets/e8a5c061-d474-4752-b063-3a8b730f6765/ticket.toml`
+
+
+### Component: worktree-lifecycle
+
+<!-- ticket-index:entry id=5f075124-402c-4a47-a549-5f522c4d95d1 slug=in-review/worktree-lifecycle digest=e3e675f7ee30 -->
+#### [5f075124] Bootstrap worktree-local repository stores
+- priority: `high`
+- summary: Add a one-command worktree bootstrap path that creates or reuses the assigned worktree and runs the repository initializer in that worktree. The command must leave `new` as Git-only, support dry runs...
+- ref: `.ticket/tickets/5f075124-402c-4a47-a549-5f522c4d95d1/ticket.toml`
 
 
 ## State: new
@@ -5917,6 +5961,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Ticket 9d527ad1 delivered per-tool-call token-load *measurement* in `mcp-cost-gate`, but nothing ever turned collection on. Every telemetry record produced in production since it landed has been sile...
 - ref: `.ticket/tickets/4aa13ba7-5bdb-4ac6-8581-2f86427f0980/ticket.toml`
+
+<!-- ticket-index:entry id=ea52bd6f-aa48-43f5-9228-0bff7190abf8 slug=open/agent-tooling digest=bd061facff77 -->
+#### [ea52bd6f] [terminal] Add human-owned observer terminal sessions
+- priority: `high`
+- summary: Provide a secure observer-terminal capability in which a human enters terminal
+- ref: `.ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml`
 
 <!-- ticket-index:entry id=0dd23fe6-6892-4d21-9927-4a81584dc77a slug=open/agent-tooling digest=eb55a913162a -->
 #### [0dd23fe6] [token-efficiency] Audit execute MCP tools for terminal reuse and input continuation features

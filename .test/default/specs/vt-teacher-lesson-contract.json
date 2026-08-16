@@ -1,0 +1,14 @@
+{
+  "id": "vt-teacher-lesson-contract",
+  "title": "Teacher Agent lesson contract",
+  "command": "bash -lc '<static check: six sections, exact Q&A plus agent grant, Explore-only delegation, no execution grant, and lesson markers>'",
+  "detail": "Checks the Teacher template, Explore-only delegation rule, human-only terminal boundary, non-grading repeat semantics, and three-task lesson example.",
+  "links": {
+    "spec_ids": [
+      "03d93adb-59a8-44be-af95-3b4b208e7e9a"
+    ],
+    "ticket_ids": [
+      "f3cc69a4-03de-4b45-8b87-a548d5669afe"
+    ]
+  }
+}

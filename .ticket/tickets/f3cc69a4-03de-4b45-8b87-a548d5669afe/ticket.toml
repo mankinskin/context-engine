@@ -1,10 +1,12 @@
 id = "f3cc69a4-03de-4b45-8b87-a548d5669afe"
 created_at = "2026-08-16T12:19:52.914462200+00:00"
 title = "[agents] Add Teacher Agent lesson guidance"
-state = "open"
+state = "in-implementation"
 component = "agent-workflow"
 depends_on = ["9f617940-a3fd-4990-b3fd-a3fa95c10ae7"]
 effort = "3200"
+parts = [{ id = "82ed1df1-9698-42fd-8f45-cd074dd84552", kind = "objective", path = "parts/82ed1df1-9698-42fd-8f45-cd074dd84552.md", frozen = true, created_at = "2026-08-16T12:34:37.201864500Z" }, { id = "d081a33d-c922-437f-a3b4-fd76e2cf78c5", kind = "requirements", path = "parts/d081a33d-c922-437f-a3b4-fd76e2cf78c5.md", frozen = true, created_at = "2026-08-16T12:34:37.202206300Z" }, { id = "94547034-e99c-4b6e-82e8-664a3a9212e9", kind = "design", path = "parts/94547034-e99c-4b6e-82e8-664a3a9212e9.md", frozen = true, created_at = "2026-08-16T12:34:37.202519300Z" }, { id = "ad3ac17a-c360-4086-ac19-cb233511d496", kind = "examples", path = "parts/ad3ac17a-c360-4086-ac19-cb233511d496.md", frozen = true, created_at = "2026-08-16T12:34:37.202864400Z" }, { id = "b0da24fb-66ef-4b91-a609-8e1f2734aff0", kind = "acceptance_criteria", path = "parts/b0da24fb-66ef-4b91-a609-8e1f2734aff0.md", frozen = true, created_at = "2026-08-16T12:34:37.203293800Z" }, { id = "a5aebf61-febc-49c6-890f-01c920d214b2", kind = "validation", path = "parts/a5aebf61-febc-49c6-890f-01c920d214b2.md", frozen = false, created_at = "2026-08-16T12:35:56.220202700Z" }]
+plan_revision = 1
 priority = "high"
 related_specs = "03d93adb-59a8-44be-af95-3b4b208e7e9a"
 type = "task"

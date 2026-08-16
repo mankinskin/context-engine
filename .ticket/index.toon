@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[1602]:
+entries[1610]:
   - id: "0028f61c-e8b9-4fb4-81fd-5d1e37f7a429"
     kind: ticket
     source_path: ".ticket/tickets/0028f61c-e8b9-4fb4-81fd-5d1e37f7a429/ticket.toml"
@@ -4423,6 +4423,19 @@ entries[1602]:
     digest: 5a98048b8bfc0da88d59aeff3e12068399d6473c925a1cb23143d143413e74c9
     tags[4]: "agent-templates","in-review",medium,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "379ac56a-4580-4ed6-a571-eb76282ef375"
+    kind: ticket
+    source_path: ".ticket/tickets/379ac56a-4580-4ed6-a571-eb76282ef375/ticket.toml"
+    title: "[viewer-api][bug] Standalone manifest cannot resolve context-api"
+    summary: "The viewer-api remote at SHA `52456b47` declares an in-tree dependency in `viewer-api/Cargo.toml` (local superproject path: `viewer-api/viewer-api/Cargo.toml`):"
+    keywords[189]: 1c452ff1,52456b47,5ee7f36a,absent,acceptance,adjusted,against,all,alternatively,and,any,api,ba4aaa9c,bash,before,behavior,branch,bug,build,building,builds,can,cannot,canonical,capture,cargo,cause,change,check,checkout,checks,clean,clone,closure,com,command,commands,committed,completed,component,consumable,consumers,context,contract,crate,criteria,declares,defect,dependency,depends,depth,dir,domain,done,downstream,during,encodes,engine,environment,every,evidence,expectation,expected,external,extracted,extraction,fails,failure,failures,feature,features,final,first,foundations,from,git,github,gitlink,has,high,https,implementation,included,independently,inside,into,introduces,its,later,local,main,manifest,mankinskin,matching,mktemp,must,named,needs,new,not,observed,only,owner,ownership,owns,package,past,patch,path,per,plan,policy,preserving,proceed,proceeds,progress,property,push,pushed,rather,related,relative,remaining,remote,replace,repositories,repository,reproduced,reproduces,reproduction,required,resolution,resolve,resolves,revision,root,run,same,scope,settled,sha,shared,source,spec,stack,standalone,start,state,states,still,successfully,such,superproject,suspected,syntax,task,test,tests,than,that,the,then,this,ticket,tickets,toml,tool,tools,traceability,trait,transition,tree,type,unrelated,update,updated,upstream,use,uses,valid,validation,viewer,"viewer-api",when,while,windows,with,workaround,workflow
+    scope: "state=done, component=viewer-api"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/379ac56a-4580-4ed6-a571-eb76282ef375/ticket.toml","379ac56a-4580-4ed6-a571-eb76282ef375",related,ticket,"",379ac56a
+    digest: 71fd28fde1ba049b4122de952fed2ff0ff0ce6a99f55e63ce7d59a44fc5c853f
+    tags[4]: done,high,ticket,"viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "379ff931-7e0a-4069-a1d7-86cc3ef73e9e"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/379ff931-7e0a-4069-a1d7-86cc3ef73e9e/ticket.toml"
@@ -6841,6 +6854,19 @@ entries[1602]:
     digest: 5b211c0c24c10b1547341229714f38fda4e5a2196f41df0f577249a41bf76e48
     tags[4]: high,open,ticket,"ticket-viewer"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "53b14bf8-3243-4cd6-909e-17c431812441"
+    kind: ticket
+    source_path: ".ticket/tickets/53b14bf8-3243-4cd6-909e-17c431812441/ticket.toml"
+    title: "[workflow-tools] Rename reference CLI binary to bare domain name"
+    summary: ""
+    keywords[12]: bare,binary,cli,domain,done,name,reference,rename,ticket,tools,unspecified,workflow
+    scope: "state=done, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/53b14bf8-3243-4cd6-909e-17c431812441/ticket.toml","53b14bf8-3243-4cd6-909e-17c431812441",related,ticket,"",53b14bf8
+    digest: 1fa590c99f5999b60cc68dec4a4f26677404cce72e1ef4dea9b2fafa83831780
+    tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "53f471a3-8a55-40ca-8f86-5da3b15aa25e"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/53f471a3-8a55-40ca-8f86-5da3b15aa25e/ticket.toml"
@@ -7516,6 +7542,19 @@ entries[1602]:
         ".ticket/tickets/5eea3447-151b-4f92-9dbf-e89280122d29/ticket.toml","5eea3447-151b-4f92-9dbf-e89280122d29",related,ticket,"",5eea3447
     digest: ac60427822afa7b7f36692782a2ad2e93b3579ed4e1736d33330bc819b805c2d
     tags[3]: "context-editor",done,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5f075124-402c-4a47-a549-5f522c4d95d1"
+    kind: ticket
+    source_path: ".ticket/tickets/5f075124-402c-4a47-a549-5f522c4d95d1/ticket.toml"
+    title: "Bootstrap worktree-local repository stores"
+    summary: "Add a one-command worktree bootstrap path that creates or reuses the assigned worktree and runs the repository initializer in that worktree. The command must leave `new` as Git-only, support dry runs..."
+    keywords[36]: add,after,and,assigned,bootstrap,command,creates,dry,failed,git,high,"in-review",initialization,initializer,leave,local,must,mutations,new,one,only,path,remain,repository,rerun,reuses,runs,safe,stores,support,that,the,ticket,without,worktree,"worktree-lifecycle"
+    scope: "state=in-review, component=worktree-lifecycle"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/5f075124-402c-4a47-a549-5f522c4d95d1/ticket.toml","5f075124-402c-4a47-a549-5f522c4d95d1",related,ticket,"",5f075124
+    digest: e3e675f7ee308c2f4cfc3abde5acc8d8a01104ff2080c2300b042e889fb38270
+    tags[4]: high,"in-review",ticket,"worktree-lifecycle"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5f217947-0fde-431c-b1ab-9d5d8153ed17"
     kind: ticket
@@ -9857,6 +9896,19 @@ entries[1602]:
     digest: 0bf1056f892c96d2bb20501533a06f2bfbe768d6297355b57131042582380460
     tags[4]: "context-stack",done,medium,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "79449c3f-2f49-4925-b8fd-3751face53b5"
+    kind: ticket
+    source_path: ".ticket/tickets/79449c3f-2f49-4925-b8fd-3751face53b5/ticket.toml"
+    title: "Define Explainer Agent version-one contract"
+    summary: ""
+    keywords[10]: agent,"agent-workflow",contract,define,explainer,high,"in-implementation",one,ticket,version
+    scope: "state=in-implementation, component=agent-workflow"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/79449c3f-2f49-4925-b8fd-3751face53b5/ticket.toml","79449c3f-2f49-4925-b8fd-3751face53b5",related,ticket,"",79449c3f
+    digest: 28b76f0a7914f46d3924781f10e4b5c08dcd5b9a7962d15c410467a291d181b3
+    tags[4]: "agent-workflow",high,"in-implementation",ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "79b0ad85-c57d-4237-bc59-281fa1ad57f8"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/79b0ad85-c57d-4237-bc59-281fa1ad57f8/ticket.toml"
@@ -11781,6 +11833,19 @@ entries[1602]:
     digest: 1e279b8583d62f000b56e39f62eca68081e707b5340ded61bc5d33d4b422f8f4
     tags[3]: "context-tasks",done,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "900ea258-7203-4e5a-aeef-4cfe35c7ce49"
+    kind: ticket
+    source_path: ".ticket/tickets/900ea258-7203-4e5a-aeef-4cfe35c7ce49/ticket.toml"
+    title: "Allow small main-checkout changes in agent guidance"
+    summary: ""
+    keywords[11]: agent,"agent-guidance",allow,changes,checkout,guidance,"in-review",main,medium,small,ticket
+    scope: "state=in-review, component=agent-guidance"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/900ea258-7203-4e5a-aeef-4cfe35c7ce49/ticket.toml","900ea258-7203-4e5a-aeef-4cfe35c7ce49",related,ticket,"",900ea258
+    digest: "022596ef0d210d8a597b9d79e0d3d78430e41feb06b32073491dc4f964fc5bfd"
+    tags[4]: "agent-guidance","in-review",medium,ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "9019477b-586d-4f42-ad57-04e0ff6b9b53"
     kind: ticket
     source_path: ".ticket/tickets/9019477b-586d-4f42-ad57-04e0ff6b9b53/ticket.toml"
@@ -13353,6 +13418,19 @@ entries[1602]:
         ".ticket/tickets/9f14365b-fbe5-4f93-a8da-f7f490dacac0/ticket.toml","9f14365b-fbe5-4f93-a8da-f7f490dacac0",related,ticket,"",9f14365b
     digest: c3bc5d9475f2a388eec97e958eaa0f6cc5d902a202d80f237263c1a0a0bddaa1
     tags[4]: high,open,"repo-guidance",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9f617940-a3fd-4990-b3fd-a3fa95c10ae7"
+    kind: ticket
+    source_path: ".ticket/tickets/9f617940-a3fd-4990-b3fd-a3fa95c10ae7/ticket.toml"
+    title: "[agents] Make Explainer Agent German-first and interactive"
+    summary: "Evolve the existing Explainer Agent into a German-first, language-adaptive,"
+    keywords[115]: acceptance,action,adaptation,adaptive,advisor,agent,"agent-workflow",agents,and,answer,automatic,before,but,capability,command,commands,common,contains,context,criteria,default,defaults,delegates,delegation,deviation,documented,documents,done,each,establish,evidence,evolve,example,executable,executes,executing,execution,existing,expected,explain,explainer,explanation,explicit,file,first,flow,focused,from,future,german,goals,grant,guidance,has,high,human,implementation,infrastructure,input,interactive,into,language,learning,lessons,links,make,may,must,mutates,mutation,never,new,next,non,not,objective,observer,output,overrides,part,problem,proposed,proves,purpose,question,reason,records,refer,request,requirements,response,sending,sends,session,signal,solution,spec,states,static,step,store,task,teacher,template,terminal,that,the,this,ticket,tool,understand,understanding,uses,validation,without
+    scope: "state=done, component=agent-workflow"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/9f617940-a3fd-4990-b3fd-a3fa95c10ae7/ticket.toml","9f617940-a3fd-4990-b3fd-a3fa95c10ae7",related,ticket,"",9f617940
+    digest: d62c2c9733cb87cee60358680c3d59c2cad849ee29d3b3e0d52efdc15c3f7566
+    tags[4]: "agent-workflow",done,high,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9f8d842e-3c7c-4470-b840-dd69b92380b5"
     kind: ticket
@@ -18970,6 +19048,19 @@ entries[1602]:
     digest: eb37664e8c4510d5f7dee0edd86f6151eea2c3ed0f726d89eb53f6f269842376
     tags[3]: "in-review",medium,ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "ea52bd6f-aa48-43f5-9228-0bff7190abf8"
+    kind: ticket
+    source_path: ".ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml"
+    title: "[terminal] Add human-owned observer terminal sessions"
+    summary: "Provide a secure observer-terminal capability in which a human enters terminal"
+    keywords[114]: 0dd23fe6,4a81584dc77a,4d21,"6892","9927",absence,acceptance,add,agent,"agent-tooling",agents,all,and,any,api,arbitrary,attach,bounded,can,capabilities,capability,carries,command,commands,compact,create,criteria,current,decision,demonstrates,directory,documents,enters,evidence,executes,execution,existing,exit,explainer,explicitly,expose,focused,follows,goals,granting,guidance,have,high,human,identity,implementation,input,integration,interactive,inventory,learning,links,must,named,never,non,not,objective,observation,observe,observer,open,operation,output,owned,ownership,owns,persisting,presented,provide,query,read,readback,records,replacing,requirements,safe,secure,selected,semantics,sending,sends,sensitive,separate,session,sessions,shot,side,single,spec,stale,state,status,teacher,terminal,terminate,test,that,the,ticket,timeout,tool,transport,used,validation,which,while,without,working
+    scope: "state=open, component=agent-tooling"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/ea52bd6f-aa48-43f5-9228-0bff7190abf8/ticket.toml","ea52bd6f-aa48-43f5-9228-0bff7190abf8",related,ticket,"",ea52bd6f
+    digest: bd061facff77171c9daddb9885330845837ec4fc1a649b2a8d12fb641e7f6ebb
+    tags[4]: "agent-tooling",high,open,ticket
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "ea80712b-3506-4b8f-bb36-fc2618aa7b82"
     kind: ticket
     source_path: ".ticket/tickets/ea80712b-3506-4b8f-bb36-fc2618aa7b82/ticket.toml"
@@ -19827,6 +19918,19 @@ entries[1602]:
         ".ticket/tickets/f3c6ed90-18a5-4bdb-8d76-9070ec24d3aa/ticket.toml","f3c6ed90-18a5-4bdb-8d76-9070ec24d3aa",related,ticket,"",f3c6ed90
     digest: 2276942bda167fdec4a8b2f6f8dea2595257bef48f8b9d748c2498b9ec39b126
     tags[4]: done,medium,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "f3cc69a4-03de-4b45-8b87-a548d5669afe"
+    kind: ticket
+    source_path: ".ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml"
+    title: "[agents] Add Teacher Agent lesson guidance"
+    summary: "Create a user-invocable Teacher Agent that turns a problem, system, or learning"
+    keywords[133]: acceptance,action,add,agent,"agent-workflow",agents,and,asks,authoring,automatic,automatically,autonomous,but,capability,choice,command,completed,contains,create,criteria,declares,delegates,delegation,does,evidence,example,executable,executes,execution,expected,explanation,explanations,explore,fail,feedback,files,flow,focused,from,frontmatter,gives,goal,goals,grade,grading,granted,guidance,handles,has,high,human,humans,implementing,"in-implementation",inconclusive,input,interactive,internal,into,invocable,its,learning,least,lesson,limited,links,may,method,mutates,mutation,never,next,non,not,objective,observed,observer,only,open,orchestrates,ordered,ordering,output,owns,pass,path,people,permits,planning,problem,progress,proves,question,questions,records,remediation,repeat,repetition,repository,required,requirements,research,sends,signal,spec,state,static,step,stores,structure,structured,summary,synthesis,system,target,task,tasks,teacher,template,terminal,that,the,three,ticket,turns,updates,use,user,validation,verification,when,without,workspace
+    scope: "state=in-implementation, component=agent-workflow"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/f3cc69a4-03de-4b45-8b87-a548d5669afe/ticket.toml","f3cc69a4-03de-4b45-8b87-a548d5669afe",related,ticket,"",f3cc69a4
+    digest: 266fc3395deb7cd550789504bbdd2b57bbcb52705874fdd64d9320c15fd827fe
+    tags[4]: "agent-workflow",high,"in-implementation",ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "f41f08a8-fad9-4a20-b3a4-58bc1cc4d6ef"
     kind: ticket

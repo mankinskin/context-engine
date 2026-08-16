@@ -1,0 +1,24 @@
+{
+  "id": "exec-teacher-lesson-contract-20260816",
+  "validation_spec_id": "vt-teacher-lesson-contract",
+  "outcome": "passed",
+  "executed_at": "2026-08-16T12:35:47.951677200Z",
+  "duration_ms": 0,
+  "detail": "Passed: six required frontmatter fields and six body sections; exact vscode/askQuestions plus agent grant; Explore-only delegation rule; no execute, terminal input, file, store, or UI mutation; three ordered human tasks; repeat path without person-level pass/fail grading.",
+  "links": {
+    "spec_ids": [
+      "03d93adb-59a8-44be-af95-3b4b208e7e9a"
+    ],
+    "ticket_ids": [
+      "f3cc69a4-03de-4b45-8b87-a548d5669afe"
+    ]
+  },
+  "provenance": {
+    "source_path": ".agents/agents/teacher.agent.md",
+    "test_id": "teacher-lesson-contract",
+    "domain": "agent-workflow",
+    "operation": "teacher-contract-static",
+    "transport": "cli",
+    "run_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60"
+  }
+}
