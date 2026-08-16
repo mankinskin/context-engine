@@ -1,0 +1,117 @@
+{
+  "handoff_id": "881aeba1-c050-4a71-9200-a30e1daf7a46",
+  "session_id": "c8ebe499-682c-4f3d-86ea-209b78a8af3b",
+  "outgoing_run_id": "e9028566-b1b5-4215-a663-d0ff5b0bfc46",
+  "created_at": "2026-08-16T14:04:34.038474Z",
+  "resume_command": "session-cli resume --session-id c8ebe499-682c-4f3d-86ea-209b78a8af3b --predecessor-run-id e9028566-b1b5-4215-a663-d0ff5b0bfc46",
+  "pinned_entities": [
+    {
+      "urn": "ce://default/spec/5ee7f36a-2aea-4373-8c67-e6b26ae174bf",
+      "kind": "spec",
+      "relation": "governing-spec",
+      "reason": "Review evidence aligns with the domain-crate contract"
+    },
+    {
+      "urn": "ce://default/ticket/379ac56a-4580-4ed6-a571-eb76282ef375",
+      "kind": "ticket",
+      "relation": "review-anchor",
+      "reason": "Superseding review verifies clean-clone validation evidence and manifest/gitlink readback."
+    },
+    {
+      "urn": "ce://default/ticket/53b14bf8-3243-4cd6-909e-17c431812441",
+      "kind": "ticket",
+      "relation": "review-anchor",
+      "reason": "Reviewer-approved verdict recorded"
+    }
+  ],
+  "workflow": {
+    "workflow": {
+      "nodes": [
+        {
+          "node_id": "review-379ac56a",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "done",
+          "title": "Review: Standalone manifest resolves context-api",
+          "created_at": "2026-08-15T17:51:05.569507500Z",
+          "updated_at": "2026-08-15T17:53:09.957823300Z",
+          "ticket_urn": "ce://default/ticket/379ac56a-4580-4ed6-a571-eb76282ef375",
+          "cached_ticket_title": "[viewer-api][bug] Standalone manifest cannot resolve context-api"
+        },
+        {
+          "node_id": "review-53b14bf8",
+          "kind": "ticket",
+          "requirement": "required",
+          "status": "done",
+          "title": "Review: Rename reference CLI binary to bare domain name",
+          "created_at": "2026-08-15T15:25:41.371995100Z",
+          "updated_at": "2026-08-15T15:25:41.433424Z",
+          "ticket_urn": "ce://default/ticket/53b14bf8-3243-4cd6-909e-17c431812441",
+          "cached_ticket_title": "[workflow-tools] Rename reference CLI binary to bare domain name"
+        }
+      ]
+    },
+    "resolutions": [
+      {
+        "node_id": "review-379ac56a",
+        "live_ticket_state": "in-implementation"
+      },
+      {
+        "node_id": "review-53b14bf8",
+        "live_ticket_state": "done"
+      }
+    ]
+  },
+  "validation": [
+    {
+      "validation_spec_id": "post-rebase-native-build",
+      "required": true,
+      "outcome": "failed: invalid TOML string at Makefile.toml line 295",
+      "command": "cargo make build-native-tools"
+    },
+    {
+      "validation_spec_id": "post-rebase-ticket-tests",
+      "required": true,
+      "outcome": "failed: cargo test -p ticket-api and cargo test -p ticket hit Rust 1.95.0 vs Rust 1.99.0-nightly artifact mismatch",
+      "command": "cargo test -p ticket-api && cargo test -p ticket"
+    }
+  ],
+  "objective": "Repair the post-rebase validation environment and Makefile TOML so ticket 0da6894c can pass current ticket-domain tests and the native-binary build before reviewing the dependent ticket extraction.",
+  "target_tickets": [
+    {
+      "id": "0da6894c-dcbb-4196-8ac7-b6fae7c40ec9",
+      "why": "Prerequisite design ticket failed review after the rebase; ba4aaa9c remains blocked until current validation succeeds.",
+      "state": "in-implementation"
+    }
+  ],
+  "higher_level_objective": "Complete the single-domain-crate contract and then merge the ticket extraction bottom-up across all rebased submodules and the superproject.",
+  "upward_context": [
+    {
+      "entity_urn": "ce://default/ticket/ba4aaa9c-d270-4cfc-a1e2-395634608371",
+      "title": "Extract ticket domain crate",
+      "role": "parent"
+    }
+  ],
+  "target_files": [
+    "Makefile.toml",
+    ".ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/",
+    "target/"
+  ],
+  "decisions": [
+    "User approved bottom-up ordering: review and close 0da6894c before ba4aaa9c.",
+    "User approved a WIP commit for the failed-review state.",
+    "Recursive submodule status is clean; do not rebase or change submodule branches unless fresh validation establishes a new necessity."
+  ],
+  "non_goals": [
+    "Do not merge any submodule or the superproject into main until ticket-domain tests and cargo make build-native-tools pass.",
+    "Do not treat the Rust target-cache mismatch as passing evidence.",
+    "Do not resolve unrelated worktree changes."
+  ],
+  "context_anchors": [
+    "Review evidence: cargo test -p ticket-api and cargo test -p ticket failed due to Rust 1.95.0 target artifacts conflicting with active Rust 1.99.0-nightly.",
+    "Review evidence: cargo make build-native-tools failed because Makefile.toml line 295 contains an invalid TOML string.",
+    "Review evidence: git submodule status --recursive reported no -, +, or U markers.",
+    "Review evidence: git diff --check passed."
+  ],
+  "risk_notes": "Clear or isolate stale Cargo artifacts using the repository-approved build environment, repair the exact Makefile.toml syntax defect, rerun focused tests and build-native-tools, then resume prerequisite review."
+}
