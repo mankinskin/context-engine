@@ -15,18 +15,21 @@ Related tickets:
 
 ## Dependent expectation
 
-If this specification is implemented, a human can work in a VS Code terminal
-while a guidance agent reads only bounded, session-scoped output and status.
-No agent-facing operation can send input or execute a command in that terminal.
+A human works directly in the normal VS Code integrated terminal. The human
+controls all terminal input and explicitly records selected output through the
+`session` CLI. A guidance agent reads only bounded, session-scoped output and
+status. No agent-facing operation can send input or execute a command in that
+terminal.
 
 ## Contract
 
 ### Ownership
 
-The ticket-vscode extension creates the terminal only from an explicit human
-command. The human owns all terminal input. The extension captures terminal
-process output through VS Code's terminal-data API, never captures or persists
-terminal input, and appends output to a session-scoped observer record.
+No terminal application or ticket-vscode terminal command is required. A human
+opens and uses the normal VS Code integrated terminal. The human explicitly
+runs `session terminal-create`, `terminal-append-output`, `terminal-peek`, and
+`terminal-close` as needed. The human must record only selected output, never
+commands, prompts, keystrokes, or secrets.
 
 ### Session record
 
@@ -38,17 +41,17 @@ monotonic sequence, timestamp, source `terminal-output`, and output data.
 
 ### Agent surface
 
-`session-cli` and `session-mcp` expose create, status, bounded peek, and close
-operations. The agent surface has no terminal-input, command, shell, cwd
-mutation, or execute argument. `peek` returns bounded events with a cursor and
-has-more signal. Closing a terminal prevents additional output append events.
+`session-cli` provides the human-operated observer lifecycle. `session-mcp`
+exposes observer status and bounded output reads without a terminal-input,
+command, shell, cwd-mutation, or execute argument. `peek` returns bounded
+events with a cursor and has-more signal. Closing a terminal prevents
+additional output append events.
 
 ### Lifecycle
 
-An observer session begins open, becomes closed through explicit human UI action
-or terminal close, and can be marked error when extension capture fails. Output
-after close is rejected. A UI host without the terminal-data API must report
-observer capture unavailable instead of silently claiming observation.
+An observer session begins open and becomes closed when the human runs
+`session terminal-close`. Output after close is rejected. The normal VS Code
+terminal remains the only terminal user interface.
 
 ## Guards
 
@@ -56,31 +59,29 @@ Before this specification is verified, evidence must show:
 
 1. `session-api` round-trips manifest and output events, preserves event order,
    rejects post-close append, and bounds peek results.
-2. `session-mcp` exposes only create, status, peek, and close terminal tools;
-   no schema contains terminal input or command execution.
-3. `session-cli` exposes equivalent observer operations without an input or
-   execution verb.
-4. ticket-vscode creates a terminal only on a human command, captures output
-   through the terminal-data listener, and never calls `sendText`.
-5. Extension unit tests and relevant Rust tests pass, followed by a manual VS
-   Code terminal trace readback in the assigned worktree.
+2. `session-mcp` exposes no schema for terminal input or command execution.
+3. `session-cli` exposes the human-operated lifecycle without an input or
+   execution verb, and a manual normal VS Code terminal trace can be read back.
+4. No ticket-vscode terminal application or command is required for observer
+   sessions.
+5. Relevant Rust tests pass.
 
 ## Positions
 
 | Code reference | Status | Required position |
 | --- | --- | --- |
-| `memory-api/crates/session-api` | not-implemented | Observer manifest/event persistence and bounded reads. |
-| `memory-api/tools/cli/session-cli` | not-implemented | Human-observer lifecycle CLI operations with no input verb. |
-| `memory-api/tools/mcp/session-mcp` | not-implemented | Read-only agent observer tools. |
-| `memory-api/tools/ticket-vscode` | not-implemented | Human command, integrated terminal, and terminal-output capture. |
+| `memory-api/crates/session-api` | implemented | Observer manifest/event persistence and bounded reads. |
+| `memory-api/tools/cli/session-cli` | implemented | Human-operated observer lifecycle CLI operations with no input verb. |
+| `memory-api/tools/mcp/session-mcp` | implemented | Read-only agent observer tools. |
+| `memory-api/tools/ticket-vscode` | excluded | No terminal UI or output capture is required. |
 | `compact-terminal-*` | implemented but excluded | Remains one-shot execution and never backs observer input. |
 
 ## Non-goals
 
+- A custom terminal application or a ticket-vscode terminal command.
 - Agent-side terminal input, `sendText`, or arbitrary shell execution.
 - Recording terminal input, secrets, or keystrokes.
 - Replacing compact-terminal's one-shot command tooling.
-- Web-host fallback that simulates terminal capture without the VS Code API.
 
 ## Governing-rule requirement
 

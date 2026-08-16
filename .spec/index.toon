@@ -1566,7 +1566,7 @@ entries[253]:
     title: "Human-owned observer terminal"
     summary: "<!-- aligned-structure:v2 -->"
     keywords[5]: human,"human-owned",observer,owned,terminal
-    non_goals: "Agent-side terminal input, `sendText`, or arbitrary shell execution. Recording terminal input, secrets, or keystrokes. Replacing compact-terminal's one-shot command tooling. Web-host fallback that simulates terminal capture without the VS Code API."
+    non_goals: "A custom terminal application or a ticket-vscode terminal command. Agent-side terminal input, `sendText`, or arbitrary shell execution. Recording terminal input, secrets, or keystrokes. Replacing compact-terminal's one-shot command tooling."
     relations:
       parent:
         canonical_path: ".spec/specs/63c60c9d-adbe-4ddb-8c1d-6156610d0753/spec.toml"
@@ -1574,7 +1574,7 @@ entries[253]:
         relation_kind: parent
         content_kind: spec
         digest: ""
-    digest: c3138de37c01801c93ebde27904bd0f234a4f206799c3fe9c532a266013dcfa5
+    digest: 2f199e62e0de738a08c5380801069e2d9f35617a674546d7d02a6db3f5830f1b
     tags[3]: "agent-tooling",draft,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "76da5f2d-cea9-49d9-b223-730a0c2a5d6b"

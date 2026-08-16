@@ -1,5 +1,5 @@
 <!-- spec-index:tree-entry generated=true -->
-<!-- spec-index:entry id=73dfa7f7-5fb4-4c75-a6b1-8773d8a1ca30 slug=agent-tooling/human-owned-observer-terminal digest=c3138de37c01 -->
+<!-- spec-index:entry id=73dfa7f7-5fb4-4c75-a6b1-8773d8a1ca30 slug=agent-tooling/human-owned-observer-terminal digest=2f199e62e0de -->
 
 # Human-owned observer terminal
 
