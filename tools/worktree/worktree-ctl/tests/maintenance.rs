@@ -443,10 +443,16 @@ fn merge_auto_fixes_fast_forwardable_orphan_gitlink() {
     git(&submodule, &["checkout", "--detach", "main"]);
     fs::write(submodule.join("ahead.txt"), "ahead\n").expect("write ahead");
     git(&submodule, &["add", "ahead.txt"]);
-    git(&submodule, &["commit", "-m", "ahead of submodule main, no branch"]);
+    git(
+        &submodule,
+        &["commit", "-m", "ahead of submodule main, no branch"],
+    );
     let recorded_sha = git_revision(&submodule, &["rev-parse", "HEAD"]);
     git(&fixture.main, &["add", "modules/example"]);
-    git(&fixture.main, &["commit", "-m", "bump gitlink ahead of main"]);
+    git(
+        &fixture.main,
+        &["commit", "-m", "bump gitlink ahead of main"],
+    );
     assert_ne!(submodule_main_before, recorded_sha);
 
     create(&fixture, "autofix");
@@ -466,18 +472,26 @@ fn merge_auto_fixes_fast_forwardable_orphan_gitlink() {
         "dry-run failed: {}",
         all(&dry_run)
     );
-    assert!(all(&dry_run).contains("auto-fix gitlink"), "{}", all(&dry_run));
+    assert!(
+        all(&dry_run).contains("auto-fix gitlink"),
+        "{}",
+        all(&dry_run)
+    );
     assert_eq!(
         submodule_main_before,
         git_revision(&submodule, &["rev-parse", "main"]),
         "dry-run must not mutate the submodule branch"
     );
 
-    let output = fixture
-        .run(["merge", "12345678-1234-1234-1234-123456789abc/autofix"]);
+    let output =
+        fixture.run(["merge", "12345678-1234-1234-1234-123456789abc/autofix"]);
 
     assert!(output.status.success(), "merge failed: {}", all(&output));
-    assert!(all(&output).contains("auto-fixed gitlink"), "{}", all(&output));
+    assert!(
+        all(&output).contains("auto-fixed gitlink"),
+        "{}",
+        all(&output)
+    );
     assert_eq!(
         recorded_sha,
         git_revision(&submodule, &["rev-parse", "main"]),
