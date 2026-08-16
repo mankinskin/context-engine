@@ -2,7 +2,7 @@
 # Pre-commit hook: ensure generated workspace artifacts stay in sync.
 #
 # Install once per clone:
-#     git config core.hooksPath .github/hooks
+#     git config core.hooksPath .githooks
 #
 # To bypass intentionally (rare):
 #     git commit --no-verify
