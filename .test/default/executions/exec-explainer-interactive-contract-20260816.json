@@ -1,0 +1,24 @@
+{
+  "id": "exec-explainer-interactive-contract-20260816",
+  "validation_spec_id": "vt-explainer-interactive-contract",
+  "outcome": "passed",
+  "executed_at": "2026-08-16T12:32:24.537040500Z",
+  "duration_ms": 0,
+  "detail": "Passed: six required frontmatter fields and six body sections; German default plus explicit language adaptation; vscode/askQuestions grant; no execute, compact-terminal, feedback, session, context, or agent grant; no terminal-input capability; documented question, human action, expected signal, deviation, and next question.",
+  "links": {
+    "spec_ids": [
+      "03d93adb-59a8-44be-af95-3b4b208e7e9a"
+    ],
+    "ticket_ids": [
+      "9f617940-a3fd-4990-b3fd-a3fa95c10ae7"
+    ]
+  },
+  "provenance": {
+    "source_path": ".agents/agents/explainer.agent.md",
+    "test_id": "explainer-interactive-contract",
+    "domain": "agent-workflow",
+    "operation": "explainer-contract-static",
+    "transport": "cli",
+    "run_id": "6ae5e73a-396f-43bf-964d-0d7e73bf3d60"
+  }
+}
