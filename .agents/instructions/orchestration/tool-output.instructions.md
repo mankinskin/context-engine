@@ -1,6 +1,6 @@
 ---
 description: "Use when handling tool result output, managing command spills, or working with the compact-terminal MCP or CLI transports. Covers output reduction and spill-file inspection."
-applyTo: "**/*.sh,**/*.ps1"
+applyTo: "**"
 ---
 
 ## Default Agent Tool Suite
@@ -78,3 +78,20 @@ Rules:
 - When a command produces truncated output, inspect the transient file via bounded read before replaying the full command.
 - Do not re-run long commands just to see more output — use the stored output file first.
 - Keep test log queries targeted: search for the specific error string, not the full log.
+
+## Long-Running Process Ownership
+
+Run Cargo, npm, Playwright, and `git fetch` as one foreground process per
+attempt. Record the command and execution id or PID before waiting for a result.
+
+- A timeout, background transition, or missing terminal result is
+  `stop-and-observe`, not a failed attempt and not permission to retry.
+- Do not start a replacement command until the prior execution has a confirmed
+  terminal state. If cancellation is required, terminate the recorded
+  execution and confirm termination first.
+- A retry report MUST name the prior command, execution id or PID, terminal
+  state, and the input or environment change that justifies the retry.
+- Package-cache or repository lock errors require identifying the owning
+  process. Never delete a lock file while its owner may still be alive.
+- Keep Cargo and rustc from one toolchain in a validation attempt; record
+  `cargo -vV` and `rustc -vV` once when a mismatch is suspected.

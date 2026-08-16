@@ -30,6 +30,25 @@ A context bundle is a **structured inline payload** passed to every sub-agent at
 
 **Standard bundle fields**:
 
+0. **Execution identity**: Keep code location, entity-store location, and
+   command location separate. The generic word `workspace` is insufficient for
+   these values.
+   ```
+   execution_identity:
+     session_id: <copilot-session-uuid>
+     code_worktree: <absolute assigned worktree path>
+     git_toplevel: <expected git top-level path>
+     branch: <expected feature branch>
+     entity_store_root: <absolute canonical store root>
+     command_cwd: <absolute directory for the delegated command>
+   ```
+   Every sub-agent MUST attest these six values before its first task command.
+   A mismatch is a blocker, not a path to repair or work around. Never reuse a
+   worktree path from another session. Never infer `entity_store_root` from
+   `command_cwd`, and never create or use a worktree-local `.ticket`, `.spec`,
+   `.test`, or `.session` shadow store unless the handoff explicitly declares
+   that store as the canonical target.
+
 1. **Resolved tickets**: Full ticket TOML content (not just id) for the ticket(s) the sub-agent acts on
    ```
    tickets:

@@ -32,6 +32,12 @@ Alternatively, use the MCP ticket tools (`mcp_ticket-mcp_next_tickets`,
 `mcp_ticket-mcp_list_tickets`, `mcp_ticket-mcp_health`,
 `mcp_ticket-mcp_board_show`) when the MCP server is running.
 
+The handoff package's `entity_store_root` selects the ticket store for the
+entire unit. Pass the root explicitly to every ticket read and write. After a
+mutation, fetch the same ticket id from the same root and verify the new state
+or part before reporting success. Discovery from another root, an aggregated
+index, or a worktree-local shadow store does not validate the intended write.
+
 ### Workspace Discovery vs Enumeration (note to self)
 
 Do not assume a nested `.ticket` store is "excluded" just because it is absent

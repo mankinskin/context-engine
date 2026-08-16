@@ -134,6 +134,12 @@ A board entry has no dedicated branch column, so the branch and worktree ride in
 
 If `session_check_in` reports a worktree conflict, or the board shows the ticket already actively held by a different `agent_id`, **stop and escalate**. Do not proceed on a shared worktree.
 
+After both claims succeed, persist `git status --short` as the session's
+worktree baseline. Later commit, review, and handoff reports classify changes
+relative to that baseline; they do not attribute every dirty path to the active
+agent. Refresh the baseline only after a committed checkpoint, and retain the
+previous checkpoint pointer.
+
 ## 3. Work
 
 - For a worktree-backed task, every read, edit, build, and test runs with the worktree as the working directory. A command run from the repository root is a bug — it touches the wrong checkout.
@@ -141,11 +147,18 @@ If `session_check_in` reports a worktree conflict, or the board shows the ticket
 - Keep the claimed file list current with `board_update_files` when scope shifts.
 - Refresh `board_heartbeat` before the TTL elapses on long tasks.
 
-### Entity stores are worktree-local
+### Entity store targeting is explicit
 
-These store rules apply to worktree-backed tasks. A small main-checkout change does not create or mutate session or board records, because the worktree guard intentionally rejects those main-checkout mutations.
+The active-session marker no longer exists. The assigned worktree's
+`.session/sessions/<session-uuid>/session.json` manifest carries runtime state,
+and agents supply the Copilot session UUID explicitly from the hook payload.
 
-The active-session marker no longer exists. The assigned worktree's `.session/sessions/<session-uuid>/session.json` manifest carries runtime state, and agents supply the Copilot session UUID explicitly from the hook payload.
+The handoff package MUST separately declare `entity_store_root`. Do not assume
+that the code worktree, main checkout, or current directory owns the canonical
+ticket, spec, test, or session store. Every state-store command passes the
+declared root explicitly. After a write, read the entity back through the same
+transport and the same root; success against a different discovered or shadow
+store is not evidence that the intended mutation occurred.
 
 `.session`, `.ticket`, and `.spec` are version-controlled, so every worktree carries its own copy. The active copy is the one **inside the session's worktree**. The main checkout's copies are a merge target: they become current only when a branch merges, never by direct edit.
 

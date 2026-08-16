@@ -38,7 +38,21 @@ session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slu
 
 Resolve every placeholder from the current session; never copy an identifier, worktree, or branch from a previous transcript.
 
-For a small main-checkout change without a session-worktree assignment, declare `session: none | worktree: main checkout | branch: main | scope: small` instead. Do not create a session or board record solely to make that declaration possible.
+## Runtime Attestation
+
+Before the first task command and after every sub-agent dispatch, compare the
+session lookup with the actual execution context:
+
+```text
+session_id | code_worktree | git_toplevel | branch | entity_store_root | command_cwd
+```
+
+`code_worktree`, `git_toplevel`, and `branch` must match the authoritative
+session assignment. `entity_store_root` must equal the explicit value in the
+handoff package; never derive it from the current directory. A mismatch stops
+the unit before any further read, write, build, or validation command. The main
+checkout may be used only for an explicitly labeled read-only source-baseline
+probe.
 
 ## Claim Order
 

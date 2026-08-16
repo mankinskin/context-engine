@@ -25,6 +25,13 @@ Use the `test-mcp` MCP tools when available:
 
 Always set `ticket_ids` on executions so the evidence can be queried back from the owning ticket.
 
+The handoff package's explicit `entity_store_root` is authoritative. Pass that
+same root to every spec write, execution write, and query; do not infer a test
+store from `command_cwd`. Immediately after recording an execution, fetch the
+same execution id through the same transport and root and verify its outcome,
+ticket ids, spec ids, and source pointer. A successful write without this
+read-back is not durable validation evidence.
+
 ### Record via the `test` CLI (fallback)
 
 ```bash

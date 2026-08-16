@@ -24,6 +24,23 @@ Run pre-dispatch gates for EVERY delegation, regardless of delegation class. Eac
 
 **Dispatch verification (binding)**: The gate input MUST include the target agent's capability mode and every exact command in the dispatch prompt. The gate MUST block a command that the target mode forbids, including a mutating command sent to a read-only agent. Each command MUST have same-session probe output or the literal marker `VERIFY BEFORE RELYING ON THIS COMMAND: <command>`; an unmarked, untested command is an orchestrator fault. A passing bundle preserves each marker so the target verifies the command before relying on it.
 
+**Execution identity attestation (binding)**: Before evaluating class-specific
+gates, the gate agent MUST resolve and compare all of the following values:
+
+- `session_id`
+- `code_worktree` from authoritative session lookup
+- `git_toplevel` from the proposed command directory
+- `branch` from the proposed command directory
+- `entity_store_root` for ticket, spec, test, and session operations
+- `command_cwd` for every proposed command
+
+The gate MUST return `pass: false` when `git_toplevel` or `branch` does not
+match the session assignment, when the prompt names a worktree owned by another
+session, or when an entity operation would use an undeclared shadow store. A
+main-checkout read is allowed only when the prompt labels it `read-only
+source-baseline`; that directory MUST NOT be reused for mutations, validation,
+or check-in. A passing bundle carries the six attested values forward unchanged.
+
 **Fail-fast semantics (binding)**: `pass: false` means the delegation is **NOT dispatched**, full stop. The orchestrator MUST do exactly one of:
 
 1. **Resolve** the precondition itself (create the missing spec, update the ticket state, fix the handoff package), then re-run the gate once, or

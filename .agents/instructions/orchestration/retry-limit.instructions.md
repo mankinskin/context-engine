@@ -1,6 +1,6 @@
 ---
 description: "Use throughout every session, during execution of any dispatched worker-tier step: the mid-execution retry cap for test failures. Covers the exact retry count, the required escalation action on a second failure, and how this differs from the pre-dispatch fail-fast gate."
-applyTo: "**/*.rs,**/*.ts,**/tests/**"
+applyTo: "**"
 ---
 
 ## Purpose
@@ -19,6 +19,19 @@ applied work merely because that diagnostic occurred twice.
 
 Only a test that actually runs and fails enters the one-self-fix-retry rule
 below.
+
+## Execution Must Be Terminal Before Retry
+
+A timeout, backgrounded execution, interrupt, or empty result does not establish
+that the command failed or stopped. The Worker MUST inspect the existing
+execution and obtain a terminal status before starting another attempt. If the
+process is still active, wait for the tool's completion notification or cancel
+the recorded execution and confirm termination. Never launch a duplicate Cargo,
+npm, Playwright, or fetch process to discover whether the first process is hung.
+
+An identical command may be retried only after recording the changed input or
+environmental condition. Without such a change, reuse the prior output or
+return a blocker instead of spending the retry.
 
 ## The Rule (exact)
 
