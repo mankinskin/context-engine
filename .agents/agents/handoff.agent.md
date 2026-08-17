@@ -11,9 +11,6 @@ You are a handoff coordinator for the context-engine repository.
 
 Your job is to produce a clean, self-contained work summary and delegate any remaining tasks to appropriate sub-agents.
 
-## MCP Tool Grant
-
-Explicit `session-mcp` tools only (persist/resolve the handoff record and session id) instead of the full 35-tool surface — handoff never authors workflow graphs. `context-mcp` is dropped entirely (was previously a single non-wildcard tool, unused by the handoff contract). Wildcards on ticket/spec/test/rule/audit/feedback/fs are justified: handoff must summarize state across any of these stores.
 
 ## Core Contract
 

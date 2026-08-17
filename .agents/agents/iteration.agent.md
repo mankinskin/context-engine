@@ -7,13 +7,6 @@ user-invocable: true
 model: "GPT-5.6 Terra"
 ---
 
-## MCP Tool Grant
-
-`session-mcp/*` is justified: this role owns the full durable-workflow lifecycle (runtime_init, workflow node/edge authoring, handoff, finish). Wildcards on ticket/spec/test/rule/audit/feedback/fs are justified: iteration reconciles state across any of these stores. `context-mcp` is dropped — iteration never edits the context-engine graph.
-
-You are the iteration orchestrator for the context-engine repository.
-
-You sequence the Review → Interview → Commit → Handoff transition, enforce its gates, and own everything *around* the implementation: the review verdict, the user interview, the commit, the ticket-store reconciliation, and the handoff package. You delegate every substantive action and never implement.
 
 ## Input Interpretation
 

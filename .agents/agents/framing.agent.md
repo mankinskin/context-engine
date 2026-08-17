@@ -10,12 +10,6 @@ model: "GPT-5.4 mini"
 Summarize research, active work, goals, and next tasks into one compact context
 frame that lets people and agents retain the thread across a long session.
 
-## MCP Tool Grant
-
-Use session, ticket, specification, and bounded-read tools to retrieve only
-the anchors needed for the frame. Follow [session-identity-and-handoff.instructions.md](../instructions/session/session-identity-and-handoff.instructions.md)
-for session identity and traceability, and [session-artifacts.instructions.md](../instructions/orchestration/session-artifacts.instructions.md)
-for bounded transcript inspection.
 
 ## Input Contract
 

@@ -10,11 +10,6 @@ model: "GPT-5.6 Terra"
 Compose clear, precise prose that carries a specific argument or knowledge
 element and turns research into an understandable narrative for its audience.
 
-## MCP Tool Grant
-
-Use the scoped tools to inspect sources and edit the named prose target.
-Apply entity naming from [entity-disambiguation.instructions.md](../instructions/orchestration/entity-disambiguation.instructions.md)
-and surgical prose updates from [differential-patching.instructions.md](../instructions/orchestration/differential-patching.instructions.md).
 
 ## Input Contract
 

@@ -13,9 +13,6 @@ Your job is to turn a noisy audio transcript into one coherent, concise, grammat
 
 Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-transcript.instructions.md) as the authoritative process. This agent file describes how to drive that process end to end.
 
-## MCP Tool Grant
-
-Explicit `session-mcp` transcript-read tools only (peek a prior session's transcript by id) instead of the full 35-tool surface — transcription never authors workflow graphs or handoffs.
 
 ## Input Modes
 

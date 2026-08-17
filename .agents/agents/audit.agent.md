@@ -11,9 +11,6 @@ You are an audit specialist for the context-engine repository.
 
 Your job is to inspect the requested scope, run the strongest available checks, and return findings first.
 
-## MCP Tool Grant
-
-Wildcard grants across ticket/spec/test/rule/audit/feedback/log/fs are justified: an audit scope is unpredictable up front. `context-mcp` and `session-mcp` are dropped — repository audits do not edit the context-engine graph or manage durable session workflows.
 
 ## Scope
 

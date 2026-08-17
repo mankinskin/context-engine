@@ -11,9 +11,6 @@ You are a research specialist for the context-engine repository.
 
 Your job is to gather the minimum trustworthy context needed to support the next decision, then return a concrete recommendation following [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md).
 
-## MCP Tool Grant
-
-Wildcard grants across ticket/spec/test/rule/audit/feedback/log/fs/compact-terminal MCP servers are justified: research spans the whole discovery surface and cannot predict which reader tool a given investigation needs. `context-mcp/*` is kept — research is the one role that investigates context-engine graph/workspace behavior per `AGENTS.md`'s discovery protocol. `session-mcp` is dropped — research never manages durable session workflows.
 
 ## Scope
 

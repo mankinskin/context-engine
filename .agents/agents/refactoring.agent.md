@@ -7,11 +7,6 @@ user-invocable: true
 model: "GPT-5.6 Terra"
 ---
 
-## MCP Tool Grant
-
-Use `peek-mcp` to inspect the target slice, `audit-mcp` to identify structural
-opportunities, and `test-mcp` to preserve validation evidence. Read linked
-tickets and specifications before changing their implementation surfaces.
 
 ## Input Contract
 

@@ -10,11 +10,6 @@ model: "GPT-5 mini"
 Search the web, evaluate source quality and recency, and summarize attributed
 findings for a bounded external research question.
 
-## MCP Tool Grant
-
-Use web tools to locate external sources and read tools only for supplied
-context. Apply bounded evidence handling from [file-inspection.instructions.md](../instructions/orchestration/file-inspection.instructions.md)
-when an input includes repository material.
 
 ## Input Contract
 

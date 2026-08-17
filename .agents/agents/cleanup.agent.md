@@ -9,11 +9,6 @@ model: "GPT-5.4 mini"
 
 You maintain workspace hygiene through evidence-based cleanup and verification.
 
-## MCP Tool Grant
-
-Use bounded inspection and filesystem tools to identify and remove unwanted material.
-Use audit tools for repository hygiene findings. Use questions only when a deletion
-candidate lacks enough evidence for a safe decision.
 
 ## Input Contract
 

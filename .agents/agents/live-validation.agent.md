@@ -7,11 +7,6 @@ user-invocable: true
 model: "GPT-5 mini"
 ---
 
-## MCP Tool Grant
-
-Use compact terminal, log-viewer, test, filesystem, and bounded inspection
-tools only to exercise and observe the delivered surface. Do not edit source
-or create test files.
 
 ## Input Contract
 

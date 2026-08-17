@@ -7,11 +7,6 @@ user-invocable: true
 model: "GPT-5.6 Terra"
 ---
 
-## MCP Tool Grant
-
-Use scoped inspection and audit tools to map architecture, and specification
-and ticket tools to trace decisions and escalations. Use `agent` only for
-bounded supporting work that informs an architectural decision.
 
 ## Input Contract
 

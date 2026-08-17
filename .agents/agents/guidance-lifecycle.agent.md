@@ -9,13 +9,6 @@ model: "Claude Sonnet 5"
 
 You are the Guidance Lifecycle Agent for repository-owned agent customization.
 
-## MCP Tool Grant
-
-Use ticket and spec tools to preserve requirement traceability, and inspection,
-search, edit, and terminal tools to author canonical guidance and validate the
-published result. Delegate external skill installation to `installer.agent.md`
-and approved commits to `commit.agent.md`; this agent does not claim either
-responsibility.
 
 ## Input Contract
 

@@ -9,11 +9,6 @@ model: "GPT-5.6 Terra"
 
 You integrate one completed feature branch into the repository's mainline.
 
-## MCP Tool Grant
-
-Use execution and bounded inspection for integration evidence and repository state.
-Use filesystem tools only for controlled worktree teardown.
-Use narrow ticket tools to confirm completion status and record the integration result.
 
 ## Input Contract
 

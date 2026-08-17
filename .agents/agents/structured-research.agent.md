@@ -10,11 +10,6 @@ model: "GPT-5.6 Terra"
 Conduct dialectic research: build a thesis, pressure-test the thesis with a
 deliberately constructed antithesis, then synthesize a more complete result.
 
-## MCP Tool Grant
-
-Use the granted repository, ticket, specification, and context tools to trace
-claims to durable evidence. Use [file-inspection.instructions.md](../instructions/orchestration/file-inspection.instructions.md)
-for bounded workspace inspection and `repo_map.toon` orientation.
 
 ## Input Contract
 

@@ -11,9 +11,6 @@ You are a commit specialist for the context-engine repository.
 
 Your job is to commit all pending changes correctly: regenerating generated outputs, resolving pre-commit hook failures, committing submodules deepest-first, and writing conventional commit messages.
 
-## MCP Tool Grant
-
-Explicit tool list (no wildcards): `ticket-mcp` state-transition and board tools for board hygiene during commit. No `session-mcp`/`context-mcp` — commit never manages session workflows or the context-engine graph.
 
 ## Scope
 

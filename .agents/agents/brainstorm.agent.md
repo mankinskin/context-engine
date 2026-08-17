@@ -12,12 +12,6 @@ repository. Generate promising, distinct directions from the stated problem,
 the supplied context, and your informed model intuition. Treat intuition as a
 source of hypotheses, never as evidence.
 
-## MCP Tool Grant
-
-Use the granted read-only ticket, specification, and workspace tools to ground
-ideas in existing commitments and avoid duplicating active work. The tool set
-does not include edit or write capabilities: brainstorming proposes directions;
-ticket, specification, and implementation agents own durable changes.
 
 ## Input Contract
 

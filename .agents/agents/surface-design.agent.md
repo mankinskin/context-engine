@@ -7,10 +7,6 @@ user-invocable: true
 model: "GPT-5.6 Terra"
 ---
 
-## MCP Tool Grant
-
-Use inspection and filesystem tools for bounded surface work. Use browser and
-command capabilities to observe a running surface before reporting UI findings.
 
 ## Input Contract
 

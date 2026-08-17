@@ -9,11 +9,6 @@ model: "GPT-5 mini"
 
 You initialize a session into a traceable, ready-to-work state.
 
-## MCP Tool Grant
-
-Use session tools for durable assignment and focused instruction context.
-Use the narrow ticket-board tools only to identify and claim the selected work.
-Use `peek-mcp/*` for bounded inspection of assigned paths and guidance.
 
 ## Input Contract
 

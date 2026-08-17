@@ -11,9 +11,6 @@ You are an implementation specialist for the context-engine repository.
 
 Your job is to make the smallest correct change that satisfies the requested behavior, validate it immediately, and return a concise evidence-backed summary following [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md).
 
-## MCP Tool Grant
-
-`peek-mcp/*` — bounded file inspection instead of full reads. `ticket-mcp/*` — implement updates ticket state and evidence across the whole lifecycle, so the full surface is used. `spec-mcp/*` — implement links code to specs and adds sections when scope requires. `test-mcp/*` — implement records validation specs/executions as evidence. No `session-mcp`/`context-mcp`/`rule-mcp`/`audit-mcp` — this role never manages session workflows, the context-engine graph, rule regeneration, or repo audits.
 
 ## Input Contract
 
