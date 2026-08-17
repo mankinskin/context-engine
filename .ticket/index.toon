@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[1612]:
+entries[1619]:
   - id: "0028f61c-e8b9-4fb4-81fd-5d1e37f7a429"
     kind: ticket
     source_path: ".ticket/tickets/0028f61c-e8b9-4fb4-81fd-5d1e37f7a429/ticket.toml"
@@ -6971,6 +6971,19 @@ entries[1612]:
     digest: b2e226c26cd2020802e8bf99a35821a4f027448dd5f0611e24535fba64c7ad27
     tags[4]: high,open,ticket,"ticket-http"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "56a17519-38aa-4c27-944c-5396df6a3fc6"
+    kind: ticket
+    source_path: ".ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml"
+    title: "[workflow-tools][per-tool] Extract `doc` tool as `doc` domain crate + viewer"
+    summary: "`memory-api/crates/memory-api` is deleted. `doc` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root development..."
+    keywords[178]: 1b7e0c3d,above,acceptance,access,actually,agents,all,alongside,and,another,any,api,are,baseline,bash,before,below,bin,binary,bins,blocking,branch,browser,build,capture,cargo,chromium,cli,com,commit,confirm,consolidated,consumers,consuming,crate,crates,create,creation,criteria,default,deleted,deleting,dependency,development,doc,does,domain,during,e2e,established,execution,exist,existence,exists,exporting,expose,exposed,external,extract,extracted,extraction,fabricate,family,feature,features,finalizing,fold,for,found,free,frontend,fullscreen,gate,gated,genuinely,git,github,harness,have,http,https,identified,implementation,including,independent,indirectly,internal,into,its,kernel,legacy,lib,like,list,log,main,manifest,mankinskin,mcp,memory,migration,move,must,names,not,old,only,open,optional,outside,own,pass,patch,path,paths,per,plan,planning,playwright,precedent,preserve,prior,proved,public,question,relative,remote,repo,repoint,repointed,repository,resolution,resolve,resolved,risk,root,same,scope,screenshots,see,separate,server,should,source,standalone,suite,surface,survey,test,tests,that,the,then,ticket,toml,tool,tools,transport,transports,tree,unconfirmed,until,use,validate,verified,verify,via,viewer,viewers,was,whatever,where,whether,whichever,with,workflow,"workflow-tools",workspace
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml","56a17519-38aa-4c27-944c-5396df6a3fc6",related,ticket,"",56a17519
+    digest: 14d58fc961a67d11f3e98be38d53d03071170de2fc1f287f77e8c9ee553b56a4
+    tags[3]: open,ticket,"workflow-tools"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "56be2eaa-6b32-4291-857a-b2c1aa24f273"
     kind: ticket
     source_path: ".ticket/tickets/56be2eaa-6b32-4291-857a-b2c1aa24f273/ticket.toml"
@@ -12015,6 +12028,19 @@ entries[1612]:
     digest: 76205e53cad74b1f544b95ef699f4637e09d841c1e49cc3783abcd9ab9ca1a08
     tags[4]: high,open,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "9158e113-86e8-47f2-964e-e21da632f4ef"
+    kind: ticket
+    source_path: ".ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml"
+    title: "[workflow-tools][per-tool] Extract `audit` tool as `audit` domain crate"
+    summary: "`memory-api/crates/memory-api` is deleted. `audit` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root developme..."
+    keywords[138]: 1b7e0c3d,21893f5f,acceptance,accessors,added,after,all,and,any,api,are,audit,bare,baseline,bash,before,bin,binary,bins,branch,build,cargo,cli,com,commit,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,default,deleted,deleting,dependency,depends,development,domain,during,established,exact,execution,exists,exporting,extension,extra,extract,extracted,extraction,feature,features,first,fold,for,free,gated,git,github,harness,http,https,identified,implementation,independent,internal,into,keep,kernel,keys,known,legacy,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,open,outside,own,patch,path,paths,per,plan,planning,preserve,proved,public,published,rather,real,relative,remote,repo,repoint,repointed,repository,resolution,risk,root,rule,sequence,source,standalone,surface,test,tests,than,the,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,under,use,verified,viewer,with,workflow,"workflow-tools",workspace
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml","9158e113-86e8-47f2-964e-e21da632f4ef",related,ticket,"","9158e113"
+    digest: 6eb4ac2bb074beb38bf6ddcf3c0b47e02770d01eb99fb6153b50d18d976e8a70
+    tags[3]: open,ticket,"workflow-tools"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "9185d8f2-1080-46b1-84da-485f9ad839f6"
     kind: ticket
     source_path: ".ticket/tickets/9185d8f2-1080-46b1-84da-485f9ad839f6/ticket.toml"
@@ -12820,6 +12846,19 @@ entries[1612]:
         ".ticket/tickets/9be61624-f8ab-42ca-980b-b1510e4136b1/ticket.toml","9be61624-f8ab-42ca-980b-b1510e4136b1",related,ticket,"",9be61624
     digest: "098be4e3d4120f0eb22f845b7524ff853f48b5494db2137ba717a1068e875769"
     tags[3]: open,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "9c029859-c0a9-4019-bb4a-160dd9cf3a9a"
+    kind: ticket
+    source_path: ".ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml"
+    title: "[workflow-tools][per-tool] Extract `feedback` tool as `feedback` domain crate"
+    summary: "`memory-api/crates/memory-api` is deleted. `feedback` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root develo..."
+    keywords[143]: 1b7e0c3d,21893f5f,acceptance,accessors,all,and,any,api,are,bare,baseline,bash,before,binary,bins,branch,build,can,cargo,cli,com,commit,complete,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,default,deleted,deleting,dependency,development,domain,during,early,established,exact,execution,exporting,extension,extra,extract,extracted,extraction,feature,features,feedback,finding,first,fold,for,free,gated,git,github,harness,has,http,https,identified,implementation,including,independent,internal,into,its,keep,kernel,keys,known,legacy,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,open,other,outside,own,patch,path,paths,per,plan,planning,preserve,prior,proved,public,publish,published,relative,remote,repo,repoint,repointed,repository,resolution,risk,root,rule,sequence,since,source,standalone,surface,survey,test,tests,that,the,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,under,use,verified,viewer,with,workflow,"workflow-tools",workspace
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml","9c029859-c0a9-4019-bb4a-160dd9cf3a9a",related,ticket,"",9c029859
+    digest: cd29ea5f10a54f06277e9fe6d5728c80e0c6d7f7c50307efd5adb1e993038aed
+    tags[3]: open,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9c1de000-0000-4000-8000-000000000000"
     kind: ticket
@@ -13900,6 +13939,19 @@ entries[1612]:
     digest: 11602bac6d438896e33af03c760e7c5712e48af4c03e37082b3943109a5d30d5
     tags[4]: done,high,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "a6d38372-0df2-437b-b06d-3984c290dbd1"
+    kind: ticket
+    source_path: ".ticket/tickets/a6d38372-0df2-437b-b06d-3984c290dbd1/ticket.toml"
+    title: "[workflow-tools][remediation] Resolve test-cli/log-api/test-api dependency cycle blocking log extraction"
+    summary: "`.agents/instructions/engine/workflow-tool-extraction.instructions.md` requires that before any `{domain}` crate is extracted into its own repository, the repository-level dependency graph across sou..."
+    keywords[279]: 0da6894c,"2026",2736c3dc,2aea,"4095","4196","4373",5ee7f36a,8a4a,8ac7,8c67,ac19,acceptance,across,active,agents,also,analogy,and,any,api,apply,are,asserted,assume,assumes,assumption,avoiding,b6fae7c40ec9,ba4aaa9c,back,before,below,bins,blocking,blocks,both,boundary,breaks,builds,calls,can,candidate,cannot,capability,capture,captures,cargo,caveat,choice,chosen,cleanly,cli,command,compile,confidence,confirmed,consumers,consuming,contain,contract,copy,crate,crates,criteria,cross,cut,cycle,dcbb,decision,define,defined,definition,deliberately,demonstrated,depend,dependencies,dependency,depending,depends,determine,different,directions,directly,diverged,document,domain,done,during,e0a61340c58b,e6b26ae174bf,each,easy,edge,edges,either,end,engine,entirely,entries,epic,etc,exactly,exists,explicit,express,extract,extracted,extracting,extraction,feature,file,files,first,flow,follow,following,for,force,found,from,frontend,fully,gate,gated,gets,git,graph,happens,has,have,high,identify,identity,implement,implementation,inaccessible,incomplete,instead,instruction,instructions,into,investigation,its,itself,just,layers,leaf,legacy,level,likely,link,live,log,looping,lower,mapped,may,mcp,members,memory,move,must,narrow,necessary,needs,new,not,once,one,only,onto,open,operations,optional,other,out,over,own,pair,pass,path,pattern,per,pick,planned,plans,plus,problem,proceeding,proceeds,proven,rather,read,reading,real,record,relative,remediation,remote,remove,removing,repo,repos,repositories,repository,requires,resolve,resolving,reverse,root,runtime,separate,separately,shared,side,simpler,single,smaller,source,spec,specific,specifically,specs,split,standalone,still,strand,strategies,strategy,structurally,subgraph,submodule,test,tests,than,that,the,then,there,therefore,thin,this,ticket,tickets,time,tiny,today,toml,tool,tools,trait,transport,tree,two,types,unpublished,unresolved,validated,validation,verification,verified,versa,vice,viewer,what,whether,whichever,why,wired,with,without,workflow,"workflow-tools",workspace,would,write,writing,yet
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/a6d38372-0df2-437b-b06d-3984c290dbd1/ticket.toml","a6d38372-0df2-437b-b06d-3984c290dbd1",related,ticket,"",a6d38372
+    digest: bd235abf8f7fa85f59937e42c0919eac599e5c60961ffe42eaff6e6c7f801833
+    tags[4]: high,open,ticket,"workflow-tools"
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "a6f17580-f7ea-4c4e-92e7-0c77c68185fe"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/a6f17580-f7ea-4c4e-92e7-0c77c68185fe/ticket.toml"
@@ -14003,6 +14055,19 @@ entries[1612]:
         "memory-api/.ticket/tickets/a762448e-464c-43da-95b8-e49eb07814ed/ticket.toml","a762448e-464c-43da-95b8-e49eb07814ed",related,ticket,"",a762448e
     digest: 5aa3e5c27e0b11a691708687b0e40dc85644052f44f14e9a46f26d618c25258c
     tags[4]: "audit-api",done,high,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "a765fca6-4670-4097-8a24-a404daddd958"
+    kind: ticket
+    source_path: ".ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml"
+    title: "[workflow-tools][per-tool] Extract `session` tool as `session` domain crate"
+    summary: "`memory-api/crates/memory-api` is deleted. `session` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root develop..."
+    keywords[169]: 0da6894c,1b7e0c3d,"395634608371",4cfc,a1e2,acceptance,accessors,after,all,also,and,api,attempting,available,ba4aaa9c,bare,baseline,bash,before,being,binary,bins,blocked,board,both,branch,build,cannot,capture,cargo,cli,com,commit,complete,confirm,consolidate,consumable,consume,consumer,consumers,contract,contradicts,crate,crates,create,criteria,cross,cut,d270,default,deleted,deleting,depend,dependency,depends,development,domain,during,equivalents,established,exact,execution,explicit,exporting,extension,external,extra,extract,extraction,feature,features,first,fold,for,free,gated,git,github,harness,has,hook,https,implementation,independent,internal,into,keep,kernel,keys,known,lands,legacy,linkage,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,open,over,pass,patch,path,paths,per,plan,planning,preserve,prior,proved,provision,public,published,rather,relative,remaining,remote,repo,repoint,repointed,repointing,repository,require,resolution,review,risk,root,scope,sequenced,session,should,source,standalone,step,surface,test,tests,than,the,their,this,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,until,use,verified,viewer,which,with,workflow,"workflow-tools",workspace,worktree,would
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml","a765fca6-4670-4097-8a24-a404daddd958",related,ticket,"",a765fca6
+    digest: f176f3a92aec954be0f6c8746767965b067dc176b5f16fda23eb6be58161e3a3
+    tags[3]: open,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a76c72e6-0bb9-48ef-be43-37c72ad89002"
     kind: ticket
@@ -14848,6 +14913,19 @@ entries[1612]:
         "memory-api/.ticket/tickets/b3155a94-230e-416b-be0e-5948d6d2193a/ticket.toml","b3155a94-230e-416b-be0e-5948d6d2193a",related,ticket,"",b3155a94
     digest: 39d556ca0c35123a01566a9d950464d69658ef7704bc68ab49135fb38adf0de8
     tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b34489db-7c08-4f6e-a22b-cb02278ac99f"
+    kind: ticket
+    source_path: ".ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml"
+    title: "[workflow-tools][per-tool] Extract `test` tool as `test` domain crate"
+    summary: "`memory-api/crates/memory-api` is deleted. `test` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root developmen..."
+    keywords[159]: 0df2,1b7e0c3d,3984c290dbd1,437b,a6d38372,above,acceptance,accessors,all,and,any,api,b06d,bare,baseline,bash,before,binary,bins,blocking,branch,build,can,cannot,cargo,cli,com,commit,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,cross,currently,cycle,default,deleted,deleting,dependency,depends,development,domain,during,established,exact,execution,explicit,exporting,extension,extra,extract,extracted,extraction,feature,features,first,fixed,fold,folded,for,free,gated,git,github,hard,harness,has,https,identified,implementation,import,including,independent,internal,into,introducing,keep,kernel,keys,known,land,legacy,log,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,not,old,only,open,order,ordering,outside,own,patch,path,paths,per,plan,planning,preference,prerequisite,preserve,proved,public,published,relative,remote,removed,repo,repoint,repointed,repository,resolution,resolve,resolved,restructured,risk,root,soft,source,standalone,surface,test,tests,the,this,ticket,toml,tool,tools,traits,transport,transports,typed,unchanged,use,verified,viewer,which,while,with,without,workflow,"workflow-tools",workspace
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml","b34489db-7c08-4f6e-a22b-cb02278ac99f",related,ticket,"",b34489db
+    digest: c1d4b8421cca848abbf069d976a1377415d4fc24e85cd829c6d9f8adc15eaa73
+    tags[3]: open,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b3d250d5-dd28-44e6-aaf4-47bee9dea56e"
     kind: ticket
@@ -17396,6 +17474,19 @@ entries[1612]:
         "memory-api/.ticket/tickets/d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94/ticket.toml","d3b5c7e9-8f1a-4b2c-9d3e-4f5a6b7c8d94",related,ticket,"",d3b5c7e9
     digest: 4ba32251c521e196ae46d9cb0f57f7afc7cc99b9d83ecc0f48d38fd162d17743
     tags[3]: lease,planned,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "d3ca741d-6ee8-4768-8eff-2099c0c5b58c"
+    kind: ticket
+    source_path: ".ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml"
+    title: "[workflow-tools][per-tool] Extract `spec` tool as `spec` domain crate + viewer"
+    summary: "`memory-api/crates/memory-api` is deleted. `spec` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root developmen..."
+    keywords[159]: 0da6894c,1b7e0c3d,acceptance,accessors,agents,all,alongside,and,any,api,are,bare,baseline,bash,before,binary,bins,branch,browser,build,capture,cargo,chromium,cli,com,commit,confirm,consolidate,consolidated,consumer,consumers,consuming,contract,crate,crates,create,criteria,default,deleted,deleting,dependency,depends,development,dioxus,domain,done,during,established,exact,execution,existing,exporting,extension,external,extra,extract,extracted,extraction,family,feature,features,first,fold,for,free,frontend,fullscreen,gated,git,github,harness,http,https,identified,implementation,including,independent,integration,internal,into,its,keep,kernel,keys,legacy,log,main,manifest,mankinskin,mcp,memory,migration,move,must,names,needs,neutral,never,old,only,open,outside,own,patch,path,paths,per,plan,planning,playwright,preserve,proof,proved,public,published,relative,remote,repeat,repo,repoint,repointed,repository,resolution,retained,risk,root,rule,screenshots,source,spec,sse,standalone,surface,survey,test,tests,the,then,ticket,toml,tool,tools,traits,transition,transport,transports,tree,typed,unchanged,use,validate,verified,verify,viewer,viewers,with,workflow,"workflow-tools",workspace
+    scope: "state=open, component=workflow-tools"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml","d3ca741d-6ee8-4768-8eff-2099c0c5b58c",related,ticket,"",d3ca741d
+    digest: d7aaa43b080d1976593ea84c5f1e88d07a5b29bb66aff9337b7f1e52b30bf321
+    tags[3]: open,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d3f76335-15de-40e7-97ef-18c400e32268"
     kind: ticket

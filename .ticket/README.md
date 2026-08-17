@@ -8780,11 +8780,47 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Tracking epic for the repository restructuring that turns this monorepo into an instantiated example of a general, self-improving agent framework, and extracts the workflow tooling into standalone, i...
 - ref: `.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml`
 
+<!-- ticket-index:entry id=9158e113-86e8-47f2-964e-e21da632f4ef slug=open/workflow-tools digest=6eb4ac2bb074 -->
+#### [9158e113] [workflow-tools][per-tool] Extract `audit` tool as `audit` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `audit` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developme...
+- ref: `.ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml`
+
+<!-- ticket-index:entry id=56a17519-38aa-4c27-944c-5396df6a3fc6 slug=open/workflow-tools digest=14d58fc961a6 -->
+#### [56a17519] [workflow-tools][per-tool] Extract `doc` tool as `doc` domain crate + viewer
+- summary: `memory-api/crates/memory-api` is deleted. `doc` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root development...
+- ref: `.ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml`
+
+<!-- ticket-index:entry id=9c029859-c0a9-4019-bb4a-160dd9cf3a9a slug=open/workflow-tools digest=cd29ea5f10a5 -->
+#### [9c029859] [workflow-tools][per-tool] Extract `feedback` tool as `feedback` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `feedback` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root develo...
+- ref: `.ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml`
+
+<!-- ticket-index:entry id=a765fca6-4670-4097-8a24-a404daddd958 slug=open/workflow-tools digest=f176f3a92aec -->
+#### [a765fca6] [workflow-tools][per-tool] Extract `session` tool as `session` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `session` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root develop...
+- ref: `.ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml`
+
+<!-- ticket-index:entry id=d3ca741d-6ee8-4768-8eff-2099c0c5b58c slug=open/workflow-tools digest=d7aaa43b080d -->
+#### [d3ca741d] [workflow-tools][per-tool] Extract `spec` tool as `spec` domain crate + viewer
+- summary: `memory-api/crates/memory-api` is deleted. `spec` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developmen...
+- ref: `.ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml`
+
+<!-- ticket-index:entry id=b34489db-7c08-4f6e-a22b-cb02278ac99f slug=open/workflow-tools digest=c1d4b8421cca -->
+#### [b34489db] [workflow-tools][per-tool] Extract `test` tool as `test` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `test` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developmen...
+- ref: `.ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml`
+
 <!-- ticket-index:entry id=858c5286-6c2b-4a05-a0f3-4e8f6b90b75e slug=open/workflow-tools digest=92c7c35a05ef -->
 #### [858c5286] [workflow-tools][per-tool] Split each domain tool into its own repository (parent tracker)
 - priority: `high`
 - summary: Phase B parent tracker. Split each of the 11 domain tools into its own bare-named repository under github.com/mankinskin. Each tool repo is built around a single domain crate (see contract `0da6894c`...
 - ref: `.ticket/tickets/858c5286-6c2b-4a05-a0f3-4e8f6b90b75e/ticket.toml`
+
+<!-- ticket-index:entry id=a6d38372-0df2-437b-b06d-3984c290dbd1 slug=open/workflow-tools digest=bd235abf8f7f -->
+#### [a6d38372] [workflow-tools][remediation] Resolve test-cli/log-api/test-api dependency cycle blocking log extraction
+- priority: `high`
+- summary: `.agents/instructions/engine/workflow-tool-extraction.instructions.md` requires that before any `{domain}` crate is extracted into its own repository, the repository-level dependency graph across sou...
+- ref: `.ticket/tickets/a6d38372-0df2-437b-b06d-3984c290dbd1/ticket.toml`
 
 <!-- ticket-index:entry id=b525a7fa-f59d-4a14-b234-2ec7b8a42e95 slug=open/workflow-tools digest=f82e7d362225 -->
 #### [b525a7fa] [workflow-tools][umbrella] Create workflow-tools umbrella aggregating tool and shared repositories
