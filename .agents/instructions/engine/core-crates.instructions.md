@@ -17,7 +17,7 @@ When changing upper layers, check assumptions in lower layers first.
 
 - Keep public APIs stable unless the task explicitly requires changes.
 - Preserve existing type and naming conventions within the crate.
-- Prefer minimal, local changes over broad refactors.
+- Keep scope disciplined: avoid unrequested broad refactors, but proactively fix a discovered quality finding in code the current unit touches or directly depends on; that related fix is in scope.
 
 ## Discovery Checklist
 
