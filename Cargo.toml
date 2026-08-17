@@ -1,11 +1,10 @@
 [workspace]
 resolver = "2"
+exclude = ["ticket"]
 members = [
   "memory-api/crates/audit-api",
   "memory-api/crates/doc-api",
   "memory-api/crates/rule-api",
-  "memory-api/crates/ticket-api",
-  "memory-api/crates/ticket",
   "memory-api/crates/spec-api",
   "memory-api/crates/test-api",
   "memory-api/crates/log-api",
@@ -16,7 +15,6 @@ members = [
   "memory-api/crates/feedback-api",
   "memory-api/crates/memory-fixtures",
   "memory-api/crates/memory-matrix",
-  "memory-api/crates/ticket-vscode-core",
   "memory-api/tools/http/doc-http",
   "context-stack/context-search",
   "context-stack/context-insert",
@@ -86,3 +84,7 @@ no-deps = true
 [patch."https://github.com/mankinskin/memory-kernel"]
 memory-kernel = { path = "memory-kernel" }
 transport-harness = { path = "memory-kernel/crates/transport-harness" }
+
+[patch."https://github.com/mankinskin/memory-api"]
+feedback-api = { path = "memory-api/crates/feedback-api" }
+spec-api = { path = "memory-api/crates/spec-api" }
