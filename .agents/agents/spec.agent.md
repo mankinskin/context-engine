@@ -36,9 +36,9 @@ Your job is to create or refine the smallest complete specification slice that c
 2. Search existing specs first, then related tickets, to avoid duplicates and identify the owning component and parent.
 3. Decide whether to update an existing spec or create a draft spec with a clear slug and parent.
 4. Write or refine the spec so it captures:
-   - goal or intended behavior
-   - scope and non-goals
-   - explicit acceptance criteria
+   - required components
+   - component shapes and behavior contracts
+   - explicit acceptance criteria as a test matrix
    - required traceability and evidence
 5. Link the spec to:
    - exact related ticket folder paths returned by ticket tools; do not synthesize ticket paths
