@@ -15530,13 +15530,13 @@ entries[1619]:
     source_path: ".ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml"
     title: "[workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends"
     summary: "Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-ap..."
-    keywords[84]: 0da6894c,858c5286,acceptance,and,api,artifacts,bare,bin,binary,bins,browser,builds,built,cli,contract,core,crate,crates,criteria,cross,dbe0e955,dependency,dioxus,domain,exporting,exports,exposes,extract,feature,follow,frontends,gated,harness,high,http,"in-implementation",independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,over,own,owner,parent,pass,per,phase,playwright,plus,primary,recipe,reference,registered,repository,scoped,screenshot,separate,shared,single,smoke,stay,store,targets,the,ticket,tool,tooling,tools,tracker,transport,transports,verified,via,viewer,vscode,with,workflow
-    scope: "state=in-implementation, component=ticket"
+    keywords[84]: 0da6894c,858c5286,acceptance,and,api,artifacts,bare,bin,binary,bins,browser,builds,built,cli,contract,core,crate,crates,criteria,cross,dbe0e955,dependency,dioxus,domain,exporting,exports,exposes,extract,feature,follow,frontends,gated,harness,high,http,"in-review",independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,over,own,owner,parent,pass,per,phase,playwright,plus,primary,recipe,reference,registered,repository,scoped,screenshot,separate,shared,single,smoke,stay,store,targets,the,ticket,tool,tooling,tools,tracker,transport,transports,verified,via,viewer,vscode,with,workflow
+    scope: "state=in-review, component=ticket"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml","ba4aaa9c-d270-4cfc-a1e2-395634608371",related,ticket,"",ba4aaa9c
-    digest: fa7bffbfffd3bd65c0806f3453417a336f3ae66b8af078a72203a6aa289575c3
-    tags[3]: high,"in-implementation",ticket
+    digest: 0ba624990c078dd8a79bfbd8b658660efd814b5541e971ca8f1eee1e365627e3
+    tags[3]: high,"in-review",ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ba602b61-5216-44bf-af04-87b6132547a7"
     kind: ticket

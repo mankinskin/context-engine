@@ -4929,15 +4929,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/52724aed-7215-471b-b2d8-7fb425f5ed61/ticket.toml`
 
 
-### Component: ticket
-
-<!-- ticket-index:entry id=ba4aaa9c-d270-4cfc-a1e2-395634608371 slug=in-implementation/ticket digest=fa7bffbfffd3 -->
-#### [ba4aaa9c] [workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends
-- priority: `high`
-- summary: Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-ap...
-- ref: `.ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml`
-
-
 ### Component: ticket-api
 
 <!-- ticket-index:entry id=fa2ba34b-59ec-4321-a4ce-a3c3a9295ea3 slug=in-implementation/ticket-api digest=84150bf41317 -->
@@ -5222,6 +5213,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `medium`
 - summary: `./target/debug/ticket.exe list --toon | head -40` panics when `head` closes stdout, exits with code 130, and produces no usable output. The same outcome occurs with ordinary early-closing consumers ...
 - ref: `.ticket/tickets/2e07430b-5ade-4384-8b4f-93dd6de73203/ticket.toml`
+
+<!-- ticket-index:entry id=ba4aaa9c-d270-4cfc-a1e2-395634608371 slug=in-review/ticket digest=0ba624990c07 -->
+#### [ba4aaa9c] [workflow-tools][per-tool] Extract ticket tool as a single `ticket` domain crate (api + transport bins) + viewer/vscode frontends
+- priority: `high`
+- summary: Phase B. Extract the ticket tool into its own `ticket` repository (owner mankinskin), built as a single `ticket` domain crate per contract `0da6894c`: the crate lib re-exports the internal `ticket-ap...
+- ref: `.ticket/tickets/ba4aaa9c-d270-4cfc-a1e2-395634608371/ticket.toml`
 
 
 ### Component: ticket-api
