@@ -1503,10 +1503,9 @@ entries[253]:
     kind: spec
     source_path: ".spec/specs/6f286eee-115b-4476-a6fc-9bd6796b5f3f/spec.toml"
     title: "Unified Agent Harness: one minimal operator interface for on-demand chat + long-running loops"
-    summary: "<!-- aligned-structure:v1 -->"
+    summary: "<!-- aligned-structure:v2 -->"
     keywords[10]: agent,chat,harness,interface,"long-running",loops,minimal,"on-demand",operator,unified
-    scope: "Shared protocol/types crate with versioned, tagged lifecycle event schemas. Core ReAct loop runtime with an explicit state machine and a single session model that supports both interactive and autonomous modes. Provider abstraction (OpenAI/Anthropic/OpenRouter) with budget/polic…"
-    digest: 80d3a7fa9524e3831916531d8ab1d10bf22d2fb8debb7f35f6e2c8051d29ca45
+    digest: 20d8ef7912e2235f44565e177f873dfb3006289bff122a23cfdd0edb8a7e6282
     tags[4]: "agent-harness",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "709f067a-21b6-41b6-8879-3cacef4bacaf"
@@ -1851,13 +1850,13 @@ entries[253]:
     generated_at: "1970-01-01T00:00:00Z"
   - id: "88413517-1d93-4582-8328-71a417dde3a1"
     kind: spec
-    source_path: ".spec/specs/88413517-1d93-4582-8328-71a417dde3a1/spec.toml"
+    source_path: "C:/Users/linus/git/2/context-engine/.spec/specs/88413517-1d93-4582-8328-71a417dde3a1/spec.toml"
     title: Agent template roster and authoring contract
     summary: "<!-- aligned-structure:v2 -->"
     keywords[5]: agent,authoring,contract,roster,template
     scope: "Add the 15 templates in the target roster below. Rewrite `orchestrator.agent.md` to route work across the complete roster and retain the red thread across tasks, sessions, and goals. Extend `simplify.agent.md` with rule-steward responsibilities for instruction files and agent te…"
     non_goals: "Implementing, deleting, or editing any agent template in this specification unit. Creating a dedicated Search Agent; `explore.agent.md` remains the owner of bounded read-only probing. Replacing the model-routing contract or the per-template MCP-grant contract. Making templates p…"
-    digest: 5f683d9b72324e4130c0ab58b3780b7fb6f4b237159e8618971c0cfc6eb759b2
+    digest: d589c1ba21bcb992acff6f6b0099bce621bcbccfaae010baf1d3d3893391a83a
     tags[4]: "agent-tooling",draft,root,"scope:internal"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "8c2bbb42-4ca0-43a3-8196-334218bf543e"
