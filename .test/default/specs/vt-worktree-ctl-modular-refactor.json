@@ -1,0 +1,7 @@
+{
+  "id": "vt-worktree-ctl-modular-refactor",
+  "title": "worktree-ctl modular refactor validation",
+  "command": "cargo test -p worktree-ctl --test maintenance && cargo test -p worktree-ctl --bin worktree-ctl",
+  "detail": "Preserves lifecycle, rebase, merge, sync, gitlink containment, and dirty-tree behavior while extracting Git process, gitlink, and synchronization modules.",
+  "links": {}
+}
