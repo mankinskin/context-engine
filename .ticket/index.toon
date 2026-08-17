@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[1619]:
+entries[1620]:
   - id: "0028f61c-e8b9-4fb4-81fd-5d1e37f7a429"
     kind: ticket
     source_path: ".ticket/tickets/0028f61c-e8b9-4fb4-81fd-5d1e37f7a429/ticket.toml"
@@ -10805,6 +10805,19 @@ entries[1619]:
         ".ticket/tickets/8418fa92-bf46-42d9-a93f-9240032893b7/ticket.toml","8418fa92-bf46-42d9-a93f-9240032893b7",related,ticket,"",8418fa92
     digest: 548e2b8972e570dfdbcadfdcb5549871620d5b3e655c78ff38d66253141a96b7
     tags[3]: ticket,todo,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae"
+    kind: ticket
+    source_path: ".ticket/tickets/842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae/ticket.toml"
+    title: "[session][hooks] Capture hook stopped firing; session lookup and MCP routing resolve to the wrong checkout"
+    summary: "Reproduce and characterize the session capture, session lookup, and MCP routing"
+    keywords[296]: 0afe45b5,153deb7f,159c71ad,200e9ecc,"2026","288",2b657154,2f81d5ed,4b1a,4bb3,4f4a,66c9ff811ceb,"74057708",807a,84d5bde2,9ec8,a3a6,a9dd1e77d915,able,acceptance,accepted,across,active,adjacent,af74,after,agents,all,also,anchored,anchors,and,another,api,approved,are,art,asserted,assigned,assignment,assume,authoritative,bash,before,begins,behavior,being,bin,binary,block,blocked,both,branch,browser,c972aed0,caller,can,capture,captures,cargo,carries,characterize,chat,check,checked,checkout,checkouts,classified,code,commit,commits,committed,completed,copy,coupled,cover,crate,crates,creating,creation,criteria,ctl,cwd,d61a,data,dead,debris,decision,decisions,defect,deferred,demonstrate,despite,details,deterministic,df78,diagnosis,differs,direct,directory,dirties,discovers,discovery,distinguish,documented,documents,does,dossier,duplicate,e2e,each,eager,entry,even,every,evidence,exe,exist,exists,explicitly,extra,extraction,f46f06cc7516,fail,fails,failure,finish,firing,first,fixture,focused,for,forward,found,fragmented,from,full,git,github,hard,has,have,here,hook,hookfileslocations,hooks,hypothesis,ignored,ignores,"in-review",independently,input,instance,instantiate,instructions,interface,into,its,itself,json,leading,lib,list,local,lookup,made,main,matching,mcp,mechanism,memory,mis,misroute,missing,model,must,mutated,mutation,mutations,new,not,objective,observed,one,only,operating,operation,original,outcome,own,package,packages,passes,path,paths,persisted,plan,positional,positionally,present,prior,produced,provision,provisioning,proxy,rather,read,readme,record,records,recover,redesign,referenced,refuse,register,registered,registration,registry,rejected,rejection,rejects,related,reloaded,relying,removal,replace,replicated,reproduce,reproduction,required,resolution,resolve,resolved,resolver,resolves,rewrite,routing,run,running,same,scope,scripts,see,session,sessions,settings,since,slug,src,stale,state,stopped,store,structurally,suspected,test,tests,than,that,the,then,this,three,ticket,tool,toolmon,tools,touched,tracked,transcript,transcripts,unit,unset,unsets,until,userpromptsubmit,uuid,uuids,valid,validation,vscode,was,when,whether,which,while,with,without,work,working,workspace,workspaces,worktree,worktrees,wp1,wrong
+    scope: "state=in-review, component=session"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae/ticket.toml","842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae",related,ticket,"",842d74cb
+    digest: e32b3932a009e36cdca3c4a9bc2b2d0490e7fe584c89a5b7749d48c48838f5de
+    tags[3]: "in-review",session,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "84673399-75e6-4f36-8a17-4c666001e530"
     kind: ticket

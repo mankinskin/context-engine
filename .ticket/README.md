@@ -5184,6 +5184,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: An orchestrator-mode session delegates every unit of work to sub-agents, but the repository can currently observe almost nothing about those sub-agents.
 - ref: `.ticket/tickets/85bfbb06-bf3a-4ea4-b57d-a829b8cd2545/ticket.toml`
 
+<!-- ticket-index:entry id=842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae slug=in-review/session digest=e32b3932a009 -->
+#### [842d74cb] [session][hooks] Capture hook stopped firing; session lookup and MCP routing resolve to the wrong checkout
+- summary: Reproduce and characterize the session capture, session lookup, and MCP routing
+- ref: `.ticket/tickets/842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae/ticket.toml`
+
 
 ### Component: testing
 
