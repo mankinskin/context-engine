@@ -47,6 +47,7 @@ owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "spec"
+features = ["cli"]
 
 [[artifact]]
 id = "audit-cli"
@@ -118,6 +119,7 @@ owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "spec-mcp"
+features = ["mcp"]
 
 [[artifact]]
 id = "test-mcp"
@@ -223,7 +225,7 @@ bin = "log-viewer"
 id = "spec-viewer"
 category = "service"
 kind = "rust-binary"
-source_path = "memory-viewers/spec-viewer"
+source_path = "workflow-tools/spec/spec-viewer"
 owner = "tooling"
 lifecycle = ["install", "start", "stop", "restart", "uninstall", "inspect"]
 safety = "approval-required"
@@ -233,7 +235,7 @@ bin = "spec-viewer"
 id = "ticket-viewer"
 category = "service"
 kind = "rust-binary"
-source_path = "memory-viewers/ticket-viewer"
+source_path = "workflow-tools/ticket/ticket-viewer"
 owner = "tooling"
 lifecycle = ["install", "start", "stop", "restart", "uninstall", "inspect"]
 safety = "approval-required"

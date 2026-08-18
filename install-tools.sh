@@ -261,82 +261,54 @@ fi
 
 resolve_install_ctl
 
-install_one() {
-    local tool=$1
-    local failed=0
-    local direct_path=
-    local direct_binary=
-    local -a subcommand_args=(install "$tool")
-    local -a full_args=("${install_ctl_cmd[@]}")
-
-    case "$tool" in
-        install-ctl)
-            direct_path=tools/install/install-ctl
-            direct_binary=install-ctl
-            ;;
-        peek-cli)
-            direct_path=memory-api/tools/cli/peek-cli
-            direct_binary=peek
-            ;;
-        test-cli)
-            direct_path=memory-api/tools/cli/test-cli
-            direct_binary=test
-            ;;
-        fs-cli)
-            direct_path=memory-api/tools/cli/fs-cli
-            direct_binary=fs
-            ;;
-        compact-terminal-cli)
-            direct_path=memory-api/tools/cli/compact-terminal-cli
-            direct_binary=compact-terminal
-            ;;
-        context-cli)
-            direct_path=context-stack/tools/cli/context-cli
-            direct_binary=context-cli
-            ;;
+# Tools installed directly with `cargo install --path` instead of through
+# install-ctl's registry (each has its own dedicated crate, so there is no
+# sibling artifact to batch it with).
+direct_path_for() {
+    case "$1" in
+        install-ctl) printf 'tools/install/install-ctl' ;;
+        peek-cli) printf 'memory-api/tools/cli/peek-cli' ;;
+        test-cli) printf 'memory-api/tools/cli/test-cli' ;;
+        fs-cli) printf 'memory-api/tools/cli/fs-cli' ;;
+        compact-terminal-cli) printf 'memory-api/tools/cli/compact-terminal-cli' ;;
+        context-cli) printf 'context-stack/tools/cli/context-cli' ;;
     esac
+}
 
-    if [[ -n "$direct_path" ]]; then
-        full_args=(cargo install --path "$direct_path" --bin "$direct_binary")
-        if [[ $force_install -eq 1 ]]; then
-            full_args+=(--force)
-        fi
-    else
-        if [[ $force_install -eq 0 ]]; then
-            subcommand_args+=(--no-force)
-        fi
-        if [[ $dry_run -eq 1 ]]; then
-            full_args+=(--dry-run)
-        fi
-        full_args+=("${subcommand_args[@]}")
+direct_binary_for() {
+    case "$1" in
+        install-ctl) printf 'install-ctl' ;;
+        peek-cli) printf 'peek' ;;
+        test-cli) printf 'test' ;;
+        fs-cli) printf 'fs' ;;
+        compact-terminal-cli) printf 'compact-terminal' ;;
+        context-cli) printf 'context-cli' ;;
+    esac
+}
+
+install_one_direct() {
+    local tool=$1
+    local direct_path
+    local direct_binary
+    direct_path=$(direct_path_for "$tool")
+    direct_binary=$(direct_binary_for "$tool")
+
+    local -a full_args=(cargo install --path "$direct_path" --bin "$direct_binary")
+    if [[ $force_install -eq 1 ]]; then
+        full_args+=(--force)
     fi
 
     printf '==> %s\n' "$tool"
 
     if [[ $dry_run -eq 1 ]]; then
-        if [[ -n "$direct_path" ]]; then
-            printf '    '
-            printf '%q ' "${full_args[@]}"
-            printf '\n'
-        else
-            if ! (cd "$repo_root" && "${full_args[@]}"); then
-                failed_tools+=("$tool")
-                printf 'error: dry-run failed for %s\n' "$tool" >&2
-                return 1
-            fi
-        fi
+        printf '    '
+        printf '%q ' "${full_args[@]}"
+        printf '\n'
         installed_tools+=("$tool")
         return 0
     fi
 
-    if ! (
-        cd "$repo_root"
-        run_filtered_command "$tool" "${full_args[@]}"
-    ); then
-        failed=1
-    fi
-
-    if [[ $failed -eq 0 ]]; then
+    if (cd "$repo_root" && run_filtered_command "$tool" "${full_args[@]}"); then
         installed_tools+=("$tool")
         return 0
     fi
@@ -346,9 +318,56 @@ install_one() {
     return 1
 }
 
+# All non-direct tools are installed via a single install-ctl invocation so
+# artifacts sharing a source path (e.g. ticket + ticket-mcp, spec-cli +
+# spec-mcp) are built once instead of once per sibling with a different
+# --bin/--features combination, which used to thrash the shared target dir
+# and force full rebuilds of common dependencies on every install.
+install_ctl_batch() {
+    local -a tools=("$@")
+    local -a subcommand_args=(install "${tools[@]}")
+    local -a full_args=("${install_ctl_cmd[@]}")
+
+    if [[ $force_install -eq 0 ]]; then
+        subcommand_args+=(--no-force)
+    fi
+    if [[ $dry_run -eq 1 ]]; then
+        full_args+=(--dry-run)
+    fi
+    full_args+=("${subcommand_args[@]}")
+
+    printf '==> %s\n' "$(IFS=', '; echo "${tools[*]}")"
+
+    if ! (cd "$repo_root" && "${full_args[@]}"); then
+        failed_tools+=("${tools[@]}")
+        printf 'error: install failed for: %s\n' "${tools[*]}" >&2
+        return 1
+    fi
+
+    installed_tools+=("${tools[@]}")
+    return 0
+}
+
+direct_tools=()
+ctl_tools=()
 for tool in "${selected_tools[@]}"; do
-    install_one "$tool" || true
+    case "$tool" in
+        install-ctl|peek-cli|test-cli|fs-cli|compact-terminal-cli|context-cli)
+            direct_tools+=("$tool")
+            ;;
+        *)
+            ctl_tools+=("$tool")
+            ;;
+    esac
 done
+
+for tool in "${direct_tools[@]}"; do
+    install_one_direct "$tool" || true
+done
+
+if [[ ${#ctl_tools[@]} -gt 0 ]]; then
+    install_ctl_batch "${ctl_tools[@]}" || true
+fi
 
 retry_prefix="./install-tools.sh"
 if [[ $force_install -eq 0 ]]; then
