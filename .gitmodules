@@ -1,10 +1,10 @@
-[submodule "memory-viewers"]
-	path = memory-viewers
-	url = https://github.com/mankinskin/memory-viewers
-	branch = main
 [submodule "context-stack"]
 	path = context-stack
 	url = https://github.com/mankinskin/context-stack
+	branch = main
+[submodule "memory-viewers"]
+	path = memory-viewers
+	url = https://github.com/mankinskin/memory-viewers
 	branch = main
 [submodule "memory-api"]
 	path = memory-api
@@ -21,4 +21,4 @@
 [submodule "workflow-tools"]
 	path = workflow-tools
 	url = https://github.com/mankinskin/workflow-tools
-  branch = main
+	branch = main

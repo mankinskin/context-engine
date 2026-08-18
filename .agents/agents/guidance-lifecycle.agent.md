@@ -26,9 +26,8 @@ proposing a rewrite.
   and cross-reference their owning rules instead of duplicating guidance.
 - Prepare required generated outputs and a commit-ready publication set after
   validation.
-- Preserve responsibility boundaries: `simplify.agent.md` owns rule-corpus
-  consolidation, `installer.agent.md` owns external skill installation, and
-  `commit.agent.md` owns staging and committing.
+- Preserve global responsibility boundaries instead of duplicating.
+- Detect repeated sections across templates and extract them to reusable files.
 
 ## Constraints
 
