@@ -77,3 +77,40 @@ opt-level = 2 # fast and small wasm
 
 [workspace.metadata.docs.rs]
 no-deps = true
+
+# Local-development overrides so crates published from repos that are also
+# checked out as submodules resolve to a single version instead of being
+# duplicated once via `path` (in-tree members) and once via `git` (pulled in
+# transitively by other extracted repos). Domain manifests keep their
+# canonical git declarations; these patches are workspace composition only
+# and must be removed to prove patch-free remote resolution.
+[patch."https://github.com/mankinskin/memory-kernel"]
+memory-kernel = { path = "memory-kernel" }
+transport-harness = { path = "memory-kernel/crates/transport-harness" }
+
+[patch."https://github.com/mankinskin/context-stack"]
+context-api = { path = "context-stack/context-api" }
+context-insert = { path = "context-stack/context-insert" }
+context-read = { path = "context-stack/context-read" }
+context-search = { path = "context-stack/context-search" }
+context-trace = { path = "context-stack/context-trace" }
+context-trace-macros = { path = "context-stack/context-trace-macros" }
+ngrams = { path = "context-stack/ngrams" }
+
+[patch."https://github.com/mankinskin/viewer-api"]
+viewer-api = { path = "viewer-api" }
+
+[patch."https://github.com/mankinskin/memory-api"]
+doc-http = { path = "memory-api/tools/http/doc-http" }
+feedback-api = { path = "memory-api/crates/feedback-api" }
+feedback-http = { path = "memory-api/tools/http/feedback-http" }
+rule-api = { path = "memory-api/crates/rule-api" }
+test-api = { path = "memory-api/crates/test-api" }
+
+[patch."https://github.com/mankinskin/ticket"]
+ticket = { path = "workflow-tools/ticket" }
+ticket-api = { path = "workflow-tools/ticket/crates/ticket-api" }
+
+[patch."https://github.com/mankinskin/spec"]
+spec = { path = "workflow-tools/spec" }
+spec-api = { path = "workflow-tools/spec/crates/spec-api" }
