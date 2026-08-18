@@ -25,7 +25,6 @@ use registry::{
     load_registry,
 };
 use selection::resolve_selection;
-use sysinfo::Pid;
 
 #[derive(Parser)]
 #[command(
@@ -216,6 +215,7 @@ fn print_plan(
         Ok(root) => root,
         Err(e) => fail(&e),
     };
+    let target_dir = repo_root.join("target/install-tools");
     let (rust_artifacts, ext_artifacts) = split_by_kind(selected);
 
     if !rust_artifacts.is_empty() {
@@ -225,13 +225,15 @@ fn print_plan(
         };
         println!("==> {}", plan.bins.join(", "));
         println!("    {}", plan.build_command_string());
-        let force_note =
-            if force { "always" } else { "only if the built binary is newer" };
-        println!(
-            "    copy target/install-tools/release/<bin> -> {} ({})",
-            paths::disp(&cargo_bin_dir()),
-            force_note
-        );
+
+        for group in group_by_path(&rust_artifacts) {
+            let (ids, path, bins, features) = group_summary(&group);
+            println!("==> {}", ids.join(", "));
+            println!(
+                "    {}",
+                install_command_string(&repo_root, &target_dir, path, &bins, &features, force)
+            );
+        }
     }
 
     for artifact in ext_artifacts {
@@ -366,19 +368,99 @@ fn package_name_for(
         })
 }
 
-/// Resolve where `cargo install` would place binaries, so plain builds can
-/// be copied to the same location: `$CARGO_INSTALL_ROOT/bin`, else
-/// `$CARGO_HOME/bin`, else `~/.cargo/bin`.
-fn cargo_bin_dir() -> std::path::PathBuf {
-    if let Ok(root) = std::env::var("CARGO_INSTALL_ROOT") {
-        return std::path::PathBuf::from(root).join("bin");
+/// Group rust-binary artifacts that share a source path (e.g. `ticket` +
+/// `ticket-mcp`, or `spec-cli` + `spec-mcp`) so a single `cargo install`
+/// call can install every bin from that crate (cargo install only accepts
+/// one `--path` per invocation, so distinct crates still need one call
+/// each).
+fn group_by_path<'a>(artifacts: &[&'a Artifact]) -> Vec<Vec<&'a Artifact>> {
+    let mut order: Vec<&str> = Vec::new();
+    let mut groups: std::collections::HashMap<&str, Vec<&'a Artifact>> =
+        std::collections::HashMap::new();
+    for artifact in artifacts {
+        groups.entry(artifact.path.as_str()).or_insert_with(|| {
+            order.push(artifact.path.as_str());
+            Vec::new()
+        });
+        groups.get_mut(artifact.path.as_str()).unwrap().push(artifact);
     }
-    if let Ok(home) = std::env::var("CARGO_HOME") {
-        return std::path::PathBuf::from(home).join("bin");
+    order
+        .into_iter()
+        .map(|path| groups.remove(path).unwrap())
+        .collect()
+}
+
+/// Collapse a group of artifacts sharing one source path into the ids,
+/// shared path, unique `--bin` names, and unioned `--features` needed to
+/// install all of them in one `cargo install` call.
+fn group_summary<'a>(
+    group: &[&'a Artifact],
+) -> (Vec<&'a str>, &'a str, Vec<&'a str>, Vec<&'a str>) {
+    let path = group[0].path.as_str();
+    let mut ids = Vec::new();
+    let mut bins: Vec<&str> = Vec::new();
+    let mut features: Vec<&str> = Vec::new();
+    for artifact in group {
+        ids.push(artifact.id.as_str());
+        let bin = artifact.bin.as_deref().unwrap_or(&artifact.id);
+        if !bins.contains(&bin) {
+            bins.push(bin);
+        }
+        for feature in &artifact.features {
+            let feature = feature.as_str();
+            if !features.contains(&feature) {
+                features.push(feature);
+            }
+        }
     }
-    dirs::home_dir()
-        .map(|h| h.join(".cargo").join("bin"))
-        .unwrap_or_else(|| std::path::PathBuf::from(".cargo/bin"))
+    (ids, path, bins, features)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn install_args(
+    repo_root: &Path,
+    target_dir: &Path,
+    path: &str,
+    bins: &[&str],
+    features: &[&str],
+    force: bool,
+) -> Vec<String> {
+    let full_path = repo_root.join(path).to_string_lossy().to_string();
+    let target_dir_str = target_dir.to_string_lossy().to_string();
+    let mut args = vec![
+        "install".to_string(),
+        "--path".to_string(),
+        full_path,
+        "--target-dir".to_string(),
+        target_dir_str,
+        "--offline".to_string(),
+    ];
+    for bin in bins {
+        args.push("--bin".to_string());
+        args.push((*bin).to_string());
+    }
+    if !features.is_empty() {
+        args.push("--features".to_string());
+        args.push(features.join(","));
+    }
+    if force {
+        args.push("--force".to_string());
+    }
+    args
+}
+
+fn install_command_string(
+    repo_root: &Path,
+    target_dir: &Path,
+    path: &str,
+    bins: &[&str],
+    features: &[&str],
+    force: bool,
+) -> String {
+    std::iter::once("cargo".to_string())
+        .chain(install_args(repo_root, target_dir, path, bins, features, force))
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 fn run_install(
@@ -422,25 +504,28 @@ fn install_rust_binaries(
     println!("==> {}", plan.bins.join(", "));
 
     // Stop every requested binary up front: a locked exe on Windows blocks
-    // both the link step and the copy that follows it.
-    let mut stopped_by_bin: Vec<(String, Vec<Pid>)> = Vec::new();
+    // both the warm-up build's link step and cargo install's replace step.
     for bin in &plan.bins {
         let running = process::pids_by_image_name(bin);
-        let mut stopped: Vec<Pid> = Vec::new();
         for pid in running {
             process::print_process_info(pid, bin);
-            if process::kill_process(pid, bin) {
-                stopped.push(pid);
-            } else {
+            if !process::kill_process(pid, bin) {
                 eprintln!(
                     "warning: [{bin}] failed to stop PID {} before install",
                     pid.as_u32()
                 );
             }
         }
-        stopped_by_bin.push((bin.clone(), stopped));
     }
 
+    // Warm-up build: compile every requested binary in one cargo invocation
+    // against the root workspace manifest, so features unify once and the
+    // workspace's own Cargo.lock/[patch] table is honored (`cargo install
+    // --path` alone re-resolves each crate's deps from scratch, ignoring
+    // both). The per-crate `cargo install` calls below reuse this shared,
+    // already-compiled target dir instead of rebuilding from nothing, while
+    // still being real `cargo install` calls for canonical `.crates2.json`
+    // bookkeeping (`cargo install --list` / `cargo uninstall` support).
     let build_args = plan.build_args();
     let arg_refs: Vec<&str> = build_args.iter().map(String::as_str).collect();
     let label = plan.bins.join(", ");
@@ -448,64 +533,19 @@ fn install_rust_binaries(
         fail(&e);
     }
 
-    let bin_dir = cargo_bin_dir();
-    if let Err(e) = std::fs::create_dir_all(&bin_dir) {
-        fail(&format!("failed to create {}: {e}", bin_dir.display()));
-    }
-    let exe_suffix = std::env::consts::EXE_SUFFIX;
-    let profile_dir = target_dir.join("release");
-
-    for (bin, stopped) in stopped_by_bin {
-        let built = profile_dir.join(format!("{bin}{exe_suffix}"));
-        let installed = bin_dir.join(format!("{bin}{exe_suffix}"));
-        match copy_binary(&built, &installed, force) {
-            Ok(true) => println!(
-                "    installed {bin} -> {}",
-                paths::disp(&installed)
-            ),
-            Ok(false) => println!("    {bin} already up to date"),
-            Err(e) => fail(&e),
-        }
-        if stopped.is_empty() {
-            println!("    no running instance of {bin} was found");
-        } else {
-            let pids = stopped
-                .iter()
-                .map(|p| p.as_u32().to_string())
-                .collect::<Vec<_>>()
-                .join(", ");
-            println!("    stopped PID(s) for {bin}: {pids}");
+    // cargo install only accepts one --path per call, so distinct crates
+    // still need one call each; siblings sharing a crate (ticket +
+    // ticket-mcp) are grouped into a single call via --bin/--features union.
+    for group in group_by_path(artifacts) {
+        let (ids, path, bins, features) = group_summary(&group);
+        let args = install_args(repo_root, target_dir, path, &bins, &features, force);
+        let arg_refs: Vec<&str> = args.iter().map(String::as_str).collect();
+        let label = ids.join(", ");
+        println!("==> {label}");
+        if let Err(e) = shell::run_cmd_args("cargo", &arg_refs, repo_root, &label) {
+            fail(&e);
         }
     }
-}
-
-/// Copy `src` to `dst` when it changed, or when `force` requires an
-/// unconditional overwrite. Returns `Ok(true)` when `dst` was stale (so
-/// callers report "installed") vs `Ok(false)` when it was already
-/// up to date (nothing new was compiled) — computed the same way
-/// regardless of `force`, so the "up to date" message stays accurate even
-/// when `force` still performs the (cheap) copy.
-fn copy_binary(
-    src: &Path,
-    dst: &Path,
-    force: bool,
-) -> Result<bool, String> {
-    let src_mtime = std::fs::metadata(src)
-        .and_then(|m| m.modified())
-        .map_err(|e| format!("failed to stat {}: {e}", src.display()))?;
-    let up_to_date = match std::fs::metadata(dst).and_then(|m| m.modified()) {
-        Ok(dst_mtime) => dst_mtime >= src_mtime,
-        Err(_) => false,
-    };
-
-    if up_to_date && !force {
-        return Ok(false);
-    }
-
-    std::fs::copy(src, dst).map_err(|e| {
-        format!("failed to copy {} to {}: {e}", src.display(), dst.display())
-    })?;
-    Ok(!up_to_date)
 }
 
 fn install_vscode_extension(
