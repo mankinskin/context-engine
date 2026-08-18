@@ -593,17 +593,17 @@ dependencies = [
  "ignore",
  "memory-kernel",
  "proc-macro2",
- "rule-api",
+ "rule-api 0.1.0",
  "rusqlite",
  "serde",
  "serde_json",
  "session-api",
  "sha2",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "syn 2.0.117",
  "tempfile",
  "thiserror 2.0.18",
- "ticket-api",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
  "toml 0.8.23",
  "uuid",
 ]
@@ -3869,11 +3869,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "doc-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-api?branch=main#0d2a16e152adff568d0d279effda89bea079b249"
+dependencies = [
+ "cargo_metadata",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+]
+
+[[package]]
 name = "doc-http"
 version = "0.1.0"
 dependencies = [
  "axum",
- "doc-api",
+ "doc-api 0.1.0",
  "memory-kernel",
  "serde",
  "serde_json",
@@ -3886,11 +3897,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "doc-http"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-api?branch=main#0d2a16e152adff568d0d279effda89bea079b249"
+dependencies = [
+ "axum",
+ "doc-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
+ "memory-kernel",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tower-http",
+ "tracing",
+]
+
+[[package]]
 name = "doc-viewer"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "doc-http",
+ "doc-http 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "markdown",
  "regex",
  "rmcp",
@@ -3899,7 +3926,7 @@ dependencies = [
  "serde_yaml",
  "thiserror 2.0.18",
  "tokio",
- "viewer-api",
+ "viewer-api 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
  "walkdir",
 ]
 
@@ -4279,12 +4306,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "feedback-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-api?branch=main#0d2a16e152adff568d0d279effda89bea079b249"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
 name = "feedback-cli"
 version = "0.1.0"
 dependencies = [
  "chrono",
  "clap",
- "feedback-api",
+ "feedback-api 0.1.0",
  "serde_json",
 ]
 
@@ -4293,7 +4331,22 @@ name = "feedback-http"
 version = "0.1.0"
 dependencies = [
  "axum",
- "feedback-api",
+ "feedback-api 0.1.0",
+ "memory-kernel",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "feedback-http"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-api?branch=main#0d2a16e152adff568d0d279effda89bea079b249"
+dependencies = [
+ "axum",
+ "feedback-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "memory-kernel",
  "serde",
  "serde_json",
@@ -4306,7 +4359,7 @@ dependencies = [
 name = "feedback-mcp"
 version = "0.1.0"
 dependencies = [
- "feedback-api",
+ "feedback-api 0.1.0",
  "memory-kernel",
  "rmcp",
  "serde",
@@ -6093,7 +6146,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
- "test-api",
+ "test-api 0.1.0",
  "thiserror 2.0.18",
 ]
 
@@ -6114,7 +6167,7 @@ dependencies = [
  "toml 0.8.23",
  "tracing",
  "ts-rs",
- "viewer-api",
+ "viewer-api 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
 ]
 
 [[package]]
@@ -6129,7 +6182,7 @@ dependencies = [
  "tracing",
  "tracing-wasm",
  "urlencoding",
- "viewer-api-dioxus",
+ "viewer-api-dioxus 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
  "web-sys",
 ]
 
@@ -6339,6 +6392,7 @@ dependencies = [
 [[package]]
 name = "memory-kernel"
 version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-kernel?branch=main#38a12e98b272fd9b0a459fa5ae0cb6be79a543c5"
 dependencies = [
  "bincode",
  "chrono",
@@ -6374,18 +6428,17 @@ dependencies = [
  "memory-kernel",
  "pretty_assertions",
  "rmcp",
- "rule-api",
+ "rule-api 0.1.0",
  "rule-cli",
  "rule-mcp",
  "serde_json",
  "session-api",
- "spec-api",
- "spec-cli",
- "spec-mcp",
+ "spec 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
- "test-api",
- "ticket",
- "ticket-api",
+ "test-api 0.1.0",
+ "ticket 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
  "tokio",
  "tower 0.5.3",
  "uuid",
@@ -7518,7 +7571,6 @@ dependencies = [
  "serde_json",
  "tempfile",
  "toon-format",
- "viewer-api",
 ]
 
 [[package]]
@@ -8488,7 +8540,7 @@ name = "rule-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "feedback-api",
+ "feedback-api 0.1.0",
  "memory-kernel",
  "pretty_assertions",
  "serde",
@@ -8502,19 +8554,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "rule-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-api?branch=main#0d2a16e152adff568d0d279effda89bea079b249"
+dependencies = [
+ "chrono",
+ "feedback-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
+ "memory-kernel",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "thiserror 2.0.18",
+ "toml 0.8.23",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "rule-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
- "feedback-api",
+ "feedback-api 0.1.0",
  "memory-fixtures 0.1.0",
  "memory-kernel",
- "rule-api",
+ "rule-api 0.1.0",
  "serde_json",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
  "thiserror 2.0.18",
- "ticket-api",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
  "toon-format",
  "uuid",
 ]
@@ -8525,10 +8594,10 @@ version = "0.1.0"
 dependencies = [
  "memory-kernel",
  "rmcp",
- "rule-api",
+ "rule-api 0.1.0",
  "serde",
  "serde_json",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
  "tokio",
  "tracing",
@@ -8998,18 +9067,18 @@ name = "session-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "feedback-api",
+ "feedback-api 0.1.0",
  "git2",
  "memory-kernel",
  "pretty_assertions",
- "rule-api",
+ "rule-api 0.1.0",
  "serde",
  "serde_json",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
- "test-api",
+ "test-api 0.1.0",
  "thiserror 2.0.18",
- "ticket-api",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
  "uuid",
 ]
 
@@ -9023,7 +9092,7 @@ dependencies = [
  "session-workspace-resolver",
  "session-worktree-provision",
  "tempfile",
- "ticket-api",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
 ]
 
 [[package]]
@@ -9034,7 +9103,7 @@ dependencies = [
  "clap",
  "memory-kernel",
  "pretty_assertions",
- "rule-api",
+ "rule-api 0.1.0",
  "serde",
  "serde_json",
  "session-api",
@@ -9051,7 +9120,7 @@ dependencies = [
  "chrono",
  "memory-kernel",
  "rmcp",
- "rule-api",
+ "rule-api 0.1.0",
  "serde",
  "serde_json",
  "session-api",
@@ -9081,10 +9150,10 @@ dependencies = [
  "filetime",
  "git2",
  "serde_json",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
  "thiserror 2.0.18",
- "ticket-api",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
  "time",
 ]
 
@@ -9536,18 +9605,78 @@ dependencies = [
 ]
 
 [[package]]
+name = "spec"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "clap",
+ "futures-util",
+ "memory-kernel",
+ "pretty_assertions",
+ "proc-macro2",
+ "rmcp",
+ "rule-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
+ "serde",
+ "serde_json",
+ "spec-api 0.1.0",
+ "syn 2.0.117",
+ "tempfile",
+ "thiserror 2.0.18",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
+ "tokio",
+ "toon-format",
+ "tower 0.5.3",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+ "viewer-api 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
+ "walkdir",
+]
+
+[[package]]
+name = "spec"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/spec?branch=main#f2295d791ab72a06efdf8047d866cbea240fc336"
+dependencies = [
+ "axum",
+ "chrono",
+ "clap",
+ "futures-util",
+ "memory-kernel",
+ "proc-macro2",
+ "rmcp",
+ "rule-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
+ "serde",
+ "serde_json",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
+ "syn 2.0.117",
+ "thiserror 2.0.18",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
+ "tokio",
+ "toon-format",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+ "viewer-api 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
+ "walkdir",
+]
+
+[[package]]
 name = "spec-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "feedback-api",
+ "feedback-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
  "memory-kernel",
  "pretty_assertions",
  "serde",
  "serde_json",
  "tempfile",
- "test-api",
+ "test-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "thiserror 2.0.18",
  "toml 0.8.23",
  "tracing",
@@ -9555,62 +9684,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "spec-cli"
+name = "spec-api"
 version = "0.1.0"
+source = "git+https://github.com/mankinskin/spec?branch=main#f2295d791ab72a06efdf8047d866cbea240fc336"
 dependencies = [
  "chrono",
- "clap",
+ "feedback-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "memory-kernel",
- "pretty_assertions",
- "proc-macro2",
- "rule-api",
  "serde",
  "serde_json",
- "spec-api",
- "syn 2.0.117",
- "tempfile",
+ "test-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "thiserror 2.0.18",
- "ticket-api",
- "toon-format",
- "uuid",
- "walkdir",
-]
-
-[[package]]
-name = "spec-http"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "futures-util",
- "memory-kernel",
- "serde",
- "serde_json",
- "spec-api",
- "tempfile",
- "tokio",
- "tower 0.5.3",
- "tower-http",
+ "toml 0.8.23",
  "tracing",
- "tracing-subscriber",
- "uuid",
- "viewer-api",
-]
-
-[[package]]
-name = "spec-mcp"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "memory-kernel",
- "rmcp",
- "serde",
- "serde_json",
- "spec-api",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
  "uuid",
 ]
 
@@ -9621,13 +9707,13 @@ dependencies = [
  "axum",
  "serde",
  "serde_json",
- "spec-api",
- "spec-http",
+ "spec 0.1.0",
+ "spec-api 0.1.0",
  "tempfile",
  "tokio",
  "tower 0.5.3",
  "tracing",
- "viewer-api",
+ "viewer-api 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
 ]
 
 [[package]]
@@ -9644,7 +9730,7 @@ dependencies = [
  "serde_json",
  "tracing",
  "tracing-wasm",
- "viewer-api-dioxus",
+ "viewer-api-dioxus 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -10105,6 +10191,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "test-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-api?branch=main#0d2a16e152adff568d0d279effda89bea079b249"
+dependencies = [
+ "chrono",
+ "memory-kernel",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "toml 0.8.23",
+ "toon-format",
+]
+
+[[package]]
 name = "test-cli"
 version = "0.1.0"
 dependencies = [
@@ -10115,9 +10215,9 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
- "test-api",
+ "test-api 0.1.0",
  "thiserror 2.0.18",
  "toon-format",
 ]
@@ -10132,7 +10232,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
- "test-api",
+ "test-api 0.1.0",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -10203,10 +10303,10 @@ dependencies = [
  "serde",
  "serde_json",
  "shell-words",
- "spec-api",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
  "tempfile",
  "thiserror 2.0.18",
- "ticket-api",
+ "ticket-api 0.1.0",
  "tokio",
  "toml 0.9.12+spec-1.1.0",
  "toon-format",
@@ -10219,12 +10319,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/ticket?branch=main#a966764f405a99a891bb6f416f5564c14120eedd"
+dependencies = [
+ "arc-swap",
+ "axum",
+ "chrono",
+ "clap",
+ "futures-util",
+ "memory-kernel",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "shell-words",
+ "spec-api 0.1.0 (git+https://github.com/mankinskin/spec?branch=main)",
+ "thiserror 2.0.18",
+ "ticket-api 0.1.0 (git+https://github.com/mankinskin/ticket?branch=main)",
+ "tokio",
+ "toon-format",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "ticket-api"
 version = "0.1.0"
 dependencies = [
  "chrono",
  "criterion",
- "feedback-api",
+ "feedback-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "fs4 0.11.1",
  "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
  "memory-kernel",
@@ -10245,20 +10369,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/ticket?branch=main#a966764f405a99a891bb6f416f5564c14120eedd"
+dependencies = [
+ "chrono",
+ "feedback-api 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
+ "fs4 0.11.1",
+ "memory-kernel",
+ "notify",
+ "reqwest",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "toml 0.8.23",
+ "tracing",
+ "url",
+ "uuid",
+]
+
+[[package]]
 name = "ticket-viewer"
 version = "0.1.0"
 dependencies = [
  "axum",
- "feedback-http",
+ "feedback-http 0.1.0 (git+https://github.com/mankinskin/memory-api?branch=main)",
  "serde",
  "serde_json",
  "tempfile",
- "ticket",
- "ticket-api",
+ "ticket 0.1.0",
+ "ticket-api 0.1.0",
  "tokio",
  "tower 0.5.3",
  "tracing",
- "viewer-api",
+ "viewer-api 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
 ]
 
 [[package]]
@@ -10277,7 +10423,7 @@ dependencies = [
  "serde_json",
  "tracing",
  "tracing-wasm",
- "viewer-api-dioxus",
+ "viewer-api-dioxus 0.1.0 (git+https://github.com/mankinskin/viewer-api?branch=main)",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -10848,6 +10994,7 @@ dependencies = [
 [[package]]
 name = "transport-harness"
 version = "0.1.0"
+source = "git+https://github.com/mankinskin/memory-kernel?branch=main#38a12e98b272fd9b0a459fa5ae0cb6be79a543c5"
 dependencies = [
  "axum",
  "clap",
@@ -11207,6 +11354,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "viewer-api"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/viewer-api?branch=main#688a18565ce6eea9df40b8a3e9ffa7da2eb9def2"
+dependencies = [
+ "axum",
+ "context-api 0.1.0 (git+https://github.com/mankinskin/context-stack?branch=main)",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "jaq-core",
+ "jaq-interpret",
+ "jaq-std",
+ "jaq-syn",
+ "rmcp",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tower 0.4.13",
+ "tower-http",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "viewer-api-dioxus"
 version = "0.1.0"
 dependencies = [
@@ -11224,6 +11397,27 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
+name = "viewer-api-dioxus"
+version = "0.1.0"
+source = "git+https://github.com/mankinskin/viewer-api?branch=main#688a18565ce6eea9df40b8a3e9ffa7da2eb9def2"
+dependencies = [
+ "dioxus",
+ "dioxus-web",
+ "gloo-events",
+ "js-sys",
+ "pulldown-cmark",
+ "serde",
+ "serde_json",
+ "syntect",
+ "tracing",
+ "tracing-subscriber",
+ "tracing-wasm",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
 ]
 
