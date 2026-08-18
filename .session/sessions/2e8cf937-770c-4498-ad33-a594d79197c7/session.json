@@ -1,12 +1,20 @@
 {
   "schema_version": 1,
   "session_id": "2e8cf937-770c-4498-ad33-a594d79197c7",
-  "source": "session-runtime-init",
+  "source": "session-worktree-check-in",
   "started_at": "2026-08-17T13:27:18.501664400Z",
-  "captured_at": "2026-08-17T13:27:18.501664400Z",
+  "captured_at": "2026-08-17T13:34:17.279540300Z",
   "metadata": {
     "workspace_slug": "default",
-    "trigger": "session-runtime-init"
+    "agent_id": "github-copilot-ticket-refinement",
+    "ticket_id": "842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae",
+    "trigger": "session-check-in",
+    "worktree": {
+      "path": "C:/Users/linus/git/2/context-engine/.worktrees/2e8cf937-770c-4498-ad33-a594d79197c7/session-hook-routing",
+      "branch": "agent/2e8cf937-770c-4498-ad33-a594d79197c7/session-hook-routing",
+      "allocation_mode": "new",
+      "status": "active"
+    }
   },
   "links": {},
   "active_run_id": "86134bae-a095-431e-bbbb-36c88b63a318",
