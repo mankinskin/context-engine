@@ -6157,17 +6157,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "memory-fixtures"
-version = "0.1.0"
-source = "git+https://github.com/mankinskin/memory-fixtures?branch=main#96bcaf34d57d1e9587609af7b727314d67f06f47"
-dependencies = [
- "serde",
- "tempfile",
- "thiserror 2.0.18",
- "toml 0.8.23",
-]
-
-[[package]]
 name = "memory-kernel"
 version = "0.1.0"
 dependencies = [
@@ -6201,13 +6190,12 @@ dependencies = [
  "chrono",
  "criterion",
  "log-api",
- "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-fixtures",
  "memory-kernel",
  "pretty_assertions",
  "rmcp",
+ "rule",
  "rule-api",
- "rule-cli",
- "rule-mcp",
  "serde_json",
  "session-api",
  "spec",
@@ -8284,6 +8272,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "rule"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "feedback-api",
+ "memory-fixtures",
+ "memory-kernel",
+ "pretty_assertions",
+ "rmcp",
+ "rule-api",
+ "serde",
+ "serde_json",
+ "spec-api",
+ "tempfile",
+ "thiserror 2.0.18",
+ "ticket-api",
+ "tokio",
+ "toon-format",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "rule-api"
 version = "0.1.0"
 dependencies = [
@@ -8298,41 +8310,6 @@ dependencies = [
  "thiserror 2.0.18",
  "toml 0.8.23",
  "tracing",
- "uuid",
-]
-
-[[package]]
-name = "rule-cli"
-version = "0.1.0"
-dependencies = [
- "clap",
- "feedback-api",
- "memory-fixtures 0.1.0",
- "memory-kernel",
- "rule-api",
- "serde_json",
- "spec-api",
- "tempfile",
- "thiserror 2.0.18",
- "ticket-api",
- "toon-format",
- "uuid",
-]
-
-[[package]]
-name = "rule-mcp"
-version = "0.1.0"
-dependencies = [
- "memory-kernel",
- "rmcp",
- "rule-api",
- "serde",
- "serde_json",
- "spec-api",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
  "uuid",
 ]
 
@@ -9384,7 +9361,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "feedback-api",
- "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-fixtures",
  "memory-kernel",
  "pretty_assertions",
  "serde",
@@ -9979,7 +9956,7 @@ dependencies = [
  "chrono",
  "clap",
  "futures-util",
- "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-fixtures",
  "memory-kernel",
  "pretty_assertions",
  "rmcp",
@@ -10009,7 +9986,7 @@ dependencies = [
  "criterion",
  "feedback-api",
  "fs4 0.11.1",
- "memory-fixtures 0.1.0 (git+https://github.com/mankinskin/memory-fixtures?branch=main)",
+ "memory-fixtures",
  "memory-kernel",
  "notify",
  "pretty_assertions",

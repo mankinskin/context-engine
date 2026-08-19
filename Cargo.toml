@@ -15,7 +15,6 @@ members = [
   "context-stack/tools/context-editor/sandbox-app",
   "memory-api/crates/audit-api",
   "memory-api/crates/doc-api",
-  "memory-api/crates/rule-api",
   "memory-api/crates/test-api",
   "memory-api/crates/log-api",
   "memory-api/crates/session-api",
@@ -29,12 +28,10 @@ members = [
   "memory-api/tools/http/doc-http",
   "memory-api/tools/http/feedback-http",
   "memory-api/tools/cli/audit-cli",
-  "memory-api/tools/cli/rule-cli",
   "memory-api/tools/cli/feedback-cli",
   "memory-api/tools/cli/session-cli",
   "memory-api/tools/cli/test-cli",
   "memory-api/tools/mcp/audit-mcp",
-  "memory-api/tools/mcp/rule-mcp",
   "memory-api/tools/mcp/session-mcp",
   "memory-api/tools/mcp/test-mcp",
   "memory-api/tools/mcp/feedback-mcp",
@@ -59,6 +56,8 @@ members = [
   "workflow-tools/ticket/ticket-viewer/frontend/dioxus",
   "workflow-tools/spec",
   "workflow-tools/ticket",
+  "workflow-tools/rule",
+  "workflow-tools/rule/crates/rule-api",
   "viewer-api",
   "viewer-api/frontend/dioxus",
   "tools/migrate-edges",
@@ -101,11 +100,15 @@ ngrams = { path = "context-stack/ngrams" }
 [patch."https://github.com/mankinskin/viewer-api"]
 viewer-api = { path = "viewer-api" }
 
+# The published memory-fixtures remote is behind the in-tree crate (missing
+# empty_workspace/EmptyWorkspace); patch to the local copy until republished.
+[patch."https://github.com/mankinskin/memory-fixtures"]
+memory-fixtures = { path = "memory-api/crates/memory-fixtures" }
+
 [patch."https://github.com/mankinskin/memory-api"]
 doc-http = { path = "memory-api/tools/http/doc-http" }
 feedback-api = { path = "memory-api/crates/feedback-api" }
 feedback-http = { path = "memory-api/tools/http/feedback-http" }
-rule-api = { path = "memory-api/crates/rule-api" }
 test-api = { path = "memory-api/crates/test-api" }
 
 [patch."https://github.com/mankinskin/ticket"]
@@ -115,3 +118,7 @@ ticket-api = { path = "workflow-tools/ticket/crates/ticket-api" }
 [patch."https://github.com/mankinskin/spec"]
 spec = { path = "workflow-tools/spec" }
 spec-api = { path = "workflow-tools/spec/crates/spec-api" }
+
+[patch."https://github.com/mankinskin/rule"]
+rule = { path = "workflow-tools/rule" }
+rule-api = { path = "workflow-tools/rule/crates/rule-api" }
