@@ -2,8 +2,10 @@
 import { useSlideContext } from '@slidev/client'
 import type { TocItem } from '@slidev/types'
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { $nav } = useSlideContext()
+const router = useRouter()
 const open = ref(false)
 
 // Active branch of the Toc tree, root first, so it doubles as a breadcrumb trail.
@@ -20,11 +22,20 @@ const breadcrumb = computed<TocItem[]>(() => {
   return path
 })
 
-// Toc items are rendered as <a> by Slidev's own TocList; delegate the click
-// instead of reimplementing navigation, and close the panel once one fires.
+// Toc items are rendered as <a href="/n"> by Slidev's own TocList. Drive the
+// navigation ourselves instead of relying on RouterLink's own click guard,
+// which otherwise falls through to a real anchor navigation (new tab/window)
+// in some host contexts.
 function onTocClick(event: MouseEvent) {
-  if ((event.target as HTMLElement).closest('a'))
-    open.value = false
+  const link = (event.target as HTMLElement).closest('a')
+  if (!link)
+    return
+  const href = link.getAttribute('href')
+  if (href && href.startsWith('/')) {
+    event.preventDefault()
+    router.push(href)
+  }
+  open.value = false
 }
 </script>
 
