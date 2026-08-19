@@ -73,7 +73,7 @@ Before this specification is verified, evidence must show:
 | `memory-api/crates/session-api` | implemented | Observer manifest/event persistence and bounded reads. |
 | `memory-api/tools/cli/session-cli` | implemented | Human-operated observer lifecycle CLI operations with no input verb. |
 | `memory-api/tools/mcp/session-mcp` | implemented | Read-only agent observer tools. |
-| `memory-api/tools/ticket-vscode` | excluded | No terminal UI or output capture is required. |
+| `memory-api/ticket-vscode` | excluded | No terminal UI or output capture is required. |
 | `compact-terminal-*` | implemented but excluded | Remains one-shot execution and never backs observer input. |
 
 ## Non-goals

@@ -14,7 +14,7 @@ Guards will be recorded by the linked implementation tracks before review: resol
 - `memory-api/crates/ticket-api/src/model/schema_registry.rs`: partial; flat TOML-only registry with replacement semantics.
 - `memory-api/crates/ticket-api/schemas/`: partial; duplicated built-in workflows.
 - `memory-api/tools/cli/ticket-cli`: partial; default type is legacy `tracker-improvement`.
-- `memory-api/tools/ticket-vscode`: partial; type picker is hard-coded to `tracker-improvement`.
+- `memory-api/ticket-vscode`: partial; type picker is hard-coded to `tracker-improvement`.
 
 ## Contract
 - Features are spec-owned. Ticket types are `epic`, `bug`, `research`, `planning`, `implementation`, `review`, `interview`, and `testing`; `task`, `feature`, and `tracker-improvement` are legacy until migration.

@@ -28,7 +28,7 @@ extension_id[ticket-vscode]="context-engine.ticket-viewer"
 
 extension_path() {
     case "$1" in
-        ticket-vscode) printf '%s\n' "memory-api/tools/ticket-vscode" ;;
+        ticket-vscode) printf '%s\n' "memory-api/ticket-vscode" ;;
         *)
             printf 'error: unknown extension: %s\n' "$1" >&2
             exit 1

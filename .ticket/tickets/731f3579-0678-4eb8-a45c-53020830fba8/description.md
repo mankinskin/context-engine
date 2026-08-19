@@ -26,4 +26,4 @@ Root cause: `TicketStore::create` only validates a manifest when a schema is kno
 
 ## Notes
 
-- `memory-api/tools/ticket-vscode/src/extensionSupport.ts` `TICKET_TYPES` is a stale UI hint (already omits `bug`) and is not the validation authority; left unchanged (out of scope).
+- `memory-api/ticket-vscode/src/extensionSupport.ts` `TICKET_TYPES` is a stale UI hint (already omits `bug`) and is not the validation authority; left unchanged (out of scope).

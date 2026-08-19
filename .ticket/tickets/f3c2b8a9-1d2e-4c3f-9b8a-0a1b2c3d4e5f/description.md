@@ -12,7 +12,7 @@ Decisions (already made)
 Research facts (verified)
 
 - `install-tools.sh` (369 lines, repo root) installs 24 artifacts across helper tools, CLI tools, MCP tools, and four viewers. Flags: positional names, `--tool`, `--tools`, `--mcp`, `--all`, `--list`, `--dry-run`, `--no-force`, `-h/--help`; env `INSTALL_TOOLS` used only when the CLI selects nothing.
-- `install-extensions.sh` (351 lines, repo root) installs `ticket-vscode` (from `memory-api/tools/ticket-vscode`) and exposes similar CLI flags; VS Code extension install logic is already implemented in Rust under `viewer-ctl`.
+- `install-extensions.sh` (351 lines, repo root) installs `ticket-vscode` (from `memory-api/ticket-vscode`) and exposes similar CLI flags; VS Code extension install logic is already implemented in Rust under `viewer-ctl`.
 - `viewer-api/viewer-ctl/src/process.rs` already exposes the needed process-management helpers: `pids_on_port`, `pids_by_image_name`, `kill_process`, `process_exists`, and `print_process_info`. `pids_by_image_name` is sufficient for non-server binaries like `mcp-toolmon` and `copilot-capture-hook`. `kill_process` uses `taskkill` on Windows.
 - `viewer-api/viewer-ctl/src/commands/extension.rs` and `server.rs` already cover extension installation and build/install workflow patterns (cargo build, copy release binaries, fallback to `cargo install --path`), so much of `install-extensions.sh` and `install-tools.sh` behavior is already present in Rust.
 - `viewer-ctl` has a committed TOML registry (`viewer-ctl.toml`) and a `viewer-api/viewer-ctl.toml` mirror; the same model will be used for `install-ctl`.

@@ -236,7 +236,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: VscodeExtension
 - Kind: VscodeExtension
-- Source: `memory-api/tools/ticket-vscode`
+- Source: `memory-api/ticket-vscode`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Npm script: `install:vsix`

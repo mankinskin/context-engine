@@ -378,7 +378,7 @@
       "type": "shell",
       "command": "npm run compile",
       "options": {
-        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/ticket-vscode"
       },
       "group": "build",
       "presentation": {
@@ -393,7 +393,7 @@
       "command": "npm run watch",
       "isBackground": true,
       "options": {
-        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/ticket-vscode"
       },
       "presentation": {
         "reveal": "silent",
@@ -407,7 +407,7 @@
       "type": "shell",
       "command": "npm run install:vsix",
       "options": {
-        "cwd": "${workspaceFolder}/memory-api/tools/ticket-vscode"
+        "cwd": "${workspaceFolder}/memory-api/ticket-vscode"
       },
       "presentation": {
         "reveal": "always",

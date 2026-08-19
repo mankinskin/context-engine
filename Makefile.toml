@@ -250,7 +250,7 @@ command = "install-ctl"
 args = ["viewer", "task", "gen-types"]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# VS Code extension — replaces tools/ticket-vscode/build-and-install.sh
+# VS Code extension — replaces ticket-vscode/build-and-install.sh
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.build-vscode-ext]

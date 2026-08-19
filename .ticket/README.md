@@ -3052,7 +3052,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=0b231549-d029-4465-997e-0ba4d5e0529e slug=done/ticket-vscode digest=1e9f6f4a4ac6 -->
 #### [0b231549] [spec][vscode] Write specification for ticket-vscode extension
 - priority: `high`
-- summary: Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`tools/ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe...
+- summary: Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe...
 - ref: `memory-api/.ticket/tickets/0b231549-d029-4465-997e-0ba4d5e0529e/ticket.toml`
 
 <!-- ticket-index:entry id=362448d4-ccf1-4b9d-90f3-d4577da83a65 slug=done/ticket-vscode digest=b4ff99585d25 -->
@@ -3094,7 +3094,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=8735fa5d-0550-40f1-9ee8-7b83a44a7fd1 slug=done/ticket-vscode digest=20334d246d75 -->
 #### [8735fa5d] [ticket-vscode] Prefer PATH ticket-viewer before debug fallback
 - priority: `medium`
-- summary: Auto-start in `tools/ticket-vscode` should prefer the `ticket-viewer` executable on `PATH` before falling back to a workspace-local `target/debug/ticket-viewer(.exe)` binary. This keeps the extension...
+- summary: Auto-start in `ticket-vscode` should prefer the `ticket-viewer` executable on `PATH` before falling back to a workspace-local `target/debug/ticket-viewer(.exe)` binary. This keeps the extension...
 - ref: `.ticket/tickets/8735fa5d-0550-40f1-9ee8-7b83a44a7fd1/ticket.toml`
 
 <!-- ticket-index:entry id=14047b99-41d6-4899-bec6-4a919bffcc2d slug=done/ticket-vscode digest=4e82d12a9693 -->
@@ -9308,7 +9308,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=6d07d610-75c1-448a-afd5-6ae15098ca21 slug=planned/ticket-vscode digest=320a4dcd0afa -->
 #### [6d07d610] [ticket-vscode] Rust/WASM port track
 - priority: `high`
-- summary: Port `memory-api/tools/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture.
+- summary: Port `memory-api/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture.
 - ref: `memory-api/.ticket/tickets/6d07d610-75c1-448a-afd5-6ae15098ca21/ticket.toml`
 
 
