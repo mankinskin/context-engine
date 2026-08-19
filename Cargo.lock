@@ -8771,6 +8771,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "session"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "memory-fixtures",
+ "memory-kernel",
+ "pretty_assertions",
+ "rmcp",
+ "rule-api",
+ "serde",
+ "serde_json",
+ "session-api",
+ "session-workspace-resolver",
+ "session-worktree-provision",
+ "tempfile",
+ "thiserror 2.0.18",
+ "ticket-api",
+ "tokio",
+ "toon-format",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "session-api"
 version = "0.1.0"
 dependencies = [
@@ -8787,58 +8814,6 @@ dependencies = [
  "test-api",
  "thiserror 2.0.18",
  "ticket-api",
- "uuid",
-]
-
-[[package]]
-name = "session-capture-hook"
-version = "0.1.0"
-dependencies = [
- "memory-kernel",
- "serde_json",
- "session-api",
- "session-workspace-resolver",
- "session-worktree-provision",
- "tempfile",
- "ticket-api",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "session-cli"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "memory-kernel",
- "pretty_assertions",
- "rule-api",
- "serde",
- "serde_json",
- "session-api",
- "tempfile",
- "thiserror 2.0.18",
- "toon-format",
- "uuid",
-]
-
-[[package]]
-name = "session-mcp"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "memory-kernel",
- "rmcp",
- "rule-api",
- "serde",
- "serde_json",
- "session-api",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
  "uuid",
 ]
 

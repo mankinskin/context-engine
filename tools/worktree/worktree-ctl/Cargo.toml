@@ -7,6 +7,6 @@ description = "Local worktree lifecycle control CLI"
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 git2 = "0.20"
-session-worktree-provision = { path = "../../../memory-api/crates/session-worktree-provision" }
+session-worktree-provision = { git = "https://github.com/mankinskin/session", branch = "main" }
 [dev-dependencies]
 tempfile = "3"
