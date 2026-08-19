@@ -4,7 +4,7 @@ title: context-engine
 info: |
   ## context-engine
   A tour of every repository in the superproject tree.
-transition: fade
+transition: slide-up
 mdc: true
 ---
 

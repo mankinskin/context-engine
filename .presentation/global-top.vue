@@ -19,6 +19,13 @@ const breadcrumb = computed<TocItem[]>(() => {
   }
   return path
 })
+
+// Toc items are rendered as <a> by Slidev's own TocList; delegate the click
+// instead of reimplementing navigation, and close the panel once one fires.
+function onTocClick(event: MouseEvent) {
+  if ((event.target as HTMLElement).closest('a'))
+    open.value = false
+}
 </script>
 
 <template>
@@ -36,6 +43,7 @@ const breadcrumb = computed<TocItem[]>(() => {
     <div
       v-show="open"
       class="max-h-[70vh] overflow-y-auto bg-main/95 backdrop-blur border-b border-main shadow-lg p-3 text-sm"
+      @click="onTocClick"
     >
       <Toc :columns="1" />
     </div>
