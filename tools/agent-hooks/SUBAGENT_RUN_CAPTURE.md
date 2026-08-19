@@ -1,11 +1,13 @@
 # Sub-Agent Run Capture
 
-`SubagentStart` and `SubagentStop` are captured through
-`tools/agent-hooks/capture-hook-stdin.sh`. Each raw payload is retained at
-`.session/local/hook-captures/<event>.json`, and the capture hook persists the
-lifecycle event in the parent session's `events.json`. The persisted event is
-keyed by the parent session id and `agent_id`; it retains `agent_type`, the
-hook timestamp, and the stop state.
+`SubagentStart` and `SubagentStop` are captured by invoking the
+`session-capture-hook` binary directly with `--from-hook-stdin` (see
+`.github/hooks/hooks.json`). The hook logs each stage to its `tracing` log
+file in the OS temp directory (`session-capture-hook/session-capture-hook.log`;
+override the directory with `SESSION_HOOK_LOG_DIR`) and persists the lifecycle
+event in the parent session's `events.json`. The persisted event is keyed by
+the parent session id and `agent_id`; it retains `agent_type`, the hook
+timestamp, and the stop state.
 
 ## Diagnose A Dispatch
 

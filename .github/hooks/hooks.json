@@ -3,7 +3,7 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 300
       }
@@ -11,7 +11,7 @@
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 300
       }
@@ -19,7 +19,7 @@
     "SubagentStart": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 120
       }
@@ -27,7 +27,7 @@
     "SubagentStop": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 120
       }
@@ -47,7 +47,7 @@
       },
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 120
       }
@@ -67,7 +67,7 @@
       },
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 120
       }
@@ -75,7 +75,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/capture-hook-stdin.sh",
+        "command": "bash -c 'PATH=\"$PATH:${CARGO_HOME:-$HOME/.cargo}/bin\" session-capture-hook --from-hook-stdin'",
         "cwd": ".",
         "timeout": 120
       }

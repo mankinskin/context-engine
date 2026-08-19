@@ -15,19 +15,19 @@ The binary usage is:
 Usage: session-capture-hook (session sync ingest) [--from-hook-stdin] [--transcript-path <PATH>] [--store-root <PATH>] [--workspace-slug <SLUG>] [--trigger <NAME>]
 ```
 
-The hook writes `{}` to stdout for both success and early skip, with diagnostics only on stderr. There is no hook log file, so an externally silent success is indistinguishable from a silent skip.
+The hook writes `{}` to stdout for both success and early skip, with human diagnostics on stderr and a structured `tracing` trail in the OS temp directory at `session-capture-hook/session-capture-hook.log` (e.g. `$TMPDIR/session-capture-hook/session-capture-hook.log` on Unix, `%TEMP%\session-capture-hook\session-capture-hook.log` on Windows; appended across invocations, never rotated, deliberately outside any `.session` checkout tree so logging is never a session-store mutation). Set `SESSION_HOOK_LOG_DIR` to relocate the log directory and `SESSION_HOOK_LOG` (or `RUST_LOG`) to change the filter level (default `info`); use `debug` to see every parsed field and decision branch.
 
 ## Hook Events
 
 | Event | Registered command | Timeout |
 |---|---|---:|
-| `SessionStart` | `bash tools/agent-hooks/capture-hook-stdin.sh` | 300s |
-| `UserPromptSubmit` | `bash tools/agent-hooks/capture-hook-stdin.sh` | 300s |
+| `SessionStart` | `session-capture-hook --from-hook-stdin` | 300s |
+| `UserPromptSubmit` | `session-capture-hook --from-hook-stdin` | 300s |
 | `PreToolUse` | `bash tools/agent-hooks/rtk-hook-copilot.sh`, then `bash tools/agent-hooks/preflight-write.sh` | 5s, 30s |
-| `PostToolUse` | `bash tools/agent-hooks/validate-docs.sh`, `bash tools/agent-hooks/terminal-pwd.sh`, then `bash tools/agent-hooks/capture-hook-stdin.sh` | 30s, 5s, 120s |
-| `Stop` | `bash tools/agent-hooks/capture-hook-stdin.sh` | 120s |
+| `PostToolUse` | `bash tools/agent-hooks/validate-docs.sh`, `bash tools/agent-hooks/terminal-pwd.sh`, then `session-capture-hook --from-hook-stdin` | 30s, 5s, 120s |
+| `Stop` | `session-capture-hook --from-hook-stdin` | 120s |
 
-[capture-hook-stdin.sh](../../../tools/agent-hooks/capture-hook-stdin.sh) records the raw hook stdin payload to `.session/local/hook-captures/<event>.json` (gitignored, one file per event, latest write wins) and then forwards the identical bytes to `session-capture-hook --from-hook-stdin`. It replaced a bare `tee ./session.log | session-capture-hook --from-hook-stdin` command: hook commands are not run through a POSIX shell on Windows, so `tee` resolved to PowerShell's `Tee-Object` and wrote a UTF-16LE BOM with zero payload bytes. Set `SESSION_HOOK_CAPTURE=0` to suppress the capture while still forwarding.
+Each registration in [hooks.json](../../../.github/hooks/hooks.json) invokes the binary directly (`bash -c 'PATH="$PATH:${CARGO_HOME:-$HOME/.cargo}/bin" session-capture-hook --from-hook-stdin'`), so `session-capture-hook` need not already be on the hook environment's `PATH`. The previous `tools/agent-hooks/capture-hook-stdin.sh` wrapper — which persisted raw stdin to `.session/local/hook-captures/<event>.json` before forwarding it — was removed; its diagnostic role is now served by the binary's own `tracing` file log, and its `SESSION_HOOK_CAPTURE`/`SESSION_HOOK_CAPTURE_DIR` env vars no longer apply.
 
 `SessionEnd` is **not** a Copilot hook event and is no longer registered. The eight events are `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, and `Stop`; `Stop` is the end-of-session event. See the [hooks reference](https://code.visualstudio.com/docs/agents/reference/hooks-reference).
 
@@ -39,10 +39,12 @@ Every event's stdin carries `timestamp`, `hook_event_name`, `session_id`, `cwd`,
 
 Two layers verify that hooks fire and that their payloads still match the documented schema.
 
-Passive: every live session writes `.session/local/hook-captures/<event>.json` through the capture wrapper. Inspect the current shape without leaking prompt or tool content:
+Passive: every live session appends structured events to the hook's
+`tracing` log file in the OS temp directory (see above). Inspect the current
+shape without leaking prompt or tool content:
 
 ```bash
-for f in .session/local/hook-captures/*.json; do echo "$f: $(jq -c 'keys' "$f")"; done
+tail -n 50 "${SESSION_HOOK_LOG_DIR:-$TMPDIR/session-capture-hook}/session-capture-hook.log"
 ```
 
 Active: [hook-capture-e2e.sh](../../../tools/agent-hooks/hook-capture-e2e.sh) drives a real headless session with the GitHub Copilot CLI, which reads the same hook schema as VS Code (`copilot help config`, key `hooks`). The script builds a throwaway repository whose hooks record each event, runs `copilot -p` with a prompt that forces a tool call, then asserts the captured payloads against the documented field sets:
