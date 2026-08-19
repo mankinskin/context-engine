@@ -1,12 +1,22 @@
 {
   "schema_version": 1,
   "session_id": "992a4eeb-3942-4980-be17-6d742902d139",
-  "source": "session-worktree-inference",
-  "started_at": "2026-08-19T01:35:14.126863800Z",
-  "captured_at": "2026-08-19T01:35:14.126864800Z",
+  "source": "copilot-hook",
+  "started_at": "2026-08-19T00:12:23.589Z",
+  "captured_at": "2026-08-19T01:52:37.134Z",
   "metadata": {
     "workspace_slug": "default",
-    "trigger": "session-worktree-inference",
+    "agent_id": "copilot-agent",
+    "trigger": "PreToolUse",
+    "provisioning": {
+      "outcome": "skipped",
+      "reason": "trigger_not_session_start",
+      "hook_event_name": "UserPromptSubmit"
+    },
+    "producer": "copilot-agent",
+    "copilot_version": "0.61.0",
+    "vscode_version": "1.133.0",
+    "protocol_version": 1,
     "worktree": {
       "path": "C:/Users/linus/git/3/context-engine/.worktrees/992a4eeb-3942-4980-be17-6d742902d139/session",
       "branch": "agent/992a4eeb-3942-4980-be17-6d742902d139/session",
