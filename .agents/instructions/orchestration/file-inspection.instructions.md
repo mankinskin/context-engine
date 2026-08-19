@@ -13,8 +13,8 @@ sub-agents that inherit none of the orchestrator's context:
 - MCP (preferred): `peek-mcp` — `peek_read`, `peek_grep`, `peek_count`,
   `peek_skeleton`. Reachable through the `'peek-mcp/*'` wildcard in
   `.agents/agents/*.agent.md`.
-- CLI fallback: `peek` (`memory-api/tools/cli/peek-cli`) when MCP is unavailable.
-- Behavior owner: `memory-api/crates/peek-api`.
+- CLI fallback: `peek` (`workflow-tools/peek/crates/peek-cli`) when MCP is unavailable.
+- Behavior owner: `workflow-tools/peek/crates/peek-api`.
 
 Use this suite instead of unbounded built-in file reads. The sibling **execute**
 category is covered in
@@ -41,7 +41,7 @@ Preferred pattern:
 3. Open a bounded line window with explicit start/end coordinates.
 4. Only escalate to a full-file read when the bounded window is genuinely insufficient.
 
-Use the `peek` CLI tool (`memory-api/tools/cli/peek-cli`) for bounded reads from the terminal:
+Use the `peek` CLI tool (`workflow-tools/peek/crates/peek-cli`) for bounded reads from the terminal:
 
 ```bash
 # Step 1: learn file size

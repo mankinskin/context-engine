@@ -13,33 +13,14 @@ members = [
   "context-stack/tools/http/context-http",
   "context-stack/tools/context-editor/kernel",
   "context-stack/tools/context-editor/sandbox-app",
-  "memory-api/crates/audit-api",
-  "memory-api/crates/doc-api",
-  "memory-api/crates/test-api",
-  "memory-api/crates/log-api",
-  "memory-api/crates/feedback-api",
   "memory-api/crates/memory-fixtures",
   "memory-api/crates/memory-matrix",
-  "memory-api/tools/http/doc-http",
-  "memory-api/tools/http/feedback-http",
-  "memory-api/tools/cli/audit-cli",
-  "memory-api/tools/cli/feedback-cli",
-  "memory-api/tools/cli/test-cli",
-  "memory-api/tools/mcp/audit-mcp",
-  "memory-api/tools/mcp/test-mcp",
-  "memory-api/tools/mcp/feedback-mcp",
-  "memory-api/tools/cli/peek-cli",
   "memory-api/tools/cli/compact-terminal-cli",
   "memory-api/tools/cli/fs-cli",
-  "memory-api/tools/mcp/peek-mcp",
   "memory-api/tools/mcp/compact-terminal-mcp",
   "memory-api/tools/mcp/fs-mcp",
-  "memory-api/crates/peek-api",
   "memory-api/crates/compact-terminal-api",
   "memory-api/crates/fs-api",
-  "memory-viewers/doc-viewer",
-  "memory-viewers/log-viewer",
-  "memory-viewers/log-viewer/frontend/dioxus",
   "workflow-tools/ticket/ticket-viewer",
   "workflow-tools/spec/spec-viewer",
   "workflow-tools/spec/spec-viewer/frontend/dioxus",
@@ -57,6 +38,25 @@ members = [
   "workflow-tools/session/crates/toolmon-costgate",
   "workflow-tools/session/crates/mcp-toolmon",
   "workflow-tools/session/crates/worktree-ctl",
+  "workflow-tools/audit/crates/audit-api",
+  "workflow-tools/audit/crates/audit-cli",
+  "workflow-tools/audit/crates/audit-mcp",
+  "workflow-tools/test/crates/test-api",
+  "workflow-tools/test/crates/test-cli",
+  "workflow-tools/test/crates/test-mcp",
+  "workflow-tools/doc/crates/doc-api",
+  "workflow-tools/doc/crates/doc-http",
+  "workflow-tools/doc/crates/doc-viewer",
+  "workflow-tools/log/crates/log-api",
+  "workflow-tools/log/crates/log-viewer",
+  "workflow-tools/log/crates/log-viewer/frontend/dioxus",
+  "workflow-tools/feedback/crates/feedback-api",
+  "workflow-tools/feedback/crates/feedback-http",
+  "workflow-tools/feedback/crates/feedback-cli",
+  "workflow-tools/feedback/crates/feedback-mcp",
+  "workflow-tools/peek/crates/peek-api",
+  "workflow-tools/peek/crates/peek-cli",
+  "workflow-tools/peek/crates/peek-mcp",
   "viewer-api",
   "viewer-api/frontend/dioxus",
   "tools/migrate-edges",
@@ -103,12 +103,6 @@ viewer-api = { path = "viewer-api" }
 [patch."https://github.com/mankinskin/memory-fixtures"]
 memory-fixtures = { path = "memory-api/crates/memory-fixtures" }
 
-[patch."https://github.com/mankinskin/memory-api"]
-doc-http = { path = "memory-api/tools/http/doc-http" }
-feedback-api = { path = "memory-api/crates/feedback-api" }
-feedback-http = { path = "memory-api/tools/http/feedback-http" }
-test-api = { path = "memory-api/crates/test-api" }
-
 [patch."https://github.com/mankinskin/ticket"]
 ticket = { path = "workflow-tools/ticket" }
 ticket-api = { path = "workflow-tools/ticket/crates/ticket-api" }
@@ -126,3 +120,28 @@ session = { path = "workflow-tools/session" }
 session-api = { path = "workflow-tools/session/crates/session-api" }
 session-worktree-provision = { path = "workflow-tools/session/crates/session-worktree-provision" }
 session-workspace-resolver = { path = "workflow-tools/session/crates/session-workspace-resolver" }
+session-record-merge = { path = "workflow-tools/session/crates/session-record-merge" }
+toolmon-policy-api = { path = "workflow-tools/session/crates/toolmon-policy-api" }
+toolmon-costgate = { path = "workflow-tools/session/crates/toolmon-costgate" }
+mcp-toolmon = { path = "workflow-tools/session/crates/mcp-toolmon" }
+worktree-ctl = { path = "workflow-tools/session/crates/worktree-ctl" }
+
+[patch."https://github.com/mankinskin/audit"]
+audit-api = { path = "workflow-tools/audit/crates/audit-api" }
+
+[patch."https://github.com/mankinskin/test"]
+test-api = { path = "workflow-tools/test/crates/test-api" }
+
+[patch."https://github.com/mankinskin/doc"]
+doc-api = { path = "workflow-tools/doc/crates/doc-api" }
+doc-http = { path = "workflow-tools/doc/crates/doc-http" }
+
+[patch."https://github.com/mankinskin/log"]
+log-api = { path = "workflow-tools/log/crates/log-api" }
+
+[patch."https://github.com/mankinskin/feedback"]
+feedback-api = { path = "workflow-tools/feedback/crates/feedback-api" }
+feedback-http = { path = "workflow-tools/feedback/crates/feedback-http" }
+
+[patch."https://github.com/mankinskin/peek"]
+peek-api = { path = "workflow-tools/peek/crates/peek-api" }

@@ -153,10 +153,10 @@ Or run manually from the viewer-specific package:
 cd memory-viewers/spec-viewer/frontend/dioxus
 npm run test:e2e:release
 
-cd memory-viewers/doc-viewer/e2e
+cd workflow-tools/doc/crates/doc-viewer/e2e
 npm test
 
-cd memory-viewers/log-viewer/e2e
+cd workflow-tools/log/crates/log-viewer/e2e
 npm run test:managed
 ```
 

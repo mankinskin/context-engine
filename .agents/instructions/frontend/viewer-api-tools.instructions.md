@@ -31,7 +31,7 @@ Applies to viewer-api-driven HTTP/SPA tools and shared frontend packages.
 
 ## Frontend Rules
 
-- Reuse shared TS UI primitives/styles from `memory-viewers/log-viewer/frontend/viewer-api-frontend` where applicable.
+- Reuse shared TS UI primitives/styles from `workflow-tools/log/crates/log-viewer/frontend/viewer-api-frontend` where applicable.
 - Reuse shared Dioxus viewer primitives and test helpers from `viewer-api/viewer-api/frontend/dioxus` for WASM viewers.
 - Keep viewer-specific features modular; avoid duplicating shared components.
 - Prefer explicit loading/error/empty states for all async data views.
