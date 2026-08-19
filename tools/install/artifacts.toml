@@ -63,11 +63,12 @@ bin = "audit"
 id = "rule-cli"
 category = "cli"
 kind = "rust-binary"
-source_path = "memory-api/tools/cli/rule-cli"
+source_path = "workflow-tools/rule"
 owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "rule"
+features = ["cli"]
 
 [[artifact]]
 id = "feedback-cli"
@@ -165,11 +166,12 @@ bin = "peek-mcp"
 id = "rule-mcp"
 category = "mcp"
 kind = "rust-binary"
-source_path = "memory-api/tools/mcp/rule-mcp"
+source_path = "workflow-tools/rule"
 owner = "tooling"
 lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "rule-mcp"
+features = ["mcp"]
 
 [[artifact]]
 id = "audit-mcp"
