@@ -1,17 +1,17 @@
 ---
-description: "Use when resolving model prices, syncing the model cost table, or wiring cost-aware routing to real numbers. Covers tools/model-prices layout, the sync script, offline queries, the cost gate, and staleness policy."
+description: "Use when resolving model prices, syncing the model cost table, or wiring cost-aware routing to real numbers. Covers workflow-tools/session/crates/model-prices layout, the sync script, offline queries, the cost gate, and staleness policy."
 applyTo: "**/*.json,**/*.toml"
 ---
 
 ## The Model Cost Table
 
-`tools/model-prices/` is the single source of truth for model pricing in this repository. Every routing, delegation, and cost-gate decision resolves against it. **Never hardcode a price** into instructions, agent templates, or tooling — read it from the table.
+`workflow-tools/session/crates/model-prices/` is the single source of truth for model pricing in this repository. Every routing, delegation, and cost-gate decision resolves against it. **Never hardcode a price** into instructions, agent templates, or tooling — read it from the table.
 
 | Path | Role |
 |---|---|
-| `tools/model-prices/model_prices.json` | The generated price table. Committed artifact; do not hand-edit. |
-| `tools/model-prices/sync_model_prices.py` | Fetches upstream prices and regenerates the table. Also serves offline queries. |
-| `memory-api/tools/mcp/mcp-toolmon` | The cost gate: MCP middleware that resolves `caller_model` to an allow/delegate decision. Rust crate; there is no Python gate. |
+| `workflow-tools/session/crates/model-prices/model_prices.json` | The generated price table. Committed artifact; do not hand-edit. |
+| `workflow-tools/session/crates/model-prices/sync_model_prices.py` | Fetches upstream prices and regenerates the table. Also serves offline queries. |
+| `workflow-tools/session/crates/mcp-toolmon` | The cost gate: MCP middleware that resolves `caller_model` to an allow/delegate decision. Rust crate; there is no Python gate. |
 
 Upstream sources are [pydantic/genai-prices](https://github.com/pydantic/genai-prices) (`prices/data_slim.json`, MIT) and GitHub Copilot's published pricing table (`https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/models-and-pricing.yml` from the github/docs repo). The script is stdlib-only — no PyYAML dependency, no virtualenv needed.
 
@@ -68,7 +68,7 @@ Within the GitHub Copilot source, models may appear multiple times with differen
 `--query` and `--list` never hit the network — they read the committed table. Use them freely.
 
 ```bash
-cd tools/model-prices
+cd workflow-tools/session/crates/model-prices
 
 # One model or family, human-readable
 python sync_model_prices.py --query claude-sonnet-5
@@ -97,7 +97,7 @@ CSV columns are `provider,model,in$/M,out$/M,cread$/M,cwrite$/M,ctx` — note th
 ## Syncing (Network)
 
 ```bash
-cd tools/model-prices
+cd workflow-tools/session/crates/model-prices
 
 # Is the local table stale? Exit 1 = out of date. Writes nothing.
 python sync_model_prices.py --check
@@ -124,7 +124,7 @@ Sync rules:
 
 ## The Cost Gate
 
-The gate is a Rust MCP middleware, [memory-api/tools/mcp/mcp-toolmon](../../../memory-api/tools/mcp/mcp-toolmon). There is **no** `cost_gate.py`; earlier revisions of this file documented one that never shipped.
+The gate is a Rust MCP middleware, [workflow-tools/session/crates/mcp-toolmon](../../../workflow-tools/session/crates/mcp-toolmon). There is **no** `cost_gate.py`; earlier revisions of this file documented one that never shipped.
 
 ```bash
 mcp-toolmon -- <real-server-command> [server args...]

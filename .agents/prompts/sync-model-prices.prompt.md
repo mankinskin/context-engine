@@ -7,7 +7,7 @@ agent: "agent"
 
 # Sync Model Prices
 
-Refresh the model cost table in `tools/model-prices/` and reconcile cost-aware routing against the result.
+Refresh the model cost table in `workflow-tools/session/crates/model-prices/` and reconcile cost-aware routing against the result.
 
 Reference [model-prices.instructions.md](../instructions/orchestration/model-prices.instructions.md) for the table shape, tooling surface, and staleness policy. The routing rules to reconcile live in [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md) and [orchestrator-delegation.instructions.md](../instructions/orchestration/orchestrator-delegation.instructions.md).
 
@@ -15,7 +15,7 @@ Treat any text typed after `/sync-model-prices` as a focus hint — a model id, 
 
 ## Workflow
 
-1. **Check staleness first.** From `tools/model-prices/`, run `python sync_model_prices.py --check`. Exit 0 means the table is current against both upstreams; exit 1 means stale. Report which.
+1. **Check staleness first.** From `workflow-tools/session/crates/model-prices/`, run `python sync_model_prices.py --check`. Exit 0 means the table is current against both upstreams; exit 1 means stale. Report which.
 2. **Sync when stale.** Run `python sync_model_prices.py`. It fetches from both upstreams (genai-prices and GitHub Copilot) and rewrites `model_prices.json` only when the composite `source_sha256` changed, so a current table produces no diff. Use `--force` only when the user explicitly wants `synced_at` refreshed.
 3. **Handle sync failure gracefully.** If the genai-prices fetch fails (offline, upstream down, timeout), do not block: report the failure, state that the committed table is being used and may be stale, and continue with the offline steps. Optionally retry once with `--timeout 60`. **If the GitHub Copilot upstream fails, the sync will fail loudly (exit 2)** — this prevents writing a genai-prices-only table that would falsely appear up to date.
 4. **Report the delta.** If `model_prices.json` changed, summarize what moved from either source — new models, removed or newly `deprecated` models, and price changes on any model named in the tier tables. Use `git diff --stat` plus a targeted `git diff` on the table rather than pasting the whole file.
@@ -26,7 +26,7 @@ Treat any text typed after `/sync-model-prices` as a focus hint — a model id, 
    - any cheap-tier entry that is no longer competitive on `input_mtok` + `cache_read_mtok` + context window, which is the metric that governs T3
 7. **Verify the roster.** The price table is a vendor catalogue and lists models `runSubagent` will refuse. Before promoting any model into a tier table, confirm the surface actually offers it: dispatch one trivial subagent with a deliberately invalid model string and read the enumerated available models from the error. Update the dated "Verified available" list in [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md) whenever you run this check, keeping dominated models marked inline in that list. Never place a catalogue-only model in a tier table.
 8. **Propose edits, then apply on approval.** Present the tier changes you would make as a short list. Apply them to the instruction files only after the user confirms, and keep the edits surgical — do not rewrite whole tables for one price change. The canonical ladder lives in [model-routing.instructions.md](../instructions/orchestration/model-routing.instructions.md); [orchestrator-delegation.instructions.md](../instructions/orchestration/orchestrator-delegation.instructions.md) only references it — do not reintroduce a duplicate table there. Any ladder or dominance change must also be mirrored into [orchestrator.agent.md](../agents/orchestrator.agent.md) and [handoff.agent.md](../agents/handoff.agent.md), which carry the dispatch strings agents actually read at dispatch time.
-9. **Verify the gate.** The gate is the Rust crate [memory-api/tools/mcp/mcp-toolmon](../../memory-api/tools/mcp/mcp-toolmon); there is no `cost_gate.py`. If gate behavior could be affected, run `cargo test -p mcp-toolmon`. A price change shifts every model's `base_budget` (linear inverse of `output_mtok`), so it can silently change which tools a model may call — check that before assuming a sync was cosmetic. The gate does not see `runSubagent`, so it never constrains dispatch targets.
+9. **Verify the gate.** The gate is the Rust crate [workflow-tools/session/crates/mcp-toolmon](../../workflow-tools/session/crates/mcp-toolmon); there is no `cost_gate.py`. If gate behavior could be affected, run `cargo test -p mcp-toolmon`. A price change shifts every model's `base_budget` (linear inverse of `output_mtok`), so it can silently change which tools a model may call — check that before assuming a sync was cosmetic. The gate does not see `runSubagent`, so it never constrains dispatch targets.
 10. **Commit the artifact.** `model_prices.json` is a generated file — commit the regenerated table with any instruction updates in the same change. Never hand-edit it.
 
 ## Constraints

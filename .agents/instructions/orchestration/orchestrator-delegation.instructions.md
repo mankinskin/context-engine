@@ -15,18 +15,18 @@ Activate this rule when:
 
 ## Cost Gating
 
-**Source of truth**: `tools/model-prices/model_prices.json`
+**Source of truth**: `workflow-tools/session/crates/model-prices/model_prices.json`
 - Keys: `provider_id`/`model_id`
 - Fields: `input_mtok`, `output_mtok`, `cache_read_mtok`, `cache_write_mtok`, `context_window`, `deprecated`
 - Never hardcode prices
 
 **Tooling**:
-- Query/regenerate the table: `tools/model-prices/sync_model_prices.py` with `--query <model>`, `--list`, `--format {table,csv,json}`, `--check`, `--force`
-- Enforcement middleware: the Rust crate `memory-api/tools/mcp/mcp-toolmon`. There is no `cost_gate.py` — earlier revisions referenced one that never shipped. See [model-prices.instructions.md](model-prices.instructions.md) for its flags and failure modes.
+- Query/regenerate the table: `workflow-tools/session/crates/model-prices/sync_model_prices.py` with `--query <model>`, `--list`, `--format {table,csv,json}`, `--check`, `--force`
+- Enforcement middleware: the Rust crate `workflow-tools/session/crates/mcp-toolmon`. There is no `cost_gate.py` — earlier revisions referenced one that never shipped. See [model-prices.instructions.md](model-prices.instructions.md) for its flags and failure modes.
 
 **MCP boundary enforcement**: `mcp-toolmon` middleware injects a mandatory `caller_model` field into every MCP tool schema, then grades each call: `base_budget = round((1 − output_mtok / 60) × 100)` versus an empirical per-tool cost. A pricier model keeps full access to cheap tools and is asked to delegate only the token-heavy ones; an unmeasured tool costs 0 and is always allowed, and a grant offset can raise any model's budget. No model is denied outright. Fails open if the price table is unavailable, and intercepts MCP `tools/call` traffic only — it never sees `runSubagent`, so it does not police dispatch targets.
 
-**Setting `caller_model` correctly**: Pass the **actual id of the model issuing the call** — the running model's real price-table `model_id`, e.g. `claude-opus-5`, `claude-sonnet-5`, `claude-haiku-4-5`, `gpt-5.3-codex`, `gpt-5.6-terra`. Match a `model_id` key in `tools/model-prices/model_prices.json` (query with `sync_model_prices.py --list`).
+**Setting `caller_model` correctly**: Pass the **actual id of the model issuing the call** — the running model's real price-table `model_id`, e.g. `claude-opus-5`, `claude-sonnet-5`, `claude-haiku-4-5`, `gpt-5.3-codex`, `gpt-5.6-terra`. Match a `model_id` key in `workflow-tools/session/crates/model-prices/model_prices.json` (query with `sync_model_prices.py --list`).
 - Do **not** pass a generic vendor or product label such as `github-copilot`, `copilot`, `openai`, or `anthropic`. An unrecognized `caller_model` resolves to a **zero-cost budget**, which silently breaks price-awareness enforcement (the gate can no longer distinguish orchestrator-tier from cheap models).
 - When delegating, the sub-agent sets `caller_model` to **its own** model id, not the orchestrator's.
 

@@ -6,7 +6,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/mcp-toolmon`
+- Source: `workflow-tools/session/crates/mcp-toolmon`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `mcp-toolmon`
@@ -246,7 +246,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Misc
 - Kind: RustBinary
-- Source: `tools/worktree/worktree-ctl`
+- Source: `workflow-tools/session/crates/worktree-ctl`
 - Owner: tooling
 - Safety: Safe
 - Bin: `worktree-ctl`

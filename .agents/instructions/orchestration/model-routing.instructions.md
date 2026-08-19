@@ -22,7 +22,7 @@ This matters most in sessions driven by a large, expensive model. Treat that mod
 
 This table is the **canonical** tier ladder for the repository. [orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md) references it rather than restating it — do not fork a second copy.
 
-Prices come from `tools/model-prices/model_prices.json` and are USD per 1M tokens. Re-check with `sync_model_prices.py --query <model>` rather than trusting these numbers indefinitely — see [model-prices.instructions.md](model-prices.instructions.md).
+Prices come from `workflow-tools/session/crates/model-prices/model_prices.json` and are USD per 1M tokens. Re-check with `sync_model_prices.py --query <model>` rather than trusting these numbers indefinitely — see [model-prices.instructions.md](model-prices.instructions.md).
 
 **Context windows are not in the price table.** No `github-copilot` row publishes `context_window`; the `ctx` values below are carried from each model's upstream (genai-prices) row or vendor documentation. Where an entry reads *unpublished*, no source gives a number — treat that as "unknown", not "large".
 
@@ -77,7 +77,7 @@ Note that the gate cannot express this: dominance is a *relative* judgement acro
 
 ### Roster is not the catalogue
 
-`tools/model-prices/model_prices.json` is a **vendor catalogue**. It lists models `runSubagent` will refuse. Routing a unit to a catalogue-only model does not degrade gracefully — the dispatch errors outright and the spawn is wasted.
+`workflow-tools/session/crates/model-prices/model_prices.json` is a **vendor catalogue**. It lists models `runSubagent` will refuse. Routing a unit to a catalogue-only model does not degrade gracefully — the dispatch errors outright and the spawn is wasted.
 
 - Only route to a model verified present in the surface's model list. To re-verify, dispatch one trivial subagent with a deliberately wrong model string; the error response enumerates every available model.
 - **Model-name format is exact.** `"GPT-5.3-Codex (copilot)"` is hyphenated; `"GPT-5.3 Codex (copilot)"` errors. Copy strings from the surface list, not from prose.
@@ -111,7 +111,7 @@ Most delegated volume lands here, so T3 dominates real spend. Route it on the ri
 
 This is the canonical contract for the `model:` frontmatter field on every `.agents/agents/*.agent.md` template. Spec [ec3b13f1 Per-template MCP tool grants](../../../.spec/specs/ec3b13f1-ae9f-4f11-b3f9-e8fa3877afbd/spec.toml) explicitly lists this field as a **non-goal** — it does not define this contract. There is no separate spec for `model:`; this instruction file is the sufficient contract surface because the field is a routing default, not a product behavior: it has one producer (the template loader), one consumer (`runSubagent`'s no-`model` path), and its correctness is fully checked by the validation commands below rather than by acceptance-criteria-driven product testing. If the resolution or override mechanics ever need enforcement in code (not just convention), promote this section to a spec at that point.
 
-**Schema.** `model:` is a single string frontmatter field, value equal to a `model_id` in [tools/model-prices/model_prices.json](../../../tools/model-prices/model_prices.json) and to a "Preferred models" entry in the Tiered Model Ladder table above (bare name, no `"(Vendor)"` suffix — the vendor suffix is a `runSubagent` dispatch-time concern, not a template-declaration concern). Every template under `.agents/agents/*.agent.md` MUST declare exactly one `model:` value. A template with no `model:` field is a bug in that template, not a valid "inherit default" state.
+**Schema.** `model:` is a single string frontmatter field, value equal to a `model_id` in [workflow-tools/session/crates/model-prices/model_prices.json](../../../workflow-tools/session/crates/model-prices/model_prices.json) and to a "Preferred models" entry in the Tiered Model Ladder table above (bare name, no `"(Vendor)"` suffix — the vendor suffix is a `runSubagent` dispatch-time concern, not a template-declaration concern). Every template under `.agents/agents/*.agent.md` MUST declare exactly one `model:` value. A template with no `model:` field is a bug in that template, not a valid "inherit default" state.
 
 **Resolution (AC2).** When `runSubagent` is invoked against a template and the caller does not pass an explicit `model` argument, the dispatcher resolves the model to that template's declared `model:` value. Explicit `model` arguments on the call always take precedence over the template default — the template value is a fallback, not a floor or ceiling.
 
