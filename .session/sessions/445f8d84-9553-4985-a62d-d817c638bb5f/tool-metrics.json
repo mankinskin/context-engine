@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "445f8d84-9553-4985-a62d-d817c638bb5f",
-  "captured_at": "2026-08-19T03:02:02.328Z",
+  "captured_at": "2026-08-19T03:03:16.569Z",
   "tools": {
     "create_file": {
       "call_count": 11,
@@ -676,8 +676,8 @@
       ]
     },
     "mcp_ticket_update_ticket": {
-      "call_count": 4,
-      "success_count": 2,
+      "call_count": 5,
+      "success_count": 3,
       "fail_count": 2,
       "timeout_count": 0,
       "hang_count": 0,
@@ -687,18 +687,20 @@
         179,
         175,
         179,
-        185
+        185,
+        177
       ],
       "duration_ms_values": [
         1509,
         1702,
         1456,
-        1829
+        1829,
+        6176
       ]
     },
     "mcp_ticket_write_amendment": {
-      "call_count": 4,
-      "success_count": 4,
+      "call_count": 5,
+      "success_count": 5,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -708,13 +710,15 @@
         968,
         488,
         1004,
-        524
+        524,
+        2164
       ],
       "duration_ms_values": [
         14,
         20,
         14,
-        26
+        26,
+        4096
       ]
     },
     "memory": {
@@ -1333,8 +1337,8 @@
       ]
     },
     "run_in_terminal": {
-      "call_count": 218,
-      "success_count": 218,
+      "call_count": 225,
+      "success_count": 225,
       "fail_count": 0,
       "timeout_count": 0,
       "hang_count": 0,
@@ -1568,7 +1572,14 @@
         452,
         297,
         268,
-        412
+        412,
+        552,
+        334,
+        280,
+        445,
+        424,
+        371,
+        358
       ],
       "duration_ms_values": [
         3401,
@@ -1788,7 +1799,14 @@
         505,
         1952,
         463,
-        144
+        144,
+        812,
+        267,
+        135,
+        1925,
+        2035,
+        606,
+        851
       ]
     },
     "send_to_terminal": {
