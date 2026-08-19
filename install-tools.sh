@@ -267,8 +267,8 @@ resolve_install_ctl
 direct_path_for() {
     case "$1" in
         install-ctl) printf 'tools/install/install-ctl' ;;
-        peek-cli) printf 'memory-api/tools/cli/peek-cli' ;;
-        test-cli) printf 'memory-api/tools/cli/test-cli' ;;
+        peek-cli) printf 'workflow-tools/peek/crates/peek-cli' ;;
+        test-cli) printf 'workflow-tools/test/crates/test-cli' ;;
         fs-cli) printf 'memory-api/tools/cli/fs-cli' ;;
         compact-terminal-cli) printf 'memory-api/tools/cli/compact-terminal-cli' ;;
         context-cli) printf 'context-stack/tools/cli/context-cli' ;;
