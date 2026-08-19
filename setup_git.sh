@@ -12,6 +12,14 @@ git config core.safecrlf warn
 git config merge.renormalize true
 git config core.hooksPath .githooks
 
+# Reconcile session.json/transcript.json conflicts between the main-checkout
+# registry mirror and each session's own worktree branch (see .gitattributes)
+# instead of leaving textual conflict markers. Shared across worktrees since
+# they use the same repo config.
+git config merge.session-record.name "context-engine session record merge"
+git config merge.session-record.driver \
+    "cargo run --manifest-path \"$repo_root/Cargo.toml\" --quiet -p session-record-merge -- %O %A %B %P"
+
 # `git submodule update --init --recursive` aborts the whole command the
 # instant one submodule fails (e.g. a stale/unreachable pinned commit), and
 # a failure partway through can also leave a later submodule with an

@@ -8866,6 +8866,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "session-record-merge"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde_json",
+ "session-api",
+]
+
+[[package]]
 name = "session-workspace-resolver"
 version = "0.1.0"
 dependencies = [

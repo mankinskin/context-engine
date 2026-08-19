@@ -13,3 +13,11 @@ Cargo.lock text eol=lf
 *.md text eol=lf
 *.sh text eol=lf
 *.ps1 text eol=lf
+
+# Session store records are written independently on the main-checkout
+# registry mirror and on each session's own worktree branch; a typed merge
+# driver (memory-api/crates/session-record-merge) reconciles them instead of
+# leaving conflict markers. Configured via `git config merge.session-record.*`
+# in setup_git.sh.
+.session/sessions/**/session.json merge=session-record
+.session/sessions/**/transcript.json merge=session-record
