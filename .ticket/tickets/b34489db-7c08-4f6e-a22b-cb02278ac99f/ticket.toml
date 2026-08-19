@@ -1,7 +1,8 @@
 id = "b34489db-7c08-4f6e-a22b-cb02278ac99f"
 created_at = "2026-08-17T10:33:51.397305600+00:00"
 title = "[workflow-tools][per-tool] Extract `test` tool as `test` domain crate"
-state = "open"
+state = "cancelled"
 component = "workflow-tools"
 depends_on = ["a6d38372-0df2-437b-b06d-3984c290dbd1"]
+parts = [{ id = "5e61e7ca-7470-4bb8-9809-97c78a7c0527", kind = "amendment", path = "parts/5e61e7ca-7470-4bb8-9809-97c78a7c0527.md", frozen = false, created_at = "2026-08-19T00:36:16.863642100Z", supersedes = "cded882f-bdc7-5e3d-8d8b-51fd16ea38c7" }]
 type = "task"
