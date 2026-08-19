@@ -1,4 +1,3 @@
-
 # Agent Rules
 
 Global working rules for this repository. Keep this file small and stable.
@@ -40,7 +39,7 @@ Use static references as support:
 ## Task Routing
 
 - Any requested implementation or behavior change: create or update the tracking ticket(s) first, then create or update the relevant spec before editing files.
-- Worktree-backed work is required for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. Create a worktree branch, claim the session and board, and use `./target/debug/worktree-ctl.exe` for bootstrap, rebase, merge, and teardown; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Rebase and integrate affected submodules before the superproject.
+- Worktree-backed work is required for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. Create a worktree branch, claim the session and board, and use `worktree-ctl` for bootstrap, rebase, merge, and teardown; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Rebase and integrate affected submodules before the superproject.
 - A small, self-contained change to one existing file or the addition of one new file may be made in the main checkout. Verify that no active board entry owns the path, stage only the changed path, and validate before committing. A small main-checkout change does not require worktree provisioning, `session_check_in`, or `board_check_in`.
 - Simple fix (1-2 files): after the ticket/spec setup when requirements or behavior change, gather context, implement, validate, update docs, verify spec links, and move the ticket to `in-review`.
 - Bug fix: after the ticket/spec setup, follow `.agents/prompts/debug-test.prompt.md` when available.
@@ -95,42 +94,6 @@ let _tracing = init_test_tracing!(&graph);
 - Ignore unrelated changes by default; do not interrupt work solely because they exist.
 - Escalate only when unrelated changes create a real conflict with your owned scope (for example merge conflicts, overlapping owned paths, or failures directly caused by those changes).
 - Never revert, stage, or commit unrelated changes created by other agents.
-
-## Fallback Mode (When MCP Is Unavailable)
-
-- Docs fallback: search/read local docs directly.
-- Ticket fallback: use `ticket` CLI.
-- Logs fallback: inspect files under `target/test-logs/` directly.
-- Context fallback: use `tools/context-cli/` commands.
-
-## Canonical Sources
-
-- Ticket workflow details: `.agents/prompts/tickets.prompt.md`
-- Path-specific rules: `.agents/instructions/*.instructions.md`
-
-## Instruction Precedence and Exceptions
-
-When guidance overlaps, apply instructions in this order and document any explicit exception used for the current task.
-
-| Priority | Source | How to apply |
-|---|---|---|
-| 1 | System + safety policy | Always mandatory; cannot be overridden by repository guidance. |
-| 2 | Developer/session instructions | Treat as global execution contract for this session. |
-| 3 | AGENTS.md global rules | Baseline repository behavior. |
-| 4 | Path-scoped instruction files | Apply only when `applyTo` matches touched files. |
-| 5 | Prompt/task-specific directives | Use for ticket-local implementation details. |
-
-Exception handling rules:
-- Prefer the most specific matching guidance over broader guidance.
-- If two rules conflict at the same specificity, follow the newer or explicitly scoped one and record the conflict in ticket notes.
-- If a path-scoped rule conflicts with AGENTS.md global guidance, follow the path-scoped rule for that file scope and keep AGENTS.md as default elsewhere.
-- If an instruction conflicts with platform/tooling constraints, apply the safest feasible behavior and note the limitation in the ticket/spec summary.
-- Never resolve conflicts by silently ignoring one side; capture the chosen precedence and rationale in the active ticket description.
-
-Formatting conflict policy (canonical):
-- File, path, and entity references in responses are owned by the Clickable Reference Policy section below — it is the single definition of reference formatting (forward-slash markdown links, repo-root-relative, no backslashes, no backticks around the reference). Do not restate those rules here; follow that section.
-- If another instruction requests backtick-wrapped file references, the Clickable Reference Policy takes precedence for file/path citations.
-
 
 ## Token-Efficient Output
 
