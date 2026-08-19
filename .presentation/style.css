@@ -1,0 +1,29 @@
+/* Global Toc sidebar (see global-top.vue) */
+.slidev-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.slidev-toc-list-level-2,
+.slidev-toc-list-level-3 {
+  padding-left: 1rem;
+  margin-top: 0.15rem;
+  margin-bottom: 0.35rem;
+}
+.slidev-toc-item > a {
+  display: block;
+  padding: 0.15rem 0;
+  opacity: 0.7;
+}
+.slidev-toc-item-active > a,
+.slidev-toc-item-parent-active > a {
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* Slidev's built-in "goto slide" dialog partially overlaps the viewport even
+   when closed; the persistent left-side Toc above replaces its navigational
+   purpose, so it is hidden outright. */
+#slidev-goto-dialog {
+  display: none !important;
+}
