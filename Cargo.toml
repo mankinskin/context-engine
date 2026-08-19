@@ -17,8 +17,6 @@ members = [
   "memory-api/crates/doc-api",
   "memory-api/crates/test-api",
   "memory-api/crates/log-api",
-  "memory-api/crates/session-record-merge",
-  "memory-api/crates/session-workspace-resolver",
   "memory-api/crates/feedback-api",
   "memory-api/crates/memory-fixtures",
   "memory-api/crates/memory-matrix",
@@ -56,6 +54,8 @@ members = [
   "workflow-tools/session",
   "workflow-tools/session/crates/session-api",
   "workflow-tools/session/crates/session-worktree-provision",
+  "workflow-tools/session/crates/session-record-merge",
+  "workflow-tools/session/crates/session-workspace-resolver",
   "viewer-api",
   "viewer-api/frontend/dioxus",
   "tools/migrate-edges",
@@ -108,7 +108,6 @@ doc-http = { path = "memory-api/tools/http/doc-http" }
 feedback-api = { path = "memory-api/crates/feedback-api" }
 feedback-http = { path = "memory-api/tools/http/feedback-http" }
 test-api = { path = "memory-api/crates/test-api" }
-session-workspace-resolver = { path = "memory-api/crates/session-workspace-resolver" }
 
 [patch."https://github.com/mankinskin/ticket"]
 ticket = { path = "workflow-tools/ticket" }
@@ -126,3 +125,4 @@ rule-api = { path = "workflow-tools/rule/crates/rule-api" }
 session = { path = "workflow-tools/session" }
 session-api = { path = "workflow-tools/session/crates/session-api" }
 session-worktree-provision = { path = "workflow-tools/session/crates/session-worktree-provision" }
+session-workspace-resolver = { path = "workflow-tools/session/crates/session-workspace-resolver" }
