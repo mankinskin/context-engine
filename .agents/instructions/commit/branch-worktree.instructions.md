@@ -93,7 +93,7 @@ Verify that the top-level repair kept every submodule populated:
 git -C .worktrees/<full-session-uuid>/<topic-slug> submodule status
 ```
 
-The output must show all five populated submodules: `memory-viewers`, `context-stack`, `memory-api`, `viewer-api`, and `memory-kernel`. Only when fewer than five are populated, run `git -C .worktrees/<full-session-uuid>/<topic-slug>/<submodule> worktree repair` for each affected submodule. Then `cd` into `.worktrees/<full-session-uuid>/<topic-slug>` and proceed to step 2 (Claim).
+The output must show all populated submodules: `memory-viewers`, `context-stack`, `memory-api`, `viewer-api`, and `workflow-tools` (which nests `memory-kernel` and the domain repos recursively). Only when fewer are populated, run `git -C .worktrees/<full-session-uuid>/<topic-slug>/<submodule> worktree repair` for each affected submodule. Then `cd` into `.worktrees/<full-session-uuid>/<topic-slug>` and proceed to step 2 (Claim).
 
 ### Renaming again when focus changes
 
@@ -238,7 +238,7 @@ Never merge the superproject branch while any affected submodule branch is unmer
 6. **Re-verify containment after the superproject merge.** Run the same loop again; all five entries must print `ok`.
 
 ```bash
-for sm in context-stack memory-api memory-kernel memory-viewers viewer-api; do
+for sm in context-stack memory-api memory-viewers viewer-api workflow-tools; do
   link=$(git ls-tree HEAD "$sm" | awk '{print $3}')
   if git -C "$sm" merge-base --is-ancestor "$link" main; then
     echo "ok   $sm $link"
@@ -281,7 +281,7 @@ One sharp edge to avoid, not perform: never run `git submodule deinit` inside a 
 
 ## Submodules
 
-This repository is a superproject with submodules (`memory-api`, `memory-viewers`, `context-stack`, `viewer-api`, `memory-kernel`), each tracking `main`. A new superproject worktree does not populate them, which is why bootstrap runs `submodule update --init --recursive`.
+This repository is a superproject with submodules (`memory-api`, `memory-viewers`, `context-stack`, `viewer-api`, `workflow-tools`), each tracking `main`. `workflow-tools` nests `memory-kernel` and the domain repos as its own submodules. A new superproject worktree does not populate them, which is why bootstrap runs `submodule update --init --recursive`.
 
 When the change touches a submodule:
 

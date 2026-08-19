@@ -83,8 +83,8 @@ no-deps = true
 # canonical git declarations; these patches are workspace composition only
 # and must be removed to prove patch-free remote resolution.
 [patch."https://github.com/mankinskin/memory-kernel"]
-memory-kernel = { path = "memory-kernel" }
-transport-harness = { path = "memory-kernel/crates/transport-harness" }
+memory-kernel = { path = "workflow-tools/memory-kernel" }
+transport-harness = { path = "workflow-tools/memory-kernel/crates/transport-harness" }
 
 [patch."https://github.com/mankinskin/context-stack"]
 context-api = { path = "context-stack/context-api" }

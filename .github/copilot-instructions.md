@@ -35,13 +35,14 @@ buildable workspace:
 - `memory-viewers/` — viewer binaries (`ticket-viewer`, `spec-viewer`, `doc-viewer`,
   `log-viewer`), each a single-process server embedding its domain HTTP router plus
   an SPA frontend (Preact/Vite or Dioxus/Trunk depending on the viewer).
-- `memory-kernel/` — required neutral shared base layer beneath domain repositories.
-  Its `memory_kernel` crate owns generic primitives and its sibling
-  `transport-harness` crate owns transport-generic startup; domain-specific
-  extension traits, command dispatch, server handlers, and router registration
-  remain domain-owned. The submodule tracks `github.com/mankinskin/memory-kernel`
-  and has a separate push cycle; the root Cargo patch substitutes the checked-out
-  kernel and harness only for this development workspace. See
+- `workflow-tools/memory-kernel/` — required neutral shared base layer beneath domain
+  repositories, nested under `workflow-tools` like the other domain repos. Its
+  `memory_kernel` crate owns generic primitives and its sibling `transport-harness`
+  crate owns transport-generic startup; domain-specific extension traits, command
+  dispatch, server handlers, and router registration remain domain-owned. The
+  submodule tracks `github.com/mankinskin/memory-kernel` and has a separate push
+  cycle; the root Cargo patch substitutes the checked-out kernel and harness only
+  for this development workspace. See
   [kernel layering guidance](../.agents/instructions/engine/kernel-layering.instructions.md).
 
 All of the above are registered as workspace members in the root [Cargo.toml](../Cargo.toml),

@@ -1,6 +1,6 @@
 ---
 description: "Use when changing memory-kernel, transport-harness, or domain extensions of their generic contracts."
-applyTo: "{memory-kernel/**,memory-api/**}"
+applyTo: "{workflow-tools/memory-kernel/**,memory-api/**}"
 ---
 
 ## Neutral Kernel Boundary
