@@ -26,6 +26,7 @@ the precedence table there.
 | [frontend/viewer-api-tools](.agents/instructions/frontend/viewer-api-tools.instructions.md) | Editing viewer-api-driven tools (viewer-api, log/doc/ticket viewers). |
 | [orchestration/compact-output](.agents/instructions/orchestration/compact-output.instructions.md) | Choosing CLI output formats (TOON vs JSON) or applying the rtk proxy. |
 | [orchestration/differential-patching](.agents/instructions/orchestration/differential-patching.instructions.md) | Editing files: surgical replacement over full-file rewrites. |
+| [orchestration/duplication-review](.agents/instructions/orchestration/duplication-review.instructions.md) | Running or resuming a structured duplication review of the instruction corpus. |
 | [orchestration/escalation-gate](.agents/instructions/orchestration/escalation-gate.instructions.md) | A handoff package is incomplete or requirements are ambiguous. |
 | [orchestration/fallback-escalation](.agents/instructions/orchestration/fallback-escalation.instructions.md) | Compact tooling is unavailable or insufficient. |
 | [orchestration/file-inspection](.agents/instructions/orchestration/file-inspection.instructions.md) | Reading workspace files: bounded reads, peek CLI, repo_map.toon orientation. |
