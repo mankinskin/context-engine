@@ -9,7 +9,7 @@ A duplication review finds every duplicated or semantically similar passage acro
 ## Scope Resolution
 
 - **Default scope** (no scope given by the caller): every file under `.agents/` — `.agents/agents/*.agent.md`, `.agents/instructions/**/*.instructions.md`, `.agents/prompts/*.prompt.md`, `.agents/skills/**/SKILL.md` — plus the repository-root [AGENTS.md](../../AGENTS.md).
-- **Narrowed scope**: the caller (a human argument to the agent, or the argument text passed to the `/review-duplication` prompt) may limit the review to a named subdirectory (e.g. `.agents/instructions/ticket/`) or an explicit file subset. A narrowed scope still includes `AGENTS.md` only if the caller names it or names the whole `.agents/` tree; otherwise treat the named subset as the complete scope.
+- **Narrowed scope**: the caller (a human argument to the agent, or the argument text passed to the `/duplication-review` prompt) may limit the review to a named subdirectory (e.g. `.agents/instructions/ticket/`) or an explicit file subset. A narrowed scope still includes `AGENTS.md` only if the caller names it or names the whole `.agents/` tree; otherwise treat the named subset as the complete scope.
 - Treat an ambiguous narrowing request (a name that could match more than one directory or file) as a blocker to clarify before comparing, rather than guessing.
 
 ## Workspace

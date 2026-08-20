@@ -1,6 +1,6 @@
 ---
 description: "Run the full duplication review pipeline end to end: pairwise-compare the agent guidance corpus, classify findings, and produce the duplication report."
-name: "review-duplication"
+name: "duplication-review"
 argument-hint: "[scope: directory, file subset, or omit for the full .agents/ tree plus AGENTS.md]"
 agent: "Duplication Review Agent"
 ---
