@@ -14,9 +14,9 @@ Follow [duplication-review.instructions.md](../instructions/orchestration/duplic
 ## Workflow
 
 1. Treat the slash-command text as the review scope; default to the full `.agents/instructions/**` corpus when no scope is given.
-2. Create the dedicated review workspace folder and seed `pair-ledger.md` with every unordered in-scope pair.
-3. Run the pairwise phase to full coverage: classify every pair and collect verbatim `exact duplicate`/`near-duplicate` passages into `duplicate-passages.md`.
-4. Run the synthesis phase only after every pair is classified: cluster ideas recurring across three or more files and rank them.
+2. Create the dedicated review workspace folder, list every in-scope file, and partition it into batches per the Parallel Batch Dispatch rules.
+3. Dispatch one parallel `runSubagent` call per batch on a cheap T3 model (`GPT-5 mini` by default) to run the pairwise comparisons for that batch; merge every batch's returned rows into `pair-ledger.md` and `duplicate-passages.md`.
+4. Run the synthesis phase yourself only after every pair is classified: cluster ideas recurring across three or more files and rank them.
 5. Write `duplication-report.md` with the ranked ideas and every occurrence.
 6. Do not edit, condense, or delete anything under `.agents/instructions/**` — this pipeline only produces the report.
 
