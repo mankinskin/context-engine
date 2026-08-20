@@ -3,8 +3,8 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/2/context-engine/.worktrees/b9020ba2-df5d-426a-b1b9-228ef159cad1/guidance-lifecycle-agent"
-top_level_dirs[10]: config,"context-stack","memory-api","memory-kernel","memory-viewers",ticket,tools,transcripts,"viewer-api","workflow-tools-contract-reference"
+  root: "//?/C:/Users/linus/git/3/context-engine"
+top_level_dirs[8]: config,"context-stack","memory-api","memory-viewers",tools,transcripts,"viewer-api","workflow-tools"
 crates:
   name: crates
   kind: dir
@@ -74,108 +74,31 @@ crates:
         - name: crates
           kind: dir
           path: "crates/memory-api/crates"
-          children[19]{name,kind,path,note}:
-            "audit-api",dir,"crates/memory-api/crates/audit-api","crate=audit-api"
+          children[4]{name,kind,path,note}:
             "compact-terminal-api",dir,"crates/memory-api/crates/compact-terminal-api","crate=compact-terminal-api"
-            "doc-api",dir,"crates/memory-api/crates/doc-api","crate=doc-api"
-            "feedback-api",dir,"crates/memory-api/crates/feedback-api","crate=feedback-api"
             "fs-api",dir,"crates/memory-api/crates/fs-api","crate=fs-api"
-            "log-api",dir,"crates/memory-api/crates/log-api","crate=log-api"
             "memory-fixtures",dir,"crates/memory-api/crates/memory-fixtures","crate=memory-fixtures"
             "memory-matrix",dir,"crates/memory-api/crates/memory-matrix","crate=memory-matrix"
-            "peek-api",dir,"crates/memory-api/crates/peek-api","crate=peek-api"
-            "rule-api",dir,"crates/memory-api/crates/rule-api","crate=rule-api"
-            "session-api",dir,"crates/memory-api/crates/session-api","crate=session-api"
-            "session-capture-hook",dir,"crates/memory-api/crates/session-capture-hook","crate=session-capture-hook"
-            "session-workspace-resolver",dir,"crates/memory-api/crates/session-workspace-resolver","crate=session-workspace-resolver"
-            "session-worktree-provision",dir,"crates/memory-api/crates/session-worktree-provision","crate=session-worktree-provision"
-            "spec-api",dir,"crates/memory-api/crates/spec-api","crate=spec-api"
-            "test-api",dir,"crates/memory-api/crates/test-api","crate=test-api"
-            ticket,dir,"crates/memory-api/crates/ticket",crate=ticket
-            "ticket-api",dir,"crates/memory-api/crates/ticket-api","crate=ticket-api"
-            "ticket-vscode-core",dir,"crates/memory-api/crates/ticket-vscode-core","crate=ticket-vscode-core"
         - name: tools
           kind: dir
           path: "crates/memory-api/tools"
-          children[3]:
+          children[2]:
             - name: cli
               kind: dir
               path: "crates/memory-api/tools/cli"
-              children[9]{name,kind,path,note}:
-                "audit-cli",dir,"crates/memory-api/tools/cli/audit-cli","crate=audit-cli"
+              children[2]{name,kind,path,note}:
                 "compact-terminal-cli",dir,"crates/memory-api/tools/cli/compact-terminal-cli","crate=compact-terminal-cli"
-                "feedback-cli",dir,"crates/memory-api/tools/cli/feedback-cli","crate=feedback-cli"
                 "fs-cli",dir,"crates/memory-api/tools/cli/fs-cli","crate=fs-cli"
-                "peek-cli",dir,"crates/memory-api/tools/cli/peek-cli","crate=peek-cli"
-                "rule-cli",dir,"crates/memory-api/tools/cli/rule-cli","crate=rule-cli"
-                "session-cli",dir,"crates/memory-api/tools/cli/session-cli","crate=session-cli"
-                "spec-cli",dir,"crates/memory-api/tools/cli/spec-cli","crate=spec-cli"
-                "test-cli",dir,"crates/memory-api/tools/cli/test-cli","crate=test-cli"
-            - name: http
-              kind: dir
-              path: "crates/memory-api/tools/http"
-              children[3]{name,kind,path,note}:
-                "doc-http",dir,"crates/memory-api/tools/http/doc-http","crate=doc-http"
-                "feedback-http",dir,"crates/memory-api/tools/http/feedback-http","crate=feedback-http"
-                "spec-http",dir,"crates/memory-api/tools/http/spec-http","crate=spec-http"
             - name: mcp
               kind: dir
               path: "crates/memory-api/tools/mcp"
-              children[12]{name,kind,path,note}:
-                "audit-mcp",dir,"crates/memory-api/tools/mcp/audit-mcp","crate=audit-mcp"
+              children[2]{name,kind,path,note}:
                 "compact-terminal-mcp",dir,"crates/memory-api/tools/mcp/compact-terminal-mcp","crate=compact-terminal-mcp"
-                "feedback-mcp",dir,"crates/memory-api/tools/mcp/feedback-mcp","crate=feedback-mcp"
                 "fs-mcp",dir,"crates/memory-api/tools/mcp/fs-mcp","crate=fs-mcp"
-                "mcp-toolmon",dir,"crates/memory-api/tools/mcp/mcp-toolmon","crate=mcp-toolmon"
-                "peek-mcp",dir,"crates/memory-api/tools/mcp/peek-mcp","crate=peek-mcp"
-                "rule-mcp",dir,"crates/memory-api/tools/mcp/rule-mcp","crate=rule-mcp"
-                "session-mcp",dir,"crates/memory-api/tools/mcp/session-mcp","crate=session-mcp"
-                "spec-mcp",dir,"crates/memory-api/tools/mcp/spec-mcp","crate=spec-mcp"
-                "test-mcp",dir,"crates/memory-api/tools/mcp/test-mcp","crate=test-mcp"
-                "toolmon-costgate",dir,"crates/memory-api/tools/mcp/toolmon-costgate","crate=toolmon-costgate"
-                "toolmon-policy-api",dir,"crates/memory-api/tools/mcp/toolmon-policy-api","crate=toolmon-policy-api"
-    - name: "memory-viewers"
-      kind: dir
-      path: "crates/memory-viewers"
-      children[4]:
-        - name: "doc-viewer"
-          kind: dir
-          path: "crates/memory-viewers/doc-viewer"
-          note: "crate=doc-viewer"
-        - name: "log-viewer"
-          kind: dir
-          path: "crates/memory-viewers/log-viewer"
-          note: "crate=log-viewer"
-          children[1]:
-            - name: frontend
-              kind: dir
-              path: "crates/memory-viewers/log-viewer/frontend"
-              children[1]{name,kind,path,note}:
-                dioxus,dir,"crates/memory-viewers/log-viewer/frontend/dioxus","crate=log-viewer-dioxus"
-        - name: "spec-viewer"
-          kind: dir
-          path: "crates/memory-viewers/spec-viewer"
-          note: "crate=spec-viewer"
-          children[1]:
-            - name: frontend
-              kind: dir
-              path: "crates/memory-viewers/spec-viewer/frontend"
-              children[1]{name,kind,path,note}:
-                dioxus,dir,"crates/memory-viewers/spec-viewer/frontend/dioxus","crate=spec-viewer-dioxus"
-        - name: "ticket-viewer"
-          kind: dir
-          path: "crates/memory-viewers/ticket-viewer"
-          note: "crate=ticket-viewer"
-          children[1]:
-            - name: frontend
-              kind: dir
-              path: "crates/memory-viewers/ticket-viewer/frontend"
-              children[1]{name,kind,path,note}:
-                dioxus,dir,"crates/memory-viewers/ticket-viewer/frontend/dioxus","crate=ticket-viewer-dioxus"
     - name: tools
       kind: dir
       path: crates/tools
-      children[6]:
+      children[5]:
         - name: cli
           kind: dir
           path: crates/tools/cli
@@ -198,25 +121,155 @@ crates:
           kind: dir
           path: "crates/tools/tracing-analyzer"
           note: "crate=tracing-analyzer"
-        - name: worktree
-          kind: dir
-          path: crates/tools/worktree
-          children[1]{name,kind,path,note}:
-            "worktree-ctl",dir,"crates/tools/worktree/worktree-ctl","crate=worktree-ctl"
     - name: "viewer-api"
       kind: dir
       path: "crates/viewer-api"
+      note: "crate=viewer-api"
       children[1]:
-        - name: "viewer-api"
+        - name: frontend
           kind: dir
-          path: "crates/viewer-api/viewer-api"
-          note: "crate=viewer-api"
+          path: "crates/viewer-api/frontend"
+          children[1]{name,kind,path,note}:
+            dioxus,dir,"crates/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
+    - name: "workflow-tools"
+      kind: dir
+      path: "crates/workflow-tools"
+      children[10]:
+        - name: audit
+          kind: dir
+          path: "crates/workflow-tools/audit"
           children[1]:
-            - name: frontend
+            - name: crates
               kind: dir
-              path: "crates/viewer-api/viewer-api/frontend"
+              path: "crates/workflow-tools/audit/crates"
+              children[3]{name,kind,path,note}:
+                "audit-api",dir,"crates/workflow-tools/audit/crates/audit-api","crate=audit-api"
+                "audit-cli",dir,"crates/workflow-tools/audit/crates/audit-cli","crate=audit-cli"
+                "audit-mcp",dir,"crates/workflow-tools/audit/crates/audit-mcp","crate=audit-mcp"
+        - name: doc
+          kind: dir
+          path: "crates/workflow-tools/doc"
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/doc/crates"
+              children[3]{name,kind,path,note}:
+                "doc-api",dir,"crates/workflow-tools/doc/crates/doc-api","crate=doc-api"
+                "doc-http",dir,"crates/workflow-tools/doc/crates/doc-http","crate=doc-http"
+                "doc-viewer",dir,"crates/workflow-tools/doc/crates/doc-viewer","crate=doc-viewer"
+        - name: feedback
+          kind: dir
+          path: "crates/workflow-tools/feedback"
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/feedback/crates"
+              children[4]{name,kind,path,note}:
+                "feedback-api",dir,"crates/workflow-tools/feedback/crates/feedback-api","crate=feedback-api"
+                "feedback-cli",dir,"crates/workflow-tools/feedback/crates/feedback-cli","crate=feedback-cli"
+                "feedback-http",dir,"crates/workflow-tools/feedback/crates/feedback-http","crate=feedback-http"
+                "feedback-mcp",dir,"crates/workflow-tools/feedback/crates/feedback-mcp","crate=feedback-mcp"
+        - name: log
+          kind: dir
+          path: "crates/workflow-tools/log"
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/log/crates"
+              children[2]:
+                - name: "log-api"
+                  kind: dir
+                  path: "crates/workflow-tools/log/crates/log-api"
+                  note: "crate=log-api"
+                - name: "log-viewer"
+                  kind: dir
+                  path: "crates/workflow-tools/log/crates/log-viewer"
+                  note: "crate=log-viewer"
+                  children[1]:
+                    - name: frontend
+                      kind: dir
+                      path: "crates/workflow-tools/log/crates/log-viewer/frontend"
+                      children[1]{name,kind,path,note}:
+                        dioxus,dir,"crates/workflow-tools/log/crates/log-viewer/frontend/dioxus","crate=log-viewer-dioxus"
+        - name: peek
+          kind: dir
+          path: "crates/workflow-tools/peek"
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/peek/crates"
+              children[3]{name,kind,path,note}:
+                "peek-api",dir,"crates/workflow-tools/peek/crates/peek-api","crate=peek-api"
+                "peek-cli",dir,"crates/workflow-tools/peek/crates/peek-cli","crate=peek-cli"
+                "peek-mcp",dir,"crates/workflow-tools/peek/crates/peek-mcp","crate=peek-mcp"
+        - name: rule
+          kind: dir
+          path: "crates/workflow-tools/rule"
+          note: crate=rule
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/rule/crates"
               children[1]{name,kind,path,note}:
-                dioxus,dir,"crates/viewer-api/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
+                "rule-api",dir,"crates/workflow-tools/rule/crates/rule-api","crate=rule-api"
+        - name: session
+          kind: dir
+          path: "crates/workflow-tools/session"
+          note: crate=session
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/session/crates"
+              children[8]{name,kind,path,note}:
+                "mcp-toolmon",dir,"crates/workflow-tools/session/crates/mcp-toolmon","crate=mcp-toolmon"
+                "session-api",dir,"crates/workflow-tools/session/crates/session-api","crate=session-api"
+                "session-record-merge",dir,"crates/workflow-tools/session/crates/session-record-merge","crate=session-record-merge"
+                "session-workspace-resolver",dir,"crates/workflow-tools/session/crates/session-workspace-resolver","crate=session-workspace-resolver"
+                "session-worktree-provision",dir,"crates/workflow-tools/session/crates/session-worktree-provision","crate=session-worktree-provision"
+                "toolmon-costgate",dir,"crates/workflow-tools/session/crates/toolmon-costgate","crate=toolmon-costgate"
+                "toolmon-policy-api",dir,"crates/workflow-tools/session/crates/toolmon-policy-api","crate=toolmon-policy-api"
+                "worktree-ctl",dir,"crates/workflow-tools/session/crates/worktree-ctl","crate=worktree-ctl"
+        - name: spec
+          kind: dir
+          path: "crates/workflow-tools/spec"
+          note: crate=spec
+          children[1]:
+            - name: "spec-viewer"
+              kind: dir
+              path: "crates/workflow-tools/spec/spec-viewer"
+              note: "crate=spec-viewer"
+              children[1]:
+                - name: frontend
+                  kind: dir
+                  path: "crates/workflow-tools/spec/spec-viewer/frontend"
+                  children[1]{name,kind,path,note}:
+                    dioxus,dir,"crates/workflow-tools/spec/spec-viewer/frontend/dioxus","crate=spec-viewer-dioxus"
+        - name: test
+          kind: dir
+          path: "crates/workflow-tools/test"
+          children[1]:
+            - name: crates
+              kind: dir
+              path: "crates/workflow-tools/test/crates"
+              children[3]{name,kind,path,note}:
+                "test-api",dir,"crates/workflow-tools/test/crates/test-api","crate=test-api"
+                "test-cli",dir,"crates/workflow-tools/test/crates/test-cli","crate=test-cli"
+                "test-mcp",dir,"crates/workflow-tools/test/crates/test-mcp","crate=test-mcp"
+        - name: ticket
+          kind: dir
+          path: "crates/workflow-tools/ticket"
+          note: crate=ticket
+          children[1]:
+            - name: "ticket-viewer"
+              kind: dir
+              path: "crates/workflow-tools/ticket/ticket-viewer"
+              note: "crate=ticket-viewer"
+              children[1]:
+                - name: frontend
+                  kind: dir
+                  path: "crates/workflow-tools/ticket/ticket-viewer/frontend"
+                  children[1]{name,kind,path,note}:
+                    dioxus,dir,"crates/workflow-tools/ticket/ticket-viewer/frontend/dioxus","crate=ticket-viewer-dioxus"
 agent_guidance:
   name: "agent-guidance"
   kind: dir
@@ -254,7 +307,7 @@ agent_files:
             iteration.prompt.md,file,"agent-files/.agents/prompts/iteration.prompt.md"
             "memory-setup.prompt.md",file,"agent-files/.agents/prompts/memory-setup.prompt.md"
             next.prompt.md,file,"agent-files/.agents/prompts/next.prompt.md"
-            "refine-request.prompt.md",file,"agent-files/.agents/prompts/refine-request.prompt.md"
+            "refine-ingest.prompt.md",file,"agent-files/.agents/prompts/refine-ingest.prompt.md"
             research.prompt.md,file,"agent-files/.agents/prompts/research.prompt.md"
             reviews.prompt.md,file,"agent-files/.agents/prompts/reviews.prompt.md"
             spec.prompt.md,file,"agent-files/.agents/prompts/spec.prompt.md"

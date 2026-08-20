@@ -1,21 +1,23 @@
 ---
-description: "Use before turning a raw, unstructured user request into tickets, a spec, or any other complex downstream workflow. Covers the denoise -> review-gate -> artifact-inventory -> research-informed restructure -> traceability-checklist -> roadmap-compilation pipeline that must run first, worked example, and the decision boundary that keeps this stage from silently becoming implementation."
+description: "Use before turning a raw prompt into tickets, a spec, or any other complex downstream workflow. Defines the structural shell of the prompt-ingestion pipeline — dossier layout, the stage sequence from a refined intent through artifact inventory, research-informed restructure, traceability checklist, and roadmap compilation — plus the decision boundary and when to run it."
 applyTo: "**/*.md"
 ---
 
 ## Purpose
 
-A raw request — a rambling transcript, a dictated prompt, a stream-of-consciousness ask — must not be handed directly to `tickets.prompt.md`, `spec.prompt.md`, or an implementation session. Structure and scope are extracted first, cheaply, in a bounded pipeline, and only the resulting dossier is used to seed tickets/specs. This closes the gap the raw-request path otherwise leaves open: unbounded scope, no verification lens, and no evidence that the eventual tickets actually cover what the requester said.
+A raw prompt — a rambling transcript, a dictated ask, a stream-of-consciousness request — must not be handed directly to `tickets.prompt.md`, `spec.prompt.md`, or an implementation session. Structure and scope are extracted first, cheaply, in a bounded pipeline, and only the resulting dossier is used to seed tickets/specs. This closes the gap the raw-prompt path otherwise leaves open: unbounded scope, no verification lens, and no evidence that the eventual tickets actually cover what the requester said.
+
+This file is the ingestion shell: it owns the dossier folder layout and the structural stages that run once a prompt's intent is pinned down. [intent-refinement.instructions.md](intent-refinement.instructions.md) owns the two stages that clarify what the prompt is actually asking for; that verdict is the input to everything below.
 
 ## The Six Stages
 
 Run each stage as a distinct pass; do not collapse them. Each stage has one job and one exit artifact.
 
-1. **Denoise (cheap).** Dispatch the [Transcription Agent](../../agents/transcription.agent.md) per [audio-transcript.instructions.md](../transcripts/audio-transcript.instructions.md), even when the source was typed rather than spoken — the same denoise/restructure/verify pipeline removes filler, resolves self-corrections, and translates non-English input without adding or dropping content. Output: `input.md` (raw, verbatim) and `input.clean.md` (denoised) in a dated `transcripts/DD-MM-YYYY_<slug>/` folder.
-2. **Review gate.** Critique the cleaned request the way [review.agent.md](../../agents/review.agent.md) critiques an implementation: is the ask bounded, is it verifiable, does it conflate distinct concerns, what existing repository capability already answers part of it? Produce a verdict (`Changes requested` or `Approved as scoped`), a findings table with severity and required improvement per finding, and an explicit scope decision listing what the eventual dossier will and will not contain. Output: `REVIEW.md`.
+1. **Denoise (cheap).** Owned by [intent-refinement.instructions.md](intent-refinement.instructions.md). Output: `input.md`, `input.clean.md`.
+2. **Review gate.** Owned by [intent-refinement.instructions.md](intent-refinement.instructions.md). Output: `REVIEW.md` with an `Approved as scoped` verdict and a scope decision.
 3. **Artifact inventory.** Once the scope is bounded, dispatch a read-only [Explore Agent](../../agents/explore.agent.md) or [Research Agent](../../agents/research.agent.md) pass to gather every existing artifact relevant to the bounded scope: tickets (ids + state), specs (ids + slugs), docs, prior transcripts/dossiers, and concrete code/config file paths the eventual work will touch or depend on. Do not re-derive this list later — every downstream stage cites entries from it instead of re-discovering paths. Output: `ARTIFACTS.md`, one row per artifact with id/path, a one-line relevance note, and its current state (e.g. ticket state, spec state, file exists/does not exist yet).
 4. **Research-informed restructure.** With the scope bounded and the artifact inventory in hand, dispatch [Research Agent](../../agents/research.agent.md) or [Structured Research Agent](../../agents/structured-research.agent.md) (dialectic pass, when the first answer needs adversarial testing) to check each reviewed concern against actual repository capability, then rewrite the bounded scope as concrete, independently actionable work packages — each with an outcome, a non-goal, and a validation method. Output: one or more numbered documents (`01-...md`, `02-...md`, ...).
-5. **Traceability checklist.** Close the loop: map every requirement from the raw transcript to the dossier location that addresses it, run deterministic checks that the expected artifacts exist and are non-empty, and list genuinely open questions rather than silently resolving them. Output: a final numbered `NN-completion-checklist.md` and a `README.md` index stating reading order, scope, and the decision boundary below.
+5. **Traceability checklist.** Close the loop: map every requirement from the raw prompt to the dossier location that addresses it, run deterministic checks that the expected artifacts exist and are non-empty, and list genuinely open questions rather than silently resolving them. Output: a final numbered `NN-completion-checklist.md` and a `README.md` index stating reading order, scope, and the decision boundary below.
 6. **Roadmap compilation (iterative).** Compile the entire dossier — artifact inventory, restructured work packages, and traceability results — into a single `ROADMAP.md` that becomes the entry point for the first executing session. Then dry-run it and refine it before handing it off. See "Roadmap Compilation and Versioning" and "Roadmap Improvement Loop" below for its required contents, dry-run procedure, and iteration rule.
 
 ## Roadmap Compilation and Versioning
@@ -72,18 +74,18 @@ The dossier produced by this pipeline is a bounded research-and-scoping artifact
 - Stage 6 (roadmap compilation and its improvement loop) is the one exception: it is explicitly allowed to create or update tickets and to add entries to the linked artifact set, per "Ticket Creation During Refinement" above. It still does not create or edit a spec — that remains a separate, later step.
 - `ROADMAP.md` is a scoping and sequencing artifact, not a spec — it names the tasks an executing session should pick up, with complex decomposition delegated to tickets created during refinement. Turning roadmap items into a spec happens in a **separate**, later step — `spec.prompt.md` — consuming `ROADMAP.md` and its linked tickets as input.
 
-This mirrors [escalation-gate.instructions.md](escalation-gate.instructions.md) and [phase-separation.instructions.md](phase-separation.instructions.md): discovery/interview/review happen before implementation, and this pipeline is exactly that discovery phase for a raw request — with ticket creation as the one deliberate, scoped exception that keeps the roadmap itself small.
+This mirrors [escalation-gate.instructions.md](escalation-gate.instructions.md) and [phase-separation.instructions.md](phase-separation.instructions.md): discovery/interview/review happen before implementation, and this pipeline is exactly that discovery phase for a raw prompt — with ticket creation as the one deliberate, scoped exception that keeps the roadmap itself small.
 
 ## When to Run This Pipeline
 
-Run it before `tickets.prompt.md`, `spec.prompt.md`, or any multi-file implementation session whenever the incoming request is:
+Run it before `tickets.prompt.md`, `spec.prompt.md`, or any multi-file implementation session whenever the incoming prompt is:
 
 - a raw transcript, dictation, or stream-of-consciousness prompt rather than an already-scoped ask,
 - broad enough that "just start implementing" would produce an unbounded session (compare the "Feature or refactor" and "Unfamiliar module" rows in `AGENTS.md`'s Task Routing table),
 - ambiguous about whether it is one request or several interleaved concerns.
 
-Skip it for an already-bounded, single-file fix or an ask that already names its acceptance criteria — running the full pipeline on a two-line, unambiguous request is pure overhead.
+Skip it for an already-bounded, single-file fix or an ask that already names its acceptance criteria — running the full pipeline on a two-line, unambiguous prompt is pure overhead.
 
 ## Cost Note
 
-Stage 1 (denoise) runs on the cheap tier per `transcription.agent.md`'s own `model:` declaration. Stage 3 (artifact inventory) is mechanical read-only extraction and belongs on the T3 floor. Stage 2 (review), Stage 4 (research), and Stage 6 (roadmap compilation) are judgement-bearing and route per the tier ladder in [model-routing.instructions.md](model-routing.instructions.md) — do not run the whole pipeline on the orchestrator-tier model when the denoise and inventory passes alone are mechanical.
+Stage 1 (denoise, in [intent-refinement.instructions.md](intent-refinement.instructions.md)) runs on the cheap tier per `transcription.agent.md`'s own `model:` declaration. Stage 3 (artifact inventory) is mechanical read-only extraction and belongs on the T3 floor. Stage 2 (review), Stage 4 (research), and Stage 6 (roadmap compilation) are judgement-bearing and route per the tier ladder in [model-routing.instructions.md](model-routing.instructions.md) — do not run the whole pipeline on the orchestrator-tier model when the denoise and inventory passes alone are mechanical.
