@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "session_id": "5e2ce195-6e5d-4c41-9c27-c06746509b72",
+  "source": "copilot-hook",
+  "started_at": "2026-08-20T11:17:01.796831600Z",
+  "captured_at": "2026-08-20T12:15:30.016551800Z",
+  "metadata": {
+    "workspace_slug": "default",
+    "trigger": "PreToolUse",
+    "provisioning": {
+      "outcome": "skipped",
+      "reason": "trigger_not_session_start",
+      "hook_event_name": "UserPromptSubmit"
+    },
+    "producer": "copilot-agent",
+    "copilot_version": "0.62.0",
+    "vscode_version": "1.134.0",
+    "protocol_version": 1,
+    "worktree": {
+      "branch": "agent/5e2ce195-6e5d-4c41-9c27-c06746509b72/session"
+    }
+  },
+  "links": {}
+}
