@@ -69,6 +69,12 @@ The retired HTML agent's proven principles — full-viewport hero, sticky nav wi
 bar, one idea per screen-height section, dark CTA section bookending the hero — are
 encoded as presets in that theme pack, and only then is the legacy agent deleted.
 
+Presets also encode a small semantic visual grammar: a fixed vocabulary of roles — goal,
+input, evidence, decision, tool, verification, output, risk, unresolved-question — each
+mapped consistently to color, edge style, and typography across every preset, with
+non-color/text distinctions preserved so the mapping stays accessible and machine-readable
+for authoring agents.
+
 ### R6 — Agent enablement
 Vendored skills (`marcoshaber99/slidev-skills`, `yoanbernabeu/slidev-skills`,
 `neversight/slidev-syntax-guide`, `zarazhangrui/frontend-slides`) plus a repo-local
@@ -88,6 +94,10 @@ and citations. Sidecars record category, severity, owner, resolution state, and 
 locations. An unresolved material contradiction blocks publication or visibly qualifies the
 affected slide.
 
+Each conceptual visual is backed by an evidence card: a structured record with a source path
+or entity URN, a stable claim identifier, a content digest, and a capture timestamp, so every
+generated statement remains traceable to the exact repository fact it renders.
+
 ### R9 — Locked and bounded generation
 Managed generation records a source lock containing specification paths and sections with
 content hashes, transform and theme/preset versions, and the Git base. If a lock no longer
@@ -103,6 +113,11 @@ dependency relationships are distinct named projections. Every node and edge has
 source; the system must not imply an unlabeled single tree. Extraction adapters normalize
 these facts separately from `presentation-api`, which continues to own persistence,
 materialization, builds, and traceability.
+
+The combined Git-repository-plus-Rust-crate view required by this track is one addressable
+graph over a shared node set keyed by path; Git containment, Cargo workspace/crate membership,
+and Cargo dependency remain separately labeled, distinctly-typed edge collections layered on
+that shared graph. It is never flattened into a single untyped parent-child tree.
 
 ### R11 — Declarative workflows and bounded provenance
 Workflow content derives from formal declarations. Durable session telemetry may be shown only
@@ -129,6 +144,13 @@ preset contract with a required legend, named node and edge roles, density limit
 screenshots. Cross-language parsing and telemetry-derived normativity are out of scope for this
 track.
 
+### R15 — Deck information architecture
+Every deck and slide declares a position on a shared information-architecture ladder
+(audience-problem, workflow, tool-role, domain-contract, component, implementation-detail),
+its prerequisite levels, and any drill-down target to a more detailed nested deck. Composed
+decks share this vocabulary so a composing deck and an imported sub-repository deck remain
+coherent. Levels are author-declared, not inferred.
+
 ## Non-Goals
 
 - PPTX/PowerPoint generation.
@@ -152,7 +174,8 @@ track.
   custom theme pack presets.
 - AC7: `presentation-http` exposes full CRUD over decks and slides.
 - AC8: A conceptual deck can be materialized from locked specification inputs with every claim
-  classified as quoted or synthesized and cited to a source selector.
+  classified as quoted or synthesized and cited to a source selector, and every generated
+  visual carries an evidence card (source path/URN, claim id, content digest, capture timestamp).
 - AC9: A changed source lock produces explicit stale or failed-regeneration behavior, and writes
   outside declared generated paths, through symlinks, or over unexpected modifications are
   rejected until explicitly replaced.
@@ -170,6 +193,28 @@ track.
 - AC15: Fixture/test validation verifies disagreement sidecars record category, enum severity,
   owner, resolution state, and source locations; unresolved material contradictions either fail
   publication or visibly qualify affected slides.
+- AC16: Deck/slide manifests carry a declared information-architecture level, prerequisites, and
+  optional drill-down target; composing decks with an incompatible or missing level produce an
+  explicit diagnostic.
+- AC17: Every theme preset maps the semantic visual grammar's roles (goal, input, evidence,
+  decision, tool, verification, output, risk, unresolved-question) consistently to color, edge
+  style, and typography, and preserves a non-color/text distinction for each role.
+
+## Deferred Ideas (Later Tracks)
+
+- **Progressive structural lens**: extend the typed topology extractor (`693763fc`) beyond
+  Git/Cargo into a stable ladder of levels of detail — repository/submodule graph,
+  workspace/package graph, crate/module graph, file skeleton, and symbol signatures — each
+  level reusing the same shared node set and adding finer-grained typed edges, with an
+  incremental path to additional languages (TypeScript, JavaScript, Python). Explicitly out
+  of scope for this track (see R10, R14); recorded here so the idea is not lost, not as an
+  active ticket.
+- **Executable workflow storyboards**: once end-to-end test sessions exercising all tools as
+  intended exist as a data source (per R11), a storyboard extractor can consume a completed
+  session's durable workflow graph and produce stages — request, research, planning,
+  implementation, validation, review, handoff — as a static Mermaid storyboard, compared
+  against the authored "typical session" explanation. Durable session telemetry remains
+  illustrative-only per R11 until that data source exists.
 
 ## Open Decisions
 

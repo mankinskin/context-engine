@@ -33,3 +33,8 @@ work. This ticket replaces it with the repo's own theme pack.
 - Playwright E2E green with per-slide screenshots; verified in an external fullscreen
   Chromium browser (record the window resolution).
 - Unblocks deletion of `Presentation.agent 2.md` in ticket `134b953b`.
+
+
+## Semantic visual grammar (added)
+
+Define a small role-based visual vocabulary — goal, input, evidence, decision, tool, verification, output, risk, unresolved-question — and map each role consistently to color, edge style, and typography across every preset. Preserve non-color/text distinctions (do not rely on color alone) so the mapping stays accessible and machine-readable for authoring agents.
