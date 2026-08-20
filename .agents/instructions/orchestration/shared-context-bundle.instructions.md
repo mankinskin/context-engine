@@ -1,11 +1,11 @@
 ---
-description: "Use at the start of and throughout every session, whenever spawning a sub-agent: shared context bundle protocol that stops sub-agents rediscovering the same artifacts. Covers bundle composition, inline content passing, parallel fan-out optimization, and read deduplication."
+description: "Use at the start of and throughout every session, whenever spawning a sub-agent: compiled delegation prompt protocol that gives sub-agents a compact, self-contained brief instead of raw artifact dumps. Covers prompt composition, named-artifact referencing, progressive compilation across a delegation chain, and parallel fan-out."
 applyTo: "**"
 ---
 
 ## Purpose
 
-Sub-agents spawn with zero inherited context and must rediscover artifacts independently. When multiple sub-agents (especially parallel siblings) need the same artifact, each pays for the same discovery. This instruction defines a shared context bundle protocol that eliminates redundant reads.
+Sub-agents spawn with zero inherited context and must rediscover artifacts independently if the orchestrator names them but does not explain them. The fix is NOT to paste every artifact's full content into the prompt — that inflates orchestrator output tokens and duplicates content the sub-agent's own tools can fetch directly. The fix is a **compiled prompt**: the orchestrator's own distillation of prior context, objective, plan, and boundaries, with artifacts referenced by resolved path/id for the sub-agent to fetch itself when it needs more than the brief.
 
 This is also how a fresh session started after a Worker's one-step-then-terminate dispatch receives its context — see [write-and-die.instructions.md](write-and-die.instructions.md).
 
@@ -24,15 +24,15 @@ Within-agent redundancy is worse: one sub-agent read `subagent_rollup.rs` 6 time
 
 Parallel fan-out siblings issued byte-identical command sequences: same `ticket.exe get`, `spec.exe get`, `spec.exe search`, and file globs.
 
-## Context Bundle Composition
+These numbers motivate compiling a good prompt, not inlining full content: a sub-agent that fetches `spec.exe get <id>` once because the compiled prompt named it precisely is cheap; the redundancy above came from sub-agents groping for artifacts the orchestrator never named, not from artifacts named but not pasted.
 
-A context bundle is a **structured inline payload** passed to every sub-agent at spawn. It contains resolved artifacts the sub-agent is likely to need, eliminating the need to fetch them.
+## Compiled Prompt Composition
 
-**Standard bundle fields**:
+A compiled prompt is the orchestrator's own summary, written fresh for this delegation — not a template you fill with pasted content. It names every artifact the sub-agent needs by resolved path or id and states what the sub-agent should conclude from it, then trusts the sub-agent's own tools (ticket-mcp, spec-mcp, peek-mcp, file reads) to fetch full content on demand.
 
-0. **Execution identity**: Keep code location, entity-store location, and
-   command location separate. The generic word `workspace` is insufficient for
-   these values.
+**Required sections, in order**:
+
+0. **Execution identity** (always first): keep code location, entity-store location, and command location separate. The generic word `workspace` is insufficient for these values.
    ```
    execution_identity:
      session_id: <copilot-session-uuid>
@@ -46,74 +46,56 @@ A context bundle is a **structured inline payload** passed to every sub-agent at
    A mismatch is a blocker, not a path to repair or work around. Never reuse a
    worktree path from another session. Never infer `entity_store_root` from
    `command_cwd`, and never create or use a worktree-local `.ticket`, `.spec`,
-   `.test`, or `.session` shadow store unless the handoff explicitly declares
+   `.test`, or `.session` shadow store unless the prompt explicitly declares
    that store as the canonical target.
 
-1. **Resolved tickets**: Full ticket TOML content (not just id) for the ticket(s) the sub-agent acts on
+1. **Available prior context** — named, not pasted. Reference the ticket/spec ids and titles, prior decisions, and findings compiled from earlier units in this chain, in prose or a short list:
    ```
-   tickets:
-     <id>:
-       title: "..."
-       state: "..."
-       component: "..."
-       description: |
-         <full markdown body>
+   prior_context:
+     ticket: <short-id> "<title>" (state: <state>)
+     spec: <short-id> "<slug>"
+     decisions: ["<decision 1>", "<decision 2>"]
+     prior_findings: ["<compiled finding from unit N>", ...]
    ```
+   The sub-agent fetches `ticket_get <short-id>` or `spec_get <short-id>` itself if it needs the full body — do not paste it here.
 
-2. **Resolved specs**: Full spec body content (not just id/slug) for specs covering the work scope
+2. **Core objective and validation metrics** — the one outcome this unit must produce and the exact commands/criteria to check during and after the work:
    ```
-   specs:
-     <id>:
-       title: "..."
-       slug: "..."
-       component: "..."
-       body: |
-         <full markdown body>
-       sections:
-         <section-name>: |
-           <section content>
-   ```
-
-3. **Handoff package**: Complete handoff JSON or structured content if the sub-agent is acting on a handoff
-   ```
-   handoff:
-     objective: "..."
-     context_anchors: [...]
-     decisions: [...]
-     target_files: [...]
-     validation_gates: [...]
-   ```
-
-4. **Relevant file digests**: For files the sub-agent will likely read, include a bounded window or skeleton
-   ```
-   file_digests:
-     <workspace-relative-path>:
-       lines: <total-line-count>
-       skeleton: |
-         <interface-level view — exported symbols, type signatures, no bodies>
-   ```
-
-5. **Validation commands**: Pre-parsed list of validation commands the sub-agent should run
-   ```
-   validation_commands:
+   objective: "<single-sentence outcome>"
+   validation:
      - "cargo test -p compact-terminal-cli"
      - "cargo test -p compact-terminal-mcp"
    ```
 
-**Bundle size guidance**: Target 2k-5k tokens for the bundle. Do not inline 20k of full file bodies — use bounded windows or skeletons. The bundle should make the sub-agent "context-warm", not "context-saturated".
+3. **Exact planned steps** — the ordered steps already worked out for this unit:
+   ```
+   steps:
+     1. "<step>"
+     2. "<step>"
+   ```
+
+4. **Non-goals, constraints, boundaries**:
+   ```
+   non_goals: ["<out-of-scope item>"]
+   constraints: ["<hard constraint, e.g. branch/worktree/tier>"]
+   ```
+
+**Named artifacts**: every ticket, spec, or file the sub-agent needs is named by its resolved path or id — `memory-api/crates/session-api/src/model/handoff.rs`, ticket short-id, spec slug — never pasted in full. The sub-agent has the same ticket-mcp/spec-mcp/peek-mcp tools the orchestrator used to learn the reference and fetches it directly.
+
+**Prompt size guidance**: target 1k-2k tokens for the compiled prompt. If you are pasting more than a short excerpt of any single artifact, you are inlining instead of compiling — name it and let the sub-agent fetch it.
 
 ## Parallel Fan-Out Optimization
 
-When spawning parallel siblings (independent READ-ONLY probes dispatched concurrently), compute the **shared prefix** of what siblings need ONCE in the orchestrator, and inline it into EACH child prompt.
+When spawning parallel siblings (independent READ-ONLY probes dispatched concurrently), compute the **shared prior-context summary** ONCE in the orchestrator, and reuse it verbatim across EACH child prompt.
 
 **Pattern**:
 
-1. Identify shared artifact set (e.g., all siblings need the same ticket, spec, handoff package)
-2. Resolve the shared artifacts ONCE via a single pre-fetch batch
-3. Inline the identical shared bundle into every sibling's prompt
-4. Each sibling still gets a unique objective and return contract, but the context bundle is duplicated text — no child fetches it
+1. Identify the shared reference set (e.g., all siblings act against the same ticket/spec)
+2. Resolve and summarize those references ONCE
+3. Reuse the identical "available prior context" section in every sibling's prompt
+4. Each sibling still gets a unique objective, steps, and non-goals — only the prior-context summary is shared text
 
-**Cost model**: Duplicating 3k tokens of inline context across 4 siblings = 12k input tokens. The alternative — 4 siblings each fetching the same 3 artifacts via separate tool calls — costs 4 turns × estimated 37k prefix = ~148k tokens. Input duplication is VASTLY cheaper than per-sibling discovery.
+**Cost model**: reusing a short shared summary across siblings avoids each one independently exploring to reconstruct the same context, while staying far smaller than inlining full artifact content per sibling.
 
 ## Read Deduplication Within a Sub-Agent
 
@@ -141,82 +123,41 @@ Sub-agents currently read `.agents/agents/*.agent.md` files to understand their 
 
 ```markdown
 You are dispatched as an Implement Agent. Your contract:
-- Consume a complete handoff package (provided inline below)
-- Make the smallest correct change that satisfies the behavior
-- Validate immediately after the first substantive edit
+- Act on the compiled prompt below; fetch any named ticket/spec/file yourself if you need more than the summary given
+- Make the smallest correct change that satisfies the objective
+- Validate immediately after the first substantive edit, using the listed validation commands
 - Return: implementation target, edits made, validation run, remaining risk
 
-Handoff package:
-<inline the full handoff here>
+Compiled prompt:
+<prior context / objective+validation / steps / non-goals — see Compiled Prompt Composition above>
 ```
 
 ## Session-Scoped Artifact Cache (Future)
 
-**Scope for future work**: A session-scoped cache keyed by `(path, content-hash)` could return a cheap "unchanged, see turn N" marker for repeat reads. This is NOT in scope for this ticket — the immediate fix is to inline the bundle and avoid repeat reads via prompt discipline.
+**Scope for future work**: A session-scoped cache keyed by `(path, content-hash)` could return a cheap "unchanged, see turn N" marker for repeat reads. This is NOT in scope for this ticket — the immediate fix is prompt discipline: compile a prior-context summary, name artifacts, and let sub-agents fetch what they need.
 
 ## Integration with Orchestrator Template
 
-**Required change to `.agents/agents/orchestrator.agent.md`** (DOCUMENT ONLY — Lane B will apply):
-
-Add after the "Delegation contract" section:
-
-```markdown
-## Shared Context Bundle
-
-EVERY sub-agent receives a **context bundle** containing resolved artifacts inline. Do NOT pass only ids/paths — pass the FULL CONTENT the sub-agent needs.
-
-**Bundle fields**: resolved tickets (full TOML + description), resolved specs (full body + sections), handoff package (complete JSON), relevant file skeletons, validation command list.
-
-**Parallel fan-out**: For sibling sub-agents, compute the shared context prefix ONCE and duplicate it into each sibling's prompt. Input duplication is far cheaper than per-sibling discovery.
-
-**Size target**: 2k-5k tokens per bundle. Use bounded windows or skeletons, not full 20k file dumps.
-
-See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` for complete bundle composition rules.
-```
+See the "Compiled Delegation Prompts" section of [orchestrator.agent.md](../../agents/orchestrator.agent.md) for the canonical statement of this contract.
 
 ## Integration with Delegation Instructions
 
-**Required change to `.agents/instructions/orchestration/orchestrator-delegation.instructions.md`** (DOCUMENT ONLY — Lane B will apply):
-
-Replace the current "Minimum context" item in the delegation contract (item 4) with:
-
-```markdown
-4. **Shared context bundle** — pass resolved artifact CONTENT inline, not just ids/paths
-   - Resolved tickets: full TOML + description markdown, not just ticket id
-   - Resolved specs: full body + sections, not just spec id/slug
-   - Handoff package: complete JSON, not just a reference
-   - Relevant file skeletons: bounded interface-level view, not "read it yourself"
-   - Validation commands: exact command list, not "figure out what to run"
-   - For parallel siblings: compute shared prefix ONCE, duplicate into each prompt
-   - Size target: 2k-5k tokens per bundle
-   - See `.agents/instructions/orchestration/shared-context-bundle.instructions.md`
-```
-
-And update the "Context Isolation" section to clarify:
-
-```markdown
-**Pre-dispatch checklist** (every sub-agent prompt MUST be self-contained):
-- Pass FULL CONTENT of artifacts via context bundle, not just ids/paths
-- Name every file with full workspace-relative path (never "the file we discussed")
-- Include the target agent's contract excerpt inline (do not make sub-agent read its own template)
-- State repository root and any command/cwd assumptions
-- Define every referent — no "this", "that fix", or "the earlier change"
-- State exact return shape you want back
-```
+See item 4 of the delegation contract in [orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md), which points here for the compiled-prompt composition rules.
 
 ## Validation
 
 This is prose-only guidance that cannot be mechanically tested. The acceptance check is:
-1. Context bundle composition is defined with exact field structure
-2. Parallel fan-out optimization pattern is documented
-3. Read deduplication rule for sub-agents is stated
-4. Integration points with orchestrator template and delegation instructions are documented
-5. Bundle size target (2k-5k tokens) is specified
+1. Compiled prompt composition is defined with exact section structure (prior context, objective+validation, steps, non-goals)
+2. Named-artifact referencing (path/id, not pasted content) is the stated default
+3. Parallel fan-out reuse of a shared prior-context summary is documented
+4. Progressive compilation of prior findings across a delegation chain is documented
+5. Read deduplication rule for sub-agents is stated
+6. Prompt size target (1k-2k tokens) is specified
 
 ## Relation to Benchmark
 
-Benchmark ticket `10d21210` includes a scenario with parallel siblings needing the same artifact. With shared context bundles applied:
-- The artifact is fetched ONCE by the orchestrator
-- Duplicated inline into each sibling prompt (cheap input cost)
-- Zero siblings fetch it independently (eliminates cross-agent duplicate reads)
-- The count of artifacts read by >2 distinct sub-agents drops to zero versus baseline
+Benchmark ticket `10d21210` includes a scenario with parallel siblings needing the same artifact. With compiled prompts applied:
+- The shared prior-context summary is written ONCE by the orchestrator
+- Reused verbatim across every sibling prompt (cheap input cost)
+- Artifacts are named, not pasted — siblings fetch them directly only if the summary is insufficient
+- The count of artifacts read redundantly by >2 distinct sub-agents drops versus a raw-dump baseline, without inflating orchestrator output tokens

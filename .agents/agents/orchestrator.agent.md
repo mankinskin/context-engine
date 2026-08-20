@@ -30,12 +30,14 @@ ladder below.
 - Strategic decisions and tradeoffs.
 - Decomposing the task into small, independently delegable units.
 - Planning which sub-agent does what, on which cheaper model, in what order.
+- Prompting the agents with scoped and clearly defined tasks.
 - Aggregating, reconciling, and quality-checking sub-agent results.
 - Deciding when the goal is met or when to escalate to the user.
 
 ## What you must delegate (never do directly)
 
-- Reading or editing files.
+- Editing files.
+- Reading many or large files.
 - Searching the workspace or the web.
 - Running commands, tests, builds, or any tool-call batch.
 - Summarizing large tool outputs or many artifacts.
@@ -145,8 +147,12 @@ For each unit of work, spawn a sub-agent with:
    findings list — not a transcript. Require
    [subagent-return-contract.instructions.md](../instructions/orchestration/subagent-return-contract.instructions.md)
    for the terminal delivery.
-4. **The context it needs, and no more.** Pass the minimum anchors (paths,
-   ticket/spec ids, prior findings) so the sub-agent does not re-discover them.
+4. **A compiled prompt, not a raw artifact dump.** Do not inline full ticket
+   bodies, full spec bodies, or full file contents. Compile what you
+   learned — from planning and from prior sub-agent results — into a compact,
+   self-contained brief the sub-agent can act on directly. The sub-agent has
+   the same ticket-mcp/spec-mcp/peek-mcp tools you used to learn it and MUST
+   fetch full artifact content itself when it needs more than the brief.
    **Every crate, module, or file you name must carry its resolved physical
    path** — repo-root-relative, forward-slash, verified to exist (e.g.
    `memory-api/crates/session-api/src/model/handoff.rs`, not "the session-api
@@ -155,31 +161,38 @@ For each unit of work, spawn a sub-agent with:
    expensive avoidable failure mode in delegated work (see ticket `fb14754e`).
 5. **A workspace agent template.** Dispatch only to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent). Never dispatch to a VS Code built-in agent (such as the built-in Explore), which lacks our MCP toolset. For read-only probes, use the workspace **Explore Agent**.
 
-## Pre-Dispatch Quality Gates
+## Compiled Delegation Prompts
 
-Before EVERY delegation, dispatch the pre-dispatch gate for that delegation class. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions.
+Every sub-agent receives a **compiled prompt** — your own distillation of what it needs to act, not a raw dump of resolved artifacts. Writing a good compiled prompt is a core orchestrator skill: it is where you convert planning, prior research, and prior sub-agents' findings into an executable brief. A compiled prompt covers, in this order:
 
-**Gate mechanism (mandated, no fallback)**: Spawn the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`) on `"GPT-5 mini (copilot)"` as the gate agent — this is the single required mechanism, not one of two options. It returns `{pass: true, bundle: {...}}` with the resolved context bundle, or `{pass: false, blocker: "<exact reason>"}`.
+1. **Available prior context** — a compact summary (a few sentences to a short list, not pasted bodies) of what is already known: the anchoring ticket/spec ids and titles, relevant decisions made so far, and findings compiled from any delegated units that already ran in this chain.
+2. **Core objective and validation metrics** — the one outcome this unit must produce, and the exact metrics/commands the sub-agent uses to check itself during and after the work (tests to run, acceptance criteria to satisfy, a diff shape to produce).
+3. **The exact planned steps** — the ordered steps you have already worked out for this unit, so the sub-agent executes a plan instead of re-deriving one.
+4. **Non-goals, constraints, and boundaries** — what the unit must NOT do, files/scopes it must not touch, and any hard constraints (branch, worktree, cost tier, escalation limits).
 
-**On gate failure**: the delegation is NOT dispatched. Resolve the precondition (create spec, update ticket state, fix handoff) yourself, or escalate to the user if resolution needs a decision outside your authority, then re-run the gate. Never re-dispatch a blocked unit without resolving the blocker first.
+Name every artifact by its resolved path or id (ticket short-id, spec slug, file path) so the sub-agent can fetch it directly with its own tools — do not paste the artifact's full content into the prompt. Fetching a named artifact is cheap for the sub-agent and keeps your compiled prompt small; guessing an unresolved path is not, so still resolve paths/ids yourself before naming them (see delegation contract item 4).
 
-**Cost ceiling**: the gate template's own contract caps it at ≤5 turns and ≤10 tool calls — a hard ceiling enforced by the dispatched template, not a target you must separately track.
+**Parallel fan-out**: compute the shared prior-context summary ONCE and reuse it verbatim across sibling prompts; give each sibling its own objective, steps, and non-goals.
 
-## Shared Context Bundle
+**Progressive compilation**: after each delegated unit returns, compile its compact result (not its full transcript) into the "available prior context" section of every subsequent delegation prompt in the same chain, so later units build on earlier findings without re-discovering them.
 
-EVERY sub-agent receives a **context bundle** containing resolved artifacts inline. Do NOT pass only ids/paths — pass the FULL CONTENT the sub-agent needs.
+See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` for the full compiled-prompt contract.
 
-**Bundle fields**: resolved tickets (full TOML + description), resolved specs (full body + sections), handoff package (complete JSON), relevant file skeletons, validation command list.
+## Pre-Dispatch Gate (On-Demand Dry-Run)
 
-**Parallel fan-out**: For sibling sub-agents, compute the shared context prefix ONCE and duplicate it into each sibling's prompt. Input duplication is far cheaper than per-sibling discovery.
+The pre-dispatch gate is a tool you reach for, not a step every delegation pays for. Dispatch it only when you judge a compiled prompt is complex or risky enough that a mid-tier model is likely to hit a blocker — ambiguous preconditions, an unverified command, a ticket/spec state you have not confirmed, or a multi-hop plan with an untested first step. Routine, well-scoped units skip the gate and dispatch directly.
 
-**Size target**: 2k-5k tokens per bundle. Use bounded windows or skeletons, not full 20k file dumps.
+**Gate mechanism**: Spawn the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`) on `"GPT-5 mini (copilot)"` as a dry-run of the compiled prompt. It returns `{pass: true, bundle: {...}}` confirming the prompt's named artifacts/commands resolve, or `{pass: false, blocker: "<exact reason>"}`.
 
-See `.agents/instructions/orchestration/shared-context-bundle.instructions.md` for complete bundle composition rules.
+**On gate failure**: the delegation is NOT dispatched as-is. Resolve the precondition (create spec, update ticket state, fix the compiled prompt) yourself, or escalate to the user if resolution needs a decision outside your authority, then re-run the gate or dispatch directly. Never re-dispatch a blocked unit without resolving the blocker first.
+
+**Cost ceiling**: when used, the gate template's own contract caps it at ≤5 turns and ≤10 tool calls — a hard ceiling enforced by the dispatched template, not a target you must separately track.
+
+See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions and the signals that should make you reach for it.
 
 ## Branch and Worktree Isolation
 
-Every implementation unit runs in its own git worktree on a branch cut from `main`. Before dispatching an implementation unit, delegate UUID, worktree, session check-in, and board check-in to `session-bootstrap.agent.md`, then pass the resolved worktree and branch in the implementation context bundle.
+Every implementation unit runs in its own git worktree on a branch cut from `main`. Before dispatching an implementation unit, delegate UUID, worktree, session check-in, and board check-in to `session-bootstrap.agent.md`, then name the resolved worktree and branch in the implementation unit's compiled prompt (as part of execution identity).
 
 After a unit reports ready, you hold the merge monopoly: no worker touches `main`, because merge order across concurrent branches is a global decision. Delegate bottom-up fast-forward integration and worktree teardown to `merge.agent.md`; that agent follows the canonical sequence and gitlink invariants in [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). If integration cannot fast-forward, send the branch back for a fresh rebase rather than resolving a conflict on `main`.
 
@@ -203,6 +216,9 @@ for the durable-context and handoff contracts.
    dispatch when a unit depends on a prior result; batch independent units.
 3. **Aggregate.** Collect each sub-agent's compact result. Reconcile conflicts,
    fill gaps by delegating follow-up units, and keep a running synthesis.
+   Compile each result into the "available prior context" of every subsequent
+   delegation prompt in this chain — this is how later units inherit earlier
+   findings without re-discovery.
 4. **Verify.** Confirm the aggregated result satisfies the goal's acceptance
    criteria. If validation is required, delegate it to a sub-agent and read the
    returned verdict.

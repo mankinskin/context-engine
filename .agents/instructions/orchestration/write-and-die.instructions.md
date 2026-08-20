@@ -18,11 +18,11 @@ A Worker that stays conversational across steps re-derives "what's next" from it
 
 ## How the next step gets its context
 
-The terminating Worker does not hand off state directly — the fresh session that runs the next step receives its context via the **shared context bundle** protocol: the resolved ticket/spec content, the step's `target_path`, `allowed_tools`, validation commands, and `return_contract` are inlined into the new session's spawn prompt by the Planner/dispatcher, exactly as any other sub-agent spawn is made self-contained. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md) for bundle composition and size targets.
+The terminating Worker does not hand off state directly — the fresh session that runs the next step receives its context via a **compiled prompt**: prior context, the step's `target_path`, `allowed_tools`, validation commands, and `return_contract` are compiled into the new session's spawn prompt by the Planner/dispatcher, with any larger artifact named by resolved path/id for the fresh session to fetch itself, exactly as any other sub-agent spawn is made self-contained. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md) for compiled-prompt composition and size targets.
 
 ## Worker vs Planner/frontier-tier
 
-**Worker (write-and-die) and Planner/frontier-tier agents are not held to the same session-lifetime rule.** Workers are single-step and terminate: each step is a new spawn, receiving its slice of the plan via the context bundle. Planner/Architect agents (T0, frontier tier) may still run multi-step sessions — they reason once over the whole task to produce the Plan, and nothing in this instruction restricts how many turns that planning pass takes. Do not apply write-and-die to a Planner/Architect dispatch; it governs Worker execution only.
+**Worker (write-and-die) and Planner/frontier-tier agents are not held to the same session-lifetime rule.** Workers are single-step and terminate: each step is a new spawn, receiving its slice of the plan via the compiled prompt. Planner/Architect agents (T0, frontier tier) may still run multi-step sessions — they reason once over the whole task to produce the Plan, and nothing in this instruction restricts how many turns that planning pass takes. Do not apply write-and-die to a Planner/Architect dispatch; it governs Worker execution only.
 
 ## Reconciling with existing statelessness language
 

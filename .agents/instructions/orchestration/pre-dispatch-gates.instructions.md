@@ -1,19 +1,26 @@
 ---
-description: "Use at the start of and throughout every session, immediately before spawning any sub-agent: pre-dispatch quality gates for delegation. Covers per-delegation-class gate sets, tool calls implementing each check, and fail-fast semantics."
+description: "Use whenever a compiled delegation prompt is complex, ambiguous, or risky enough that a mid-tier model is likely to hit a blocker: on-demand pre-dispatch dry-run gates. Covers per-delegation-class gate sets, tool calls implementing each check, when to reach for the gate, and fail-fast semantics."
 applyTo: "**"
 ---
 
 ## Purpose
 
-Quality gates that run AFTER dispatch cost full delegation loops when preconditions fail. This instruction defines pre-dispatch gate sets that catch bad units while they are still cheap — before spawning the sub-agent.
+Quality gates that run AFTER dispatch cost full delegation loops when preconditions fail. This instruction defines pre-dispatch gate sets that catch bad units while they are still cheap — before spawning the sub-agent. The gate is a dry-run tool, not a tax on every delegation: reach for it when the compiled prompt itself is the risk.
 
 ## When to Apply
 
-Run pre-dispatch gates for EVERY delegation, regardless of delegation class. Each class has its own gate set tailored to its common precondition failures.
+The gate is **on-demand, not mandatory for every delegation**. The orchestrator decides, per delegation, whether the compiled prompt is complex or risky enough that a mid-tier (T2/T3) sub-agent is likely to hit a blocker. Reach for the gate when one or more of these signals is present:
 
-## Gate Execution Model (MANDATED — no either/or)
+- The compiled prompt names a ticket/spec state, file path, or command the orchestrator has not itself confirmed in this session
+- The plan has multiple hops and the first hop is unverified
+- The unit is high-risk (touches shared infrastructure, a destructive command, or a cross-cutting scope)
+- A prior delegation in this chain already came back blocked once, and the retry needs the same precondition re-checked
 
-**Mechanism (binding, single choice)**: The orchestrator cannot run gates directly (it has no tools), so a **cheap gate sub-agent MUST be dispatched before every delegation**. There is no fallback "orchestrator tool grant" option — that alternative is rejected: it would break the orchestrator's structural no-direct-tools constraint for marginal savings on simple checks, and it does not compose with context-bundle sharing the way a gate sub-agent does. The gate agent is the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`), formally designated as the pre-dispatch gate agent — see "Acting as the Pre-Dispatch Gate" in that template. It runs on the T3 floor model (`"GPT-5 mini (copilot)"`).
+Skip the gate for routine, well-scoped units where the orchestrator already has confirmed evidence (ticket state read this session, path verified via `peek-mcp`, command already run once). Paying gate cost on every delegation defeats the purpose of a cheap dry-run tool — it should be reached for, not defaulted to.
+
+## Gate Execution Model
+
+**Mechanism**: The orchestrator cannot run gates directly (it has no tools), so when it decides a dry-run is warranted, it dispatches a cheap gate sub-agent — the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`), formally designated as the pre-dispatch gate agent — see "Acting as the Pre-Dispatch Gate" in that template. It runs on the T3 floor model (`"GPT-5 mini (copilot)"`).
 
 **Gate contract (explicit input/output)**:
 
@@ -154,49 +161,25 @@ Re-dispatching the same blocked unit without resolving the blocker is the exact 
 
 ## Integration with Orchestrator Template
 
-**Required change to `.agents/agents/orchestrator.agent.md`** (DOCUMENT ONLY — Lane B will apply):
-
-Add after the "Delegation contract" section:
-
-```markdown
-## Pre-Dispatch Quality Gates
-
-Before EVERY delegation, dispatch the **Explore Agent** template as the pre-dispatch gate for that delegation class (mandated mechanism — no orchestrator tool-grant alternative). See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions.
-
-**Gate mechanism**: Spawn `.agents/agents/explore.agent.md` on `"GPT-5 mini (copilot)"`. It returns `{pass: true, bundle: {...}}` with the resolved context bundle, or `{pass: false, blocker: "<exact reason>"}`.
-
-**On gate failure**: the delegation is NOT dispatched. Resolve the precondition (create spec, update ticket state, fix handoff) or escalate, then re-run the gate — never re-dispatch a blocked unit without resolving the blocker.
-
-**Cost ceiling**: the gate template's own contract caps it at ≤5 turns and ≤10 tool calls; exceeding it forces a `pass: false` verdict rather than continued investigation.
-```
+See the "Pre-Dispatch Gate (On-Demand Dry-Run)" section of [orchestrator.agent.md](../../agents/orchestrator.agent.md) for the canonical statement of this contract.
 
 ## Integration with Delegation Instructions
 
-**Required change to `.agents/instructions/orchestration/orchestrator-delegation.instructions.md`** (DOCUMENT ONLY — Lane B will apply):
-
-Add before the "Required Workflow" section:
-
-```markdown
-## Pre-Dispatch Quality Gates
-
-Run pre-dispatch gates for EVERY delegation by dispatching the Explore Agent template (`.agents/agents/explore.agent.md`, `"GPT-5 mini (copilot)"`) as the mandated gate mechanism. Each delegation class (Implement, Review, Testing, Commit, Research/Explore) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.
-
-Gate failures (`pass: false`) mean the delegation is NOT dispatched: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works.
-```
+See the "Pre-Dispatch Quality Gates" section in [orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md), which points here for the on-demand gate mechanism, per-class gate sets, and fail-fast semantics.
 
 ## Validation
 
 This is prose-only guidance that cannot be mechanically tested. The acceptance check is:
-1. Gate definitions exist for all four delegation classes
+1. Gate definitions exist for all five delegation classes
 2. Each gate specifies the exact tool call and pass/block criteria
-3. The gate mechanism is a single mandated choice (cheap gate sub-agent via the Explore Agent template) with no unresolved either/or
+3. The trigger signals for reaching for the gate (vs. skipping it) are stated explicitly
 4. Fail-fast semantics are stated: `pass: false` blocks dispatch until resolved or escalated
 5. Integration points with orchestrator template and delegation instructions are documented
-6. Cost ceiling (≤5 turns, ≤10 tool calls) is stated as a hard requirement enforced in the gate's own contract
+6. Cost ceiling (≤5 turns, ≤10 tool calls) is stated as a hard requirement enforced in the gate's own contract, applying whenever the gate is used
 
 ## Relation to Benchmark
 
-Benchmark ticket `10d21210` (now DONE) publishes the combined-baseline `redispatch_count` in [.benchmark/10d21210/README.md](../../../.benchmark/10d21210/README.md)'s thresholds table: **baseline 10 → target 0**, measured as `runSubagent` dispatches sharing `(agent_name, description)` with an earlier dispatch whose span recorded a failure. With pre-dispatch gates applied via the mandated gate mechanism above, the blocker is caught BEFORE dispatch, which is the mechanism this threshold measures — a post-change session replayed through the same harness is expected to show `redispatch_count = 0`. Actual measurement of a post-change run is not owed by this ticket; only the evidence path is cited here. The gate cost (≤5 turns) is far cheaper than a full delegation loop (20-64 turns in the measured sessions).
+Benchmark ticket `10d21210` (now DONE) publishes the combined-baseline `redispatch_count` in [.benchmark/10d21210/README.md](../../../.benchmark/10d21210/README.md)'s thresholds table: **baseline 10 → target 0**, measured as `runSubagent` dispatches sharing `(agent_name, description)` with an earlier dispatch whose span recorded a failure. When the orchestrator reaches for the gate on a risky compiled prompt, the blocker is caught BEFORE dispatch, which is the mechanism this threshold measures — a post-change session replayed through the same harness is expected to show `redispatch_count = 0` on the units where the gate was used. Actual measurement of a post-change run is not owed by this ticket; only the evidence path is cited here. The gate cost (≤5 turns) is far cheaper than a full delegation loop (20-64 turns in the measured sessions), which is why it is worth reaching for on risky units even though it is not run on every delegation.
 
 ## Schema Gaps Discovered
 

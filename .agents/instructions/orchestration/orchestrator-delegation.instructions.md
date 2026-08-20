@@ -62,7 +62,7 @@ Each sub-agent dispatch MUST include:
 2. **Single well-scoped objective** — one unit per sub-agent, never the whole task
 3. **Compact return contract** — ask for exactly the facts/edits/results needed (file paths, line ranges, diff summary, decision, short findings list), not a transcript
    - Suggested shape: `scope | finding | outcome | blocker | pointer`
-4. **Shared context bundle** — governs which artifact content to inline (resolved tickets/specs, handoff package, file skeletons, validation commands), the parallel-sibling shared-prefix optimization, and the 2k-5k token size target. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md).
+4. **Compiled prompt** — compile prior context, objective, plan, and boundaries into a compact self-contained brief; name artifacts by resolved path/id for the sub-agent to fetch itself rather than pasting their full content. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md).
 5. **Workspace agent template only** — dispatch to a workspace `.agents/agents/*.agent.md` template (e.g. Research Agent, Implement Agent, Explore Agent); never dispatch to a VS Code built-in agent (e.g. the built-in Explore), which is not integrated with our MCP toolset. For read-only probes use the workspace **Explore Agent** template.
 
 ## Context Isolation
@@ -70,12 +70,14 @@ Each sub-agent dispatch MUST include:
 **The single most important delegation rule**: A sub-agent inherits NONE of the current session's context. No conversation history, no prior findings, no shared "we". Context-dependent prompts do not fail loudly — they burn a full agent spawn to reply "I have no prior context."
 
 The pre-dispatch self-containment checklist lives in [model-routing.instructions.md](model-routing.instructions.md). Two additions specific to orchestration:
-- Pass the FULL CONTENT of artifacts via the context bundle, not just ids/paths.
+- Compile prior context, objective/validation, steps, and non-goals into the prompt; name artifacts by path/id rather than pasting their full content.
 - Include the target agent's contract excerpt inline; do not make the sub-agent read its own template.
 
 ## Pre-Dispatch Quality Gates
 
-Run pre-dispatch gates for EVERY delegation — this governs the mandated gate mechanism (dispatch the Explore Agent template as gate agent), the per-delegation-class gate sets (Implement/Review/Testing/Commit), and the fail-fast semantics for a `{pass: false}` verdict. See [pre-dispatch-gates.instructions.md](pre-dispatch-gates.instructions.md).
+The pre-dispatch gate is an on-demand dry-run, not a step run before every delegation. Reach for it (dispatching the Explore Agent template, `.agents/agents/explore.agent.md`, `"GPT-5 mini (copilot)"`) when a compiled prompt is complex or risky enough that a mid-tier sub-agent is likely to hit a blocker; skip it for routine, well-scoped units. Each delegation class (Implement, Review, Testing, Commit, Research/Explore) has its own gate set. See [pre-dispatch-gates.instructions.md](pre-dispatch-gates.instructions.md) for complete definitions and trigger signals.
+
+Gate failures (`pass: false`) mean the delegation is NOT dispatched as-is: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works.
 
 ## Required Workflow
 
@@ -83,7 +85,7 @@ Run pre-dispatch gates for EVERY delegation — this governs the mandated gate m
 
 1. **Plan** — ordered delegable units + done-criteria + dependencies
 2. **Dispatch** — sequential when dependent, batch when independent
-3. **Aggregate** — collect compact results, reconcile conflicts, fill gaps with follow-up units, keep running synthesis
+3. **Aggregate** — collect compact results, reconcile conflicts, fill gaps with follow-up units, keep running synthesis; compile each result into the "available prior context" of subsequent delegation prompts in the same chain
 4. **Verify** — confirm acceptance criteria; delegate validation and read the verdict
 5. **Report or escalate** — escalate to user only on genuine ambiguity/conflicting evidence after focused delegation
 
