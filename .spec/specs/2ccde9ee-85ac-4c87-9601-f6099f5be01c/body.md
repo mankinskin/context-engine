@@ -79,6 +79,56 @@ workflow prompt covering the script -> deck -> build -> verify loop.
 A deck is done when Playwright E2E passes with a screenshot captured per slide, per
 the mandatory browser-verification rules in AGENTS.md.
 
+### R8 — Specification-derived conceptual inputs
+The next track produces conceptual decks for a live human audience from specifications.
+Specifications are authoritative; implementation and documentation evidence may only be
+recorded as structured disagreement sidecars, not used to replace normative claims. Each
+claim declares whether it is quoted or synthesized and carries claim-level source selectors
+and citations. Sidecars record category, severity, owner, resolution state, and source
+locations. An unresolved material contradiction blocks publication or visibly qualifies the
+affected slide.
+
+### R9 — Locked and bounded generation
+Managed generation records a source lock containing specification paths and sections with
+content hashes, transform and theme/preset versions, and the Git base. If a lock no longer
+matches, the deck is marked stale or regeneration fails explicitly. Generation may write only
+declared generated paths, rejects path traversal and symlink escapes, separates generated
+sources from a human-owned overlay, and preflights unexpected generated-output modifications
+before an explicit replace. Git patch review is the review mechanism for generated output.
+
+### R10 — Typed repository projections
+Conceptual structural slides initially cover Git repository/submodule topology and Cargo
+workspace/Rust crate topology. Git containment, Cargo workspace/crate membership, and Cargo
+dependency relationships are distinct named projections. Every node and edge has a type and
+source; the system must not imply an unlabeled single tree. Extraction adapters normalize
+these facts separately from `presentation-api`, which continues to own persistence,
+materialization, builds, and traceability.
+
+### R11 — Declarative workflows and bounded provenance
+Workflow content derives from formal declarations. Durable session telemetry may be shown only
+as illustrative examples, is labeled as such, and cannot alter normative claims. Visual
+provenance is either `synthetic` or a pinned `snapshot`; live visual sources are excluded from
+this track. Every generated conceptual slide includes presenter notes or explicitly declares
+`no notes required`.
+
+### R12 — Deterministic discovery and materialization
+Before a multi-deck registry becomes canonical, the system defines deterministic discovery and
+migration for legacy singleton `.presentation/deck.toml` sources and deterministic
+cross-repository imports. Materialization creates a managed deck, its presenter notes, source
+lock, and disagreement sidecar deterministically from the selected inputs.
+
+### R13 — Static per-slide evidence
+Validation materializes and builds static output. It derives the expected slide count from the
+deck manifest, visits every slide at a fixed viewport, and captures one screenshot per slide.
+The suite asserts required citations and legends and fails on browser console errors or missing
+assets; title-page-only checks are insufficient.
+
+### R14 — Deferred topology visual preset
+Before flagship structural slides are introduced, the later theme work defines a topology visual
+preset contract with a required legend, named node and edge roles, density limits, and baseline
+screenshots. Cross-language parsing and telemetry-derived normativity are out of scope for this
+track.
+
 ## Non-Goals
 
 - PPTX/PowerPoint generation.
@@ -101,6 +151,25 @@ the mandatory browser-verification rules in AGENTS.md.
 - AC6: `Presentation.agent 2.md` is removed and its design principles are represented in the
   custom theme pack presets.
 - AC7: `presentation-http` exposes full CRUD over decks and slides.
+- AC8: A conceptual deck can be materialized from locked specification inputs with every claim
+  classified as quoted or synthesized and cited to a source selector.
+- AC9: A changed source lock produces explicit stale or failed-regeneration behavior, and writes
+  outside declared generated paths, through symlinks, or over unexpected modifications are
+  rejected until explicitly replaced.
+- AC10: Fixture validation distinguishes typed Git containment, Cargo membership, and Cargo
+  dependency projections and preserves a source for every node and edge.
+- AC11: Formal workflow slides and any telemetry examples visibly distinguish normative claims
+  from illustrative data; all visual provenance is synthetic or a pinned snapshot.
+- AC12: Discovery/migration covers a legacy singleton deck and deterministic cross-repository
+  imports, and generated conceptual slides include presenter notes or `no notes required`.
+- AC13: Static Playwright E2E derives slide count from the manifest, visits and screenshots every
+  slide at a fixed viewport, verifies required citations and legends, and fails on console errors
+  or missing assets.
+- AC14: A topology preset contract defines its legend, node/edge roles, density limits, and
+  baseline screenshots before flagship structural slides ship.
+- AC15: Fixture/test validation verifies disagreement sidecars record category, enum severity,
+  owner, resolution state, and source locations; unresolved material contradictions either fail
+  publication or visibly qualify affected slides.
 
 ## Open Decisions
 
