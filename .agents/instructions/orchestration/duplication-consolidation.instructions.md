@@ -8,7 +8,7 @@ Consolidation takes a duplication review's structured findings and turns each re
 
 ## Input Contract
 
-Expect a completed review workspace: `duplication-reviews/<DD-MM-YYYY>_<scope-slug>/` containing `pair-ledger.md`, `duplicate-passages.md`, and `duplication-report.md`. Default to the most recently modified matching folder under `duplication-reviews/` when the caller does not name one. Treat a missing file, or any unclassified pair remaining in `pair-ledger.md`, as a blocker — do not consolidate from a partial review.
+Expect a completed review workspace per [duplication-review.instructions.md Workspace](duplication-review.instructions.md#workspace). Default to the most recently modified matching folder under `duplication-reviews/` when the caller does not name one. Treat a missing file, or any unclassified pair remaining in `pair-ledger.md`, as a blocker — do not consolidate from a partial review.
 
 ## Consolidation Candidates
 

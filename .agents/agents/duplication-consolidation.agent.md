@@ -25,10 +25,9 @@ Accept a completed review workspace folder path; default to the most recently mo
 
 ## Constraints
 
-- Never select an `.agent.md` or `.prompt.md` template as an authoritative location while an `AGENTS.md` or `.instructions.md` occurrence exists for the same concept.
-- Compile every concept's edits fully before applying any of them; do not interleave compilation and execution.
-- Within one file touched by multiple concepts, apply edits bottom-to-top by current line number, re-reading the file first if a prior edit in this run already touched it.
-- Never edit a file another agent actively owns; check board ownership before the first edit.
+- Follow [Authoritative Location Selection](../instructions/orchestration/duplication-consolidation.instructions.md#authoritative-location-selection) when choosing where a concept's snippet lives.
+- Follow [Mechanical Execution](../instructions/orchestration/duplication-consolidation.instructions.md#mechanical-execution): compile every concept fully before applying anything, then apply file-by-file, bottom-to-top.
+- Never edit a file another agent actively owns; check board ownership before the first edit, per Mechanical Execution step 5.
 - Everything else — candidate selection, concept grouping, snippet/replacement compilation, and the mechanical-execution order — is governed by [duplication-consolidation.instructions.md](../instructions/orchestration/duplication-consolidation.instructions.md); do not diverge from it.
 
 ## Required Workflow
