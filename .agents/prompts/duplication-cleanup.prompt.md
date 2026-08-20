@@ -14,13 +14,14 @@ This pipeline only sequences [Duplication Review Agent](../agents/duplication-re
 ## Workflow
 
 1. Treat the slash-command text as the review scope; default per Duplication Review Agent's own Scope Resolution when none is given.
-2. Run the review stage to completion.
-3. Run the consolidation stage against exactly the review stage's resulting workspace folder.
-4. Report both stages together.
+2. Run the review stage to completion — for a large scope this resolves and closes one anchor slice of the campaign, not the whole comparison scope in one pass (see [Anchor-Subset Scope for Large Corpora](../instructions/orchestration/duplication-review.instructions.md#anchor-subset-scope-for-large-corpora)).
+3. Run the consolidation stage against exactly the review stage's resulting workspace folder (the slice folder in campaign mode).
+4. Report both stages together, including campaign progress when applicable.
 
 ## Response
 
 Return:
 - review stage summary (scope, workspace folder, counts)
 - consolidation stage summary (concepts, authoritative locations, edits applied, deferred candidates)
+- in campaign mode: anchor slice closed, pairs remaining, and a note to re-invoke the same command to continue
 - reminder that committing is Commit Agent's job

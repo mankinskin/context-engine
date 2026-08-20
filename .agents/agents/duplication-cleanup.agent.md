@@ -26,6 +26,7 @@ Accept a review scope exactly as Duplication Review Agent would: by default, eve
 - Never dispatch the consolidation stage before the review stage in this same run has fully returned its workspace folder and report.
 - Never point the consolidation stage at any workspace folder other than the one this run's review stage just produced.
 - Do not restate classification, batching, candidate-selection, or authoritative-location rules here — they live in the two linked instructions files and belong to the two dispatched agents.
+- When the review stage reports it ran in campaign mode (see [Anchor-Subset Scope for Large Corpora](../instructions/orchestration/duplication-review.instructions.md#anchor-subset-scope-for-large-corpora)), still dispatch consolidation against that run's own slice folder — do not wait for the full campaign to close before consolidating what this slice found. Never claim full-scope coverage in the combined report when only a slice ran.
 
 ## Required Workflow
 
@@ -40,4 +41,5 @@ Accept a review scope exactly as Duplication Review Agent would: by default, eve
 Return:
 - review stage summary: scope, workspace folder (link), files/batches/phases/pairs evaluated, verdict counts
 - consolidation stage summary: per-concept table (concept, authoritative location, occurrences replaced), edits applied, files touched, deferred thematic-overlap candidates
+- when the review stage ran in campaign mode: the anchor slice closed this run, pairs remaining across the campaign, and an explicit instruction to re-invoke with the same scope to process the next slice
 - reminder that committing the resulting changeset is Commit Agent's job

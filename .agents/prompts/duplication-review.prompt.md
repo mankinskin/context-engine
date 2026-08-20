@@ -14,7 +14,7 @@ Follow [duplication-review.instructions.md](../instructions/orchestration/duplic
 ## Workflow
 
 1. Treat the slash-command text as the review scope, resolved per [Scope Resolution](../instructions/orchestration/duplication-review.instructions.md#scope-resolution).
-2. Create the dedicated review workspace folder, list every in-scope file, sort it, and build anchor-fixed batches (each with one fixed anchor file and a capped set of targets) per Anchor-Fixed Batching.
+2. Create the dedicated review workspace folder (or the next campaign run folder — see [Anchor-Subset Scope for Large Corpora](../instructions/orchestration/duplication-review.instructions.md#anchor-subset-scope-for-large-corpora) — when the comparison scope is large), list every in-scope file, sort it, and build anchor-fixed batches (each with one fixed anchor file and a capped set of targets) per Anchor-Fixed Batching.
 3. Run [Phased Dispatch](../instructions/orchestration/duplication-review.instructions.md#phased-dispatch): dispatch each phase's batches in parallel to Duplication Batch Worker Agent on a cheap T3 model (`GPT-5 mini` by default), waiting for the phase to fully return before starting the next one.
 4. Merge each phase's returned findings into `pair-ledger.md` and `duplicate-passages.md` as it completes, per Phased Dispatch.
 5. Run the [synthesis phase](../instructions/orchestration/duplication-review.instructions.md#two-phase-workflow) yourself only after every pair has a verdict.
@@ -23,4 +23,4 @@ Follow [duplication-review.instructions.md](../instructions/orchestration/duplic
 
 ## Response
 
-Follow the [Reporting Contract](../instructions/orchestration/duplication-review.instructions.md#reporting-contract): return the workspace folder and report link, files/batch/phase/pair counts, counts by verdict, the top duplicated ideas table, and a handoff note to Simplify Agent.
+Follow the [Reporting Contract](../instructions/orchestration/duplication-review.instructions.md#reporting-contract): return the workspace folder and report link, files/batch/phase/pair counts, counts by verdict, the top duplicated ideas table, and a handoff note to Simplify Agent. In campaign mode, also state the anchor slice this run closed and the pairs remaining, and note that the command must be re-invoked with the same scope to continue the campaign.

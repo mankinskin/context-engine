@@ -16,7 +16,7 @@ You are the orchestrator for this review: you never perform the pairwise file co
 
 ## Input Contract
 
-Accept a scope per [Scope Resolution](../instructions/orchestration/duplication-review.instructions.md#scope-resolution); treat an ambiguous scope (e.g. "the ticket instructions" when multiple directories could match) as a blocker to clarify before comparing.
+Accept a comparison scope per [Scope Resolution](../instructions/orchestration/duplication-review.instructions.md#scope-resolution); treat an ambiguous scope (e.g. "the ticket instructions" when multiple directories could match) as a blocker to clarify before comparing. When the comparison scope is large enough to trigger [Anchor-Subset Scope for Large Corpora](../instructions/orchestration/duplication-review.instructions.md#anchor-subset-scope-for-large-corpora), resolve this run's anchor scope from `campaign-coverage.md` yourself — the caller only supplies the comparison scope, never an anchor slice directly.
 
 ## Scope
 
@@ -27,6 +27,8 @@ Accept a scope per [Scope Resolution](../instructions/orchestration/duplication-
 
 Apply the Anchor-Fixed Batching formulas (file sort order, pair count, per-batch file/char caps, greedy packing) and the Phased Dispatch formulas (`PHASE_WIDTH`, phase count, sequential dispatch) from [duplication-review.instructions.md](../instructions/orchestration/duplication-review.instructions.md#anchor-fixed-batching) yourself before dispatching anything — this agent performs the partitioning and dispatch, it does not restate the formulas.
 
+Before building batches, estimate the total batch count for the whole comparison scope and compare it against `MAX_BATCHES_PER_RUN` per [Anchor-Subset Scope for Large Corpora](../instructions/orchestration/duplication-review.instructions.md#anchor-subset-scope-for-large-corpora). If it exceeds the budget, read or create `campaign-coverage.md`, resolve this run's anchor scope, and build batches only for anchors in that scope — every anchor still compares against the full remaining comparison scope, never just the slice.
+
 ## Constraints
 
 - Findings only — see [duplication-review.instructions.md Purpose](../instructions/orchestration/duplication-review.instructions.md#purpose) for the no-edit/condense/delete rule that governs every file under `.agents/`, `AGENTS.md`, and any `.agent.md` template.
@@ -36,13 +38,13 @@ Apply the Anchor-Fixed Batching formulas (file sort order, pair count, per-batch
 
 ## Required Workflow
 
-1. Confirm scope, list every in-scope file, sort it, and build anchor-fixed batches per Batch Construction above.
+1. Confirm scope, list every in-scope file, sort it, and build anchor-fixed batches per Batch Construction above (resolving an anchor scope from `campaign-coverage.md` first if the comparison scope is large).
 2. Run [Phased Dispatch](../instructions/orchestration/duplication-review.instructions.md#phased-dispatch): one `runSubagent` call per batch in each phase, in parallel, targeting `agentName: "Duplication Batch Worker Agent"` on `GPT-5 mini` (or `GPT-5.6 Luna` per the sizing exception), each with a fully self-contained prompt.
 3. After each phase returns, merge its rows into `pair-ledger.md` and `duplicate-passages.md` before starting the next phase, per Phased Dispatch's re-dispatch rule for incomplete batches.
-4. Confirm every pair in the ledger has a verdict, then run the [synthesis phase](../instructions/orchestration/duplication-review.instructions.md#two-phase-workflow) yourself (this step is not delegated).
-5. Write `duplication-report.md` per the Reporting Contract in the instructions file.
+4. Confirm every pair this run owns has a verdict, then run the [synthesis phase](../instructions/orchestration/duplication-review.instructions.md#two-phase-workflow) yourself (this step is not delegated).
+5. Write `duplication-report.md` per the Reporting Contract in the instructions file. In campaign mode, also append this run's closed anchor slice to `campaign-coverage.md` and only run the cross-run synthesis pass once every anchor is closed.
 6. Report a summary back to the user; do not apply any consolidation yourself.
 
 ## Output Format
 
-Follow the [Reporting Contract](../instructions/orchestration/duplication-review.instructions.md#reporting-contract); additionally inline the top duplicated ideas table (idea, occurrence count, classification, linked occurrences) in your response to the user.
+Follow the [Reporting Contract](../instructions/orchestration/duplication-review.instructions.md#reporting-contract); additionally inline the top duplicated ideas table (idea, occurrence count, classification, linked occurrences) in your response to the user. In campaign mode, also state the anchor index range this run closed, pairs resolved this run, pairs remaining across the campaign, and whether the caller must re-invoke for the next slice.
