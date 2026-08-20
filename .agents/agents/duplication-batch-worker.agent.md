@@ -19,12 +19,12 @@ Expect the dispatch prompt to already contain, self-contained: one **anchor** fi
 ## Scope
 
 - Read the anchor file once, then for each target file run the full Per-Pair Comparison Procedure (read the target, mark matching sections in both files, classify each match, and record a `no overlap` finding if nothing matches) from [duplication-review.instructions.md](../instructions/orchestration/duplication-review.instructions.md).
-- Out of scope: editing, condensing, or deleting any file; writing `pair-ledger.md`, `duplicate-passages.md`, or `duplication-report.md` yourself; comparing two target files against each other; clustering findings across batches.
+- Out of scope: editing, condensing, or deleting any file (see [duplication-review.instructions.md Purpose](../instructions/orchestration/duplication-review.instructions.md#purpose) — that rule applies to every pipeline role); writing `pair-ledger.md`, `duplicate-passages.md`, or `duplication-report.md` yourself; comparing two target files against each other; clustering findings across batches.
 
 ## Constraints
 
 - Follow the Per-Pair Comparison Procedure exactly: mark both files' matching sections with line ranges before classifying, rather than judging a whole-file verdict without pointing at the matched text.
-- Quote real text with real file paths and line ranges for every `exact duplicate` or `near-duplicate` finding; never paraphrase a duplicate into existence.
+- Quote real text with real file paths and line ranges for every `exact duplicate` or `near-duplicate` finding (see [Coverage and Efficiency Rules](../instructions/orchestration/duplication-review.instructions.md#coverage-and-efficiency-rules)).
 - Read the anchor file once and hold it for every pair in the batch; read each target file once, only when its pair comes up.
 - Cover every anchor/target pair you were assigned, each with at least one finding row (`no overlap` when nothing matches) — an omitted pair is a failed dispatch, not an acceptable partial result.
 - Return only the findings requested; do not attempt to write ledger or report files, and do not propose corpus edits.
