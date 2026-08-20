@@ -6,8 +6,8 @@ Global working rules for this repository. Keep this file small and stable.
 
 - Gather context before coding. Do not guess.
 - Read existing tests to infer expected behavior.
-- For implementation work, create or update the relevant ticket(s) before editing code.
-- For new or changed requirements and goals, create or update the relevant spec before implementation proceeds.
+- Tickets track large work that spans multiple sessions or multiple files/components — not small refactorings or single-file fixes. Create or update the relevant ticket(s) before editing code only when the work meets that bar; see Task Routing below for the exact threshold.
+- For new or changed requirements and goals, create or update the relevant spec before implementation proceeds. A small, self-contained change does not require a spec update unless it changes a documented requirement or goal.
 - Keep the ticket, spec, validation, and documentation trail current so review and status summaries stay accurate.
 - Commit every completed change on its owning feature branch; uncommitted completed work is not a valid handoff.
 - Prefer bash commands over PowerShell/cmd.
@@ -38,12 +38,12 @@ Use static references as support:
 
 ## Task Routing
 
-- Any requested implementation or behavior change: create or update the tracking ticket(s) first, then create or update the relevant spec before editing files.
+- **Ticket threshold**: a ticket is required only when the work is large enough to plausibly span multiple sessions — a feature, a cross-cutting refactor, a multi-file/multi-component change, or anything with unclear scope. A ticket is NOT required for a small, self-contained change: one existing file, or the addition of one new file, completable in the current session. Do not create a ticket for a small refactor just because it touches guidance, docs, or config rather than application code — the file type does not change the size threshold.
+- Small, self-contained change (no ticket needed): may be made in the main checkout without a ticket or spec update. Verify that no active board entry owns the path, stage only the changed path, and validate before committing. It does not require worktree provisioning, `session_check_in`, or `board_check_in`.
+- Simple fix (1-2 files, behavior requirements unchanged): gather context, implement, validate, and update docs directly — no ticket required.
+- Bug fix: if it stays within the small-change threshold above, fix directly; otherwise create the tracking ticket first and follow `.agents/prompts/debug-test.prompt.md` when available.
+- Feature or refactor (>5 files, >100 LOC, spans multiple sessions, or unclear scope): create or update the tracking ticket(s) first, then use `.agents/prompts/tickets.prompt.md` to establish the ticket set, then `.agents/prompts/spec.prompt.md` to update the spec before implementation.
 - Worktree-backed work is required for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. Create a worktree branch, claim the session and board, and use `worktree-ctl` for bootstrap, rebase, merge, and teardown; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Rebase and integrate affected submodules before the superproject.
-- A small, self-contained change to one existing file or the addition of one new file may be made in the main checkout. Verify that no active board entry owns the path, stage only the changed path, and validate before committing. A small main-checkout change does not require worktree provisioning, `session_check_in`, or `board_check_in`.
-- Simple fix (1-2 files): after the ticket/spec setup when requirements or behavior change, gather context, implement, validate, update docs, verify spec links, and move the ticket to `in-review`.
-- Bug fix: after the ticket/spec setup, follow `.agents/prompts/debug-test.prompt.md` when available.
-- Feature or refactor (>5 files, >100 LOC, or unclear scope): use `.agents/prompts/tickets.prompt.md` to establish the ticket set, then `.agents/prompts/spec.prompt.md` to update the spec before implementation.
 - Unfamiliar module or unclear behavior: follow `.agents/prompts/research.prompt.md` when available before locking the spec or implementation plan.
 
 ## Quality Gates
