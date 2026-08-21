@@ -13,7 +13,7 @@ Reference [AGENTS](../../AGENTS.md), [ticket-cli](../../memory-api/tools/cli/tic
 
 ## Workflow
 
-1. Inspect the draftboard and the actionable ticket queue before choosing work.
+1. Follow [workflow.instructions.md's Orientation](../instructions/ticket/workflow.instructions.md#orientation-start-of-every-session) and [Picking Next Work](../instructions/ticket/workflow.instructions.md#picking-next-work) sections before choosing work.
 2. If the slash-command text names a ticket or query, prefer that scope when it is valid and actionable.
 3. Otherwise pick the highest-value actionable ticket or the smallest unblocked child of the user's current track.
 4. Gather only enough code, test, and spec context to define the first implementation slice.
