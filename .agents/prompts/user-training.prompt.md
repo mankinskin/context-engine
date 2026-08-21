@@ -15,7 +15,7 @@ Reference [AGENTS](../../AGENTS.md), [tickets prompt](./tickets.prompt.md), [spe
 
 1. Treat the slash-command text as the user's initial goal.
 2. Clarify the intended outcome, constraints, and urgency with concise questions.
-3. Search for existing tickets, specs, prompts, or code that already cover the same work.
+3. Search for existing tickets (per [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating)), specs, prompts, or code that already cover the same work.
 4. Turn the goal into a practical workflow batch:
 - recommended tracker or child tickets
 - whether an existing spec should be updated or a new one created

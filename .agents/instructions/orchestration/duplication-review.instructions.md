@@ -24,16 +24,20 @@ duplication-reviews/<DD-MM-YYYY>_<scope-slug>/
   duplication-report.md   # final deliverable
 ```
 
-When a review runs in Anchor-Subset campaign mode (large comparison scope), nest each run's folder under one persistent campaign folder instead, keyed by the comparison scope's slug rather than a run date:
+When a review runs in Anchor-Subset campaign mode (large comparison scope), nest each run's folder under one persistent, dated campaign folder instead of the flat per-run form above:
 
 ```
-duplication-reviews/<comparison-scope-slug>/
+duplication-reviews/<DD-MM-YYYY>_<scope-slug>_campaign/
   campaign-coverage.md                    # persistent across every run against this comparison scope
   <DD-MM-YYYY>_<anchor-slice-slug>/
     pair-ledger.md
     duplicate-passages.md
     duplication-report.md
 ```
+
+The `<DD-MM-YYYY>` prefix on the campaign folder records only when the campaign was **first created** and never changes across later runs, even if those runs happen on a different date; the `_campaign` suffix distinguishes it from an ordinary single-run folder sharing the same scope-slug. A campaign is uniquely identified by its `<scope-slug>_campaign` suffix, not by that creation date.
+
+**Locating an existing campaign.** Every campaign folder lives directly under `duplication-reviews/`, never nested deeper and never named after anything outside that folder. Before creating a new campaign folder, list `duplication-reviews/` non-recursively and match by the `_campaign` suffix and scope-slug alone (ignore the date prefix) — this single directory listing is always sufficient; do not grep or semantic-search the rest of the workspace to find a campaign's ledger. If a match exists, resume it (read its `campaign-coverage.md`); only create a new dated campaign folder when no folder with that scope-slug's `_campaign` suffix exists yet.
 
 Never write review artifacts into `.agents/` or `AGENTS.md` themselves.
 

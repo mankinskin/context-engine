@@ -2,7 +2,7 @@
 description: "Use when performing the repository commit workflow. Covers checking status, regenerating generated outputs, staging logical batches, committing, and verifying clean state."
 ---
 
-**Branch precondition.** For a worktree-backed task, before step 1 confirm you are committing inside the task's own worktree on its own feature branch: `git branch --show-current` must print `agent/<ticket-short-id>-<slug>`, not `main`. Stage only files the task's board entry claims; `git add -A` from an implementation session is forbidden. `./target/debug/worktree-ctl.exe list`, run from the main checkout, shows the registered worktrees and their branches. A small, self-contained main-checkout change may commit on `main` after checking the board, staging only its changed path, and running focused validation. See [branch-worktree.instructions.md](./branch-worktree.instructions.md).
+**Branch precondition.** For a worktree-backed task, before step 1 confirm you are committing inside the task's own worktree on its own feature branch: `git branch --show-current` must print `agent/<ticket-short-id>-<slug>`, not `main`. Stage only files the task's board entry claims; `git add -A` from an implementation session is forbidden. `./target/debug/worktree-ctl.exe list`, run from the main checkout, shows the registered worktrees and their branches. The small-change main-checkout exception is defined in [AGENTS.md](../../../AGENTS.md#task-routing)'s Task Routing threshold; see [branch-worktree.instructions.md](./branch-worktree.instructions.md) for the full protocol.
 
 1. Check status before staging:
 
@@ -20,4 +20,4 @@ git submodule foreach --recursive 'git status --short && echo "=== $name ==="'
 git status --short
 git submodule status
 
-6. Rebase the feature branch onto updated `main` in every affected repository: each affected submodule first, then the superproject. Resolve conflicts on feature branches, re-run validation, run the invariant check in [branch-worktree.instructions.md](./branch-worktree.instructions.md#bottom-up-integration-sequence-canonical), then mark the branch ready to merge with a `board check-out` whose reason starts `ready-to-merge:`. The root orchestrator integrates bottom-up (submodules before the superproject); see [branch-worktree.instructions.md](./branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
+6. Per [AGENTS.md](../../../AGENTS.md#quality-gates)'s bottom-up rebase rule (submodules before the superproject), rebase the feature branch onto updated `main` in every affected repository. Resolve conflicts on feature branches, re-run validation, run the invariant check in [branch-worktree.instructions.md](./branch-worktree.instructions.md#bottom-up-integration-sequence-canonical), then mark the branch ready to merge with a `board check-out` whose reason starts `ready-to-merge:`.

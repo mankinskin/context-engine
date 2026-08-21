@@ -14,7 +14,7 @@ Reference [AGENTS](../../AGENTS.md), [session-optimization instructions](../inst
 ## Workflow
 
 1. Read the slash-command text and determine the handoff track, current implementation slice, and whether new ticketing is needed.
-2. Search existing tickets first so the handoff flow reuses or updates the authoritative ticket set instead of creating duplicates.
+2. Search existing tickets first per [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating) so the handoff flow reuses or updates the authoritative ticket set.
 3. Inspect the current board, spec, validation, implementation references, session-audit evidence, and any persisted cross-session history needed to describe the track accurately.
 4. Produce a short, paragraph-style, reference-centric handoff prompt for a new session.
 5. If the current track is not already represented well enough in the ticket graph, create or refine the needed ticket or tracker ticket items:

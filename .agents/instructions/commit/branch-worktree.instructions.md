@@ -10,7 +10,7 @@ Multiple agents editing the same checkout at the same time is the failure mode t
 
 ## When This Applies
 
-Use this protocol for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. A small, self-contained change to one existing file or the addition of one new file may be made in the main checkout after checking that no active board entry owns the path. The small main-checkout path does not require worktree provisioning, session check-in, or board check-in; stage only the changed path and validate before committing.
+Use this protocol when [AGENTS.md](../../../AGENTS.md#task-routing)'s Task Routing worktree threshold applies (changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes). The small main-checkout path does not require worktree provisioning, session check-in, or board check-in; stage only the changed path and validate before committing.
 
 ## The Loop
 
@@ -175,7 +175,7 @@ git -C <repo-root> status --porcelain -- .ticket .spec .session
 
 ## 4. Commit
 
-Worktree-backed commits land on the feature branch inside the worktree. [workflow.instructions.md](workflow.instructions.md) still governs staging batches, generated outputs, and message conventions, and [submodule.instructions.md](submodule.instructions.md) still governs deepest-first submodule ordering. A small main-checkout change may commit directly to `main` after validation when only its explicit path is staged. Two additions for worktree-backed commits:
+Per [AGENTS.md](../../../AGENTS.md#quality-gates)'s commit rule, worktree-backed commits land on the feature branch inside the worktree; a small main-checkout change may commit directly to `main` after validation when only its explicit path is staged. [workflow.instructions.md](workflow.instructions.md) still governs staging batches, generated outputs, and message conventions, and [submodule.instructions.md](submodule.instructions.md) still governs deepest-first submodule ordering. Two additions for worktree-backed commits:
 
 - Verify the branch before staging. `git -C <worktree> branch --show-current` must print `agent/<full-session-uuid>/<slug>`. If it prints `main`, stop — the session is in the wrong checkout.
 - Stage only files the board entry claims. `git add -A` from an implementation session is forbidden; it is exactly how an unrelated agent's work gets swallowed.

@@ -50,7 +50,7 @@ For every non-authoritative occurrence:
 2. Group the compiled edits by file. Within a file that receives edits from more than one concept, apply them **bottom-to-top by current line number** so an earlier edit never shifts the location an unapplied edit still needs to match.
 3. Apply each edit by matching its exact current text (not the review's stored line numbers, which may be stale) — re-read the file immediately before editing if any prior edit in this run touched it.
 4. After all edits to a file are applied, re-read the file once to confirm every intended replacement landed and no unrelated content was altered.
-5. Never edit a file another agent actively owns — check `board_show` per [board.instructions.md](../ticket/board.instructions.md) before the first edit to any file in the changeset.
+5. Never edit a file, integrate a branch, or delete a worktree with unmerged commits that another agent actively owns, and never revert, stage, or commit another agent's in-progress work — check `board_show` per [board.instructions.md](../ticket/board.instructions.md) before the first edit to any file in the changeset.
 
 ## Reporting Contract
 

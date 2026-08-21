@@ -19,7 +19,7 @@ Follow [duplication-consolidation.instructions.md](../instructions/orchestration
 4. For each concept, select the authoritative location and compile its snippet plus every replacement, per [Authoritative Location Selection](../instructions/orchestration/duplication-consolidation.instructions.md#authoritative-location-selection) and [Snippet/Replacement Compilation](../instructions/orchestration/duplication-consolidation.instructions.md#snippet-compilation).
 5. Apply the full compiled changeset per [Mechanical Execution](../instructions/orchestration/duplication-consolidation.instructions.md#mechanical-execution).
 6. Defer every `thematic overlap` finding to Simplify Agent instead of consolidating it.
-7. Do not commit — that stays with Commit Agent.
+7. Do not commit — per [duplication-consolidation.instructions.md](../instructions/orchestration/duplication-consolidation.instructions.md#reporting-contract), that stays with Commit Agent.
 
 ## Response
 

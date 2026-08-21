@@ -27,7 +27,7 @@ Accept a completed review workspace folder path; default to the most recently mo
 
 - Follow [Authoritative Location Selection](../instructions/orchestration/duplication-consolidation.instructions.md#authoritative-location-selection) when choosing where a concept's snippet lives.
 - Follow [Mechanical Execution](../instructions/orchestration/duplication-consolidation.instructions.md#mechanical-execution): compile every concept fully before applying anything, then apply file-by-file, bottom-to-top.
-- Never edit a file another agent actively owns; check board ownership before the first edit, per Mechanical Execution step 5.
+- Follow [Mechanical Execution](../instructions/orchestration/duplication-consolidation.instructions.md#mechanical-execution) step 5 for board-ownership checks before editing any changeset file.
 - Everything else — candidate selection, concept grouping, snippet/replacement compilation, and the mechanical-execution order — is governed by [duplication-consolidation.instructions.md](../instructions/orchestration/duplication-consolidation.instructions.md); do not diverge from it.
 
 ## Required Workflow

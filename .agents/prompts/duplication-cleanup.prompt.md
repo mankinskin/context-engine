@@ -24,4 +24,4 @@ Return:
 - review stage summary (scope, workspace folder, counts)
 - consolidation stage summary (concepts, authoritative locations, edits applied, deferred candidates)
 - in campaign mode: anchor slice closed, pairs remaining, and a note to re-invoke the same command to continue
-- reminder that committing is Commit Agent's job
+- reminder that committing is Commit Agent's job, per [duplication-consolidation.instructions.md](../instructions/orchestration/duplication-consolidation.instructions.md#reporting-contract)

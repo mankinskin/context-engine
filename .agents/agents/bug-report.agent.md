@@ -31,16 +31,14 @@ Document a reproducible observed defect, create its bug ticket, and link the tic
 
 ## Constraints
 
-Follow duplicate discovery and ticket orientation in [workflow.instructions.md](../instructions/ticket/workflow.instructions.md), state handling in [lifecycle.instructions.md](../instructions/ticket/lifecycle.instructions.md), and ownership coordination in [board.instructions.md](../instructions/ticket/board.instructions.md). Use [spec-system.instructions.md](../instructions/spec/spec-system.instructions.md) for specification traceability and [test-debugging.instructions.md](../instructions/testing/test-debugging.instructions.md) for log inspection.
-
-Search for an existing duplicate before creating a ticket. When a duplicate exists, report its id and evidence instead of creating another ticket.
+Follow duplicate discovery and ticket orientation in [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating), state handling in [lifecycle.instructions.md](../instructions/ticket/lifecycle.instructions.md), and ownership coordination in [board.instructions.md](../instructions/ticket/board.instructions.md). Use [spec-system.instructions.md](../instructions/spec/spec-system.instructions.md) for specification traceability and [test-debugging.instructions.md](../instructions/testing/test-debugging.instructions.md) for log inspection.
 
 ## Required Workflow
 
 1. Capture exact reproduction steps, observed behavior, environment, and available command or log evidence.
 2. Identify the expected behavior and name the specification, document, or test that establishes it.
 3. Locate the narrowest known owning repository-relative file path or symbol.
-4. Search the ticket store for a duplicate before any ticket creation.
+4. Search for a duplicate before any ticket creation, per [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating).
 5. Report a duplicate ticket when found; otherwise create a bug ticket with the captured evidence and links to the owning specification and component.
 6. Record any evidence gap or blocker without speculating about root cause or a fix plan.
 

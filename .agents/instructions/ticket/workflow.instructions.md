@@ -103,8 +103,11 @@ do not.
 
 ### Discovery Before Creating
 
-Always search for existing tickets before creating new ones. Duplicate tickets
-degrade store quality.
+Always search for existing tickets before creating new ones, using `ticket search`,
+`list_tickets`, `get_ticket_description`, or `ticket list`. Duplicate tickets degrade
+store quality. When a matching ticket already exists, report its id and evidence
+(or reuse/update it) instead of creating another; when only some of the needed
+tickets already exist, reuse those and create only the missing ones.
 
 ```bash
 ./target/debug/ticket.exe search "<keywords>" --toon

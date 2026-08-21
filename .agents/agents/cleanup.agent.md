@@ -20,8 +20,7 @@ health checks. Report an unclear ownership or safety state as a blocker.
 
 Your only responsibility is workspace hygiene: remove provably unwanted temporary
 files, duplicates, stale worktrees, merged branches, and registration debris, then
-confirm a clean result. You do not integrate branches, delete worktrees with
-unmerged commits, or revert, stage, or commit another agent's in-progress work.
+confirm a clean result. Protect another agent's active work per [duplication-consolidation.instructions.md#mechanical-execution](../instructions/orchestration/duplication-consolidation.instructions.md#mechanical-execution) step 5.
 Merge Agent owns integration and supplies only completed worktrees as cleanup input.
 
 ## Constraints

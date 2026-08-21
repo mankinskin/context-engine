@@ -35,7 +35,7 @@ For frontend-impacting changes run, at minimum:
 
 1. Lint and typecheck for each affected frontend package.
 2. Nearest unit/component tests where available (for example Vitest in log-viewer frontend).
-3. Browser end-to-end checks where available. For browser-hosted frontend code, first try the MCP Playwright/browser tools; if they are unavailable or insufficient for the scenario, fall back to repo-local Playwright flows (for example ticket-viewer frontend).
+3. Browser end-to-end checks where available, per [AGENTS.md](../../../AGENTS.md#quality-gates)'s MCP-Playwright-first rule (fall back to repo-local Playwright flows only when the MCP surface is unavailable or insufficient, for example ticket-viewer frontend).
 4. Contract checks for changed API integration paths.
 
 ## UX Validation Expectations

@@ -1,0 +1,294 @@
+# Pair Ledger — anchor slice [4,5] (`bug-report.agent.md`, `cleanup.agent.md`)
+
+Sorted file list `F_1..F_142` is recorded in [../20-08-2026_anchor-001-agents-md/pair-ledger.md](../20-08-2026_anchor-001-agents-md/pair-ledger.md) and is not repeated here.
+
+## Anchor slice owned by this run
+
+- Anchor `F_4` (`.agents/agents/bug-report.agent.md`) vs targets `F_5..F_142` (138 pairs, 20 batches, batches 1-20)
+- Anchor `F_5` (`.agents/agents/cleanup.agent.md`) vs targets `F_6..F_142` (137 pairs, 20 batches, batches 21-40)
+- Total pairs this run: 275. `MAX_FILES_PER_BATCH = 8`, `PHASE_WIDTH = 6`. Phases: 1 = batches 1-6, 2 = batches 7-12, 3 = batches 13-18, 4 = batches 19-24, 5 = batches 25-30, 6 = batches 31-36, 7 = batches 37-40.
+
+## Anchor `F_4` (`bug-report.agent.md`) vs `F_5..F_142` — 138 pairs
+
+| Pair | Anchor | Target | Batch | Phase | Verdict | Status |
+|---|---|---|---|---|---|---|
+| 1 | bug-report.agent.md | agents/cleanup.agent.md | 1 | 1 | thematic overlap | closed |
+| 2 | bug-report.agent.md | agents/code-architect.agent.md | 1 | 1 | thematic overlap | closed |
+| 3 | bug-report.agent.md | agents/commit.agent.md | 1 | 1 | thematic overlap | closed |
+| 4 | bug-report.agent.md | agents/context-enrichment.agent.md | 1 | 1 | thematic overlap | closed |
+| 5 | bug-report.agent.md | agents/deduplication-campaign.agent.md | 1 | 1 | thematic overlap | closed |
+| 6 | bug-report.agent.md | agents/duplication-batch-worker.agent.md | 1 | 1 | thematic overlap | closed |
+| 7 | bug-report.agent.md | agents/duplication-cleanup.agent.md | 1 | 1 | thematic overlap | closed |
+| 8 | bug-report.agent.md | agents/duplication-consolidation.agent.md | 2 | 1 | thematic overlap | closed |
+| 9 | bug-report.agent.md | agents/duplication-review.agent.md | 2 | 1 | thematic overlap | closed |
+| 10 | bug-report.agent.md | agents/explainer.agent.md | 2 | 1 | thematic overlap | closed |
+| 11 | bug-report.agent.md | agents/explore.agent.md | 2 | 1 | thematic overlap | closed |
+| 12 | bug-report.agent.md | agents/framing.agent.md | 2 | 1 | thematic overlap | closed |
+| 13 | bug-report.agent.md | agents/guidance-lifecycle.agent.md | 2 | 1 | thematic overlap | closed |
+| 14 | bug-report.agent.md | agents/handoff.agent.md | 2 | 1 | thematic overlap | closed |
+| 15 | bug-report.agent.md | agents/implement.agent.md | 3 | 1 | exact duplicate | closed |
+| 16 | bug-report.agent.md | agents/installer.agent.md | 3 | 1 | exact duplicate | closed |
+| 17 | bug-report.agent.md | agents/interview.agent.md | 3 | 1 | exact duplicate | closed |
+| 18 | bug-report.agent.md | agents/iteration.agent.md | 3 | 1 | exact duplicate | closed |
+| 19 | bug-report.agent.md | agents/live-validation.agent.md | 3 | 1 | exact duplicate | closed |
+| 20 | bug-report.agent.md | agents/merge.agent.md | 3 | 1 | exact duplicate | closed |
+| 21 | bug-report.agent.md | agents/mission-planning.agent.md | 3 | 1 | exact duplicate | closed |
+| 22 | bug-report.agent.md | agents/online-research.agent.md | 4 | 1 | exact duplicate | closed |
+| 23 | bug-report.agent.md | agents/orchestrator.agent.md | 4 | 1 | exact duplicate | closed |
+| 24 | bug-report.agent.md | agents/refactoring.agent.md | 4 | 1 | exact duplicate | closed |
+| 25 | bug-report.agent.md | agents/research.agent.md | 4 | 1 | exact duplicate | closed |
+| 26 | bug-report.agent.md | agents/review.agent.md | 4 | 1 | exact duplicate | closed |
+| 27 | bug-report.agent.md | agents/roast.agent.md | 4 | 1 | exact duplicate | closed |
+| 28 | bug-report.agent.md | agents/scoping.agent.md | 4 | 1 | exact duplicate | closed |
+| 29 | bug-report.agent.md | agents/session-bootstrap.agent.md | 5 | 1 | exact duplicate | closed |
+| 30 | bug-report.agent.md | agents/session-learning.agent.md | 5 | 1 | exact duplicate | closed |
+| 31 | bug-report.agent.md | agents/simplify.agent.md | 5 | 1 | exact duplicate | closed |
+| 32 | bug-report.agent.md | agents/spec.agent.md | 5 | 1 | exact duplicate | closed |
+| 33 | bug-report.agent.md | agents/structured-research.agent.md | 5 | 1 | exact duplicate | closed |
+| 34 | bug-report.agent.md | agents/surface-design.agent.md | 5 | 1 | exact duplicate | closed |
+| 35 | bug-report.agent.md | agents/teacher.agent.md | 5 | 1 | exact duplicate | closed |
+| 36 | bug-report.agent.md | agents/testing.agent.md | 6 | 1 | thematic overlap | closed |
+| 37 | bug-report.agent.md | agents/ticket-refinement.agent.md | 6 | 1 | near-duplicate | closed |
+| 38 | bug-report.agent.md | agents/transcription.agent.md | 6 | 1 | thematic overlap | closed |
+| 39 | bug-report.agent.md | agents/writing.agent.md | 6 | 1 | thematic overlap | closed |
+| 40 | bug-report.agent.md | instructions/audit/audit.instructions.md | 6 | 1 | thematic overlap | closed |
+| 41 | bug-report.agent.md | instructions/commit/branch-worktree.instructions.md | 6 | 1 | thematic overlap | closed |
+| 42 | bug-report.agent.md | instructions/commit/cross-repo-dependencies.instructions.md | 6 | 1 | no overlap | closed |
+| 43 | bug-report.agent.md | instructions/commit/generated-files.instructions.md | 7 | 2 | thematic overlap | closed |
+| 44 | bug-report.agent.md | instructions/commit/message-conventions.instructions.md | 7 | 2 | thematic overlap | closed |
+| 45 | bug-report.agent.md | instructions/commit/pre-commit.instructions.md | 7 | 2 | no overlap | closed |
+| 46 | bug-report.agent.md | instructions/commit/submodule.instructions.md | 7 | 2 | no overlap | closed |
+| 47 | bug-report.agent.md | instructions/commit/workflow.instructions.md | 7 | 2 | thematic overlap | closed |
+| 48 | bug-report.agent.md | instructions/engine/context-http.instructions.md | 7 | 2 | no overlap | closed |
+| 49 | bug-report.agent.md | instructions/engine/core-crates.instructions.md | 7 | 2 | thematic overlap | closed |
+| 50 | bug-report.agent.md | instructions/engine/kernel-layering.instructions.md | 8 | 2 | thematic overlap | closed |
+| 51 | bug-report.agent.md | instructions/engine/workflow-tool-extraction.instructions.md | 8 | 2 | thematic overlap | closed |
+| 52 | bug-report.agent.md | instructions/frontend/frontend.instructions.md | 8 | 2 | thematic overlap | closed |
+| 53 | bug-report.agent.md | instructions/frontend/viewer-api-tools.instructions.md | 8 | 2 | thematic overlap | closed |
+| 54 | bug-report.agent.md | instructions/orchestration/code-quality.instructions.md | 8 | 2 | thematic overlap | closed |
+| 55 | bug-report.agent.md | instructions/orchestration/compact-output.instructions.md | 8 | 2 | thematic overlap | closed |
+| 56 | bug-report.agent.md | instructions/orchestration/differential-patching.instructions.md | 8 | 2 | no overlap | closed |
+| 57 | bug-report.agent.md | instructions/orchestration/duplication-consolidation.instructions.md | 9 | 2 | thematic overlap | closed |
+| 58 | bug-report.agent.md | instructions/orchestration/duplication-review.instructions.md | 9 | 2 | thematic overlap | closed |
+| 59 | bug-report.agent.md | instructions/orchestration/entity-disambiguation.instructions.md | 9 | 2 | thematic overlap | closed |
+| 60 | bug-report.agent.md | instructions/orchestration/escalation-gate.instructions.md | 9 | 2 | thematic overlap | closed |
+| 61 | bug-report.agent.md | instructions/orchestration/fallback-escalation.instructions.md | 9 | 2 | no overlap | closed |
+| 62 | bug-report.agent.md | instructions/orchestration/file-inspection.instructions.md | 9 | 2 | thematic overlap | closed |
+| 63 | bug-report.agent.md | instructions/orchestration/intent-refinement.instructions.md | 9 | 2 | thematic overlap | closed |
+| 64 | bug-report.agent.md | instructions/orchestration/loop-closure.instructions.md | 10 | 2 | thematic overlap | closed |
+| 65 | bug-report.agent.md | instructions/orchestration/mermaid-graph-rendering.instructions.md | 10 | 2 | no overlap | closed |
+| 66 | bug-report.agent.md | instructions/orchestration/model-prices.instructions.md | 10 | 2 | no overlap | closed |
+| 67 | bug-report.agent.md | instructions/orchestration/model-routing.instructions.md | 10 | 2 | near-duplicate | closed |
+| 68 | bug-report.agent.md | instructions/orchestration/orchestrator-delegation.instructions.md | 10 | 2 | thematic overlap | closed |
+| 69 | bug-report.agent.md | instructions/orchestration/phase-separation.instructions.md | 10 | 2 | thematic overlap | closed |
+| 70 | bug-report.agent.md | instructions/orchestration/pre-dispatch-gates.instructions.md | 10 | 2 | thematic overlap | closed |
+| 71 | bug-report.agent.md | instructions/orchestration/preflight-validation.instructions.md | 11 | 2 | no overlap | closed |
+| 72 | bug-report.agent.md | instructions/orchestration/prompt-ingestion.instructions.md | 11 | 2 | thematic overlap | closed |
+| 73 | bug-report.agent.md | instructions/orchestration/question-quality.instructions.md | 11 | 2 | thematic overlap | closed |
+| 74 | bug-report.agent.md | instructions/orchestration/retry-limit.instructions.md | 11 | 2 | no overlap | closed |
+| 75 | bug-report.agent.md | instructions/orchestration/routine-actions.instructions.md | 11 | 2 | no overlap | closed |
+| 76 | bug-report.agent.md | instructions/orchestration/session-artifacts.instructions.md | 11 | 2 | thematic overlap | closed |
+| 77 | bug-report.agent.md | instructions/orchestration/shared-context-bundle.instructions.md | 11 | 2 | thematic overlap | closed |
+| 78 | bug-report.agent.md | instructions/orchestration/subagent-return-contract.instructions.md | 12 | 2 | thematic overlap | closed |
+| 79 | bug-report.agent.md | instructions/orchestration/tool-output.instructions.md | 12 | 2 | thematic overlap | closed |
+| 80 | bug-report.agent.md | instructions/orchestration/write-and-die.instructions.md | 12 | 2 | no overlap | closed |
+| 81 | bug-report.agent.md | instructions/session/session-bootstrap.instructions.md | 12 | 2 | thematic overlap | closed |
+| 82 | bug-report.agent.md | instructions/session/session-identity-and-handoff.instructions.md | 12 | 2 | thematic overlap | closed |
+| 83 | bug-report.agent.md | instructions/session/session-optimization.instructions.md | 12 | 2 | thematic overlap | closed |
+| 84 | bug-report.agent.md | instructions/session/session-workflow.instructions.md | 12 | 2 | thematic overlap | closed |
+| 85 | bug-report.agent.md | instructions/session/worktree-provisioning.instructions.md | 13 | 3 | thematic overlap | closed |
+| 86 | bug-report.agent.md | instructions/spec/spec-system.instructions.md | 13 | 3 | thematic overlap | closed |
+| 87 | bug-report.agent.md | instructions/testing/assertions.instructions.md | 13 | 3 | thematic overlap | closed |
+| 88 | bug-report.agent.md | instructions/testing/benchmarks.instructions.md | 13 | 3 | no overlap | closed |
+| 89 | bug-report.agent.md | instructions/testing/data-capture-verification.instructions.md | 13 | 3 | thematic overlap | closed |
+| 90 | bug-report.agent.md | instructions/testing/http-stress.instructions.md | 13 | 3 | no overlap | closed |
+| 91 | bug-report.agent.md | instructions/testing/split-responsibility-testing.instructions.md | 13 | 3 | thematic overlap | closed |
+| 92 | bug-report.agent.md | instructions/testing/test-debugging.instructions.md | 14 | 3 | thematic overlap | closed |
+| 93 | bug-report.agent.md | instructions/testing/test-execution.instructions.md | 14 | 3 | thematic overlap | closed |
+| 94 | bug-report.agent.md | instructions/testing/validation-evidence.instructions.md | 14 | 3 | thematic overlap | closed |
+| 95 | bug-report.agent.md | instructions/ticket/board.instructions.md | 14 | 3 | thematic overlap | closed |
+| 96 | bug-report.agent.md | instructions/ticket/engine.instructions.md | 14 | 3 | thematic overlap | closed |
+| 97 | bug-report.agent.md | instructions/ticket/lifecycle.instructions.md | 14 | 3 | thematic overlap | closed |
+| 98 | bug-report.agent.md | instructions/ticket/workflow.instructions.md | 14 | 3 | near-duplicate | closed |
+| 99 | bug-report.agent.md | instructions/transcripts/audio-transcript.instructions.md | 15 | 3 | thematic overlap | closed |
+| 100 | bug-report.agent.md | prompts/audit.prompt.md | 15 | 3 | thematic overlap | closed |
+| 101 | bug-report.agent.md | prompts/build-validate-tools.prompt.md | 15 | 3 | no overlap | closed |
+| 102 | bug-report.agent.md | prompts/commit.prompt.md | 15 | 3 | no overlap | closed |
+| 103 | bug-report.agent.md | prompts/debug-test.prompt.md | 15 | 3 | thematic overlap | closed |
+| 104 | bug-report.agent.md | prompts/deduplication-campaign.prompt.md | 15 | 3 | thematic overlap | closed |
+| 105 | bug-report.agent.md | prompts/duplication-cleanup.prompt.md | 15 | 3 | thematic overlap | closed |
+| 106 | bug-report.agent.md | prompts/duplication-consolidation.prompt.md | 16 | 3 | no overlap | closed |
+| 107 | bug-report.agent.md | prompts/duplication-review.prompt.md | 16 | 3 | no overlap | closed |
+| 108 | bug-report.agent.md | prompts/epic-db6980d1.prompt.md | 16 | 3 | no overlap | closed |
+| 109 | bug-report.agent.md | prompts/handoff-tickets.prompt.md | 16 | 3 | near-duplicate | closed |
+| 110 | bug-report.agent.md | prompts/handoff.prompt.md | 16 | 3 | thematic overlap | closed |
+| 111 | bug-report.agent.md | prompts/implement.prompt.md | 16 | 3 | no overlap | closed |
+| 112 | bug-report.agent.md | prompts/interview.prompt.md | 16 | 3 | thematic overlap | closed |
+| 113 | bug-report.agent.md | prompts/iteration.prompt.md | 17 | 3 | no overlap | closed |
+| 114 | bug-report.agent.md | prompts/memory-setup.prompt.md | 17 | 3 | no overlap | closed |
+| 115 | bug-report.agent.md | prompts/next.prompt.md | 17 | 3 | no overlap | closed |
+| 116 | bug-report.agent.md | prompts/refine-ingest.prompt.md | 17 | 3 | thematic overlap | closed |
+| 117 | bug-report.agent.md | prompts/research.prompt.md | 17 | 3 | thematic overlap | closed |
+| 118 | bug-report.agent.md | prompts/reviews.prompt.md | 17 | 3 | thematic overlap | closed |
+| 119 | bug-report.agent.md | prompts/spec.prompt.md | 17 | 3 | thematic overlap | closed |
+| 120 | bug-report.agent.md | prompts/sync-model-prices.prompt.md | 18 | 3 | no overlap | closed |
+| 121 | bug-report.agent.md | prompts/tdd.prompt.md | 18 | 3 | thematic overlap | closed |
+| 122 | bug-report.agent.md | prompts/ticket-next.prompt.md | 18 | 3 | thematic overlap | closed |
+| 123 | bug-report.agent.md | prompts/ticket.prompt.md | 18 | 3 | near-duplicate | closed |
+| 124 | bug-report.agent.md | prompts/tickets.prompt.md | 18 | 3 | near-duplicate | closed |
+| 125 | bug-report.agent.md | prompts/tool-grant-regression-probe.prompt.md | 18 | 3 | no overlap | closed |
+| 126 | bug-report.agent.md | prompts/transform-transcript.prompt.md | 18 | 3 | no overlap | closed |
+| 127 | bug-report.agent.md | prompts/user-training.prompt.md | 19 | 4 | near-duplicate | closed |
+| 128 | bug-report.agent.md | skills/customer-interviews/SKILL.md | 19 | 4 | no overlap | closed |
+| 129 | bug-report.agent.md | skills/dioxus/SKILL.md | 19 | 4 | thematic overlap | closed |
+| 130 | bug-report.agent.md | skills/doc-coauthoring/SKILL.md | 19 | 4 | thematic overlap | closed |
+| 131 | bug-report.agent.md | skills/find-skills/SKILL.md | 19 | 4 | no overlap | closed |
+| 132 | bug-report.agent.md | skills/playwright-best-practices/SKILL.md | 19 | 4 | thematic overlap | closed |
+| 133 | bug-report.agent.md | skills/playwright-cli/SKILL.md | 19 | 4 | no overlap | closed |
+| 134 | bug-report.agent.md | skills/rust-async-patterns/SKILL.md | 20 | 4 | no overlap | closed |
+| 135 | bug-report.agent.md | skills/rust-best-practices/SKILL.md | 20 | 4 | no overlap | closed |
+| 136 | bug-report.agent.md | skills/token-optimized-agentic-engineering/SKILL.md | 20 | 4 | thematic overlap | closed |
+| 137 | bug-report.agent.md | skills/typegpu/SKILL.md | 20 | 4 | no overlap | closed |
+| 138 | bug-report.agent.md | skills/webgpu-threejs-tsl/SKILL.md | 20 | 4 | no overlap | closed |
+
+## Anchor `F_5` (`cleanup.agent.md`) vs `F_6..F_142` — 137 pairs
+
+| Pair | Anchor | Target | Batch | Phase | Verdict | Status |
+|---|---|---|---|---|---|---|
+| 139 | cleanup.agent.md | agents/code-architect.agent.md | 21 | 4 | no overlap | closed |
+| 140 | cleanup.agent.md | agents/commit.agent.md | 21 | 4 | thematic overlap | closed |
+| 141 | cleanup.agent.md | agents/context-enrichment.agent.md | 21 | 4 | no overlap | closed |
+| 142 | cleanup.agent.md | agents/deduplication-campaign.agent.md | 21 | 4 | no overlap | closed |
+| 143 | cleanup.agent.md | agents/duplication-batch-worker.agent.md | 21 | 4 | no overlap | closed |
+| 144 | cleanup.agent.md | agents/duplication-cleanup.agent.md | 21 | 4 | thematic overlap | closed |
+| 145 | cleanup.agent.md | agents/duplication-consolidation.agent.md | 21 | 4 | near-duplicate | closed |
+| 146 | cleanup.agent.md | agents/duplication-review.agent.md | 22 | 4 | thematic overlap | closed |
+| 147 | cleanup.agent.md | agents/explainer.agent.md | 22 | 4 | thematic overlap | closed |
+| 148 | cleanup.agent.md | agents/explore.agent.md | 22 | 4 | thematic overlap | closed |
+| 149 | cleanup.agent.md | agents/framing.agent.md | 22 | 4 | thematic overlap | closed |
+| 150 | cleanup.agent.md | agents/guidance-lifecycle.agent.md | 22 | 4 | thematic overlap | closed |
+| 151 | cleanup.agent.md | agents/handoff.agent.md | 22 | 4 | thematic overlap | closed |
+| 152 | cleanup.agent.md | agents/implement.agent.md | 22 | 4 | thematic overlap | closed |
+| 153 | cleanup.agent.md | agents/installer.agent.md | 23 | 4 | no overlap | closed |
+| 154 | cleanup.agent.md | agents/interview.agent.md | 23 | 4 | no overlap | closed |
+| 155 | cleanup.agent.md | agents/iteration.agent.md | 23 | 4 | no overlap | closed |
+| 156 | cleanup.agent.md | agents/live-validation.agent.md | 23 | 4 | thematic overlap | closed |
+| 157 | cleanup.agent.md | agents/merge.agent.md | 23 | 4 | thematic overlap | closed |
+| 158 | cleanup.agent.md | agents/mission-planning.agent.md | 23 | 4 | no overlap | closed |
+| 159 | cleanup.agent.md | agents/online-research.agent.md | 23 | 4 | no overlap | closed |
+| 160 | cleanup.agent.md | agents/orchestrator.agent.md | 24 | 4 | thematic overlap | closed |
+| 161 | cleanup.agent.md | agents/refactoring.agent.md | 24 | 4 | thematic overlap | closed |
+| 162 | cleanup.agent.md | agents/research.agent.md | 24 | 4 | thematic overlap | closed |
+| 163 | cleanup.agent.md | agents/review.agent.md | 24 | 4 | thematic overlap | closed |
+| 164 | cleanup.agent.md | agents/roast.agent.md | 24 | 4 | thematic overlap | closed |
+| 165 | cleanup.agent.md | agents/scoping.agent.md | 24 | 4 | thematic overlap | closed |
+| 166 | cleanup.agent.md | agents/session-bootstrap.agent.md | 24 | 4 | thematic overlap | closed |
+| 167 | cleanup.agent.md | agents/session-learning.agent.md | 25 | 5 | thematic overlap | closed |
+| 168 | cleanup.agent.md | agents/simplify.agent.md | 25 | 5 | thematic overlap | closed |
+| 169 | cleanup.agent.md | agents/spec.agent.md | 25 | 5 | thematic overlap | closed |
+| 170 | cleanup.agent.md | agents/structured-research.agent.md | 25 | 5 | thematic overlap | closed |
+| 171 | cleanup.agent.md | agents/surface-design.agent.md | 25 | 5 | thematic overlap | closed |
+| 172 | cleanup.agent.md | agents/teacher.agent.md | 25 | 5 | thematic overlap | closed |
+| 173 | cleanup.agent.md | agents/testing.agent.md | 25 | 5 | thematic overlap | closed |
+| 174 | cleanup.agent.md | agents/ticket-refinement.agent.md | 26 | 5 | thematic overlap | closed |
+| 175 | cleanup.agent.md | agents/transcription.agent.md | 26 | 5 | thematic overlap | closed |
+| 176 | cleanup.agent.md | agents/writing.agent.md | 26 | 5 | thematic overlap | closed |
+| 177 | cleanup.agent.md | instructions/audit/audit.instructions.md | 26 | 5 | thematic overlap | closed |
+| 178 | cleanup.agent.md | instructions/commit/branch-worktree.instructions.md | 26 | 5 | thematic overlap | closed |
+| 179 | cleanup.agent.md | instructions/commit/cross-repo-dependencies.instructions.md | 26 | 5 | thematic overlap | closed |
+| 180 | cleanup.agent.md | instructions/commit/generated-files.instructions.md | 26 | 5 | thematic overlap | closed |
+| 181 | cleanup.agent.md | instructions/commit/message-conventions.instructions.md | 27 | 5 | no overlap | closed |
+| 182 | cleanup.agent.md | instructions/commit/pre-commit.instructions.md | 27 | 5 | no overlap | closed |
+| 183 | cleanup.agent.md | instructions/commit/submodule.instructions.md | 27 | 5 | thematic overlap | closed |
+| 184 | cleanup.agent.md | instructions/commit/workflow.instructions.md | 27 | 5 | thematic overlap | closed |
+| 185 | cleanup.agent.md | instructions/engine/context-http.instructions.md | 27 | 5 | thematic overlap | closed |
+| 186 | cleanup.agent.md | instructions/engine/core-crates.instructions.md | 27 | 5 | thematic overlap | closed |
+| 187 | cleanup.agent.md | instructions/engine/kernel-layering.instructions.md | 27 | 5 | no overlap | closed |
+| 188 | cleanup.agent.md | instructions/engine/workflow-tool-extraction.instructions.md | 28 | 5 | no overlap | closed |
+| 189 | cleanup.agent.md | instructions/frontend/frontend.instructions.md | 28 | 5 | thematic overlap | closed |
+| 190 | cleanup.agent.md | instructions/frontend/viewer-api-tools.instructions.md | 28 | 5 | thematic overlap | closed |
+| 191 | cleanup.agent.md | instructions/orchestration/code-quality.instructions.md | 28 | 5 | thematic overlap | closed |
+| 192 | cleanup.agent.md | instructions/orchestration/compact-output.instructions.md | 28 | 5 | no overlap | closed |
+| 193 | cleanup.agent.md | instructions/orchestration/differential-patching.instructions.md | 28 | 5 | no overlap | closed |
+| 194 | cleanup.agent.md | instructions/orchestration/duplication-consolidation.instructions.md | 28 | 5 | near-duplicate | closed |
+| 195 | cleanup.agent.md | instructions/orchestration/duplication-review.instructions.md | 29 | 5 | no overlap | closed |
+| 196 | cleanup.agent.md | instructions/orchestration/entity-disambiguation.instructions.md | 29 | 5 | no overlap | closed |
+| 197 | cleanup.agent.md | instructions/orchestration/escalation-gate.instructions.md | 29 | 5 | thematic overlap | closed |
+| 198 | cleanup.agent.md | instructions/orchestration/fallback-escalation.instructions.md | 29 | 5 | no overlap | closed |
+| 199 | cleanup.agent.md | instructions/orchestration/file-inspection.instructions.md | 29 | 5 | thematic overlap | closed |
+| 200 | cleanup.agent.md | instructions/orchestration/intent-refinement.instructions.md | 29 | 5 | thematic overlap | closed |
+| 201 | cleanup.agent.md | instructions/orchestration/loop-closure.instructions.md | 29 | 5 | thematic overlap | closed |
+| 202 | cleanup.agent.md | instructions/orchestration/mermaid-graph-rendering.instructions.md | 30 | 5 | no overlap | closed |
+| 203 | cleanup.agent.md | instructions/orchestration/model-prices.instructions.md | 30 | 5 | no overlap | closed |
+| 204 | cleanup.agent.md | instructions/orchestration/model-routing.instructions.md | 30 | 5 | thematic overlap | closed |
+| 205 | cleanup.agent.md | instructions/orchestration/orchestrator-delegation.instructions.md | 30 | 5 | thematic overlap | closed |
+| 206 | cleanup.agent.md | instructions/orchestration/phase-separation.instructions.md | 30 | 5 | thematic overlap | closed |
+| 207 | cleanup.agent.md | instructions/orchestration/pre-dispatch-gates.instructions.md | 30 | 5 | thematic overlap | closed |
+| 208 | cleanup.agent.md | instructions/orchestration/preflight-validation.instructions.md | 30 | 5 | thematic overlap | closed |
+| 209 | cleanup.agent.md | instructions/orchestration/prompt-ingestion.instructions.md | 31 | 6 | thematic overlap | closed |
+| 210 | cleanup.agent.md | instructions/orchestration/question-quality.instructions.md | 31 | 6 | thematic overlap | closed |
+| 211 | cleanup.agent.md | instructions/orchestration/retry-limit.instructions.md | 31 | 6 | no overlap | closed |
+| 212 | cleanup.agent.md | instructions/orchestration/routine-actions.instructions.md | 31 | 6 | thematic overlap | closed |
+| 213 | cleanup.agent.md | instructions/orchestration/session-artifacts.instructions.md | 31 | 6 | thematic overlap | closed |
+| 214 | cleanup.agent.md | instructions/orchestration/shared-context-bundle.instructions.md | 31 | 6 | thematic overlap | closed |
+| 215 | cleanup.agent.md | instructions/orchestration/subagent-return-contract.instructions.md | 31 | 6 | thematic overlap | closed |
+| 216 | cleanup.agent.md | instructions/orchestration/tool-output.instructions.md | 32 | 6 | no overlap | closed |
+| 217 | cleanup.agent.md | instructions/orchestration/write-and-die.instructions.md | 32 | 6 | no overlap | closed |
+| 218 | cleanup.agent.md | instructions/session/session-bootstrap.instructions.md | 32 | 6 | thematic overlap | closed |
+| 219 | cleanup.agent.md | instructions/session/session-identity-and-handoff.instructions.md | 32 | 6 | thematic overlap | closed |
+| 220 | cleanup.agent.md | instructions/session/session-optimization.instructions.md | 32 | 6 | thematic overlap | closed |
+| 221 | cleanup.agent.md | instructions/session/session-workflow.instructions.md | 32 | 6 | thematic overlap | closed |
+| 222 | cleanup.agent.md | instructions/session/worktree-provisioning.instructions.md | 32 | 6 | thematic overlap | closed |
+| 223 | cleanup.agent.md | instructions/spec/spec-system.instructions.md | 33 | 6 | thematic overlap | closed |
+| 224 | cleanup.agent.md | instructions/testing/assertions.instructions.md | 33 | 6 | no overlap | closed |
+| 225 | cleanup.agent.md | instructions/testing/benchmarks.instructions.md | 33 | 6 | no overlap | closed |
+| 226 | cleanup.agent.md | instructions/testing/data-capture-verification.instructions.md | 33 | 6 | thematic overlap | closed |
+| 227 | cleanup.agent.md | instructions/testing/http-stress.instructions.md | 33 | 6 | no overlap | closed |
+| 228 | cleanup.agent.md | instructions/testing/split-responsibility-testing.instructions.md | 33 | 6 | thematic overlap | closed |
+| 229 | cleanup.agent.md | instructions/testing/test-debugging.instructions.md | 33 | 6 | thematic overlap | closed |
+| 230 | cleanup.agent.md | instructions/testing/test-execution.instructions.md | 34 | 6 | thematic overlap | closed |
+| 231 | cleanup.agent.md | instructions/testing/validation-evidence.instructions.md | 34 | 6 | thematic overlap | closed |
+| 232 | cleanup.agent.md | instructions/ticket/board.instructions.md | 34 | 6 | thematic overlap | closed |
+| 233 | cleanup.agent.md | instructions/ticket/engine.instructions.md | 34 | 6 | thematic overlap | closed |
+| 234 | cleanup.agent.md | instructions/ticket/lifecycle.instructions.md | 34 | 6 | thematic overlap | closed |
+| 235 | cleanup.agent.md | instructions/ticket/workflow.instructions.md | 34 | 6 | thematic overlap | closed |
+| 236 | cleanup.agent.md | instructions/transcripts/audio-transcript.instructions.md | 34 | 6 | thematic overlap | closed |
+| 237 | cleanup.agent.md | prompts/audit.prompt.md | 35 | 6 | thematic overlap | closed |
+| 238 | cleanup.agent.md | prompts/build-validate-tools.prompt.md | 35 | 6 | thematic overlap | closed |
+| 239 | cleanup.agent.md | prompts/commit.prompt.md | 35 | 6 | thematic overlap | closed |
+| 240 | cleanup.agent.md | prompts/debug-test.prompt.md | 35 | 6 | thematic overlap | closed |
+| 241 | cleanup.agent.md | prompts/deduplication-campaign.prompt.md | 35 | 6 | thematic overlap | closed |
+| 242 | cleanup.agent.md | prompts/duplication-cleanup.prompt.md | 35 | 6 | thematic overlap | closed |
+| 243 | cleanup.agent.md | prompts/duplication-consolidation.prompt.md | 35 | 6 | thematic overlap | closed |
+| 244 | cleanup.agent.md | prompts/duplication-review.prompt.md | 36 | 6 | thematic overlap | closed |
+| 245 | cleanup.agent.md | prompts/epic-db6980d1.prompt.md | 36 | 6 | thematic overlap | closed |
+| 246 | cleanup.agent.md | prompts/handoff-tickets.prompt.md | 36 | 6 | thematic overlap | closed |
+| 247 | cleanup.agent.md | prompts/handoff.prompt.md | 36 | 6 | thematic overlap | closed |
+| 248 | cleanup.agent.md | prompts/implement.prompt.md | 36 | 6 | thematic overlap | closed |
+| 249 | cleanup.agent.md | prompts/interview.prompt.md | 36 | 6 | thematic overlap | closed |
+| 250 | cleanup.agent.md | prompts/iteration.prompt.md | 36 | 6 | thematic overlap | closed |
+| 251 | cleanup.agent.md | prompts/memory-setup.prompt.md | 37 | 7 | thematic overlap | closed |
+| 252 | cleanup.agent.md | prompts/next.prompt.md | 37 | 7 | thematic overlap | closed |
+| 253 | cleanup.agent.md | prompts/refine-ingest.prompt.md | 37 | 7 | thematic overlap | closed |
+| 254 | cleanup.agent.md | prompts/research.prompt.md | 37 | 7 | thematic overlap | closed |
+| 255 | cleanup.agent.md | prompts/reviews.prompt.md | 37 | 7 | thematic overlap | closed |
+| 256 | cleanup.agent.md | prompts/spec.prompt.md | 37 | 7 | thematic overlap | closed |
+| 257 | cleanup.agent.md | prompts/sync-model-prices.prompt.md | 37 | 7 | no overlap | closed |
+| 258 | cleanup.agent.md | prompts/tdd.prompt.md | 38 | 7 | thematic overlap | closed |
+| 259 | cleanup.agent.md | prompts/ticket-next.prompt.md | 38 | 7 | thematic overlap | closed |
+| 260 | cleanup.agent.md | prompts/ticket.prompt.md | 38 | 7 | thematic overlap | closed |
+| 261 | cleanup.agent.md | prompts/tickets.prompt.md | 38 | 7 | thematic overlap | closed |
+| 262 | cleanup.agent.md | prompts/tool-grant-regression-probe.prompt.md | 38 | 7 | no overlap | closed |
+| 263 | cleanup.agent.md | prompts/transform-transcript.prompt.md | 38 | 7 | no overlap | closed |
+| 264 | cleanup.agent.md | prompts/user-training.prompt.md | 38 | 7 | thematic overlap | closed |
+| 265 | cleanup.agent.md | skills/customer-interviews/SKILL.md | 39 | 7 | no overlap | closed |
+| 266 | cleanup.agent.md | skills/dioxus/SKILL.md | 39 | 7 | thematic overlap | closed |
+| 267 | cleanup.agent.md | skills/doc-coauthoring/SKILL.md | 39 | 7 | thematic overlap | closed |
+| 268 | cleanup.agent.md | skills/find-skills/SKILL.md | 39 | 7 | no overlap | closed |
+| 269 | cleanup.agent.md | skills/playwright-best-practices/SKILL.md | 39 | 7 | no overlap | closed |
+| 270 | cleanup.agent.md | skills/playwright-cli/SKILL.md | 39 | 7 | no overlap | closed |
+| 271 | cleanup.agent.md | skills/rust-async-patterns/SKILL.md | 39 | 7 | no overlap | closed |
+| 272 | cleanup.agent.md | skills/rust-best-practices/SKILL.md | 40 | 7 | no overlap | closed |
+| 273 | cleanup.agent.md | skills/token-optimized-agentic-engineering/SKILL.md | 40 | 7 | thematic overlap | closed |
+| 274 | cleanup.agent.md | skills/typegpu/SKILL.md | 40 | 7 | no overlap | closed |
+| 275 | cleanup.agent.md | skills/webgpu-threejs-tsl/SKILL.md | 40 | 7 | no overlap | closed |

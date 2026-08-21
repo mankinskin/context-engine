@@ -26,4 +26,4 @@ Return:
 - per-slice table (anchor range, workspace folder, verdict counts, concepts consolidated, files touched)
 - campaign totals: pairs resolved / pairs remaining
 - whether the campaign is fully complete, or an instruction to re-invoke `/deduplication-campaign` with the same scope to continue
-- reminder that committing is Commit Agent's job
+- reminder that committing is Commit Agent's job, per [duplication-consolidation.instructions.md](../instructions/orchestration/duplication-consolidation.instructions.md#reporting-contract)

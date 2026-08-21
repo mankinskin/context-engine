@@ -33,7 +33,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 1. Research first
 - Discover the active ticket workspace.
 - Use `ticket next` or `mcp_ticket-mcp_next_tickets` to see what's currently actionable.
-- Search for related tickets before creating new ones.
+- Search for related tickets before creating new ones, per [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating).
 - Read relevant spec-stack entries, prompts/instructions, and nearby code/tests as needed.
 
 2. Clarify with interview questions

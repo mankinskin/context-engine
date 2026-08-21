@@ -19,14 +19,14 @@ Install or build the ticket tools when needed:
 
 Workflow:
 1. Treat the text typed after `/tickets` as the source request.
-2. Search existing tickets first with `list_tickets`, `get_ticket_description`, `ticket search`, or `ticket list` so you do not duplicate existing work.
+2. Search existing tickets first per [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating).
 3. Search existing specs for the same work so you can update the relevant spec after the ticket set is created or matched.
 4. Prefer `ticket-mcp` tools such as `list_tickets`, `get_ticket_description`, `create_ticket`, `add_edge`, and `workflow` when they are available.
 5. If `ticket-mcp` is unavailable, fall back to `./target/debug/ticket.exe search`, `./target/debug/ticket.exe list`, `./target/debug/ticket.exe create`, and `./target/debug/ticket.exe link`; use `--index-root` when the intended `.ticket` store is not the nearest one.
 6. Infer the smallest useful set of tickets that captures the request. Split only where the prompt implies distinct deliverables, dependencies, or workstreams.
 7. Give each ticket a clear title plus reasonable type, priority, and initial state. Add descriptions when the prompt provides enough detail.
 8. Add dependency edges only when the ordering is explicit or strongly implied. Do not invent extra structure.
-9. If some of the needed tickets already exist, reuse them and create only the missing ones.
+9. Reuse existing tickets and create only the missing ones, per [workflow.instructions.md#discovery-before-creating](../instructions/ticket/workflow.instructions.md#discovery-before-creating).
 10. For work that introduces new or changed requirements, goals, or behavior, create or update the relevant spec after the ticket set is created or matched. Prefer spec-mcp tools when they are available and fall back to `./target/debug/spec.exe` when needed.
 11. In markdown outputs or spec bodies, never synthesize any ticket folder path from a UUID, the chosen store, or an example path.
 12. Extract each exact canonical ticket folder path from ticket-api output. If the first create, match, or list response omits the folder path, run an immediate follow-up ticket-api command that returns the authoritative path for each referenced ticket before composing the chat response or updating the spec.

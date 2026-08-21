@@ -97,8 +97,7 @@ fn Counter(start: i32) -> Element {
 - Lifecycle is orchestrated by `viewer-ctl`: `viewer-ctl prepare <viewer>` builds the frontend,
   `viewer-ctl start <viewer>` runs it. Do not hand-roll bespoke build scripts — extend the
   managed flow.
-- **Browser verification is mandatory** for viewer/frontend changes: open the viewer in an
-  external fullscreen Chromium browser and confirm visually, then add/extend the shared
+- Browser verification follows [AGENTS.md](../../../AGENTS.md#quality-gates)'s mandatory external fullscreen Chromium-family browser check; add/extend the shared
   Playwright E2E suites under `viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
 
 ## 5. Styling / asset handling
