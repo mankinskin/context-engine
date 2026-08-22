@@ -20,9 +20,10 @@ The research-informed restructure step of this run produced durable
 repository process artifacts rather than more dossier documents, because the
 deliverable the request asked for **is** the reusable process itself:
 
-- [request-refinement-pipeline.instructions.md](../../.agents/instructions/orchestration/request-refinement-pipeline.instructions.md) — the canonical 4-stage process, citing the precedent transcript as its worked example.
-- [refine-request.prompt.md](../../.agents/prompts/refine-request.prompt.md) — the `/refine-request` slash command that sequences the four stages.
-- [AGENTS.md](../../AGENTS.md) Task Routing — the new first row that sends a raw/unstructured request through `/refine-request` before `/tickets` or `/spec`.
+- [prompt-ingestion.instructions.md](../../.agents/instructions/orchestration/prompt-ingestion.instructions.md) — the canonical ingestion shell, citing the precedent transcript as its worked example.
+- [intent-refinement.instructions.md](../../.agents/instructions/orchestration/intent-refinement.instructions.md) — the denoise/review-gate stages the shell delegates to.
+- [refine-ingest.prompt.md](../../.agents/prompts/refine-ingest.prompt.md) — the `/refine-ingest` slash command that sequences the stages.
+- [AGENTS.md](../../AGENTS.md) Task Routing — the new first row that sends a raw/unstructured request through `/refine-ingest` before `/tickets` or `/spec`.
 
 ## Scope
 
@@ -32,6 +33,6 @@ code or workflow/store state was changed.
 
 ## Decision Boundary
 
-Using the new `/refine-request` pipeline to turn any of its own open
+Using the new `/refine-ingest` pipeline to turn any of its own open
 questions into tickets is a separate, later step, to be taken only when a
 user or reviewer decides to act on them.

@@ -31,7 +31,7 @@ surfaces.
 | [repo map](../../repo_map.toon) | Generated structure map | Present | Compact structural orientation input; not a replacement for typed extraction. |
 | [spec-api source](../../workflow-tools/spec/crates/spec-api/src/) | Implementation reference | Present after nested-submodule initialization | Closest file-backed manifest, section, and store conventions used by the current workflow-tools checkout. |
 | [browser validation rules](../../AGENTS.md) | Repository instruction | Present | External-browser and Playwright screenshot requirements. |
-| [request-refinement pipeline](../../.agents/instructions/orchestration/request-refinement-pipeline.instructions.md) | Repository instruction | Present | Governs this dossier and roadmap handoff boundary. |
+| [prompt-ingestion pipeline](../../.agents/instructions/orchestration/prompt-ingestion.instructions.md) | Repository instruction | Present | Governs this dossier and roadmap handoff boundary. |
 
 ## Ordering Constraints
 
