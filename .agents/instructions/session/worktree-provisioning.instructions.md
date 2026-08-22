@@ -59,7 +59,7 @@ Exit codes are `0` for pass, `1` for schema drift or a missing required event, a
 
 The hook crate lives in [memory-api/crates/session-capture-hook](../../../memory-api/crates/session-capture-hook/), with entry point [main.rs](../../../memory-api/crates/session-capture-hook/src/main.rs). The provisioning crate is [memory-api/crates/session-worktree-provision](../../../memory-api/crates/session-worktree-provision/), with policy in [policy.rs](../../../memory-api/crates/session-worktree-provision/src/policy.rs). Both crates compile into the ordinary release binary; provisioning is not feature-gated or test-only.
 
-Eager provisioning runs for `SessionStart` with a non-blank session id, plus a lazy fallback on any other non-`Stop` event when no assignment is resolvable (see "What Fires And When"). A successful provision creates the session worktree and writes a minimal registration record — `session_id`, `metadata.worktree.{path,branch,allocation_mode,status}` — to the **main checkout's own** `.session/sessions/<session-uuid>/session.json` via `SessionStoreConfig::register_provisioned_worktree` (ticket 842d74cb D1: the main checkout is the authoritative session-to-worktree registry). This is a no-op once a record with a worktree assignment already exists, so it never clobbers a real capture. Worktree discovery is otherwise positional from the supported directory layouts. `WORKTREE_EAGER_PROVISION` is opt-out: the condition treats unset as enabled and only `0` as disabled.
+Eager provisioning runs for `SessionStart` with a non-blank session id, plus a lazy fallback on any other non-`Stop` event when no assignment is resolvable (see "What Fires And When"). A successful provision creates the session worktree and writes a minimal registration record — `session_id`, `metadata.worktree.{path,branch,allocation_mode,status}` — to the **main checkout's own** `.session/sessions/<session-uuid>/session.json` via `SessionStoreConfig::register_provisioned_worktree` (ticket 842d74cb D1: the main checkout is the authoritative session-to-worktree registry). Every `UserPromptSubmit` is also mirrored to that main store's `events.json`, including when the transcript has not flushed yet, so the initial request remains visible with the registration. This is a no-op once a record with a worktree assignment already exists, so it never clobbers a real capture. Worktree discovery is otherwise positional from the supported directory layouts. `WORKTREE_EAGER_PROVISION` is opt-out: the condition treats unset as enabled and only `0` as disabled.
 
 The policy follows reuse, reclaim, then create:
 
@@ -87,7 +87,7 @@ The policy orders passing candidates by modification time and then name. A faile
 
 ## Capture Resolution
 
-For a valid `UserPromptSubmit`, the hook routes and attempts eager provisioning before transcript capture or capture-store resolution. The transcript guard runs next and skips only transcript capture when the transcript path is absent. Capture-store resolution then determines whether the hook can persist a session record; a blank `workspace_slug` or an unresolvable store root does not block provisioning.
+For a valid `UserPromptSubmit`, the hook routes and attempts eager provisioning before transcript capture or capture-store resolution. The transcript guard skips capture when the path is absent, the file is zero-byte, or it contains only lifecycle records and no messages; when a hook event is available, the skip still persists that event. Capture-store resolution then determines whether the hook can persist a session record; a blank `workspace_slug` or an unresolvable store root does not block provisioning.
 
 The resolver uses `MCP_MAIN_CHECKOUT` when that environment variable has a non-empty value; otherwise the current directory anchors the checkout. An explicit external store that does not match the resolved checkout prevents provisioning, but ordinary capture-resolution failures only prevent transcript capture and persistence.
 
@@ -130,7 +130,7 @@ The `session` slug is a placeholder for a topic not yet declared. Rename the nes
 
 Malformed hook input cannot identify a valid event or session and therefore skips provisioning. Provisioning also skips for any event other than `UserPromptSubmit`, a blank `session_id`, an unavailable current directory, an invalid anchor checkout, `WORKTREE_EAGER_PROVISION=0`, or a mismatched explicit external store. `AlreadyProvisioned` requires exactly one nested slug directory for the full session UUID; competing slug directories return the deterministic ambiguity error.
 
-A missing transcript path skips only transcript capture, and an unresolvable capture store or blank `workspace_slug` does not block provisioning. All provisioning failures still exit 0 and emit `{}` with diagnostics on stderr, so a silent success, reuse, failure, and skip remain indistinguishable from outside the hook.
+A missing, zero-byte, or lifecycle-only transcript skips only transcript capture, and an unresolvable capture store or blank `workspace_slug` does not block provisioning. Provisioning failures exit non-zero with the detailed error on stderr; success and intentional capture skips emit `{}`.
 
 ## Troubleshooting
 
