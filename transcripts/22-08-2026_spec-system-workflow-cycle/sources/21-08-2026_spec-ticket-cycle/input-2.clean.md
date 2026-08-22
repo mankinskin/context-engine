@@ -1,0 +1,5 @@
+The "tickets before code" principle points to a more important principle that has not yet been documented. It should be captured both in the instructions and in the presentation deck, because it is the core cycle of our production workflow.
+
+The cycle is incremental and iterative. Each iteration gathers measurable evidence from the system and from the user to optimize system performance. One part of the cycle is understanding what the user wants and the most favorable path to the goal. The other part is operational efficiency in the implementation and the correctness of the executable measurements and tests that validate it.
+
+A closed-loop system must always return to the user with a response to the request. The quality of that response is the quality of the implementation plus the user's satisfaction with the result.

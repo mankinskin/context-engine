@@ -1,0 +1,1 @@
+Betrachte hier das Beispiel das wir vor kurzem erzeugt haben. Da schon relativ viel Arbeit reingeflossen aber dennoch Finde ich sieht man das Problem an der Spezifikation Für das Presentations System.
