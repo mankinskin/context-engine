@@ -21,7 +21,7 @@ the user's next judgment. It complements [phase separation](phase-separation.ins
 ## Contract Rules
 
 - Author the spec before tickets when the work requires a spec. Tickets plan implementation and reference the governing spec; they do not author or restate spec content.
-- Each component owns its outward-facing acceptance criteria. Consumers reference the provider-owned criteria instead of duplicating them.
+- Each component owns its outward-facing acceptance criteria. When a component requires a child spec, [spec-system.instructions.md](../spec/spec-system.instructions.md#component-hierarchy) requires that separate entity; "component" never means an in-body record. Consumers reference the provider-owned criteria instead of duplicating them.
 - An acceptance criterion without executable validation remains a valid documented criterion. Add automation when feasible, but do not block review on a missing `validated_by` record.
 - Test evidence links the cycle's measurable validation stage: [validation evidence](../testing/validation-evidence.instructions.md) records `ticket_ids`, `spec_ids`, and applicable `acceptance_criterion_ids`.
 

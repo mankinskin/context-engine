@@ -54,11 +54,23 @@ Create a new spec when:
 
 ## Spec Authoring Workflow
 
+### Component Hierarchy
+
+When a request names independently addressable components, create one thin parent root and one child spec per component. The root carries only shared motivation, cross-component invariants, and the component relationship map; each child MUST set `parent` to that root and own its component contract. Root specs MUST NOT carry per-component acceptance criteria.
+
+Create the root first, then create each child with:
+
+```bash
+spec create --workspace <repo-root> --title "<child-title>" --slug <child-slug> --component <component> --parent <root-id-or-slug>
+```
+
+Use the [spec-editor hierarchy](../../../.spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/body.md) as the imitable precedent.
+
 ### Choose Component, Slug, and Parent
 
 - Use the owning subsystem or workflow area as the component.
 - Keep slugs lowercase, use `-` within segments, and `/` between segments.
-- Prefer a parent spec only when the new slice is clearly a child of an existing broader contract.
+- Every component child MUST set `parent` to its root. Root specs are reserved for shared scope and MUST NOT carry per-component criteria.
 - Avoid creating shallow duplicate siblings with overlapping goals.
 
 ### Structure the Spec (aligned-structure:v2)
@@ -72,6 +84,10 @@ Each spec must act as a dependable, verifiable contract. Every spec must start w
 5. **Governing-rule requirement** — Link to the PolicyRule(s) that must introduce/explain this spec in-session (governed by the rule-introduces-spec mechanism).
 
 Acceptance criteria and guards must be concrete enough that a reviewer or automated tool can tell exactly what evidence proves the contract is satisfied.
+
+#### Anti-Boilerplate Gate
+
+Every child spec MUST state its responsibility, interfaces and dependencies, observable behavior, boundaries and failure cases, and concrete acceptance evidence. Omit any mandated section that would contain only a placeholder. A one-sentence purpose with no behavior, boundary, or failure detail is incomplete and MUST be rejected in review; for example, "Capture the requested outcome and any open questions that must be resolved before durable planning." is not a sufficient component contract.
 
 ### Link Tickets, Tests, and Related Specs
 

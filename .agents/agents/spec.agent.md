@@ -30,8 +30,8 @@ Your job is to create or refine the smallest complete specification slice that c
 ## Required Workflow
 
 1. Anchor on the requested behavior, affected feature, or existing spec.
-2. Search existing specs first, then related tickets, to avoid duplicates and identify the owning component and parent.
-3. Decide whether to update an existing spec or create a draft spec with a clear slug and parent.
+2. Search existing specs first, then related tickets, to avoid duplicates and enumerate the component map. Decide explicitly whether the request needs a shared root and component children under [the spec hierarchy rule](../instructions/spec/spec-system.instructions.md#component-hierarchy).
+3. Decide whether to update an existing spec or create draft specs. When the hierarchy rule applies, create the root first, then create each component child with `--parent <root-id-or-slug>`.
 4. Write or refine the spec so it captures:
    - required components
    - component shapes and behavior contracts
