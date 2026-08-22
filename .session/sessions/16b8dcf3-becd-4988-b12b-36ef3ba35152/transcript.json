@@ -1,5 +1,595 @@
 {
   "schema_version": 1,
   "session_id": "16b8dcf3-becd-4988-b12b-36ef3ba35152",
-  "captured_at": "2026-08-20T12:49:19.410187800Z"
+  "captured_at": "2026-08-20T13:37:20.011Z",
+  "turns": [
+    {
+      "sequence": 0,
+      "role": "user",
+      "content": "Refactor the orchestrator agent contract. I am especially concerned about the pre-dispatch gates and the shared context bundle. The expensive agent should not pass the full contents of resolved artifacts, but compile the scoped task into a specialized prompt. Cheaper agents should be expected to access the artifacts directly when they need to. The orchestrator needs to compile research, decisions and scoping into the prompt for the delegated agents and it needs to learn how to produce good prompts. The Prompts should outline the complete session of the delegation end to end and describe\r\n- available prior context\r\n- core objective and validation metrics to use during and after implementation\r\n- the exact steps that have been planned for the execution.\r\n- non goals, constraints, boundaries.\r\n\r\nThe expensive agent should compile the findings of delegated units into the prompts for the following delegations.\r\n\r\nThe pre-dispatch gate should be used as a dry-run of complex prompts, not be used on every delegation. the expensive model should decide when a pre-dispatch is necessary to avoid medium tier models running into blockers.",
+      "captured_at": "2026-08-20T12:50:16.248Z",
+      "event_meta": {
+        "event_id": "3f93ad54-d64f-4533-ab2a-5c425791a100",
+        "parent_event_id": "212869d4-7576-4758-809a-6a63c68d71bd",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 1,
+      "role": "assistant",
+      "content": "Now update the two instruction files to match the new contract.",
+      "captured_at": "2026-08-20T12:52:26.852Z",
+      "event_meta": {
+        "event_id": "87f1dd6f-f212-4654-8bf3-b62de4c9b682",
+        "parent_event_id": "a4031493-934b-4f98-ab20-7a339cfbc327",
+        "event_type": "assistant.message",
+        "message_id": "bd4efb2f-649e-495d-b862-f5ad49f2ff4e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_011qLP3ZDwKNQ7gdnon45xZt",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Rewrite shared-context-bundle.instructions.md to describe compiled prompts (summaries + named artifacts) instead of full-content bundles, keeping the file's rationale/measurement sections but replacing the bundle composition and integration guidance.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\shared-context-bundle.instructions.md",
+                  "oldString": "---\ndescription: \"Use at the start of and throughout every session, whenever spawning a sub-agent: shared context bundle protocol that stops sub-agents rediscovering the same artifacts. Covers bundle composition, inline content passing, parallel fan-out optimization, and read deduplication.\"\napplyTo: \"**\"\n---\n\n## Purpose\n\nSub-agents spawn with zero inherited context and must rediscover artifacts independently. When multiple sub-agents (especially parallel siblings) need the same artifact, each pays for the same discovery. This instruction defines a shared context bundle protocol that eliminates redundant reads.\n\nThis is also how a fresh session started after a Worker's one-step-then-terminate dispatch receives its context — see [write-and-die.instructions.md](write-and-die.instructions.md).",
+                  "newString": "---\ndescription: \"Use at the start of and throughout every session, whenever spawning a sub-agent: compiled delegation prompt protocol that gives sub-agents a compact, self-contained brief instead of raw artifact dumps. Covers prompt composition, named-artifact referencing, progressive compilation across a delegation chain, and parallel fan-out.\"\napplyTo: \"**\"\n---\n\n## Purpose\n\nSub-agents spawn with zero inherited context and must rediscover artifacts independently if the orchestrator names them but does not explain them. The fix is NOT to paste every artifact's full content into the prompt — that inflates orchestrator output tokens and duplicates content the sub-agent's own tools can fetch directly. The fix is a **compiled prompt**: the orchestrator's own distillation of prior context, objective, plan, and boundaries, with artifacts referenced by resolved path/id for the sub-agent to fetch itself when it needs more than the brief.\n\nThis is also how a fresh session started after a Worker's one-step-then-terminate dispatch receives its context — see [write-and-die.instructions.md](write-and-die.instructions.md)."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\shared-context-bundle.instructions.md",
+                  "oldString": "Within-agent redundancy is worse: one sub-agent read `subagent_rollup.rs` 6 times, `body.md` 4 times, `lib.rs` 4 times.\n\nParallel fan-out siblings issued byte-identical command sequences: same `ticket.exe get`, `spec.exe get`, `spec.exe search`, and file globs.\n\n## Context Bundle Composition\n\nA context bundle is a **structured inline payload** passed to every sub-agent at spawn. It contains resolved artifacts the sub-agent is likely to need, eliminating the need to fetch them.\n\n**Standard bundle fields**:",
+                  "newString": "Within-agent redundancy is worse: one sub-agent read `subagent_rollup.rs` 6 times, `body.md` 4 times, `lib.rs` 4 times.\n\nParallel fan-out siblings issued byte-identical command sequences: same `ticket.exe get`, `spec.exe get`, `spec.exe search`, and file globs.\n\nThese numbers motivate compiling a good prompt, not inlining full content: a sub-agent that fetches `spec.exe get <id>` once because the compiled prompt named it precisely is cheap; the redundancy above came from sub-agents groping for artifacts the orchestrator never named, not from artifacts named but not pasted.\n\n## Compiled Prompt Composition\n\nA compiled prompt is the orchestrator's own summary, written fresh for this delegation — not a template you fill with pasted content. It names every artifact the sub-agent needs by resolved path or id and states what the sub-agent should conclude from it, then trusts the sub-agent's own tools (ticket-mcp, spec-mcp, peek-mcp, file reads) to fetch full content on demand.\n\n**Required sections, in order**:\n\n1. **Available prior context** — a compact summary: anchoring ticket/spec ids and titles, decisions already made, and findings compiled from any units that already ran in this delegation chain. Reference ids and paths; do not paste full ticket/spec bodies.\n2. **Core objective and validation metrics** — the one outcome this unit must produce, plus the exact commands/criteria to check during and after the work.\n3. **Exact planned steps** — the ordered steps already worked out for this unit.\n4. **Non-goals, constraints, boundaries** — what must NOT change, scopes not to touch, and hard constraints (branch, worktree, tier, escalation limits).\n\n0. **Execution identity** (always first, regardless of the four sections above): Keep code location, entity-store location, and\n   command location separate. The generic word `workspace` is insufficient for\n   these values.",
+                  "expected_replacements": 1
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "role": "assistant",
+      "content": "Now let's fix the remaining sections (Eliminating Agent Template Reads example, Integration sections, Validation, Relation to Benchmark).",
+      "captured_at": "2026-08-20T12:53:05.395Z",
+      "event_meta": {
+        "event_id": "ed540acd-83e0-4b20-80f0-2023f470b045",
+        "parent_event_id": "b8eb3762-c680-4d9b-904f-4f9df99121c8",
+        "event_type": "assistant.message",
+        "message_id": "d137014e-23d0-4057-b02e-404d9913d488",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01A5qcgX8ktV2bjEiQNNKsqa",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 260,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\shared-context-bundle.instructions.md",
+              "startLine": 130
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 3,
+      "role": "assistant",
+      "content": "Now update pre-dispatch-gates.instructions.md to reflect the on-demand model rather than mandatory-every-delegation.",
+      "captured_at": "2026-08-20T12:54:01.339Z",
+      "event_meta": {
+        "event_id": "acb7c2bf-a08f-4821-ba16-212e24657cfc",
+        "parent_event_id": "f5eb0732-b3fe-4ed0-a6ad-a542fccbe672",
+        "event_type": "assistant.message",
+        "message_id": "6f90cd55-997a-4e8e-93b4-6847ab5e1c44",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_016YYt3fJn5MjWZE76aKmuJP",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Change pre-dispatch-gates.instructions.md from a mandatory-every-delegation gate to an on-demand dry-run tool the orchestrator invokes when it judges a compiled prompt is risky.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\pre-dispatch-gates.instructions.md",
+                  "newString": "---\ndescription: \"Use whenever a compiled delegation prompt is complex, ambiguous, or risky enough that a mid-tier model is likely to hit a blocker: on-demand pre-dispatch dry-run gates. Covers per-delegation-class gate sets, tool calls implementing each check, when to reach for the gate, and fail-fast semantics.\"\napplyTo: \"**\"\n---\n\n## Purpose\n\nQuality gates that run AFTER dispatch cost full delegation loops when preconditions fail. This instruction defines pre-dispatch gate sets that catch bad units while they are still cheap — before spawning the sub-agent. The gate is a dry-run tool, not a tax on every delegation: reach for it when the compiled prompt itself is the risk.\n\n## When to Apply\n\nThe gate is **on-demand, not mandatory for every delegation**. The orchestrator decides, per delegation, whether the compiled prompt is complex or risky enough that a mid-tier (T2/T3) sub-agent is likely to hit a blocker. Reach for the gate when one or more of these signals is present:\n\n- The compiled prompt names a ticket/spec state, file path, or command the orchestrator has not itself confirmed in this session\n- The plan has multiple hops and the first hop is unverified\n- The unit is high-risk (touches shared infrastructure, a destructive command, or a cross-cutting scope)\n- A prior delegation in this chain already came back blocked once, and the retry needs the same precondition re-checked\n\nSkip the gate for routine, well-scoped units where the orchestrator already has confirmed evidence (ticket state read this session, path verified via `peek-mcp`, command already run once). Paying gate cost on every delegation defeats the purpose of a cheap dry-run tool — it should be reached for, not defaulted to.",
+                  "oldString": "---\ndescription: \"Use at the start of and throughout every session, immediately before spawning any sub-agent: pre-dispatch quality gates for delegation. Covers per-delegation-class gate sets, tool calls implementing each check, and fail-fast semantics.\"\napplyTo: \"**\"\n---\n\n## Purpose\n\nQuality gates that run AFTER dispatch cost full delegation loops when preconditions fail. This instruction defines pre-dispatch gate sets that catch bad units while they are still cheap — before spawning the sub-agent.\n\n## When to Apply\n\nRun pre-dispatch gates for EVERY delegation, regardless of delegation class. Each class has its own gate set tailored to its common precondition failures."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\pre-dispatch-gates.instructions.md",
+                  "newString": "## Gate Execution Model\n\n**Mechanism**: The orchestrator cannot run gates directly (it has no tools), so when it decides a dry-run is warranted, it dispatches a cheap gate sub-agent — the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`), formally designated as the pre-dispatch gate agent — see \"Acting as the Pre-Dispatch Gate\" in that template. It runs on the T3 floor model (`\"GPT-5 mini (copilot)\"`).",
+                  "oldString": "## Gate Execution Model (MANDATED — no either/or)\n\n**Mechanism (binding, single choice)**: The orchestrator cannot run gates directly (it has no tools), so a **cheap gate sub-agent MUST be dispatched before every delegation**. There is no fallback \"orchestrator tool grant\" option — that alternative is rejected: it would break the orchestrator's structural no-direct-tools constraint for marginal savings on simple checks, and it does not compose with context-bundle sharing the way a gate sub-agent does. The gate agent is the workspace **Explore Agent** template (`.agents/agents/explore.agent.md`), formally designated as the pre-dispatch gate agent — see \"Acting as the Pre-Dispatch Gate\" in that template. It runs on the T3 floor model (`\"GPT-5 mini (copilot)\"`)."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\pre-dispatch-gates.instructions.md",
+                  "newString": "## Integration with Orchestrator Template\n\nSee the \"Pre-Dispatch Gate (On-Demand Dry-Run)\" section of [orchestrator.agent.md](../../agents/orchestrator.agent.md) for the canonical statement of this contract.\n\n## Integration with Delegation Instructions\n\nSee the \"Pre-Dispatch Quality Gates\" section in [orchestrator-delegation.instructions.md](orchestrator-delegation.instructions.md), which points here for the on-demand gate mechanism, per-class gate sets, and fail-fast semantics.\n\n## Validation\n\nThis is prose-only guidance that cannot be mechanically tested. The acceptance check is:\n1. Gate definitions exist for all five delegation classes\n2. Each gate specifies the exact tool call and pass/block criteria\n3. The trigger signals for reaching for the gate (vs. skipping it) are stated explicitly\n4. Fail-fast semantics are stated: `pass: false` blocks dispatch until resolved or escalated\n5. Integration points with orchestrator template and delegation instructions are documented\n6. Cost ceiling (≤5 turns, ≤10 tool calls) is stated as a hard requirement enforced in the gate's own contract, applying whenever the gate is used",
+                  "oldString": "## Integration with Orchestrator Template\n\n**Required change to `.agents/agents/orchestrator.agent.md`** (DOCUMENT ONLY — Lane B will apply):\n\nAdd after the \"Delegation contract\" section:\n\n```markdown\n## Pre-Dispatch Quality Gates\n\nBefore EVERY delegation, dispatch the **Explore Agent** template as the pre-dispatch gate for that delegation class (mandated mechanism — no orchestrator tool-grant alternative). See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for the complete gate definitions.\n\n**Gate mechanism**: Spawn `.agents/agents/explore.agent.md` on `\"GPT-5 mini (copilot)\"`. It returns `{pass: true, bundle: {...}}` with the resolved context bundle, or `{pass: false, blocker: \"<exact reason>\"}`.\n\n**On gate failure**: the delegation is NOT dispatched. Resolve the precondition (create spec, update ticket state, fix handoff) or escalate, then re-run the gate — never re-dispatch a blocked unit without resolving the blocker.\n\n**Cost ceiling**: the gate template's own contract caps it at ≤5 turns and ≤10 tool calls; exceeding it forces a `pass: false` verdict rather than continued investigation.\n```\n\n## Integration with Delegation Instructions\n\n**Required change to `.agents/instructions/orchestration/orchestrator-delegation.instructions.md`** (DOCUMENT ONLY — Lane B will apply):\n\nAdd before the \"Required Workflow\" section:\n\n```markdown\n## Pre-Dispatch Quality Gates\n\nRun pre-dispatch gates for EVERY delegation by dispatching the Explore Agent template (`.agents/agents/explore.agent.md`, `\"GPT-5 mini (copilot)\"`) as the mandated gate mechanism. Each delegation class (Implement, Review, Testing, Commit, Research/Explore) has its own gate set. See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for complete definitions.\n\nGate failures (`pass: false`) mean the delegation is NOT dispatched: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works.\n```\n\n## Validation\n\nThis is prose-only guidance that cannot be mechanically tested. The acceptance check is:\n1. Gate definitions exist for all four delegation classes\n2. Each gate specifies the exact tool call and pass/block criteria\n3. The gate mechanism is a single mandated choice (cheap gate sub-agent via the Explore Agent template) with no unresolved either/or\n4. Fail-fast semantics are stated: `pass: false` blocks dispatch until resolved or escalated\n5. Integration points with orchestrator template and delegation instructions are documented\n6. Cost ceiling (≤5 turns, ≤10 tool calls) is stated as a hard requirement enforced in the gate's own contract"
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 4,
+      "role": "assistant",
+      "content": "Good, the \"gate contract\" and benchmark sections are still accurate/generic enough (they describe the gate's own behavior when invoked, not \"every delegation\"). Let's check line 182 fully and the \"bundle\" wording (\"resolved context bundle\") to align terminology with compiled prompts.",
+      "captured_at": "2026-08-20T12:54:12.732Z",
+      "event_meta": {
+        "event_id": "da5cffc0-d402-4cc5-b6db-1157b70345a8",
+        "parent_event_id": "9f0c891b-3298-482d-8369-7c3d2e82a4ca",
+        "event_type": "assistant.message",
+        "message_id": "65f2d814-ff42-440c-a7d7-a518ccb7f8d2",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01QavxPuXrdXWdvTLWxXY4uQ",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 190,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\pre-dispatch-gates.instructions.md",
+              "startLine": 160
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 5,
+      "role": "assistant",
+      "content": "Fix the \"mandated gate mechanism above\" wording and \"resolved context bundle\" reference to reflect on-demand usage.",
+      "captured_at": "2026-08-20T12:54:21.471Z",
+      "event_meta": {
+        "event_id": "06c37e87-7e02-4ffd-ad8e-90da805296eb",
+        "parent_event_id": "89e076ab-8e28-46e6-a870-6760f28f9434",
+        "event_type": "assistant.message",
+        "message_id": "a998b044-ddc2-444a-a1db-002e4caade27",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01NuGaqxAXjPpJ1uL3n2QBe6",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\pre-dispatch-gates.instructions.md",
+              "newString": "Benchmark ticket `10d21210` (now DONE) publishes the combined-baseline `redispatch_count` in [.benchmark/10d21210/README.md](../../../.benchmark/10d21210/README.md)'s thresholds table: **baseline 10 → target 0**, measured as `runSubagent` dispatches sharing `(agent_name, description)` with an earlier dispatch whose span recorded a failure. When the orchestrator reaches for the gate on a risky compiled prompt, the blocker is caught BEFORE dispatch, which is the mechanism this threshold measures — a post-change session replayed through the same harness is expected to show `redispatch_count = 0` on the units where the gate was used. Actual measurement of a post-change run is not owed by this ticket; only the evidence path is cited here. The gate cost (≤5 turns) is far cheaper than a full delegation loop (20-64 turns in the measured sessions), which is why it is worth reaching for on risky units even though it is not run on every delegation.",
+              "oldString": "Benchmark ticket `10d21210` (now DONE) publishes the combined-baseline `redispatch_count` in [.benchmark/10d21210/README.md](../../../.benchmark/10d21210/README.md)'s thresholds table: **baseline 10 → target 0**, measured as `runSubagent` dispatches sharing `(agent_name, description)` with an earlier dispatch whose span recorded a failure. With pre-dispatch gates applied via the mandated gate mechanism above, the blocker is caught BEFORE dispatch, which is the mechanism this threshold measures — a post-change session replayed through the same harness is expected to show `redispatch_count = 0`. Actual measurement of a post-change run is not owed by this ticket; only the evidence path is cited here. The gate cost (≤5 turns) is far cheaper than a full delegation loop (20-64 turns in the measured sessions)."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 6,
+      "role": "assistant",
+      "content": "Now let's check the \"Fail-fast semantics\" and \"Gate contract\" wording for \"MANDATED\" language that should soften, and check the whole file for remaining stale references (e.g., \"mandated gate mechanism\", \"no either/or\").",
+      "captured_at": "2026-08-20T12:54:26.862Z",
+      "event_meta": {
+        "event_id": "710f015e-6c70-4dc5-a1d9-f9fa939ed3f7",
+        "parent_event_id": "635739fe-a990-412d-bb0c-a586283f0cf9",
+        "event_type": "assistant.message",
+        "message_id": "5d663ce4-230a-4c3c-afca-5e6d3d19e591",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01AK9wk4QUzApvEjHVJPg7nW",
+            "name": "grep_search",
+            "arguments": {
+              "isRegexp": true,
+              "query": "MANDATED|mandated|no either/or|no fallback",
+              "includePattern": ".agents/instructions/orchestration/pre-dispatch-gates.instructions.md"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 7,
+      "role": "assistant",
+      "content": "Good, all cleared. Now update `orchestrator-delegation.instructions.md` (item 4 and the \"Pre-Dispatch Quality Gates\" section) to match.",
+      "captured_at": "2026-08-20T12:54:39.760Z",
+      "event_meta": {
+        "event_id": "6fef79e7-ac83-42c8-85d3-5ab6163b0b77",
+        "parent_event_id": "a2e24671-ba01-4830-8115-061a5f2fb05b",
+        "event_type": "assistant.message",
+        "message_id": "3b7701be-ea62-4d08-b8bb-5ee98c80a8ad",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01L1ADqevFnVTFKug5PNV5iX",
+            "name": "multi_replace_string_in_file",
+            "arguments": {
+              "explanation": "Update orchestrator-delegation.instructions.md item 4 and the Pre-Dispatch Quality Gates section to describe compiled prompts and on-demand gating instead of full-content bundles and mandatory gating.",
+              "replacements": [
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+                  "newString": "4. **Compiled prompt** — compile prior context, objective, plan, and boundaries into a compact self-contained brief; name artifacts by resolved path/id for the sub-agent to fetch itself rather than pasting their full content. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md).",
+                  "oldString": "4. **Shared context bundle** — governs which artifact content to inline (resolved tickets/specs, handoff package, file skeletons, validation commands), the parallel-sibling shared-prefix optimization, and the 2k-5k token size target. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md)."
+                },
+                {
+                  "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+                  "newString": "The pre-dispatch self-containment checklist lives in [model-routing.instructions.md](model-routing.instructions.md). Two additions specific to orchestration:\n- Compile prior context, objective/validation, steps, and non-goals into the prompt; name artifacts by path/id rather than pasting their full content.\n- Include the target agent's contract excerpt inline; do not make the sub-agent read its own template.\n\n## Pre-Dispatch Quality Gates\n\nThe pre-dispatch gate is an on-demand dry-run, not a step run before every delegation. Reach for it (dispatching the Explore Agent template, `.agents/agents/explore.agent.md`, `\"GPT-5 mini (copilot)\"`) when a compiled prompt is complex or risky enough that a mid-tier sub-agent is likely to hit a blocker; skip it for routine, well-scoped units. Each delegation class (Implement, Review, Testing, Commit, Research/Explore) has its own gate set. See [pre-dispatch-gates.instructions.md](pre-dispatch-gates.instructions.md) for complete definitions and trigger signals.\n\nGate failures (`pass: false`) mean the delegation is NOT dispatched as-is: fix the precondition or escalate BEFORE dispatch, never re-dispatch a blocked unit and hope it works.",
+                  "oldString": "The pre-dispatch self-containment checklist lives in [model-routing.instructions.md](model-routing.instructions.md). Two additions specific to orchestration:\n- Pass the FULL CONTENT of artifacts via the context bundle, not just ids/paths.\n- Include the target agent's contract excerpt inline; do not make the sub-agent read its own template.\n\n## Pre-Dispatch Quality Gates\n\nRun pre-dispatch gates for EVERY delegation — this governs the mandated gate mechanism (dispatch the Explore Agent template as gate agent), the per-delegation-class gate sets (Implement/Review/Testing/Commit), and the fail-fast semantics for a `{pass: false}` verdict. See [pre-dispatch-gates.instructions.md](pre-dispatch-gates.instructions.md)."
+                }
+              ]
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 8,
+      "role": "assistant",
+      "content": "Good, only one occurrence of each now (the original standalone section got merged/removed as part of the replacement). Let's verify the full file reads coherently.",
+      "captured_at": "2026-08-20T12:54:49.869Z",
+      "event_meta": {
+        "event_id": "00288e73-1071-4ea8-9393-0df8e9bff77f",
+        "parent_event_id": "44644725-6670-41cb-ae16-1e2b1aa0f077",
+        "event_type": "assistant.message",
+        "message_id": "774b3243-d9e2-4fdd-948f-cc74d03000ed",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01ES9vVqWxTd4DEK95CUDCYa",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 90,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\orchestrator-delegation.instructions.md",
+              "startLine": 55
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 9,
+      "role": "assistant",
+      "content": "Now let's sanity-check the orchestrator.agent.md final state for consistency.",
+      "captured_at": "2026-08-20T12:54:58.950Z",
+      "event_meta": {
+        "event_id": "b207ef04-a669-4cfd-bf0b-77d2f543f053",
+        "parent_event_id": "ef3f7edf-ca19-4295-857b-de74552c1de7",
+        "event_type": "assistant.message",
+        "message_id": "a03195d3-dcce-4afd-b72b-14a97be9496e",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01PfpE2swdJXZcniXDRYzAdK",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 160,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+              "startLine": 85
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 10,
+      "role": "assistant",
+      "content": "This reads consistently. Let's view the rest (Pre-Dispatch/Compiled sections and Pre-Dispatch Gates section further down) to confirm no leftover stale text.",
+      "captured_at": "2026-08-20T12:55:03.872Z",
+      "event_meta": {
+        "event_id": "310a00ed-46bd-4068-86cb-be367c0bef1e",
+        "parent_event_id": "972c73b7-5471-4f38-b15f-aab3c84096ec",
+        "event_type": "assistant.message",
+        "message_id": "9a8e99b8-2059-4bbb-98ec-cb7fff7d5aa8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01F4w3NGYdmwu8PKY5HYjTPx",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 210,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+              "startLine": 160
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 11,
+      "role": "assistant",
+      "content": "Small leftover: \"pass the resolved worktree and branch in the implementation context bundle\" — update wording to \"compiled prompt\" for consistency.",
+      "captured_at": "2026-08-20T12:55:09.514Z",
+      "event_meta": {
+        "event_id": "b4e19084-fc22-42b6-aff3-59fc6b422192",
+        "parent_event_id": "9ff2fe00-b0d8-4433-8f4f-70b17c98224d",
+        "event_type": "assistant.message",
+        "message_id": "30d9704a-2740-43a3-a78d-5b427c4ee7bd",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01XZArKYWPEBT4HfoygRy7Wj",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\agents\\orchestrator.agent.md",
+              "newString": "Every implementation unit runs in its own git worktree on a branch cut from `main`. Before dispatching an implementation unit, delegate UUID, worktree, session check-in, and board check-in to `session-bootstrap.agent.md`, then name the resolved worktree and branch in the implementation unit's compiled prompt (as part of execution identity).",
+              "oldString": "Every implementation unit runs in its own git worktree on a branch cut from `main`. Before dispatching an implementation unit, delegate UUID, worktree, session check-in, and board check-in to `session-bootstrap.agent.md`, then pass the resolved worktree and branch in the implementation context bundle."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 12,
+      "role": "assistant",
+      "content": "Now check for any other references to \"Shared Context Bundle\" heading or old gate wording elsewhere in the repo (e.g., other agent templates referencing it) that should stay untouched but let's verify no broken anchors.",
+      "captured_at": "2026-08-20T12:55:13.926Z",
+      "event_meta": {
+        "event_id": "a015d9af-9c78-4faa-aa5d-d61af8133752",
+        "parent_event_id": "69a4a24d-4632-42d8-b66a-21c12789e838",
+        "event_type": "assistant.message",
+        "message_id": "b41152b2-7860-42a6-9897-62058dba9153",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01CzvhCfDYBUh1iG46XTGu1p",
+            "name": "grep_search",
+            "arguments": {
+              "query": "Shared Context Bundle|Pre-Dispatch Quality Gates|shared context bundle\", \"orchestrator.agent.md#Shared\", \"context bundle",
+              "isRegexp": false,
+              "includePattern": ".agents/**"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 13,
+      "role": "assistant",
+      "content": "Minor terminology alignment for consistency; keep concept intact but reference \"compiled prompt\" terminology since the referenced instructions file was renamed conceptually.",
+      "captured_at": "2026-08-20T12:55:27.973Z",
+      "event_meta": {
+        "event_id": "379dea20-4258-4ae1-a756-746695e1848e",
+        "parent_event_id": "3a57f856-7ee6-4058-b78b-0135edc40c53",
+        "event_type": "assistant.message",
+        "message_id": "89c073ce-2ca0-4a96-9f30-c8634a6c6df8",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01H9onEEW1JdTALZ5NhZPBBu",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\write-and-die.instructions.md",
+              "newString": "The terminating Worker does not hand off state directly — the fresh session that runs the next step receives its context via a **compiled prompt**: prior context, the step's `target_path`, `allowed_tools`, validation commands, and `return_contract` are compiled into the new session's spawn prompt by the Planner/dispatcher, with any larger artifact named by resolved path/id for the fresh session to fetch itself, exactly as any other sub-agent spawn is made self-contained. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md) for compiled-prompt composition and size targets.",
+              "oldString": "The terminating Worker does not hand off state directly — the fresh session that runs the next step receives its context via the **shared context bundle** protocol: the resolved ticket/spec content, the step's `target_path`, `allowed_tools`, validation commands, and `return_contract` are inlined into the new session's spawn prompt by the Planner/dispatcher, exactly as any other sub-agent spawn is made self-contained. See [shared-context-bundle.instructions.md](shared-context-bundle.instructions.md) for bundle composition and size targets."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 14,
+      "role": "assistant",
+      "content": "All four files are now edited and internally consistent. Let's do a final consistency grep across the touched files for any leftover stale terms.",
+      "captured_at": "2026-08-20T12:55:38.506Z",
+      "event_meta": {
+        "event_id": "aa6c50e1-c50c-4b4c-bdb6-c4444e336ace",
+        "parent_event_id": "af0f0336-ed84-4ee9-b942-69c678b3dd30",
+        "event_type": "assistant.message",
+        "message_id": "fbcf89b9-0ffe-46d2-a5a0-13fe93892f9d",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_0195ydmn5a7H8NZg5RYeQvvu",
+            "name": "grep_search",
+            "arguments": {
+              "includePattern": ".agents/agents/orchestrator.agent.md;.agents/instructions/orchestration/shared-context-bundle.instructions.md;.agents/instructions/orchestration/pre-dispatch-gates.instructions.md;.agents/instructions/orchestration/orchestrator-delegation.instructions.md",
+              "isRegexp": false,
+              "query": "FULL CONTENT|inline the full|EVERY delegation|MANDATED"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 15,
+      "role": "assistant",
+      "content": "All matches are the new, correctly-worded prose (no stale mandatory/full-content language remains except the unrelated testing file). The four target files are consistent.\n\n## Summary\n\nRefactored the orchestrator delegation contract across four hand-maintained (non-generated) files:\n\n- [orchestrator.agent.md](.agents/agents/orchestrator.agent.md) — delegation contract item 4 now requires a **compiled prompt** (named artifacts, not pasted content); \"Shared Context Bundle\" replaced by **Compiled Delegation Prompts** (prior context → objective/validation → steps → non-goals, with progressive compilation of prior units' findings); \"Pre-Dispatch Quality Gates\" replaced by **Pre-Dispatch Gate (On-Demand Dry-Run)** — a tool reached for on risky prompts, not run every time; Aggregate step now states findings are compiled forward into later prompts.\n- [shared-context-bundle.instructions.md](.agents/instructions/orchestration/shared-context-bundle.instructions.md) — rewritten around compiled-prompt composition (execution identity + 4 required sections), named-artifact referencing, 1k-2k token target (down from 2k-5k full dumps), and parallel-sibling reuse of a shared prior-context summary instead of duplicated full content.\n- [pre-dispatch-gates.instructions.md](.agents/instructions/orchestration/pre-dispatch-gates.instructions.md) — gate is now explicitly on-demand with stated trigger signals (unconfirmed precondition, multi-hop risk, high-risk scope, repeat blocker), rather than mandatory for every delegation.\n- [orchestrator-delegation.instructions.md](.agents/instructions/orchestration/orchestrator-delegation.instructions.md) — delegation contract item 4 and the Pre-Dispatch/Context Isolation sections updated to match; also touched [write-and-die.instructions.md](.agents/instructions/orchestration/write-and-die.instructions.md) for terminology consistency.\n\n**Blocker/limitation**: ticket-mcp writes (`board_show`, `create_ticket`) were rejected — `\"main checkout mutations are blocked; run session_check_in from an assigned worktree path\"` — so this change has no tracking ticket yet. Per AGENTS.md this should be ticketed; a worktree-bootstrap session should create the ticket and commit this change on a feature branch rather than leaving it uncommitted in the main checkout.",
+      "captured_at": "2026-08-20T12:55:54.897Z",
+      "event_meta": {
+        "event_id": "83a6f77f-1ab8-442b-a84d-38e16956429a",
+        "parent_event_id": "5ca331e7-c0c0-4fa9-be31-84b2ffe4e86f",
+        "event_type": "assistant.message",
+        "message_id": "5e554dc2-320d-41e3-949f-a34766afa85f",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 16,
+      "role": "user",
+      "content": "update the agents file to prevent small changes like this to require a ticket. tickets are for large tasks that require multiple sessions, not for small refactorings",
+      "captured_at": "2026-08-20T12:59:55.301Z",
+      "event_meta": {
+        "event_id": "d085255b-93df-4d6b-a526-aa769f26d37c",
+        "parent_event_id": "f25c3018-bae5-4d4f-af81-df5da8e9ef9d",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 17,
+      "role": "assistant",
+      "content": "Now update the Quality Gates section, which still assumes every change has a ticket (\"Before a ticket moves to `in-review`...\"). Check for other stale references.",
+      "captured_at": "2026-08-20T13:00:27.751Z",
+      "event_meta": {
+        "event_id": "98ae443f-41d9-4068-b929-fd3217d32dce",
+        "parent_event_id": "d8a77fd9-8753-435a-8014-ae7f237714b8",
+        "event_type": "assistant.message",
+        "message_id": "051bb2f8-cf78-41b7-9148-cc5f4b515890",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01KAiUb37xwStRceQ9HhvaYz",
+            "name": "grep_search",
+            "arguments": {
+              "isRegexp": false,
+              "query": "ticket",
+              "includePattern": "AGENTS.md"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 18,
+      "role": "assistant",
+      "content": "Root [AGENTS.md](AGENTS.md) now clarifies the ticket threshold: tickets are only for multi-session/multi-file work, and small self-contained changes (including guidance/doc edits like the orchestrator refactor) proceed without one. Note: [memory-viewers/AGENTS.md](memory-viewers/AGENTS.md) has the same stale wording but wasn't in scope of this request — flag if you want it updated too.",
+      "captured_at": "2026-08-20T13:00:41.264Z",
+      "event_meta": {
+        "event_id": "1e28f9bd-fd9a-4a3b-81fd-5cd32d05d47e",
+        "parent_event_id": "fd028be8-dbba-46fc-8d93-70e76d26d29c",
+        "event_type": "assistant.message",
+        "message_id": "93aa0465-28ff-4ecf-9eb8-4cdc4ad15b0a",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 19,
+      "role": "user",
+      "content": "Update the request refinement with additional steps to gather existing artifacts that are relevant in a file and to maintain a single file as the output that tracks the relevant artifact ids, active blockers, the most important validation gates that need to pass after validation, and the full roadmap for the executing sessions structured in properly scoped tasks with a single clearly measurable objective, aswell as a heads-up note list that gathers relevant quirks or good-to-know information to help navigate the task.\r\n\r\nThis roadmap should be repeatedly optimized into better versions (do not overwrite previous iterations, move old versions to a versioned name, only the current, most refined file is named ROADMAP.md)\r\n\r\nThe roadmap should serve as the entry point for first executing session. Smaller tasks may be completed in one session, larger tasks may be scoped into multiple sessions.",
+      "captured_at": "2026-08-20T13:27:30.455Z",
+      "event_meta": {
+        "event_id": "8f414218-843a-4e66-8e48-85420f390efd",
+        "parent_event_id": "1c08a8c0-9670-419e-953e-b10f7fd150c8",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 20,
+      "role": "assistant",
+      "content": "Now update the \"When to Run This Pipeline\" and \"Cost Note\" sections for consistency with the new stage numbering (Stage 3 renamed reference).",
+      "captured_at": "2026-08-20T13:28:36.922Z",
+      "event_meta": {
+        "event_id": "65019f00-f93b-48b8-9369-4874b532d37f",
+        "parent_event_id": "2323e653-bc72-400d-aab6-23f7949801bf",
+        "event_type": "assistant.message",
+        "message_id": "9b846665-292a-43a0-a179-c8096a7aa584",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01L6ZSqx4bYfQDaQrTpKive5",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 45,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\request-refinement-pipeline.instructions.md",
+              "startLine": 30
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 21,
+      "role": "assistant",
+      "content": "Good, looks clean. Let's view the rest of the file to check \"Cost Note\" section.",
+      "captured_at": "2026-08-20T13:28:41.391Z",
+      "event_meta": {
+        "event_id": "70daae9d-7a54-4aa5-bc80-c92b74ed32ba",
+        "parent_event_id": "77c70a92-a756-46d0-8e12-7994883468dd",
+        "event_type": "assistant.message",
+        "message_id": "1319dfdd-fe99-4711-9d72-f1745f422c66",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01UdPA2YWHN6wbCEnNMCtzBm",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 65,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\request-refinement-pipeline.instructions.md",
+              "startLine": 45
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 22,
+      "role": "assistant",
+      "content": "Update the Cost Note's stage numbering to reflect the new artifact-inventory (Stage 3) and research (now Stage 4), and add a note about the roadmap compilation stage's cost.",
+      "captured_at": "2026-08-20T13:28:48.399Z",
+      "event_meta": {
+        "event_id": "fad61c0b-75d9-4075-8281-2c532731d991",
+        "parent_event_id": "56f54c76-a55c-49df-a15d-20891b9489de",
+        "event_type": "assistant.message",
+        "message_id": "67f83352-e7d3-4ce5-b201-8079362e41da",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01BNoue7dVExBbDqJ5SZDWKp",
+            "name": "replace_string_in_file",
+            "arguments": {
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\request-refinement-pipeline.instructions.md",
+              "newString": "## Cost Note\n\nStage 1 (denoise) runs on the cheap tier per `transcription.agent.md`'s own `model:` declaration. Stage 3 (artifact inventory) is mechanical read-only extraction and belongs on the T3 floor. Stage 2 (review), Stage 4 (research), and Stage 6 (roadmap compilation) are judgement-bearing and route per the tier ladder in [model-routing.instructions.md](model-routing.instructions.md) — do not run the whole pipeline on the orchestrator-tier model when the denoise and inventory passes alone are mechanical.",
+              "oldString": "## Cost Note\n\nStage 1 (denoise) runs on the cheap tier per `transcription.agent.md`'s own `model:` declaration. Stage 2 (review) and Stage 3 (research) are judgement-bearing and route per the tier ladder in [model-routing.instructions.md](model-routing.instructions.md) — do not run the whole pipeline on the orchestrator-tier model when the denoise pass alone is mechanical."
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 23,
+      "role": "assistant",
+      "content": "The pipeline now has six stages: Denoise → Review gate → **Artifact inventory** (new, produces `ARTIFACTS.md`) → Research-informed restructure → Traceability checklist → **Roadmap compilation** (new, produces the iterative `ROADMAP.md`). Key additions:\n\n- `ARTIFACTS.md` catalogs every relevant existing ticket/spec/doc/file so later stages cite instead of re-discovering.\n- `ROADMAP.md` compiles artifact ids, active blockers, validation gates, the full dependency-ordered task roadmap (each task single-objective, sized single-session or split into single-session sub-tasks), and a heads-up notes list — and is the entry point for the first executing session.\n- Versioning rule: never overwrite `ROADMAP.md` in place — rename the prior file to `ROADMAP.vN.md` first, so only the current best iteration is ever named `ROADMAP.md`.\n\nThis is a single-file instruction edit, within the small-change threshold in [AGENTS.md](AGENTS.md) — no ticket required.",
+      "captured_at": "2026-08-20T13:28:54.693Z",
+      "event_meta": {
+        "event_id": "183b5552-0beb-4768-bd9d-c94ec31ca1f4",
+        "parent_event_id": "5a39a6a7-9ce3-44dd-85cd-fd4e26be56f0",
+        "event_type": "assistant.message",
+        "message_id": "c4bf6c6f-096d-416a-8b4f-ef0d6c5c3362",
+        "tool_requests_json": []
+      }
+    },
+    {
+      "sequence": 24,
+      "role": "user",
+      "content": "Flesh out the roadmap improvement loop. Given a roadmap, explain how to dry-run the roadmap and uncover blockers or informational gaps, advice or how to improve the structure of the roadmap for an even flow and resolution of dependencies.\r\n\r\nThe roadmap refinement is also allowed to create or refine tickets and add to the linked artifacts. the roadmap should not be too large, it should serve as a root anchor for the entire effort motivated by the transcript request. To efficiently model complex task dependencies and large blockers, the ticket system should be used.",
+      "captured_at": "2026-08-20T13:36:08.368Z",
+      "event_meta": {
+        "event_id": "8ffed69b-20b7-4fe0-b64c-bf1f0bb3459d",
+        "parent_event_id": "9a5f7ff1-b4d7-485e-aef2-215750bbe93b",
+        "event_type": "user.message"
+      }
+    },
+    {
+      "sequence": 25,
+      "role": "assistant",
+      "content": "Now update the Cost Note to reflect that Stage 6 includes ticket-creation work (judgement-bearing, already covered) — check it's still accurate, and verify the full file reads coherently end to end.",
+      "captured_at": "2026-08-20T13:37:15.470Z",
+      "event_meta": {
+        "event_id": "c8d29f33-3cee-4bb2-8690-2db717272798",
+        "parent_event_id": "e31acb27-c584-45fe-95de-062b0c185b55",
+        "event_type": "assistant.message",
+        "message_id": "e70f02b5-b50d-4a33-9417-26bc272ca4db",
+        "tool_requests_json": [
+          {
+            "toolCallId": "toolu_01J26TJQhsJU4ivB7EM9sjge",
+            "name": "read_file",
+            "arguments": {
+              "endLine": 100,
+              "filePath": "c:\\Users\\linus\\git\\3\\context-engine\\.agents\\instructions\\orchestration\\request-refinement-pipeline.instructions.md",
+              "startLine": 1
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 26,
+      "role": "assistant",
+      "content": "This reads coherently end to end. Cost Note already covers Stage 6 correctly. The file is consistent and complete — single-file instruction edit, within the small-change threshold in [AGENTS.md](AGENTS.md), no ticket required.",
+      "captured_at": "2026-08-20T13:37:20.011Z",
+      "event_meta": {
+        "event_id": "cc7fccea-7a1f-473c-bb7c-9205860d9c5b",
+        "parent_event_id": "34602777-c533-46f7-9515-4d06210a94ba",
+        "event_type": "assistant.message",
+        "message_id": "70d2ddcf-5a6b-4081-9e5f-4c555194c496",
+        "tool_requests_json": []
+      }
+    }
+  ]
 }
