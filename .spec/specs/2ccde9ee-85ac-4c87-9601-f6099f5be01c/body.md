@@ -113,6 +113,7 @@ dependency relationships are distinct named projections. Every node and edge has
 source; the system must not imply an unlabeled single tree. Extraction adapters normalize
 these facts separately from `presentation-api`, which continues to own persistence,
 materialization, builds, and traceability.
+The combined Git-repository-plus-Rust-crate view required by this track is one addressable graph over a shared node set keyed by path; Git containment, Cargo workspace/crate membership, and Cargo dependency remain separately labeled, distinctly-typed edge collections layered on that shared graph. It is never flattened into a single untyped parent-child tree.
 
 The combined Git-repository-plus-Rust-crate view required by this track is one addressable
 graph over a shared node set keyed by path; Git containment, Cargo workspace/crate membership,
