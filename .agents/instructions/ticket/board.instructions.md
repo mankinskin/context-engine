@@ -45,7 +45,7 @@ Signal that a branch is integrable by checking out with a `ready-to-merge:` reas
 The board claim covers ticket and file ownership only. The authoritative
 session-to-worktree-to-branch assignment is claimed separately with
 `session_check_in`. Both are required before the first edit, and a conflict on
-either is an escalation, not something to work around. See
+either is an escalation per [escalation-gate.instructions.md](../orchestration/escalation-gate.instructions.md), not something to work around. See
 [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md).
 
 ### WIP Limit

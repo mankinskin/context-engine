@@ -5,18 +5,16 @@ applyTo: "**/*.md"
 
 ## Purpose
 
-Denoising a prompt (turning raw words into clean words) is not the same job as refining its intent (turning clean words into a verified, unambiguous decision). This instruction owns the second job: the **informed review + interview loop** that [prompt-ingestion.instructions.md](prompt-ingestion.instructions.md) runs twice — once right after research and the artifact inventory, before anything is drafted, and once right after the dossier and `ROADMAP.md` are drafted, before they ship. Denoising itself is not this file's job: it is delegated entirely to [audio-transcript.instructions.md](../transcripts/audio-transcript.instructions.md) and the [Transcription Agent](../../agents/transcription.agent.md), the same pipeline this whole ingestion process extends.
+Denoising a prompt (turning raw words into clean words) is not the same job as refining its intent (turning clean words into a verified, unambiguous decision). This instruction owns the second job: applying the shared [evidence-grounded refinement loop](evidence-grounded-refinement.instructions.md) that [prompt-ingestion.instructions.md](prompt-ingestion.instructions.md) runs twice — once right after research and the artifact inventory, before anything is drafted, and once right after the dossier and `ROADMAP.md` are drafted, before they ship. Denoising itself is not this file's job: it is delegated entirely to [audio-transcript.instructions.md](../transcripts/audio-transcript.instructions.md) and the [Transcription Agent](../../agents/transcription.agent.md), the same pipeline this whole ingestion process extends.
 
-## The Informed Review + Interview Loop
+## Applying the Refinement Loop Here
 
-Never critique or interview from the raw prompt's words alone — every pass in this loop is grounded in whatever research, inventory, or dossier state already exists at that point in the pipeline.
+Follow the four-step loop in [evidence-grounded-refinement.instructions.md](evidence-grounded-refinement.instructions.md); this section states only what differs for a prompt's intent:
 
-1. **Critique.** Review the current state — the cleaned prompt plus `ARTIFACTS.md` for the first loop; the drafted dossier and `ROADMAP.md` for the second — the way [review.agent.md](../../agents/review.agent.md) critiques an implementation: is the ask bounded, is it verifiable, does it conflate distinct concerns, what does the gathered research already answer.
-2. **Verdict.** Produce a verdict (`Changes requested` or `Approved as scoped`), a findings table with severity and required improvement per finding, and an explicit scope decision — or, for the second loop, a plain statement that no open question remains.
-3. **Interview only what evidence cannot resolve.** If a finding is a genuine ambiguity — the words are bounded but the underlying goal, priority, or acceptance condition is not, and nothing in the research answers it — dispatch the [Mission Planning Agent](../../agents/mission-planning.agent.md) for a mission-goal-level gap, or the [Interview Agent](../../agents/interview.agent.md) for a narrower requirement/acceptance-criteria gap. Hand the dispatched agent the research already gathered so every question it asks is grounded in a concrete finding, not a guess dressed up as a question.
-4. **Repeat until clean.** Re-run the critique against the updated state after answers arrive. Do not close the loop with an unresolved finding still open — carry it to another round rather than downgrading it to a note.
-
-Follow [escalation-gate.instructions.md](escalation-gate.instructions.md) rather than guessing at any point: an ambiguous verdict is a blocked loop, not an approved one.
+- **Evidence**: `ARTIFACTS.md` for the first loop; the drafted dossier and `ROADMAP.md` for the second loop.
+- **Critique**: review the current state the way [review.agent.md](../../agents/review.agent.md) critiques an implementation.
+- **Verdict**: `Changes requested` or `Approved as scoped`, plus a findings table and an explicit scope decision — or, for the second loop, a plain statement that no open question remains.
+- **Interview dispatch**: the [Mission Planning Agent](../../agents/mission-planning.agent.md) for a mission-goal-level gap, or the [Interview Agent](../../agents/interview.agent.md) for a narrower requirement/acceptance-criteria gap. Hand the dispatched agent the research already gathered and interview only what that evidence cannot resolve, so every question is grounded in a concrete finding, not a guess dressed up as a question.
 
 ## Where the Loop Runs
 

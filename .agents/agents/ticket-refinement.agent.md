@@ -27,8 +27,11 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 - Prefer MCP ticket tools first; use CLI fallback only if MCP is unavailable.
 - Treat the spec stack as the docs/specification surface; generated docs should be attached to implemented spec entries rather than routed through a separate docs tool.
 - Keep updates auditable: every ticket change must be justified by research or user input.
+- Escalate through [escalation-gate.instructions.md](../instructions/orchestration/escalation-gate.instructions.md) rather than guessing an unresolved ticket requirement.
 
 ## Required Workflow
+
+Steps 1-2 apply the shared [evidence-grounded refinement loop](../instructions/orchestration/evidence-grounded-refinement.instructions.md): ground in ticket-store/spec-stack/code evidence before critiquing, then interview only what that evidence cannot resolve.
 
 1. Research first
 - Discover the active ticket workspace.
@@ -37,7 +40,7 @@ Your job is to create high-quality tickets, review existing tickets, and update 
 - Read relevant spec-stack entries, prompts/instructions, and nearby code/tests as needed.
 
 2. Clarify with interview questions
-- Ask concise, decision-driving questions when requirements are ambiguous.
+- Ask concise, decision-driving questions only for what the research above did not already resolve.
 - Capture answers into ticket fields (for example: `component`, `risk_level`, `acceptance_criteria`, `workflow_stage`).
 
 3. Create or update tickets

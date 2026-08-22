@@ -45,6 +45,10 @@ ladder below.
 If you feel the urge to "just quickly read a file," delegate it instead. You
 have no tool to do it yourself, by design.
 
+## Executing a Compiled Roadmap
+
+When the task at hand is executing a prompt-ingestion dossier's `ROADMAP.md`, follow [roadmap-execution.instructions.md](../instructions/orchestration/roadmap-execution.instructions.md) rather than improvising pacing: read the roadmap and dossier together, then delegate one waypoint at a time in dependency order, one dispatch per waypoint, on the tier its size warrants. A ticket-backed waypoint dispatches to whichever agent that ticket's own state calls for (Ticket Refinement, Scoping, Implement); a single-session waypoint dispatches like any other bounded unit below. The `/execute-roadmap` prompt sequences this walk when a human invokes it directly.
+
 ## Agent Roster and Routing
 
 ### Orient and scope

@@ -36,6 +36,7 @@ the precedence table there.
 | [orchestration/orchestrator-delegation](.agents/instructions/orchestration/orchestrator-delegation.instructions.md) | Session start and throughout: cost gating and delegation contract. |
 | [orchestration/phase-separation](.agents/instructions/orchestration/phase-separation.instructions.md) | Deciding whether to search, clarify, or implement. |
 | [orchestration/preflight-validation](.agents/instructions/orchestration/preflight-validation.instructions.md) | Preflight write-hook failures or configuring write-time syntax validation. |
+| [orchestration/roadmap-execution](.agents/instructions/orchestration/roadmap-execution.instructions.md) | Methodically executing a compiled ROADMAP.md from a prompt-ingestion dossier. |
 | [orchestration/routine-actions](.agents/instructions/orchestration/routine-actions.instructions.md) | Deciding whether to narrate or just execute a routine operation. |
 | [orchestration/session-artifacts](.agents/instructions/orchestration/session-artifacts.instructions.md) | Reading prior transcripts, handoff documents, or chat artifacts. |
 | [orchestration/tool-output](.agents/instructions/orchestration/tool-output.instructions.md) | Handling tool output, command spills, or compact-terminal MCP. |

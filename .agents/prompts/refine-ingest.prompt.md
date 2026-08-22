@@ -42,7 +42,7 @@ Follow [intent-refinement.instructions.md](../instructions/orchestration/intent-
 - resolved input mode (existing path, continuation `input-N.md`, or newly created `transcripts/DD-MM-YYYY_<slug>/`)
 - dossier file paths created or updated, in reading order, ending with `ROADMAP.md`
 - both loops' verdicts: Stage 3's scope decision and Stage 5's confirmation that no open question remains
-- the prioritized roadmap items from `ROADMAP.md`, each with its non-goal
-- explicit reminder that no ticket/spec/implementation was created — that is the next, separate step
+- `ROADMAP.md`'s outcome summary
+- the prioritized waypoints from `ROADMAP.md`, each with its non-goal
 - explicit reminder that no ticket/spec/implementation was created — that is the next, separate step
 
