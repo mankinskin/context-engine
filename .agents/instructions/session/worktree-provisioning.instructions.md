@@ -156,7 +156,7 @@ When hand-constructing a `transcript_path` for a manual hook invocation under Gi
 | Subcommand | Signature | Behavior |
 |---|---|---|
 | `new` | `new <full-session-uuid> <slug> [--dry-run] [--preserve-main-changes]` | Requires a full UUID and creates `.worktrees/<full-session-uuid>/<slug>` with `agent/<full-session-uuid>/<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
-| `list` | `list [--dry-run]` | Renders nested and legacy flat `.worktrees` as a live tree: each superproject and initialized submodule shows branch, clean/dirty state, and ahead/behind divergence from local `main`; unavailable submodules and unregistered debris remain visible. |
+| `list` | `list [--dry-run] [--verbose]` | Defaults to a compact color-coded summary with relative paths, lifecycle labels, offending dirty/ahead/behind repositories, and condensed branch state. `--verbose` renders the full tree with superproject and submodule branch, clean/dirty state, and divergence from local `main`; unavailable submodules and unregistered debris remain visible. |
 | `rebase` | `rebase <name> [--dry-run]` | Rebases only the superproject worktree branch onto local `main`; stops on conflict. |
 | `merge` | `merge <name> [--dry-run]` | Partially automates nested submodule fast-forwards and then the superproject fast-forward; it does not enforce gitlink containment. |
 | `remove` | `remove <name> [--force] [--dry-run]` | Refuses dirty worktrees unless forced, then removes the worktree, prunes registrations, and deletes the merged branch. Use `<full-session-uuid>/<slug>` for nested worktrees; the UUID parent is removed only when empty. |
