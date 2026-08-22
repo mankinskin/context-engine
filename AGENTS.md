@@ -72,6 +72,7 @@ let _tracing = init_test_tracing!(&graph);
 - Follow `.github/hooks/` reminders when they fire.
 - Scratch notes belong in temporary files only; do not commit ephemeral notes.
 - Follow the closed-loop iteration workflow: Review→Interview→Commit→Handoff. See [loop-closure.instructions.md](.agents/instructions/orchestration/loop-closure.instructions.md).
+- Follow the production workflow cycle: request → spec → tickets → tests → implementation → validated response → next iteration. See [core-cycle.instructions.md](.agents/instructions/orchestration/core-cycle.instructions.md).
 - When a handoff package is incomplete or requirements are ambiguous, escalate rather than clarifying inline during implementation. See [escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md).
 - Never commit directly to `main` for worktree-backed work — all such commits land on the feature branch. After the branch is rebased clean and validation passes, the session merges its own feature branch into `main` (bottom-up: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on the feature branch, then fast-forward each `main`). A validated small main-checkout change may commit its explicitly staged path directly to `main`. See [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
 
