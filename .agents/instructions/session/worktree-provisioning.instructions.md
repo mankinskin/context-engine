@@ -156,10 +156,11 @@ When hand-constructing a `transcript_path` for a manual hook invocation under Gi
 | Subcommand | Signature | Behavior |
 |---|---|---|
 | `new` | `new <full-session-uuid> <slug> [--dry-run] [--preserve-main-changes]` | Requires a full UUID and creates `.worktrees/<full-session-uuid>/<slug>` with `agent/<full-session-uuid>/<slug>` from local `main`, populates submodules offline, and rolls back on failure. |
-| `list` | `list [--dry-run]` | Lists nested and legacy flat `.worktrees` entries, branches, submodule initialization, and unregistered debris. |
+| `list` | `list [--dry-run]` | Renders nested and legacy flat `.worktrees` as a live tree: each superproject and initialized submodule shows branch, clean/dirty state, and ahead/behind divergence from local `main`; unavailable submodules and unregistered debris remain visible. |
 | `rebase` | `rebase <name> [--dry-run]` | Rebases only the superproject worktree branch onto local `main`; stops on conflict. |
 | `merge` | `merge <name> [--dry-run]` | Partially automates nested submodule fast-forwards and then the superproject fast-forward; it does not enforce gitlink containment. |
 | `remove` | `remove <name> [--force] [--dry-run]` | Refuses dirty worktrees unless forced, then removes the worktree, prunes registrations, and deletes the merged branch. Use `<full-session-uuid>/<slug>` for nested worktrees; the UUID parent is removed only when empty. |
+| `clean` | `clean [--dry-run]` | Removes registered worktrees under `.worktrees` only when the superproject and every initialized submodule are clean and not ahead of local `main`; preserves all other worktrees with a reason. |
 | `rename` | `rename <source-name> <target-name> [--dry-run]` | Re-topics a clean worktree through filesystem relocation, repair, and branch rename. Use `<full-session-uuid>/<slug>` addresses for nested worktrees; bare names address legacy flat worktrees. |
 | `finish` | `finish <name> [--dry-run]` | Evaluates completion and preserves or reclaims the worktree according to lifecycle gates. Use `<full-session-uuid>/<slug>` for nested worktrees. |
 | `doctor` | `doctor [--dry-run]` | Repairs deinitialized main-checkout submodules and reports stale registrations. |
