@@ -4,7 +4,7 @@ usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
   root: "//?/C:/Users/linus/git/3/context-engine"
-top_level_dirs[8]: config,"context-stack","memory-api","memory-viewers",tools,transcripts,"viewer-api","workflow-tools"
+top_level_dirs[9]: config,"context-stack","duplication-reviews","memory-api","memory-viewers",tools,transcripts,"viewer-api","workflow-tools"
 crates:
   name: crates
   kind: dir
@@ -294,18 +294,24 @@ agent_files:
         - name: prompts
           kind: dir
           path: "agent-files/.agents/prompts"
-          children[24]{name,kind,path}:
+          children[30]{name,kind,path}:
             audit.prompt.md,file,"agent-files/.agents/prompts/audit.prompt.md"
             "build-validate-tools.prompt.md",file,"agent-files/.agents/prompts/build-validate-tools.prompt.md"
             commit.prompt.md,file,"agent-files/.agents/prompts/commit.prompt.md"
             "debug-test.prompt.md",file,"agent-files/.agents/prompts/debug-test.prompt.md"
+            "deduplication-campaign.prompt.md",file,"agent-files/.agents/prompts/deduplication-campaign.prompt.md"
+            "duplication-cleanup.prompt.md",file,"agent-files/.agents/prompts/duplication-cleanup.prompt.md"
+            "duplication-consolidation.prompt.md",file,"agent-files/.agents/prompts/duplication-consolidation.prompt.md"
+            "duplication-review.prompt.md",file,"agent-files/.agents/prompts/duplication-review.prompt.md"
             "epic-db6980d1.prompt.md",file,"agent-files/.agents/prompts/epic-db6980d1.prompt.md"
+            "execute-roadmap.prompt.md",file,"agent-files/.agents/prompts/execute-roadmap.prompt.md"
             "handoff-tickets.prompt.md",file,"agent-files/.agents/prompts/handoff-tickets.prompt.md"
             handoff.prompt.md,file,"agent-files/.agents/prompts/handoff.prompt.md"
             implement.prompt.md,file,"agent-files/.agents/prompts/implement.prompt.md"
             interview.prompt.md,file,"agent-files/.agents/prompts/interview.prompt.md"
             iteration.prompt.md,file,"agent-files/.agents/prompts/iteration.prompt.md"
             "memory-setup.prompt.md",file,"agent-files/.agents/prompts/memory-setup.prompt.md"
+            "merge-dossiers.prompt.md",file,"agent-files/.agents/prompts/merge-dossiers.prompt.md"
             next.prompt.md,file,"agent-files/.agents/prompts/next.prompt.md"
             "refine-ingest.prompt.md",file,"agent-files/.agents/prompts/refine-ingest.prompt.md"
             research.prompt.md,file,"agent-files/.agents/prompts/research.prompt.md"

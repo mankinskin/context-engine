@@ -415,6 +415,34 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/c91a334e-26cf-4cf2-9212-4288a07bbf09/ticket.toml`
 
 
+### Component: workflow-tools
+
+<!-- ticket-index:entry id=9158e113-86e8-47f2-964e-e21da632f4ef slug=cancelled/workflow-tools digest=7326bd5d984b -->
+#### [9158e113] [workflow-tools][per-tool] Extract `audit` tool as `audit` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `audit` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developme...
+- ref: `.ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml`
+
+<!-- ticket-index:entry id=56a17519-38aa-4c27-944c-5396df6a3fc6 slug=cancelled/workflow-tools digest=ef0beaa141b8 -->
+#### [56a17519] [workflow-tools][per-tool] Extract `doc` tool as `doc` domain crate + viewer
+- summary: `memory-api/crates/memory-api` is deleted. `doc` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root development...
+- ref: `.ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml`
+
+<!-- ticket-index:entry id=9c029859-c0a9-4019-bb4a-160dd9cf3a9a slug=cancelled/workflow-tools digest=1aafcc9b54f8 -->
+#### [9c029859] [workflow-tools][per-tool] Extract `feedback` tool as `feedback` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `feedback` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root develo...
+- ref: `.ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml`
+
+<!-- ticket-index:entry id=a765fca6-4670-4097-8a24-a404daddd958 slug=cancelled/workflow-tools digest=2872f7626087 -->
+#### [a765fca6] [workflow-tools][per-tool] Extract `session` tool as `session` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `session` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root develop...
+- ref: `.ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml`
+
+<!-- ticket-index:entry id=b34489db-7c08-4f6e-a22b-cb02278ac99f slug=cancelled/workflow-tools digest=9fbe6e03d6c8 -->
+#### [b34489db] [workflow-tools][per-tool] Extract `test` tool as `test` domain crate
+- summary: `memory-api/crates/memory-api` is deleted. `test` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developmen...
+- ref: `.ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml`
+
+
 ## State: done
 
 ### Component: agent-config
@@ -1967,6 +1995,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Owning spec updated: explicit-init-only contract now forbids implicit root creation and defines validation matrix.
 - ref: `memory-api/.ticket/tickets/a9514081-35c2-4162-b62d-3baf4a14ec8b/ticket.toml`
 
+<!-- ticket-index:entry id=58576ac3-3180-485d-876f-60fb5c84180c slug=done/spec digest=21a1a1f812f4 -->
+#### [58576ac3] [workflow-tools][per-tool] Extract spec tool as a single `spec` domain crate (api + transport bins) + viewer frontend
+- priority: `high`
+- summary: Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per contract `0da6894c`: the crate lib re-exports the internal `spec-api` crate...
+- ref: `.ticket/tickets/58576ac3-3180-485d-876f-60fb5c84180c/ticket.toml`
+
 
 ### Component: spec-api
 
@@ -2351,7 +2385,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: After memory-api is extracted, refactor ticket-api to be a thin domain layer on top of memory-api, keeping only ticket-specific logic.
 - ref: `memory-api/.ticket/tickets/82652305-ab94-4270-847c-a5209c2dcd44/ticket.toml`
 
-<!-- ticket-index:entry id=731f3579-0678-4eb8-a45c-53020830fba8 slug=done/ticket-api digest=a451f6217d0c -->
+<!-- ticket-index:entry id=731f3579-0678-4eb8-a45c-53020830fba8 slug=done/ticket-api digest=59c05d48a3ec -->
 #### [731f3579] [ticket-api] Add built-in `task` schema and health check for ticket types missing a schema
 - summary: Many tickets have `type = "task"`, but no schema was registered for the `task` type. Transitions/close operations failed with `no schema for type 'task'` (see the schema lookup in `memory-api/crates/...
 - ref: `.ticket/tickets/731f3579-0678-4eb8-a45c-53020830fba8/ticket.toml`
@@ -2642,6 +2676,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: `ticket list` currently supports `--state` and `--type` filters only.
 - ref: `memory-api/.ticket/tickets/a48475e3-42fc-44f6-88b2-0f4a86930a31/ticket.toml`
+
+<!-- ticket-index:entry id=b83d2e14-98cb-464a-84c4-389c14e61080 slug=done/ticket-cli digest=e333c34d59c4 -->
+#### [b83d2e14] Remove recommended_next/Next Up from ticket board show to match ticket-mcp board_show parity
+- priority: `medium`
+- ref: `.ticket/tickets/b83d2e14-98cb-464a-84c4-389c14e61080/ticket.toml`
 
 <!-- ticket-index:entry id=53176121-eb55-4aa9-a1d6-5075db1c163b slug=done/ticket-cli digest=56b5f9bedded -->
 #### [53176121] [ticket-cli] Add `ticket move` CLI with dry-run and recovery guidance
@@ -3052,7 +3091,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=0b231549-d029-4465-997e-0ba4d5e0529e slug=done/ticket-vscode digest=1e9f6f4a4ac6 -->
 #### [0b231549] [spec][vscode] Write specification for ticket-vscode extension
 - priority: `high`
-- summary: Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe...
+- summary: Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`tools/ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe...
 - ref: `memory-api/.ticket/tickets/0b231549-d029-4465-997e-0ba4d5e0529e/ticket.toml`
 
 <!-- ticket-index:entry id=362448d4-ccf1-4b9d-90f3-d4577da83a65 slug=done/ticket-vscode digest=b4ff99585d25 -->
@@ -3091,10 +3130,10 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Relocate ticket `694d74b4-028b-4602-8090-d6200d577d4a` ("[ticket-vscode] Integrate Rust/WASM core into TS hosts and remove replaced legacy logic") from the root store into the memory-api store so it ...
 - ref: `memory-api/.ticket/tickets/44abe1d4-5727-45f8-be3b-d1ca5bf4c1ae/ticket.toml`
 
-<!-- ticket-index:entry id=8735fa5d-0550-40f1-9ee8-7b83a44a7fd1 slug=done/ticket-vscode digest=20334d246d75 -->
+<!-- ticket-index:entry id=8735fa5d-0550-40f1-9ee8-7b83a44a7fd1 slug=done/ticket-vscode digest=f2826b6a3610 -->
 #### [8735fa5d] [ticket-vscode] Prefer PATH ticket-viewer before debug fallback
 - priority: `medium`
-- summary: Auto-start in `ticket-vscode` should prefer the `ticket-viewer` executable on `PATH` before falling back to a workspace-local `target/debug/ticket-viewer(.exe)` binary. This keeps the extension...
+- summary: Auto-start in `ticket-vscode` should prefer the `ticket-viewer` executable on `PATH` before falling back to a workspace-local `target/debug/ticket-viewer(.exe)` binary. This keeps the extension align...
 - ref: `.ticket/tickets/8735fa5d-0550-40f1-9ee8-7b83a44a7fd1/ticket.toml`
 
 <!-- ticket-index:entry id=14047b99-41d6-4899-bec6-4a919bffcc2d slug=done/ticket-vscode digest=4e82d12a9693 -->
@@ -4870,6 +4909,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Phase A. Stabilize the shared, non-domain support libraries as standalone dependencies consumable by every per-tool repo: the `viewer-api` framework (+ viewer-ctl, already its own repo) and shared te...
 - ref: `.ticket/tickets/1c452ff1-6edc-47c8-a73d-d07ce9b4d473/ticket.toml`
 
+<!-- ticket-index:entry id=d3ca741d-6ee8-4768-8eff-2099c0c5b58c slug=done/workflow-tools digest=ff76eccbc70a -->
+#### [d3ca741d] [workflow-tools][per-tool] Extract `spec` tool as `spec` domain crate + viewer
+- summary: `memory-api/crates/memory-api` is deleted. `spec` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developmen...
+- ref: `.ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml`
+
 <!-- ticket-index:entry id=a78ec124-1540-4d18-b3f0-cb02bca7764c slug=done/workflow-tools digest=881fa30d1793 -->
 #### [a78ec124] [workflow-tools][pilot] Align ticket crate memory-fixtures dep to git pin (gates PILOT closure)
 - priority: `medium`
@@ -5176,6 +5220,15 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/a74f09cf-2c4b-4c13-9247-cd74519b6b7e/ticket.toml`
 
 
+### Component: rule
+
+<!-- ticket-index:entry id=21893f5f-e57f-4cdf-b5de-39f42ae5d89d slug=in-review/rule digest=dc7478e08622 -->
+#### [21893f5f] [workflow-tools][per-tool] Extract rule tool as a single `rule` domain crate (api + transport bins)
+- priority: `high`
+- summary: Phase B. Extract the rule tool into its own `rule` repository (owner mankinskin), built as a single `rule` domain crate per contract `0da6894c`: the crate lib re-exports the internal `rule-api` crate...
+- ref: `.ticket/tickets/21893f5f-e57f-4cdf-b5de-39f42ae5d89d/ticket.toml`
+
+
 ### Component: session
 
 <!-- ticket-index:entry id=85bfbb06-bf3a-4ea4-b57d-a829b8cd2545 slug=in-review/session digest=7f653000ff4b -->
@@ -5188,6 +5241,12 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [842d74cb] [session][hooks] Capture hook stopped firing; session lookup and MCP routing resolve to the wrong checkout
 - summary: Reproduce and characterize the session capture, session lookup, and MCP routing
 - ref: `.ticket/tickets/842d74cb-a09f-405d-b6dc-f4e8a0aaa0ae/ticket.toml`
+
+<!-- ticket-index:entry id=94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25 slug=in-review/session digest=80f5b9712101 -->
+#### [94de0e62] [workflow-tools][per-tool] Extract session tool as a single `session` domain crate (api + transport bins)
+- priority: `high`
+- summary: Phase B. Extract the session tool into its own `session` repository (owner mankinskin), built as a single `session` domain crate per contract `0da6894c`: the crate lib re-exports the internal `sessio...
+- ref: `.ticket/tickets/94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25/ticket.toml`
 
 
 ### Component: testing
@@ -5252,6 +5311,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 
 ### Component: unspecified
 
+<!-- ticket-index:entry id=908a7c75-337e-4366-8977-968f1e9e55b9 slug=in-review/unspecified digest=8932839986fe -->
+#### [908a7c75] Nest memory-kernel under workflow-tools; extend contract-reference with viewer + vscode extension
+- summary: `memory-kernel` is the shared, filesystem-backed substrate used by every workflow-tools domain (audit, test, doc, log, feedback, peek, rule, session, spec, ticket), but it is still registered as a ro...
+- ref: `.ticket/tickets/908a7c75-337e-4366-8977-968f1e9e55b9/ticket.toml`
+
 <!-- ticket-index:entry id=2606f325-b029-4fae-8442-94b1793b786e slug=in-review/unspecified digest=19b3df00da95 -->
 #### [2606f325] Sync-copilot-surfaces should try symlinks with read-only-copy fallback
 - summary: tools/install/sync-copilot-surfaces.sh currently always deep-copies .agents/{agents,prompts,instructions} into .github/{agents,prompts,instructions}. This risks silent data loss: someone edits the ge...
@@ -5266,6 +5330,16 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [5d4078fa] [content-materialization][feedback-api] G-D: Close the feedback ring — execution→verified, transcript mining, missing-rule tickets, ticket-entity feedback
 - summary: Close the open loop so the system improves itself. The ring is an **emergent distributed loop**, not a module: every domain writes feedback into the feedback-api hub and reacts to outcomes. Extends t...
 - ref: `memory-api/.ticket/tickets/5d4078fa-d7eb-4f0d-bf84-e21029f5ad5d/ticket.toml`
+
+<!-- ticket-index:entry id=666f9e9a-8b53-4d25-81db-cc20ffe3260d slug=in-review/unspecified digest=3a0cbdfdf961 -->
+#### [666f9e9a] [presentation] Per-repository composable .presentation/ entry points (toolchain + context-engine/workflow-tools proof pair)
+- summary: The presentation epic (`0ee95228`) establishes Slidev as the rendering engine and a `.presentation/` deck store (`deck.toml` + `slides.md`), but its Phase 1 (`89b0c64a`) scope is a single synthetic s...
+- ref: `.ticket/tickets/666f9e9a-8b53-4d25-81db-cc20ffe3260d/ticket.toml`
+
+<!-- ticket-index:entry id=6ea4c9c1-9c94-4fbe-9c8c-b7516b7c14e8 slug=in-review/unspecified digest=e9b268552afa -->
+#### [6ea4c9c1] [workflow-tools] Extract audit, test, doc, log, feedback, peek as standalone domain repos
+- summary: Continue the `workflow-tools` per-tool crate extraction: move the remaining
+- ref: `.ticket/tickets/6ea4c9c1-9c94-4fbe-9c8c-b7516b7c14e8/ticket.toml`
 
 
 ### Component: workflow-tools
@@ -6699,15 +6773,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - ref: `.ticket/tickets/ca30f696-e8a0-4904-9a1d-a507e9ef6147/ticket.toml`
 
 
-### Component: rule
-
-<!-- ticket-index:entry id=21893f5f-e57f-4cdf-b5de-39f42ae5d89d slug=open/rule digest=d5db5c21b4ad -->
-#### [21893f5f] [workflow-tools][per-tool] Extract rule tool as a single `rule` domain crate (api + transport bins)
-- priority: `high`
-- summary: Phase B. Extract the rule tool into its own `rule` repository (owner mankinskin), built as a single `rule` domain crate per contract `0da6894c`: the crate lib re-exports the internal `rule-api` crate...
-- ref: `.ticket/tickets/21893f5f-e57f-4cdf-b5de-39f42ae5d89d/ticket.toml`
-
-
 ### Component: rule-api
 
 <!-- ticket-index:entry id=f15d9e8b-72d2-44d9-965d-9fecbbc02d7f slug=open/rule-api digest=586bc8368b5f -->
@@ -6906,12 +6971,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Gather all worktree provisioning, worktree tooling, and session-to-worktree assignment work under one tracker.
 - ref: `.ticket/tickets/db6980d1-38bf-4819-8c07-b6db09229c1c/ticket.toml`
-
-<!-- ticket-index:entry id=94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25 slug=open/session digest=ffddfb488a98 -->
-#### [94de0e62] [workflow-tools][per-tool] Extract session tool as a single `session` domain crate (api + transport bins)
-- priority: `high`
-- summary: Phase B. Extract the session tool into its own `session` repository (owner mankinskin), built as a single `session` domain crate per contract `0da6894c`: the crate lib re-exports the internal `sessio...
-- ref: `.ticket/tickets/94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25/ticket.toml`
 
 <!-- ticket-index:entry id=200e9ecc-d61a-4b1a-a3a6-a9dd1e77d915 slug=open/session digest=50fa523ed54f -->
 #### [200e9ecc] session_check_in rejects a single nested worktree unless a persisted assignment exists
@@ -7220,12 +7279,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `medium`
 - summary: Explicit feedback was recorded against `ce://default/spec/96bc688a-62ac-4083-923f-e507f2bb19fe` during session `6f9208a4-c40e-4010-abf8-023505b4bf97` (tool call `call_Dw8Ts8bDIwMgdLvrpN1JqRDp`).
 - ref: `.ticket/tickets/3d19a0a1-a845-54c0-acc5-e206b1cab457/ticket.toml`
-
-<!-- ticket-index:entry id=58576ac3-3180-485d-876f-60fb5c84180c slug=open/spec digest=22cc2ec4b789 -->
-#### [58576ac3] [workflow-tools][per-tool] Extract spec tool as a single `spec` domain crate (api + transport bins) + viewer frontend
-- priority: `high`
-- summary: Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per contract `0da6894c`: the crate lib re-exports the internal `spec-api` crate...
-- ref: `.ticket/tickets/58576ac3-3180-485d-876f-60fb5c84180c/ticket.toml`
 
 
 ### Component: spec-api
@@ -8677,6 +8730,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Widening 1d6a033e: this is not limited to add_edge. During this iteration, `update_ticket` reported `{\"status\":\"ok\"}` for two separate writes and neither persisted:\n1. `update_ticket(id=d1b3a6c9...
 - ref: `.ticket/tickets/604ee0a0-d07e-47d0-99e9-c6ee61283dc4/ticket.toml`
 
+<!-- ticket-index:entry id=5bea5e20-730e-4d96-a892-fd3f7f1e98ac slug=open/unspecified digest=7149a2fdd02a -->
+#### [5bea5e20] worktree-ctl bootstrap doesn't recurse into workflow-tools nested submodules
+- summary: `worktree-ctl bootstrap` populates only the direct, first-level submodules of
+- ref: `.ticket/tickets/5bea5e20-730e-4d96-a892-fd3f7f1e98ac/ticket.toml`
+
 
 ### Component: viewer-api
 
@@ -8781,36 +8839,6 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - priority: `high`
 - summary: Tracking epic for the repository restructuring that turns this monorepo into an instantiated example of a general, self-improving agent framework, and extracts the workflow tooling into standalone, i...
 - ref: `.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml`
-
-<!-- ticket-index:entry id=9158e113-86e8-47f2-964e-e21da632f4ef slug=open/workflow-tools digest=6eb4ac2bb074 -->
-#### [9158e113] [workflow-tools][per-tool] Extract `audit` tool as `audit` domain crate
-- summary: `memory-api/crates/memory-api` is deleted. `audit` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developme...
-- ref: `.ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml`
-
-<!-- ticket-index:entry id=56a17519-38aa-4c27-944c-5396df6a3fc6 slug=open/workflow-tools digest=14d58fc961a6 -->
-#### [56a17519] [workflow-tools][per-tool] Extract `doc` tool as `doc` domain crate + viewer
-- summary: `memory-api/crates/memory-api` is deleted. `doc` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root development...
-- ref: `.ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml`
-
-<!-- ticket-index:entry id=9c029859-c0a9-4019-bb4a-160dd9cf3a9a slug=open/workflow-tools digest=cd29ea5f10a5 -->
-#### [9c029859] [workflow-tools][per-tool] Extract `feedback` tool as `feedback` domain crate
-- summary: `memory-api/crates/memory-api` is deleted. `feedback` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root develo...
-- ref: `.ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml`
-
-<!-- ticket-index:entry id=a765fca6-4670-4097-8a24-a404daddd958 slug=open/workflow-tools digest=f176f3a92aec -->
-#### [a765fca6] [workflow-tools][per-tool] Extract `session` tool as `session` domain crate
-- summary: `memory-api/crates/memory-api` is deleted. `session` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root develop...
-- ref: `.ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml`
-
-<!-- ticket-index:entry id=d3ca741d-6ee8-4768-8eff-2099c0c5b58c slug=open/workflow-tools digest=d7aaa43b080d -->
-#### [d3ca741d] [workflow-tools][per-tool] Extract `spec` tool as `spec` domain crate + viewer
-- summary: `memory-api/crates/memory-api` is deleted. `spec` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developmen...
-- ref: `.ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml`
-
-<!-- ticket-index:entry id=b34489db-7c08-4f6e-a22b-cb02278ac99f slug=open/workflow-tools digest=c1d4b8421cca -->
-#### [b34489db] [workflow-tools][per-tool] Extract `test` tool as `test` domain crate
-- summary: `memory-api/crates/memory-api` is deleted. `test` must commit `memory_kernel = { git = "https://github.com/mankinskin/memory-kernel", branch = "main" }`; use a relative path only in a root developmen...
-- ref: `.ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml`
 
 <!-- ticket-index:entry id=858c5286-6c2b-4a05-a0f3-4e8f6b90b75e slug=open/workflow-tools digest=92c7c35a05ef -->
 #### [858c5286] [workflow-tools][per-tool] Split each domain tool into its own repository (parent tracker)
@@ -9308,7 +9336,7 @@ Generated ticket index grouped by state and component. Use this before scanning 
 <!-- ticket-index:entry id=6d07d610-75c1-448a-afd5-6ae15098ca21 slug=planned/ticket-vscode digest=320a4dcd0afa -->
 #### [6d07d610] [ticket-vscode] Rust/WASM port track
 - priority: `high`
-- summary: Port `memory-api/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture.
+- summary: Port `memory-api/tools/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture.
 - ref: `memory-api/.ticket/tickets/6d07d610-75c1-448a-afd5-6ae15098ca21/ticket.toml`
 
 
@@ -9434,20 +9462,35 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Define measurable performance SLOs for feedback deep-search operations and index growth behavior under high event volume.
 - ref: `memory-api/.ticket/tickets/3a1ec9f8-15ea-43f2-b6d3-89b88cbdcb17/ticket.toml`
 
-<!-- ticket-index:entry id=60222b57-095d-4c9e-b83a-70c3dd8690ba slug=planned/unspecified digest=d012ae542701 -->
+<!-- ticket-index:entry id=1500a9e6-293f-4803-969d-0dcabeaa470a slug=planned/unspecified digest=913e7e04deb4 -->
+#### [1500a9e6] [presentation] Conceptual deck contract: source locks, claims, sidecars, and managed output
+- summary: Implement the specification-derived conceptual-deck contract under presentation-api: versioned serialized claims/citations, source locks, structured disagreement sidecars, managed-output and human-ov...
+- ref: `.ticket/tickets/1500a9e6-293f-4803-969d-0dcabeaa470a/ticket.toml`
+
+<!-- ticket-index:entry id=60222b57-095d-4c9e-b83a-70c3dd8690ba slug=planned/unspecified digest=5ec35228ab16 -->
 #### [60222b57] [presentation] Custom repo theme pack: design tokens, curated presets, preset descriptors
 - summary: Parent epic: `0ee95228`. Spec: `2ccde9ee`. Depends on `89b0c64a` (Phase 1 on a stock theme).
 - ref: `.ticket/tickets/60222b57-095d-4c9e-b83a-70c3dd8690ba/ticket.toml`
+
+<!-- ticket-index:entry id=30b87a49-524b-445a-8e86-57bc71e5ae04 slug=planned/unspecified digest=18245b00baeb -->
+#### [30b87a49] [presentation] Deck information architecture: audience level, prerequisites, and drill-down declarations
+- summary: Parent epic: `0ee95228`. Spec: `2ccde9ee` (new R15/AC16).
+- ref: `.ticket/tickets/30b87a49-524b-445a-8e86-57bc71e5ae04/ticket.toml`
 
 <!-- ticket-index:entry id=e01dd058-a539-4620-87b2-0a4895114ca2 slug=planned/unspecified digest=9b824df0cef9 -->
 #### [e01dd058] [presentation] Embed shared repo graph component as standalone WASM inside slides
 - summary: Parent epic: `0ee95228`. Spec: `2ccde9ee`. Depends on `89b0c64a` (toolchain with wasm plugins).
 - ref: `.ticket/tickets/e01dd058-a539-4620-87b2-0a4895114ca2/ticket.toml`
 
-<!-- ticket-index:entry id=0ee95228-475d-4706-a108-fd208f7c4098 slug=planned/unspecified digest=1db404df34d8 -->
+<!-- ticket-index:entry id=0ee95228-475d-4706-a108-fd208f7c4098 slug=planned/unspecified digest=64ec6d8f5601 -->
 #### [0ee95228] [presentation] Epic: script-to-deck presentation system (Slidev + presentation domain + viewer)
 - summary: Governing spec: `presentation-system` (`2ccde9ee-85ac-4c87-9601-f6099f5be01c`).
 - ref: `.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml`
+
+<!-- ticket-index:entry id=693763fc-e4c1-4c93-b39f-5e0958b57d19 slug=planned/unspecified digest=cd8499e64f24 -->
+#### [693763fc] [presentation] Extract specification facts and typed Git/Cargo projections
+- summary: Implement normalized extraction adapters for authoritative specification facts plus distinct Git/submodule containment, Cargo workspace/crate membership, and Cargo dependency projections. Every node ...
+- ref: `.ticket/tickets/693763fc-e4c1-4c93-b39f-5e0958b57d19/ticket.toml`
 
 <!-- ticket-index:entry id=969ffba0-6bff-4a58-9d74-18368ac87875 slug=planned/unspecified digest=31751630d36b -->
 #### [969ffba0] [presentation] First real deck: workflow-tools suite introduction and overview
@@ -9459,6 +9502,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 - summary: Parent epic: `0ee95228`. Spec: `2ccde9ee`.
 - ref: `.ticket/tickets/134b953b-1294-4d27-9479-1662a2f5e250/ticket.toml`
 
+<!-- ticket-index:entry id=ec1f452d-8eba-488c-bcfe-8dd8728130f1 slug=planned/unspecified digest=fedd8b6b7ddb -->
+#### [ec1f452d] [presentation] Materialize and statically validate conceptual decks
+- summary: Consume the conceptual contract and typed extractors to generate deterministic managed conceptual decks with presenter notes and disagreement sidecars, enforce stale/replace behavior, build static ou...
+- ref: `.ticket/tickets/ec1f452d-8eba-488c-bcfe-8dd8728130f1/ticket.toml`
+
 <!-- ticket-index:entry id=89b0c64a-b573-4f7b-b692-fa3d383e386c slug=planned/unspecified digest=f0a4a9dccca0 -->
 #### [89b0c64a] [presentation] Phase 1: Slidev toolchain on stock theme, sample deck, Playwright verification
 - summary: Parent epic: `0ee95228`. Spec: `2ccde9ee`.
@@ -9468,6 +9516,11 @@ Generated ticket index grouped by state and component. Use this before scanning 
 #### [3cdcaf3b] [presentation] Phase 2: presentation-api + presentation facade crate + .presentation store schema
 - summary: Parent epic: `0ee95228` — [presentation] Epic: script-to-deck presentation system.
 - ref: `.ticket/tickets/3cdcaf3b-d958-44f3-afb2-b17be3484419/ticket.toml`
+
+<!-- ticket-index:entry id=34803271-6ebb-4fc5-a0a3-33a61f3cea7a slug=planned/unspecified digest=e9cfaee19576 -->
+#### [34803271] [presentation] Topology visual preset: legend, node/edge roles, density limits, baseline screenshots
+- summary: Parent epic: `0ee95228`. Spec: `2ccde9ee` (R14/AC14). Depends on `1500a9e6` for deck/slide slot shape only — this ticket does NOT depend on `693763fc`'s real extraction data; preset/legend design pro...
+- ref: `.ticket/tickets/34803271-6ebb-4fc5-a0a3-33a61f3cea7a/ticket.toml`
 
 <!-- ticket-index:entry id=345528ff-a9ca-4d0d-ba94-a5365a14c54e slug=planned/unspecified digest=9fd89fe8fa12 -->
 #### [345528ff] [presentation] presentation-viewer: Rust server + Dioxus deck browser on port 3003, registered in viewer-ctl

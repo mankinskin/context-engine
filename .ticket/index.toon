@@ -2,7 +2,7 @@ version: 1
 domain: ticket
 store_path: .ticket
 generated_at: "1970-01-01T00:00:00Z"
-entries[1620]:
+entries[1630]:
   - id: "0028f61c-e8b9-4fb4-81fd-5d1e37f7a429"
     kind: ticket
     source_path: ".ticket/tickets/0028f61c-e8b9-4fb4-81fd-5d1e37f7a429/ticket.toml"
@@ -917,7 +917,7 @@ entries[1620]:
     kind: ticket
     source_path: "memory-api/.ticket/tickets/0b231549-d029-4465-997e-0ba4d5e0529e/ticket.toml"
     title: "[spec][vscode] Write specification for ticket-vscode extension"
-    summary: "Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe..."
+    summary: "Produce a complete design specification for the existing `ticket-vscode` VS Code extension (`tools/ticket-vscode/`). The spec must be detailed enough to serve as the architectural reference model whe..."
     keywords[249]: "3002",acceptance,activation,activity,add,adddependency,added,advance,advanced,all,and,any,api,architectural,architecture,ascii,assign,auto,autoconnectcdp,automation,autorefreshseconds,autostartserver,back,bar,based,before,binary,body,bridge,bridgeconnectcdp,bridgenavigate,bridgeport,bridgestatus,browser,browserbridge,built,call,calls,can,cancel,cancelticket,captured,cdp,cdpport,client,close,closeticket,code,coderefs,collapsible,command,commands,complete,component,configuration,connectcdp,considerations,context,control,copyid,covers,create,created,createticket,criteria,crud,cursor,custom,default,defaults,delete,deleteticket,dependency,dependencyitem,description,design,designing,detailed,diagram,dirs,document,documented,done,drive,edges,editdescription,edittitle,effect,endpoint,enough,every,existed,existing,explains,exposes,extension,falls,feature,features,fetches,files,first,folders,follow,for,formal,from,fully,get,getstatus,goal,graph,grouped,has,health,high,hover,http,implementation,input,interactions,issues,item,layout,lazy,lifecycle,linked,menu,method,model,must,navigate,new,open,openbrowser,openinticketviewer,openticket,overview,package,pagination,panel,path,patterns,payload,per,placement,planned,playwright,pointing,port,post,previewdescription,produce,purpose,put,quickpick,rather,reference,refresh,registers,registration,renderer,reports,resolution,resolve,resolvetreeitem,rest,review,reviewed,run,same,scans,schemas,scope,scratch,section,sections,security,selectworkspace,serve,server,serverbinarypath,serverurl,serverworkingdirectory,set,setstate,settings,shape,should,sibling,sidebar,slug,source,spa,spawns,spec,specification,src,stack,startserver,state,stategroupitem,status,steps,store,strategy,subtrees,surface,surfaces,system,table,technology,test,than,that,the,their,then,this,ticket,"ticket-vscode",ticketitem,ticketprovider,tickets,title,tools,tooltip,tree,treedataprovider,treeview,typed,types,typescript,undo,undoticket,update,url,used,via,viewer,viewscontainer,vscode,was,when,with,working,workspace,workspaces,write
     scope: "state=done, component=ticket-vscode"
     relations:
@@ -1230,12 +1230,12 @@ entries[1620]:
     source_path: ".ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml"
     title: "[presentation] Epic: script-to-deck presentation system (Slidev + presentation domain + viewer)"
     summary: "Governing spec: `presentation-system` (`2ccde9ee-85ac-4c87-9601-f6099f5be01c`)."
-    keywords[216]: 2ccde9ee,"3003",4c87,85ac,"9601",ac1,ac2,ac3,ac4,ac5,ac6,acceptance,agent,agents,and,api,architecture,author,authored,authoring,base,bins,bookend,browser,build,builds,built,can,chart,cheaply,cli,command,compiled,component,components,confirmed,contract,cost,crate,crates,criteria,cta,ctl,curated,custom,decisions,deck,decks,dev,dioxus,documented,domain,e2e,each,echarts,effort,embedding,end,epic,existing,export,extracted,f6099f5be01c,facade,filesystem,first,for,fork,formalize,four,from,frontend,goal,governing,graph,guide,hero,holds,hot,http,iframing,index,infra,interactive,interactivity,into,intro,introduction,its,json,layout,live,local,lock,low,managed,marcoshaber99,markdown,mcp,memory,mermaid,mid,migrate,mode,model,modules,name,native,nav,needed,neversight,notes,npm,one,only,open,optional,output,outputs,override,overview,pack,passes,pdf,per,phase,phasing,planned,playwright,port,presentation,presenter,presets,principles,prompt,prompts,readable,real,recorded,registered,reload,removed,rendered,rendering,repeatably,repo,represented,required,retired,root,rules,runtime,rust,sample,schema,scratch,screenshots,script,scripts,server,service,shared,shell,single,skill,skills,slide,slides,slidev,spa,speaker,spec,stack,standalone,static,sticky,store,suite,surface,syntax,system,templates,text,the,theme,theming,then,ticket,tier,token,toml,toolchain,tools,top,turn,turns,under,unspecified,validation,vendor,vendored,verification,via,viewer,viewers,vite,vue,wasm,web,whether,which,with,workflow,working,yoanbernabeu,zarazhangrui
+    keywords[342]: 2ccde9ee,"3003",4c87,85ac,"9601",ac1,ac2,ac3,ac4,ac5,ac6,acceptance,adapters,agent,agents,alternative,and,api,architecture,are,audience,author,authored,authoring,authoritative,authorities,baseline,behavior,bins,bookend,boundaries,browser,build,builds,built,can,cargo,chart,cheaply,citation,citations,claim,classification,cli,command,compiled,complete,component,components,conceptual,confirmed,connect,consumes,containment,content,contract,contracts,cost,coverage,crate,crates,criteria,cross,cta,ctl,curated,custom,data,decisions,deck,decks,declarative,declared,define,density,dependencies,dependency,depends,derived,deterministic,deterministically,dev,digestible,dimensions,dioxus,disagreement,discovery,documentation,documented,domain,durable,e2e,each,echarts,edge,effort,end,enforce,epic,every,evidence,excludes,explicit,explicitly,export,extraction,f6099f5be01c,facade,facts,filesystem,first,fixtures,flagship,following,for,formalize,foundation,four,from,frontend,generated,generation,generator,git,goal,governing,graph,guide,hero,holds,hot,http,human,iframing,illustrative,implementation,imports,index,infra,input,integration,interactive,interactivity,into,intro,introduction,its,json,language,later,layout,legacy,legend,limits,live,local,lock,locks,low,managed,marcoshaber99,markdown,materialization,materialize,may,mcp,measurable,membership,memory,mermaid,mid,migrate,migration,mode,model,modules,name,native,nav,near,neversight,next,node,normalize,normative,normativity,note,notes,npm,one,only,optional,output,outputs,override,overview,overwritten,ownership,pack,package,packages,parsing,passes,patches,path,pdf,per,persistence,phase,phasing,planned,playwright,plus,port,precedes,presentation,presentations,presenter,preset,presets,principles,projections,prompt,prompts,proof,proposed,provenance,proves,rather,readable,real,recorded,registered,reload,remain,remaining,remains,removed,rendered,rendering,repeatably,replace,repo,repository,represented,required,retired,reviewed,roles,root,rules,runtime,rust,sample,schema,screenshots,script,scripts,separate,serialization,serve,server,service,session,shared,shell,sidecar,sidecars,signals,single,singleton,skill,skills,slide,slides,slidev,source,sources,spa,speaker,spec,specification,specifications,stable,stack,stale,standalone,static,sticky,stock,store,structural,structured,suite,surface,syntax,system,telemetry,templates,test,text,than,the,theme,theming,then,this,ticket,tier,token,toml,toolchain,tools,top,topology,traceability,track,turn,turns,typed,under,unspecified,validation,vendor,vendored,verification,via,viewer,viewers,viewport,visual,vite,vue,wasm,web,with,work,workflow,working,workspace,yoanbernabeu,zarazhangrui
     scope: "state=planned, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml","0ee95228-475d-4706-a108-fd208f7c4098",related,ticket,"","0ee95228"
-    digest: 1db404df34d8fd681d27d9e1277aaab28c291a9735d3cc2b5f79bdd0aa04ef91
+    digest: 64ec6d8f560186edb9672af868fea25421e1350b933032028fed7662b8060f92
     tags[3]: planned,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "0eef1873-0626-4a87-93bc-51d182808e16"
@@ -1796,6 +1796,19 @@ entries[1620]:
         ".ticket/tickets/14ff41fa-818e-4a4e-8747-f79a33d174c2/ticket.toml","14ff41fa-818e-4a4e-8747-f79a33d174c2",related,ticket,"",14ff41fa
     digest: 86a52e7f0957da9963d4bdf1f9e577d7f73aaddfc2f389b60c9ea1b3890c6137
     tags[4]: done,medium,"repo-guidance",ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "1500a9e6-293f-4803-969d-0dcabeaa470a"
+    kind: ticket
+    source_path: ".ticket/tickets/1500a9e6-293f-4803-969d-0dcabeaa470a/ticket.toml"
+    title: "[presentation] Conceptual deck contract: source locks, claims, sidecars, and managed output"
+    summary: "Implement the specification-derived conceptual-deck contract under presentation-api: versioned serialized claims/citations, source locks, structured disagreement sidecars, managed-output and human-ov..."
+    keywords[85]: 693763fc,adapter,agree,and,api,are,automatic,blocking,both,boundaries,can,citation,citations,claims,classification,conceptual,containment,contract,contradiction,deck,derived,deterministic,disagreement,discovery,early,epic,excludes,existing,explicit,extends,extraction,fixture,focused,for,frozen,human,implement,import,imports,interface,interfaces,legacy,locks,managed,material,must,note,once,output,overlay,parallel,path,phase,planned,presentation,proceed,publication,qualification,reconciliation,rendering,replacement,serialized,shared,short,sidecar,sidecars,singleton,source,specification,stale,store,structured,symlink,telemetry,tests,the,this,ticket,topology,under,unresolved,unspecified,validation,versioned,work
+    scope: "state=planned, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/1500a9e6-293f-4803-969d-0dcabeaa470a/ticket.toml","1500a9e6-293f-4803-969d-0dcabeaa470a",related,ticket,"",1500a9e6
+    digest: 913e7e04deb4c50bb419fad6b4e96b1f9d12fb21fad788fe1e6817737795b9e5
+    tags[3]: planned,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "15234799-d540-4e49-9bf2-4514b768cb79"
     kind: ticket
@@ -2920,13 +2933,13 @@ entries[1620]:
     source_path: ".ticket/tickets/21893f5f-e57f-4cdf-b5de-39f42ae5d89d/ticket.toml"
     title: "[workflow-tools][per-tool] Extract rule tool as a single `rule` domain crate (api + transport bins)"
     summary: "Phase B. Extract the rule tool into its own `rule` repository (owner mankinskin), built as a single `rule` domain crate per contract `0da6894c`: the crate lib re-exports the internal `rule-api` crate..."
-    keywords[79]: 0da6894c,858c5286,acceptance,and,any,api,artifacts,bare,bin,binary,bins,builds,built,cli,contract,coordinate,coupling,crate,criteria,cross,dbe0e955,dependency,domain,exporting,exports,exposes,extract,feature,follow,gated,generator,harness,high,http,independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,off,open,over,own,owner,parent,pass,per,phase,plus,primary,recipe,reference,registered,repository,rule,scoped,shared,single,smoke,store,targets,the,ticket,tool,tooling,tools,tracker,transport,transports,via,with,work,workflow
-    scope: "state=open, component=rule"
+    keywords[79]: 0da6894c,858c5286,acceptance,and,any,api,artifacts,bare,bin,binary,bins,builds,built,cli,contract,coordinate,coupling,crate,criteria,cross,dbe0e955,dependency,domain,exporting,exports,exposes,extract,feature,follow,gated,generator,harness,high,http,"in-review",independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,off,over,own,owner,parent,pass,per,phase,plus,primary,recipe,reference,registered,repository,rule,scoped,shared,single,smoke,store,targets,the,ticket,tool,tooling,tools,tracker,transport,transports,via,with,work,workflow
+    scope: "state=in-review, component=rule"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/21893f5f-e57f-4cdf-b5de-39f42ae5d89d/ticket.toml","21893f5f-e57f-4cdf-b5de-39f42ae5d89d",related,ticket,"",21893f5f
-    digest: d5db5c21b4ad5270833edfe8d26b7004304ae895fb82352bad4a271131680880
-    tags[4]: high,open,rule,ticket
+    digest: dc7478e086224f5a00cf481fc1b31bc936ed443ad7c06c5edd7c76b11c910695
+    tags[4]: high,"in-review",rule,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "21a1b9ca-c053-4709-8785-e41fb0661c31"
     kind: ticket
@@ -3994,6 +4007,19 @@ entries[1620]:
     digest: 486713c223256c941382fce7290b5b9656f2dd719273c3cd5d3793f5b1fa46ad
     tags[3]: done,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "30b87a49-524b-445a-8e86-57bc71e5ae04"
+    kind: ticket
+    source_path: ".ticket/tickets/30b87a49-524b-445a-8e86-57bc71e5ae04/ticket.toml"
+    title: "[presentation] Deck information architecture: audience level, prerequisites, and drill-down declarations"
+    summary: "Parent epic: `0ee95228`. Spec: `2ccde9ee` (new R15/AC16)."
+    keywords[96]: "0ee95228",2ccde9ee,ac16,and,annotated,architecture,are,audience,authors,automatic,carries,coherent,combined,component,composed,composes,composing,context,contract,deck,decks,declarations,declare,declared,declares,definition,detail,detailed,diagnostic,domain,done,down,drill,engine,epic,every,example,existing,explicit,explicitly,implementation,imported,inference,information,its,ladder,level,levels,manifest,mechanism,mismatched,missing,more,must,nested,new,not,omission,optional,parent,per,planned,position,prerequisite,prerequisites,presentation,problem,produces,r15,readme,repository,role,sample,schema,scope,share,shared,silent,slide,spec,stay,sub,super,target,targets,the,this,ticket,tool,tools,unspecified,vocabulary,when,with,worked,workflow
+    scope: "state=planned, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/30b87a49-524b-445a-8e86-57bc71e5ae04/ticket.toml","30b87a49-524b-445a-8e86-57bc71e5ae04",related,ticket,"",30b87a49
+    digest: 18245b00baeb723c590d64dab5a8bf01b131612f8f4b6ed3dfbc2ba11b09516b
+    tags[3]: planned,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "3125d4c5-5eb1-48a0-a935-a5d686408a72"
     kind: ticket
     source_path: ".ticket/tickets/3125d4c5-5eb1-48a0-a935-a5d686408a72/ticket.toml"
@@ -4227,6 +4253,19 @@ entries[1620]:
         ".ticket/tickets/346573c1-2711-407d-a50f-a2cbce53b965/ticket.toml","346573c1-2711-407d-a50f-a2cbce53b965",related,ticket,"",346573c1
     digest: 3a723774f1e773ee68933ce54bf05745a9405631732c11d85e96c2a1c782c5a5
     tags[3]: "context-search",open,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "34803271-6ebb-4fc5-a0a3-33a61f3cea7a"
+    kind: ticket
+    source_path: ".ticket/tickets/34803271-6ebb-4fc5-a0a3-33a61f3cea7a/ticket.toml"
+    title: "[presentation] Topology visual preset: legend, node/edge roles, density limits, baseline screenshots"
+    summary: "Parent epic: `0ee95228`. Spec: `2ccde9ee` (R14/AC14). Depends on `1500a9e6` for deck/slide slot shape only — this ticket does NOT depend on `693763fc`'s real extraction data; preset/legend design pro..."
+    keywords[91]: "0ee95228",1500a9e6,2ccde9ee,60222b57,693763fc,ac14,and,any,are,authored,baseline,before,cargo,comparison,consumed,containment,contract,data,deck,define,definition,density,depend,dependency,depends,descriptor,design,does,done,edge,epic,exist,exists,extraction,fixture,flagship,for,from,git,implementation,itself,kinds,least,legend,limits,live,matching,membership,named,node,not,one,only,parent,planned,presentation,preset,presets,proceeds,projections,r14,readable,real,regression,rendering,required,requirements,role,roles,same,satisfied,scope,screenshots,shape,ships,slide,slot,spec,specified,structural,synthetic,the,this,thresholds,ticket,topology,typed,unspecified,visual,vocabulary,way
+    scope: "state=planned, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/34803271-6ebb-4fc5-a0a3-33a61f3cea7a/ticket.toml","34803271-6ebb-4fc5-a0a3-33a61f3cea7a",related,ticket,"","34803271"
+    digest: e9cfaee19576a27aeef0a38a92c11158069adf864afe8cabba58450008bac4a6
+    tags[3]: planned,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "34bc4938-fe4a-4ab1-94da-9d8d3697b268"
     kind: ticket
@@ -6976,13 +7015,13 @@ entries[1620]:
     source_path: ".ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml"
     title: "[workflow-tools][per-tool] Extract `doc` tool as `doc` domain crate + viewer"
     summary: "`memory-api/crates/memory-api` is deleted. `doc` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root development..."
-    keywords[178]: 1b7e0c3d,above,acceptance,access,actually,agents,all,alongside,and,another,any,api,are,baseline,bash,before,below,bin,binary,bins,blocking,branch,browser,build,capture,cargo,chromium,cli,com,commit,confirm,consolidated,consumers,consuming,crate,crates,create,creation,criteria,default,deleted,deleting,dependency,development,doc,does,domain,during,e2e,established,execution,exist,existence,exists,exporting,expose,exposed,external,extract,extracted,extraction,fabricate,family,feature,features,finalizing,fold,for,found,free,frontend,fullscreen,gate,gated,genuinely,git,github,harness,have,http,https,identified,implementation,including,independent,indirectly,internal,into,its,kernel,legacy,lib,like,list,log,main,manifest,mankinskin,mcp,memory,migration,move,must,names,not,old,only,open,optional,outside,own,pass,patch,path,paths,per,plan,planning,playwright,precedent,preserve,prior,proved,public,question,relative,remote,repo,repoint,repointed,repository,resolution,resolve,resolved,risk,root,same,scope,screenshots,see,separate,server,should,source,standalone,suite,surface,survey,test,tests,that,the,then,ticket,toml,tool,tools,transport,transports,tree,unconfirmed,until,use,validate,verified,verify,via,viewer,viewers,was,whatever,where,whether,whichever,with,workflow,"workflow-tools",workspace
-    scope: "state=open, component=workflow-tools"
+    keywords[179]: 1b7e0c3d,above,acceptance,access,actually,agents,all,alongside,and,another,any,api,are,baseline,bash,before,below,bin,binary,bins,blocking,branch,browser,build,cancelled,capture,cargo,chromium,cli,com,commit,confirm,consolidated,consumers,consuming,crate,crates,create,creation,criteria,default,deleted,deleting,dependency,development,doc,does,domain,during,e2e,established,execution,exist,existence,exists,exporting,expose,exposed,external,extract,extracted,extraction,fabricate,family,feature,features,finalizing,fold,for,found,free,frontend,fullscreen,gate,gated,genuinely,git,github,harness,have,http,https,identified,implementation,including,independent,indirectly,internal,into,its,kernel,legacy,lib,like,list,log,main,manifest,mankinskin,mcp,memory,migration,move,must,names,not,old,only,open,optional,outside,own,pass,patch,path,paths,per,plan,planning,playwright,precedent,preserve,prior,proved,public,question,relative,remote,repo,repoint,repointed,repository,resolution,resolve,resolved,risk,root,same,scope,screenshots,see,separate,server,should,source,standalone,suite,surface,survey,test,tests,that,the,then,ticket,toml,tool,tools,transport,transports,tree,unconfirmed,until,use,validate,verified,verify,via,viewer,viewers,was,whatever,where,whether,whichever,with,workflow,"workflow-tools",workspace
+    scope: "state=cancelled, component=workflow-tools"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/56a17519-38aa-4c27-944c-5396df6a3fc6/ticket.toml","56a17519-38aa-4c27-944c-5396df6a3fc6",related,ticket,"",56a17519
-    digest: 14d58fc961a67d11f3e98be38d53d03071170de2fc1f287f77e8c9ee553b56a4
-    tags[3]: open,ticket,"workflow-tools"
+    digest: ef0beaa141b82708bd0dce50a71b4d28cf0a9db5695f695a83b6f8451a6dee43
+    tags[3]: cancelled,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "56be2eaa-6b32-4291-857a-b2c1aa24f273"
     kind: ticket
@@ -7158,13 +7197,13 @@ entries[1620]:
     source_path: ".ticket/tickets/58576ac3-3180-485d-876f-60fb5c84180c/ticket.toml"
     title: "[workflow-tools][per-tool] Extract spec tool as a single `spec` domain crate (api + transport bins) + viewer frontend"
     summary: "Phase B. Extract the spec tool into its own `spec` repository (owner mankinskin), built as a single `spec` domain crate per contract `0da6894c`: the crate lib re-exports the internal `spec-api` crate..."
-    keywords[82]: 0da6894c,858c5286,acceptance,and,api,artifacts,bare,bin,binary,bins,browser,builds,built,cli,contract,crate,criteria,cross,dbe0e955,dependency,domain,exporting,exports,exposes,extract,feature,follow,frontend,gated,harness,high,http,independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,open,over,own,owner,parent,pass,per,phase,playwright,plus,present,primary,recipe,reference,registered,repository,scoped,screenshot,separate,shared,single,smoke,spec,stays,store,targets,the,ticket,tool,tooling,tools,tracker,transport,transports,verified,via,viewer,with,workflow
-    scope: "state=open, component=spec"
+    keywords[82]: 0da6894c,858c5286,acceptance,and,api,artifacts,bare,bin,binary,bins,browser,builds,built,cli,contract,crate,criteria,cross,dbe0e955,dependency,domain,done,exporting,exports,exposes,extract,feature,follow,frontend,gated,harness,high,http,independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,over,own,owner,parent,pass,per,phase,playwright,plus,present,primary,recipe,reference,registered,repository,scoped,screenshot,separate,shared,single,smoke,spec,stays,store,targets,the,ticket,tool,tooling,tools,tracker,transport,transports,verified,via,viewer,with,workflow
+    scope: "state=done, component=spec"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/58576ac3-3180-485d-876f-60fb5c84180c/ticket.toml","58576ac3-3180-485d-876f-60fb5c84180c",related,ticket,"",58576ac3
-    digest: 22cc2ec4b789f91cb7fe2bce92193daf08fa5e4f8f904e8fa7725e5816c215fc
-    tags[4]: high,open,spec,ticket
+    digest: 21a1a1f812f484e2b5a66f9b327f6c8fcdf243a43a256b46aef7f555996742e6
+    tags[4]: done,high,spec,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "58fe9f39-50c2-4e1c-8bdc-336ed5d6da6e"
     kind: ticket
@@ -7360,6 +7399,19 @@ entries[1620]:
         ".ticket/tickets/5bb96360-90e3-43d5-b03b-d568d163eeff/ticket.toml","5bb96360-90e3-43d5-b03b-d568d163eeff",related,ticket,"",5bb96360
     digest: a4495f5a85a35d6d3d75c675a27ac494d63a001849b070e8aefce5265fd60f77
     tags[4]: "agent-harness",high,open,ticket
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "5bea5e20-730e-4d96-a892-fd3f7f1e98ac"
+    kind: ticket
+    source_path: ".ticket/tickets/5bea5e20-730e-4d96-a892-fd3f7f1e98ac/ticket.toml"
+    title: "worktree-ctl bootstrap doesn't recurse into workflow-tools nested submodules"
+    summary: "`worktree-ctl bootstrap` populates only the direct, first-level submodules of"
+    keywords[132]: acceptance,across,add,addressed,after,against,also,and,any,api,audit,awk,bash,before,bootstrap,build,builds,cargo,case,change,context,continue,costgate,covering,crate,crates,created,criteria,ctl,currently,deeper,detach,detects,direct,doc,does,doesn,domain,during,each,engine,every,evidence,existing,feedback,first,flagged,follow,for,formerly,fresh,git,harness,head,hit,init,inline,interview,into,keep,least,level,log,main,manual,mcp,mechanical,merge,model,needed,nested,new,not,notes,one,only,open,own,pass,paths,peek,policy,populates,populating,population,prices,print,problem,record,recurse,recurses,regression,relocation,repeatedly,repos,requires,resolver,rule,scoped,series,session,sha,spec,src,starting,step,submodule,submodules,succeed,succeeds,supports,test,tests,that,the,these,ticket,toolmon,tools,touches,touching,tree,unspecified,update,via,with,without,work,workflow,workspace,worktree,would
+    scope: "state=open, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/5bea5e20-730e-4d96-a892-fd3f7f1e98ac/ticket.toml","5bea5e20-730e-4d96-a892-fd3f7f1e98ac",related,ticket,"",5bea5e20
+    digest: 7149a2fdd02a1e92d0823ff7685133002add5753ef184eb46b2b57be5b398906
+    tags[3]: open,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "5bf1951a-dce4-4efb-80d6-89fe4fa01573"
     kind: ticket
@@ -7730,12 +7782,12 @@ entries[1620]:
     source_path: ".ticket/tickets/60222b57-095d-4c9e-b83a-70c3dd8690ba/ticket.toml"
     title: "[presentation] Custom repo theme pack: design tokens, curated presets, preset descriptors"
     summary: "Parent epic: `0ee95228`. Spec: `2ccde9ee`. Depends on `89b0c64a` (Phase 1 on a stock theme)."
-    keywords[162]: "0ee95228",134b953b,2ccde9ee,3cdcaf3b,89b0c64a,agent,always,and,animated,api,authoring,background,bar,bookend,browser,but,chart,chromium,closing,color,column,consumes,content,contract,css,cta,curated,custom,dark,deck,definition,deletion,deliberately,depends,descriptors,design,diagram,done,e2e,embed,encoding,epic,every,exercised,external,first,from,frontend,full,fullscreen,gradient,green,height,hero,horizontal,html,idea,keep,large,last,layout,light,link,links,load,local,loop,machine,memory,migrate,mirroring,name,naming,nav,navbar,one,override,own,pack,package,palette,parent,per,phase,picks,planned,playwright,plus,prefers,presentation,preset,presets,principles,progress,prove,proven,publishable,purpose,raises,readable,reading,record,registry,renders,replaces,repo,required,resolution,retired,same,sample,scale,scope,screen,screenshots,scroll,section,set,ships,slide,slidev,slots,source,spacing,spec,start,static,sticky,stock,subtitle,support,the,theme,themes,this,through,ticket,title,tokens,toml,two,typography,unblocks,unchanged,under,unknown,unknownpreset,unspecified,valid,variables,verified,via,viewer,viewers,viewport,visual,weight,whichever,window,with,without,work
+    keywords[198]: "0ee95228",134b953b,2ccde9ee,3cdcaf3b,89b0c64a,accessible,across,added,agent,agents,alone,always,and,animated,api,authoring,background,bar,based,bookend,browser,but,chart,chromium,closing,color,column,consistently,consumes,content,contract,css,cta,curated,custom,dark,decision,deck,define,definition,deletion,deliberately,depends,descriptors,design,diagram,distinctions,done,e2e,each,edge,embed,encoding,epic,every,evidence,exercised,external,first,for,from,frontend,full,fullscreen,goal,gradient,grammar,green,height,hero,horizontal,html,idea,input,keep,large,last,layout,light,link,links,load,local,loop,machine,map,mapping,memory,migrate,mirroring,name,naming,nav,navbar,non,not,one,output,override,own,pack,package,palette,parent,per,phase,picks,planned,playwright,plus,prefers,presentation,preserve,preset,presets,principles,progress,prove,proven,publishable,purpose,question,raises,readable,reading,record,registry,rely,renders,replaces,repo,required,resolution,retired,risk,role,same,sample,scale,scope,screen,screenshots,scroll,section,semantic,set,ships,slide,slidev,slots,small,source,spacing,spec,start,static,stays,sticky,stock,style,subtitle,support,text,the,theme,themes,this,through,ticket,title,tokens,toml,tool,two,typography,unblocks,unchanged,under,unknown,unknownpreset,unresolved,unspecified,valid,variables,verification,verified,via,viewer,viewers,viewport,visual,vocabulary,weight,whichever,window,with,without,work
     scope: "state=planned, component=unspecified"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/60222b57-095d-4c9e-b83a-70c3dd8690ba/ticket.toml","60222b57-095d-4c9e-b83a-70c3dd8690ba",related,ticket,"",60222b57
-    digest: d012ae542701056e58ce6f5f7d332003c034f663df7945e8cf92518e4e4a1710
+    digest: 5ec35228ab165d15614e4917865bfd2bd9da4491a32be2c7bb6ecb2ea320680e
     tags[3]: planned,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "604ee0a0-d07e-47d0-99e9-c6ee61283dc4"
@@ -8284,6 +8336,19 @@ entries[1620]:
     digest: a43e6d2629fb08f9ef124ad43c5df8a23e788ef934aa08782916ef773961da0a
     tags[3]: done,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "666f9e9a-8b53-4d25-81db-cc20ffe3260d"
+    kind: ticket
+    source_path: ".ticket/tickets/666f9e9a-8b53-4d25-81db-cc20ffe3260d/ticket.toml"
+    title: "[presentation] Per-repository composable .presentation/ entry points (toolchain + context-engine/workflow-tools proof pair)"
+    summary: "The presentation epic (`0ee95228`) establishes Slidev as the rendering engine and a `.presentation/` deck store (`deck.toml` + `slides.md`), but its Phase 1 (`89b0c64a`) scope is a single synthetic s..."
+    keywords[182]: "0ee95228",89b0c64a,ac1,ac2,ac3,ac4,ac5,ac6,acceptance,additionally,address,agents,and,any,api,are,audit,author,both,browser,build,buildable,builds,but,can,check,combined,composable,compose,composes,composition,config,confirmed,content,context,contract,convention,criteria,decisions,deck,decks,dev,directly,doc,documented,does,domain,domains,each,engine,entry,epic,establishes,every,example,existing,exists,explicitly,expose,feedback,first,follow,for,from,frontend,frontmatter,full,hybrid,iframing,imports,"in-review",include,independent,independently,inline,interview,into,introducing,its,json,kernel,least,level,loads,location,log,matches,mechanism,memory,nested,not,npm,once,one,other,out,overview,own,package,pair,pass,pattern,peek,per,phase,playwright,point,points,presentation,presentational,problem,produces,proof,proving,real,reference,remaining,rendering,renders,replicated,repo,repos,repository,reusable,rollout,root,rule,rules,sample,scaffold,scope,screenshot,scripts,session,should,single,slide,slides,slidev,smoke,source,spec,src,stack,standalone,static,still,stock,store,sub,submodule,super,superproject,synthetic,test,that,the,theme,this,those,through,ticket,toml,too,toolchain,tools,top,tracks,tree,unspecified,user,verification,via,viewer,viewers,vite,walking,while,without,workflow,working,works
+    scope: "state=in-review, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/666f9e9a-8b53-4d25-81db-cc20ffe3260d/ticket.toml","666f9e9a-8b53-4d25-81db-cc20ffe3260d",related,ticket,"",666f9e9a
+    digest: 3a0cbdfdf96166c50a6322489a312ca2091f99ee06ff022670d661330858b2ac
+    tags[3]: "in-review",ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "668743ea-497b-46a2-b7f7-f136684acc8c"
     kind: ticket
     source_path: ".ticket/tickets/668743ea-497b-46a2-b7f7-f136684acc8c/ticket.toml"
@@ -8596,6 +8661,19 @@ entries[1620]:
     digest: 7516151590273dd8bf4cf9a5b268e97059ebb7c58b6a637d9f440282ee111036
     tags[3]: done,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "693763fc-e4c1-4c93-b39f-5e0958b57d19"
+    kind: ticket
+    source_path: ".ticket/tickets/693763fc-e4c1-4c93-b39f-5e0958b57d19/ticket.toml"
+    title: "[presentation] Extract specification facts and typed Git/Cargo projections"
+    summary: "Implement normalized extraction adapters for authoritative specification facts plus distinct Git/submodule containment, Cargo workspace/crate membership, and Cargo dependency projections. Every node ..."
+    keywords[86]: 1500a9e6,adapter,adapters,agree,and,are,authoritative,both,can,cannot,cargo,carries,claims,cli,containment,content,crate,cross,declarative,dependency,derived,diagnostics,distinct,docs,each,early,edge,every,evidence,excludes,expanding,extract,extraction,facts,fixture,for,frozen,git,graph,illustrative,implement,independently,interface,interfaces,into,language,live,mcp,membership,must,node,normalized,normative,note,once,only,parallel,parsing,peek,planned,plus,presentation,proceed,projection,projections,prove,rendering,shared,short,source,specification,submodule,telemetry,test,tests,this,ticket,type,typed,universal,unspecified,validation,workflow,workflows,workspace,yield
+    scope: "state=planned, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/693763fc-e4c1-4c93-b39f-5e0958b57d19/ticket.toml","693763fc-e4c1-4c93-b39f-5e0958b57d19",related,ticket,"",693763fc
+    digest: cd8499e64f244657bb347d14558181035bc0e5ce28eaa5d45ea226986c0814c9
+    tags[3]: planned,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "694d74b4-028b-4602-8090-d6200d577d4a"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/694d74b4-028b-4602-8090-d6200d577d4a/ticket.toml"
@@ -8886,7 +8964,7 @@ entries[1620]:
     kind: ticket
     source_path: "memory-api/.ticket/tickets/6d07d610-75c1-448a-afd5-6ae15098ca21/ticket.toml"
     title: "[ticket-vscode] Rust/WASM port track"
-    summary: "Port `memory-api/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture."
+    summary: "Port `memory-api/tools/ticket-vscode` from a TypeScript-heavy implementation to a Rust/WASM-backed VS Code extension architecture."
     keywords[185]: "011563c2",0dcf7fc730ac,14047b99,"1e41",362448d4,"4145",41d6,43c7,47ef,"4899",48f1,4a919bffcc2d,4b9d,4ec2,53dbd04aac7b,"59e7",68ec,6de424b0,8dd2,90f3,93f7e422,"966e",9d70,a1135be4efd6,a592900c,a61f,access,across,activation,adapters,add,all,and,api,architecture,are,asexternaluri,automation,b8ba,backed,bec6,been,behavior,behaviors,below,bfafde19,bound,browser,browserbridge,bundle,bundling,cannot,capability,ccf1,cdp,chain,child,clipboard,code,compatible,core,current,d4577da83a65,d8fdc80d2f6e,ddf7,depend,dependency,depends,desktop,deterministic,domain,done,dual,eb8d17305ab3,electron,entry,entrypoints,env,every,evidence,executed,executes,execution,explicit,explicitly,extension,extensioncommands,extensions,extensionsupport,extract,f513,feature,features,file,final,for,free,freeze,from,harnesses,has,heavy,high,host,hosts,implementation,integration,into,keep,local,logic,matrix,memory,migration,mixes,model,move,node,not,only,openexternal,order,oriented,packaging,parent,parity,parts,path,plan,planned,planning,port,portable,prefer,process,prove,raw,redesign,reflects,remote,replace,require,requires,research,result,rules,runtime,rust,safe,scenarios,scope,sequential,shell,should,single,spec,src,still,summary,target,test,that,the,therefore,thin,this,ticket,"ticket-vscode",ticketprovider,tickets,toml,tools,track,tracker,tree,typescript,use,validate,validation,vscode,wasm,web,webworker,when,with
     scope: "state=planned, component=ticket-vscode"
     relations:
@@ -9115,6 +9193,19 @@ entries[1620]:
         "memory-viewers/.ticket/tickets/6ea2c97c-0b41-4b90-91db-f0de9e8e4b8e/ticket.toml","6ea2c97c-0b41-4b90-91db-f0de9e8e4b8e",related,ticket,"",6ea2c97c
     digest: f027ee2e6d25f9ddb710c6f9ea575b8975a77991ce713df8fe1717f229dfdb22
     tags[4]: done,high,ticket,"ticket-viewer"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "6ea4c9c1-9c94-4fbe-9c8c-b7516b7c14e8"
+    kind: ticket
+    source_path: ".ticket/tickets/6ea4c9c1-9c94-4fbe-9c8c-b7516b7c14e8/ticket.toml"
+    title: "[workflow-tools] Extract audit, test, doc, log, feedback, peek as standalone domain repos"
+    summary: "Continue the `workflow-tools` per-tool crate extraction: move the remaining"
+    keywords[216]: 5bea5e20,add,affected,after,against,agents,all,and,any,api,applicable,archival,are,artifacts,audit,auto,baseline,batch,become,before,binaries,binary,blocks,bootstrap,bottom,branch,build,cache,cargo,catalog,checkout,cleanly,cli,com,commit,commits,compact,compare,confirm,context,continue,coupled,crate,crates,cross,ctl,currently,depending,deps,destination,detach,dioxus,dir,directories,doc,docs,domain,each,empty,end,engine,entries,ephemeral,established,existing,exists,extract,extraction,extractions,failures,families,fast,feature,feedback,fix,fixed,following,for,forward,fresh,frontend,full,gap,git,github,had,historical,http,https,ignores,"in-review",install,installs,instructions,intentionally,internal,into,intra,introduced,its,json,known,layout,leave,level,limitation,living,local,log,main,mankinskin,manual,matching,mcp,member,members,memory,monorepo,move,moved,named,needed,nested,newly,non,not,notes,now,objective,offline,old,one,only,orchestration,out,own,patch,path,paths,peek,per,physically,populate,pre,precedent,prompts,push,pushed,pushing,readme,recipe,record,reference,referenced,references,remain,remaining,repo,repos,requester,required,root,rule,run,same,scaffold,scope,see,session,sibling,source,spec,standalone,starting,state,stay,still,submodule,submodules,succeed,superproject,table,terminal,test,that,the,their,then,there,they,this,ticket,toml,tool,tools,top,touched,under,unfixed,unmodified,unspecified,until,untouched,update,used,validate,viewer,viewers,vscode,warm,whole,will,workflow,workspace,worktree,worktrees
+    scope: "state=in-review, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/6ea4c9c1-9c94-4fbe-9c8c-b7516b7c14e8/ticket.toml","6ea4c9c1-9c94-4fbe-9c8c-b7516b7c14e8",related,ticket,"",6ea4c9c1
+    digest: e9b268552afa2a24a1cab6352dd32aa1af410dcf5c56d425a570ed878bc6f2a9
+    tags[3]: "in-review",ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "6f368e20-00a4-4da5-9388-492ba4209915"
     kind: ticket
@@ -9420,12 +9511,12 @@ entries[1620]:
     source_path: ".ticket/tickets/731f3579-0678-4eb8-a45c-53020830fba8/ticket.toml"
     title: "[ticket-api] Add built-in `task` schema and health check for ticket types missing a schema"
     summary: "Many tickets have `type = \"task\"`, but no schema was registered for the `task` type. Transitions/close operations failed with `no schema for type 'task'` (see the schema lookup in `memory-api/crates/..."
-    keywords[153]: "123",acceptance,accepted,add,added,all,already,and,any,api,around,authority,baseline,before,broke,bug,build,built,builtin,builtins,but,cancelled,cargo,cause,check,checks,cli,clone,close,collect,confirmed,crates,create,creation,criteria,criterion,dedicated,default,done,emits,error,every,except,existing,extensionsupport,failed,failing,failure,finding,findings,for,forward,get,git,going,has,have,health,hint,http,implementation,improvement,include,invisible,known,later,left,let,lib,lifecycle,like,lookup,manifest,many,mcp,memory,met,missing,model,move,new,not,notes,omits,only,operations,out,pass,passed,path,planner,pre,preflight,prior,problem,produces,reference,refs,registered,registry,renaming,reports,resolves,root,run,schema,schemaregistry,scope,see,self,sessions,severity,silently,skip,some,src,stale,stash,storage,store,surfaced,task,test,tests,the,then,ticket,"ticket-api",tickets,ticketstore,time,tools,tracker,transition,transitions,type,types,unchanged,unknown,unrelated,uses,validates,validation,via,visibility,vscode,was,were,when,whose,with,work,worked
+    keywords[152]: "123",acceptance,accepted,add,added,all,already,and,any,api,around,authority,baseline,before,broke,bug,build,built,builtin,builtins,but,cancelled,cargo,cause,check,checks,cli,clone,close,collect,confirmed,crates,create,creation,criteria,criterion,dedicated,default,done,emits,error,every,except,existing,extensionsupport,failed,failing,failure,finding,findings,for,forward,get,git,going,has,have,health,hint,http,implementation,improvement,include,invisible,known,later,left,let,lib,lifecycle,like,lookup,manifest,many,mcp,memory,met,missing,model,move,new,not,notes,omits,only,operations,out,pass,passed,path,planner,pre,preflight,prior,problem,produces,reference,refs,registered,registry,renaming,reports,resolves,root,run,schema,schemaregistry,scope,see,self,sessions,severity,silently,skip,some,src,stale,stash,storage,store,surfaced,task,test,tests,the,then,ticket,"ticket-api",tickets,ticketstore,time,tracker,transition,transitions,type,types,unchanged,unknown,unrelated,uses,validates,validation,via,visibility,vscode,was,were,when,whose,with,work,worked
     scope: "state=done, component=ticket-api"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/731f3579-0678-4eb8-a45c-53020830fba8/ticket.toml","731f3579-0678-4eb8-a45c-53020830fba8",related,ticket,"",731f3579
-    digest: a451f6217d0c16bcbf998be04dc02fa11997c322020190d0cdde3ed4cbb8ad20
+    digest: 59c05d48a3ecdc2c42a0167516e32900e2d716beeef8f67c6b3f0002bafd3a9c
     tags[3]: done,ticket,"ticket-api"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "7330aa36-102d-452c-b61d-6f4c8651b422"
@@ -11148,13 +11239,13 @@ entries[1620]:
     kind: ticket
     source_path: ".ticket/tickets/8735fa5d-0550-40f1-9ee8-7b83a44a7fd1/ticket.toml"
     title: "[ticket-vscode] Prefer PATH ticket-viewer before debug fallback"
-    summary: "Auto-start in `ticket-vscode` should prefer the `ticket-viewer` executable on `PATH` before falling back to a workspace-local `target/debug/ticket-viewer(.exe)` binary. This keeps the extension..."
-    keywords[70]: acceptance,aligned,and,are,auto,available,back,before,binary,checking,compile,covers,criteria,debug,default,describing,detect,docs,done,empty,exe,executable,explicit,extension,fallback,falling,falls,focused,from,highest,implementation,install,installed,keeps,local,managed,match,medium,new,order,override,path,prefer,present,preserving,priority,remains,resolution,resolves,serverbinarypath,should,spec,start,still,target,the,this,ticket,"ticket-vscode",ticketviewer,tools,unit,updated,validation,viewer,vscode,when,while,with,workspace
+    summary: "Auto-start in `ticket-vscode` should prefer the `ticket-viewer` executable on `PATH` before falling back to a workspace-local `target/debug/ticket-viewer(.exe)` binary. This keeps the extension align..."
+    keywords[69]: acceptance,aligned,and,are,auto,available,back,before,binary,checking,compile,covers,criteria,debug,default,describing,detect,docs,done,empty,exe,executable,explicit,extension,fallback,falling,falls,focused,from,highest,implementation,install,installed,keeps,local,managed,match,medium,new,order,override,path,prefer,present,preserving,priority,remains,resolution,resolves,serverbinarypath,should,spec,start,still,target,the,this,ticket,"ticket-vscode",ticketviewer,unit,updated,validation,viewer,vscode,when,while,with,workspace
     scope: "state=done, component=ticket-vscode"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/8735fa5d-0550-40f1-9ee8-7b83a44a7fd1/ticket.toml","8735fa5d-0550-40f1-9ee8-7b83a44a7fd1",related,ticket,"",8735fa5d
-    digest: 20334d246d75e1349837f15b2b9a00f8e93ca6f352a38f55a3b9999b2b28e019
+    digest: f2826b6a36100e27adef7286e38bb3b849c1b505834492812edfa73850a25438
     tags[4]: done,medium,ticket,"ticket-vscode"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "875919d5-558c-46a8-a83f-02a6756a1e0e"
@@ -11963,6 +12054,19 @@ entries[1620]:
     digest: 418f6bb3a930c58c2e9c1ccf2c555ced939bcef4347b1aa80c0747c0610a5a82
     tags[4]: done,high,"test-api",ticket
     generated_at: "1970-01-01T00:00:00Z"
+  - id: "908a7c75-337e-4366-8977-968f1e9e55b9"
+    kind: ticket
+    source_path: ".ticket/tickets/908a7c75-337e-4366-8977-968f1e9e55b9/ticket.toml"
+    title: "Nest memory-kernel under workflow-tools; extend contract-reference with viewer + vscode extension"
+    summary: "`memory-kernel` is the shared, filesystem-backed substrate used by every workflow-tools domain (audit, test, doc, log, feedback, peek, rule, session, spec, ticket), but it is still registered as a ro..."
+    keywords[166]: acceptance,across,additionally,after,all,alongside,and,any,api,are,artifact,audit,backed,block,both,branch,build,but,cargo,changes,cli,code,com,complete,config,consumers,context,contract,convention,conventions,crate,criteria,currently,demonstrate,demonstrates,demonstrating,dependent,dev,dioxus,doc,does,doesn,domain,domains,each,earlier,engine,entry,every,example,exhibited,existing,exists,extend,extension,extraction,extractions,feature,feedback,filesystem,fixing,follow,form,from,frontend,full,gains,git,github,gitmodules,goal,guidance,http,https,"in-review",index,init,inside,install,instead,instructions,integration,its,kernel,level,like,log,main,mankinskin,matching,mcp,memory,minimal,most,move,nest,nested,nesting,new,not,one,only,other,own,parenting,parity,part,passes,patch,path,paths,peek,plus,pointed,problem,readme,reference,references,registered,registration,relocation,remaining,removed,repo,repository,required,resolves,reusing,root,rule,scaffold,session,shape,shared,sibling,smallest,spec,stale,still,submodule,substrate,succeed,teaching,test,that,the,their,this,ticket,toml,tools,transport,transports,under,unspecified,updates,used,via,viable,viewer,vscode,which,with,workflow,working,workspace
+    scope: "state=in-review, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/908a7c75-337e-4366-8977-968f1e9e55b9/ticket.toml","908a7c75-337e-4366-8977-968f1e9e55b9",related,ticket,"",908a7c75
+    digest: 8932839986fe85ed6e47300c1d888e709b1072349290480b9fac43d75ba46ad7
+    tags[3]: "in-review",ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
   - id: "908ed6a4-d4f2-4cd1-bce0-d2d804b19b62"
     kind: ticket
     source_path: "memory-api/.ticket/tickets/908ed6a4-d4f2-4cd1-bce0-d2d804b19b62/ticket.toml"
@@ -12046,13 +12150,13 @@ entries[1620]:
     source_path: ".ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml"
     title: "[workflow-tools][per-tool] Extract `audit` tool as `audit` domain crate"
     summary: "`memory-api/crates/memory-api` is deleted. `audit` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root developme..."
-    keywords[138]: 1b7e0c3d,21893f5f,acceptance,accessors,added,after,all,and,any,api,are,audit,bare,baseline,bash,before,bin,binary,bins,branch,build,cargo,cli,com,commit,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,default,deleted,deleting,dependency,depends,development,domain,during,established,exact,execution,exists,exporting,extension,extra,extract,extracted,extraction,feature,features,first,fold,for,free,gated,git,github,harness,http,https,identified,implementation,independent,internal,into,keep,kernel,keys,known,legacy,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,open,outside,own,patch,path,paths,per,plan,planning,preserve,proved,public,published,rather,real,relative,remote,repo,repoint,repointed,repository,resolution,risk,root,rule,sequence,source,standalone,surface,test,tests,than,the,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,under,use,verified,viewer,with,workflow,"workflow-tools",workspace
-    scope: "state=open, component=workflow-tools"
+    keywords[138]: 1b7e0c3d,21893f5f,acceptance,accessors,added,after,all,and,any,api,are,audit,bare,baseline,bash,before,bin,binary,bins,branch,build,cancelled,cargo,cli,com,commit,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,default,deleted,deleting,dependency,depends,development,domain,during,established,exact,execution,exists,exporting,extension,extra,extract,extracted,extraction,feature,features,first,fold,for,free,gated,git,github,harness,http,https,identified,implementation,independent,internal,into,keep,kernel,keys,known,legacy,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,outside,own,patch,path,paths,per,plan,planning,preserve,proved,public,published,rather,real,relative,remote,repo,repoint,repointed,repository,resolution,risk,root,rule,sequence,source,standalone,surface,test,tests,than,the,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,under,use,verified,viewer,with,workflow,"workflow-tools",workspace
+    scope: "state=cancelled, component=workflow-tools"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/9158e113-86e8-47f2-964e-e21da632f4ef/ticket.toml","9158e113-86e8-47f2-964e-e21da632f4ef",related,ticket,"","9158e113"
-    digest: 6eb4ac2bb074beb38bf6ddcf3c0b47e02770d01eb99fb6153b50d18d976e8a70
-    tags[3]: open,ticket,"workflow-tools"
+    digest: 7326bd5d984b2c093182254b48cfb2246bddbef0d51998e37b5ae0b0ffddb1a6
+    tags[3]: cancelled,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9185d8f2-1080-46b1-84da-485f9ad839f6"
     kind: ticket
@@ -12384,13 +12488,13 @@ entries[1620]:
     source_path: ".ticket/tickets/94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25/ticket.toml"
     title: "[workflow-tools][per-tool] Extract session tool as a single `session` domain crate (api + transport bins)"
     summary: "Phase B. Extract the session tool into its own `session` repository (owner mankinskin), built as a single `session` domain crate per contract `0da6894c`: the crate lib re-exports the internal `sessio..."
-    keywords[78]: 0da6894c,858c5286,acceptance,and,api,artifacts,bare,bin,binary,bins,builds,built,cli,contract,coordinate,crate,criteria,cross,dbe0e955,dependency,domain,exporting,exports,exposes,extract,feature,follow,gated,harness,high,identity,independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,open,optimization,over,own,owner,parent,pass,per,phase,plus,primary,recipe,reference,registered,repository,review,scoped,session,shared,single,smoke,still,store,targets,the,ticket,tickets,tool,tooling,tools,tracker,transport,transports,via,with,workflow
-    scope: "state=open, component=session"
+    keywords[78]: 0da6894c,858c5286,acceptance,and,api,artifacts,bare,bin,binary,bins,builds,built,cli,contract,coordinate,crate,criteria,cross,dbe0e955,dependency,domain,exporting,exports,exposes,extract,feature,follow,gated,harness,high,identity,"in-review",independently,integrity,internal,into,its,lib,mankinskin,mcp,migrate,migrated,move,optimization,over,own,owner,parent,pass,per,phase,plus,primary,recipe,reference,registered,repository,review,scoped,session,shared,single,smoke,still,store,targets,the,ticket,tickets,tool,tooling,tools,tracker,transport,transports,via,with,workflow
+    scope: "state=in-review, component=session"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25/ticket.toml","94de0e62-0d8d-4c33-b7b0-1a1e5dcffd25",related,ticket,"",94de0e62
-    digest: ffddfb488a988eba8862dd799d4d35b151741b9852c81894f648528e5e305e9d
-    tags[4]: high,open,session,ticket
+    digest: 80f5b971210154851a2e2de08eff63a2ad8b94d6bb164087d8fcaf2c598bb020
+    tags[4]: high,"in-review",session,ticket
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9515b7db-6bbe-4ec4-acae-494d51ae9c99"
     kind: ticket
@@ -12865,13 +12969,13 @@ entries[1620]:
     source_path: ".ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml"
     title: "[workflow-tools][per-tool] Extract `feedback` tool as `feedback` domain crate"
     summary: "`memory-api/crates/memory-api` is deleted. `feedback` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root develo..."
-    keywords[143]: 1b7e0c3d,21893f5f,acceptance,accessors,all,and,any,api,are,bare,baseline,bash,before,binary,bins,branch,build,can,cargo,cli,com,commit,complete,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,default,deleted,deleting,dependency,development,domain,during,early,established,exact,execution,exporting,extension,extra,extract,extracted,extraction,feature,features,feedback,finding,first,fold,for,free,gated,git,github,harness,has,http,https,identified,implementation,including,independent,internal,into,its,keep,kernel,keys,known,legacy,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,open,other,outside,own,patch,path,paths,per,plan,planning,preserve,prior,proved,public,publish,published,relative,remote,repo,repoint,repointed,repository,resolution,risk,root,rule,sequence,since,source,standalone,surface,survey,test,tests,that,the,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,under,use,verified,viewer,with,workflow,"workflow-tools",workspace
-    scope: "state=open, component=workflow-tools"
+    keywords[143]: 1b7e0c3d,21893f5f,acceptance,accessors,all,and,any,api,are,bare,baseline,bash,before,binary,bins,branch,build,can,cancelled,cargo,cli,com,commit,complete,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,default,deleted,deleting,dependency,development,domain,during,early,established,exact,execution,exporting,extension,extra,extract,extracted,extraction,feature,features,feedback,finding,first,fold,for,free,gated,git,github,harness,has,http,https,identified,implementation,including,independent,internal,into,its,keep,kernel,keys,known,legacy,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,other,outside,own,patch,path,paths,per,plan,planning,preserve,prior,proved,public,publish,published,relative,remote,repo,repoint,repointed,repository,resolution,risk,root,rule,sequence,since,source,standalone,surface,survey,test,tests,that,the,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,under,use,verified,viewer,with,workflow,"workflow-tools",workspace
+    scope: "state=cancelled, component=workflow-tools"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/9c029859-c0a9-4019-bb4a-160dd9cf3a9a/ticket.toml","9c029859-c0a9-4019-bb4a-160dd9cf3a9a",related,ticket,"",9c029859
-    digest: cd29ea5f10a54f06277e9fe6d5728c80e0c6d7f7c50307efd5adb1e993038aed
-    tags[3]: open,ticket,"workflow-tools"
+    digest: 1aafcc9b54f818789edc8a2ac3fc98b32d8397d053255c68f84f031c410924e2
+    tags[3]: cancelled,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "9c1de000-0000-4000-8000-000000000000"
     kind: ticket
@@ -14074,13 +14178,13 @@ entries[1620]:
     source_path: ".ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml"
     title: "[workflow-tools][per-tool] Extract `session` tool as `session` domain crate"
     summary: "`memory-api/crates/memory-api` is deleted. `session` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root develop..."
-    keywords[169]: 0da6894c,1b7e0c3d,"395634608371",4cfc,a1e2,acceptance,accessors,after,all,also,and,api,attempting,available,ba4aaa9c,bare,baseline,bash,before,being,binary,bins,blocked,board,both,branch,build,cannot,capture,cargo,cli,com,commit,complete,confirm,consolidate,consumable,consume,consumer,consumers,contract,contradicts,crate,crates,create,criteria,cross,cut,d270,default,deleted,deleting,depend,dependency,depends,development,domain,during,equivalents,established,exact,execution,explicit,exporting,extension,external,extra,extract,extraction,feature,features,first,fold,for,free,gated,git,github,harness,has,hook,https,implementation,independent,internal,into,keep,kernel,keys,known,lands,legacy,linkage,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,open,over,pass,patch,path,paths,per,plan,planning,preserve,prior,proved,provision,public,published,rather,relative,remaining,remote,repo,repoint,repointed,repointing,repository,require,resolution,review,risk,root,scope,sequenced,session,should,source,standalone,step,surface,test,tests,than,the,their,this,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,until,use,verified,viewer,which,with,workflow,"workflow-tools",workspace,worktree,would
-    scope: "state=open, component=workflow-tools"
+    keywords[169]: 0da6894c,1b7e0c3d,"395634608371",4cfc,a1e2,acceptance,accessors,after,all,also,and,api,attempting,available,ba4aaa9c,bare,baseline,bash,before,being,binary,bins,blocked,board,both,branch,build,cancelled,cannot,capture,cargo,cli,com,commit,complete,confirm,consolidate,consumable,consume,consumer,consumers,contract,contradicts,crate,crates,create,criteria,cross,cut,d270,default,deleted,deleting,depend,dependency,depends,development,domain,during,equivalents,established,exact,execution,explicit,exporting,extension,external,extra,extract,extraction,feature,features,first,fold,for,free,gated,git,github,harness,has,hook,https,implementation,independent,internal,into,keep,kernel,keys,known,lands,legacy,linkage,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,old,only,over,pass,patch,path,paths,per,plan,planning,preserve,prior,proved,provision,public,published,rather,relative,remaining,remote,repo,repoint,repointed,repointing,repository,require,resolution,review,risk,root,scope,sequenced,session,should,source,standalone,step,surface,test,tests,than,the,their,this,ticket,toml,tool,tools,traits,transport,transports,tree,typed,unchanged,until,use,verified,viewer,which,with,workflow,"workflow-tools",workspace,worktree,would
+    scope: "state=cancelled, component=workflow-tools"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/a765fca6-4670-4097-8a24-a404daddd958/ticket.toml","a765fca6-4670-4097-8a24-a404daddd958",related,ticket,"",a765fca6
-    digest: f176f3a92aec954be0f6c8746767965b067dc176b5f16fda23eb6be58161e3a3
-    tags[3]: open,ticket,"workflow-tools"
+    digest: 2872f7626087296d21ec3c121a2d22e953045ac8f297a617490c554300be74cb
+    tags[3]: cancelled,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "a76c72e6-0bb9-48ef-be43-37c72ad89002"
     kind: ticket
@@ -14932,13 +15036,13 @@ entries[1620]:
     source_path: ".ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml"
     title: "[workflow-tools][per-tool] Extract `test` tool as `test` domain crate"
     summary: "`memory-api/crates/memory-api` is deleted. `test` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root developmen..."
-    keywords[159]: 0df2,1b7e0c3d,3984c290dbd1,437b,a6d38372,above,acceptance,accessors,all,and,any,api,b06d,bare,baseline,bash,before,binary,bins,blocking,branch,build,can,cannot,cargo,cli,com,commit,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,cross,currently,cycle,default,deleted,deleting,dependency,depends,development,domain,during,established,exact,execution,explicit,exporting,extension,extra,extract,extracted,extraction,feature,features,first,fixed,fold,folded,for,free,gated,git,github,hard,harness,has,https,identified,implementation,import,including,independent,internal,into,introducing,keep,kernel,keys,known,land,legacy,log,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,not,old,only,open,order,ordering,outside,own,patch,path,paths,per,plan,planning,preference,prerequisite,preserve,proved,public,published,relative,remote,removed,repo,repoint,repointed,repository,resolution,resolve,resolved,restructured,risk,root,soft,source,standalone,surface,test,tests,the,this,ticket,toml,tool,tools,traits,transport,transports,typed,unchanged,use,verified,viewer,which,while,with,without,workflow,"workflow-tools",workspace
-    scope: "state=open, component=workflow-tools"
+    keywords[160]: 0df2,1b7e0c3d,3984c290dbd1,437b,a6d38372,above,acceptance,accessors,all,and,any,api,b06d,bare,baseline,bash,before,binary,bins,blocking,branch,build,can,cancelled,cannot,cargo,cli,com,commit,confirm,consolidate,consolidated,consumers,consumes,consuming,crate,crates,create,criteria,cross,currently,cycle,default,deleted,deleting,dependency,depends,development,domain,during,established,exact,execution,explicit,exporting,extension,extra,extract,extracted,extraction,feature,features,first,fixed,fold,folded,for,free,gated,git,github,hard,harness,has,https,identified,implementation,import,including,independent,internal,into,introducing,keep,kernel,keys,known,land,legacy,log,main,manifest,mankinskin,mcp,memory,move,must,names,neutral,never,not,old,only,open,order,ordering,outside,own,patch,path,paths,per,plan,planning,preference,prerequisite,preserve,proved,public,published,relative,remote,removed,repo,repoint,repointed,repository,resolution,resolve,resolved,restructured,risk,root,soft,source,standalone,surface,test,tests,the,this,ticket,toml,tool,tools,traits,transport,transports,typed,unchanged,use,verified,viewer,which,while,with,without,workflow,"workflow-tools",workspace
+    scope: "state=cancelled, component=workflow-tools"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/b34489db-7c08-4f6e-a22b-cb02278ac99f/ticket.toml","b34489db-7c08-4f6e-a22b-cb02278ac99f",related,ticket,"",b34489db
-    digest: c1d4b8421cca848abbf069d976a1377415d4fc24e85cd829c6d9f8adc15eaa73
-    tags[3]: open,ticket,"workflow-tools"
+    digest: 9fbe6e03d6c89ec5996ad926290a503dfad31ecff38a143052e490aced4bb69a
+    tags[3]: cancelled,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b3d250d5-dd28-44e6-aaf4-47bee9dea56e"
     kind: ticket
@@ -15381,6 +15485,19 @@ entries[1620]:
         "viewer-api/.ticket/tickets/b83b1002-41ba-4eb7-9f1a-c20cbf49137b/ticket.toml","b83b1002-41ba-4eb7-9f1a-c20cbf49137b",related,ticket,"",b83b1002
     digest: f0a1017b0266d04e4b0e08a7c5d248fee31cf7df205ecf233e952aedd6429e42
     tags[3]: ready,ticket,"viewer-api"
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "b83d2e14-98cb-464a-84c4-389c14e61080"
+    kind: ticket
+    source_path: ".ticket/tickets/b83d2e14-98cb-464a-84c4-389c14e61080/ticket.toml"
+    title: "Remove recommended_next/Next Up from ticket board show to match ticket-mcp board_show parity"
+    summary: ""
+    keywords[13]: board,done,from,match,mcp,medium,next,parity,recommended,remove,show,ticket,"ticket-cli"
+    scope: "state=done, component=ticket-cli"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/b83d2e14-98cb-464a-84c4-389c14e61080/ticket.toml","b83d2e14-98cb-464a-84c4-389c14e61080",related,ticket,"",b83d2e14
+    digest: e333c34d59c45ed68cc35e76a03edb8b676fbd3ec6feea7aa24443762aeaf53d
+    tags[4]: done,medium,ticket,"ticket-cli"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "b88b1fc0-eabe-444e-8511-e3467a699849"
     kind: ticket
@@ -17493,13 +17610,13 @@ entries[1620]:
     source_path: ".ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml"
     title: "[workflow-tools][per-tool] Extract `spec` tool as `spec` domain crate + viewer"
     summary: "`memory-api/crates/memory-api` is deleted. `spec` must commit `memory_kernel = { git = \"https://github.com/mankinskin/memory-kernel\", branch = \"main\" }`; use a relative path only in a root developmen..."
-    keywords[159]: 0da6894c,1b7e0c3d,acceptance,accessors,agents,all,alongside,and,any,api,are,bare,baseline,bash,before,binary,bins,branch,browser,build,capture,cargo,chromium,cli,com,commit,confirm,consolidate,consolidated,consumer,consumers,consuming,contract,crate,crates,create,criteria,default,deleted,deleting,dependency,depends,development,dioxus,domain,done,during,established,exact,execution,existing,exporting,extension,external,extra,extract,extracted,extraction,family,feature,features,first,fold,for,free,frontend,fullscreen,gated,git,github,harness,http,https,identified,implementation,including,independent,integration,internal,into,its,keep,kernel,keys,legacy,log,main,manifest,mankinskin,mcp,memory,migration,move,must,names,needs,neutral,never,old,only,open,outside,own,patch,path,paths,per,plan,planning,playwright,preserve,proof,proved,public,published,relative,remote,repeat,repo,repoint,repointed,repository,resolution,retained,risk,root,rule,screenshots,source,spec,sse,standalone,surface,survey,test,tests,the,then,ticket,toml,tool,tools,traits,transition,transport,transports,tree,typed,unchanged,use,validate,verified,verify,viewer,viewers,with,workflow,"workflow-tools",workspace
-    scope: "state=open, component=workflow-tools"
+    keywords[158]: 0da6894c,1b7e0c3d,acceptance,accessors,agents,all,alongside,and,any,api,are,bare,baseline,bash,before,binary,bins,branch,browser,build,capture,cargo,chromium,cli,com,commit,confirm,consolidate,consolidated,consumer,consumers,consuming,contract,crate,crates,create,criteria,default,deleted,deleting,dependency,depends,development,dioxus,domain,done,during,established,exact,execution,existing,exporting,extension,external,extra,extract,extracted,extraction,family,feature,features,first,fold,for,free,frontend,fullscreen,gated,git,github,harness,http,https,identified,implementation,including,independent,integration,internal,into,its,keep,kernel,keys,legacy,log,main,manifest,mankinskin,mcp,memory,migration,move,must,names,needs,neutral,never,old,only,outside,own,patch,path,paths,per,plan,planning,playwright,preserve,proof,proved,public,published,relative,remote,repeat,repo,repoint,repointed,repository,resolution,retained,risk,root,rule,screenshots,source,spec,sse,standalone,surface,survey,test,tests,the,then,ticket,toml,tool,tools,traits,transition,transport,transports,tree,typed,unchanged,use,validate,verified,verify,viewer,viewers,with,workflow,"workflow-tools",workspace
+    scope: "state=done, component=workflow-tools"
     relations:
       related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
         ".ticket/tickets/d3ca741d-6ee8-4768-8eff-2099c0c5b58c/ticket.toml","d3ca741d-6ee8-4768-8eff-2099c0c5b58c",related,ticket,"",d3ca741d
-    digest: d7aaa43b080d1976593ea84c5f1e88d07a5b29bb66aff9337b7f1e52b30bf321
-    tags[3]: open,ticket,"workflow-tools"
+    digest: ff76eccbc70a75c11c029396582a30ba045217da65ad3f07ca662d8792a64da5
+    tags[3]: done,ticket,"workflow-tools"
     generated_at: "1970-01-01T00:00:00Z"
   - id: "d3f76335-15de-40e7-97ef-18c400e32268"
     kind: ticket
@@ -19294,6 +19411,19 @@ entries[1620]:
         ".ticket/tickets/ebf4b601-0f9e-471c-9283-1390cda1eb41/ticket.toml","ebf4b601-0f9e-471c-9283-1390cda1eb41",related,ticket,"",ebf4b601
     digest: 0bcc67969012681c5ad417916f86b799224a6f70eeb56cade98632c31c9a8a4b
     tags[3]: done,ticket,unspecified
+    generated_at: "1970-01-01T00:00:00Z"
+  - id: "ec1f452d-8eba-488c-bcfe-8dd8728130f1"
+    kind: ticket
+    source_path: ".ticket/tickets/ec1f452d-8eba-488c-bcfe-8dd8728130f1/ticket.toml"
+    title: "[presentation] Materialize and statically validate conceptual decks"
+    summary: "Consume the conceptual contract and typed extractors to generate deterministic managed conceptual decks with presenter notes and disagreement sidecars, enforce stale/replace behavior, build static ou..."
+    keywords[70]: and,api,assets,automation,behavior,build,captures,citations,conceptual,console,consume,contract,cross,custom,decks,deterministic,disagreement,each,enforce,errors,every,excludes,extractors,fails,fixed,flagship,generate,implementation,language,legends,live,managed,manifest,materialization,materialize,missing,new,notes,output,planned,playwright,presentation,presenter,provenance,replace,screenshots,sidecars,slide,slidev,stale,static,statically,telemetry,tests,the,theme,ticket,topology,typed,unspecified,validate,validation,verifies,viewer,viewport,visits,visual,visuals,with,work
+    scope: "state=planned, component=unspecified"
+    relations:
+      related[1]{canonical_path,entry_id,relation_kind,content_kind,digest,anchor}:
+        ".ticket/tickets/ec1f452d-8eba-488c-bcfe-8dd8728130f1/ticket.toml","ec1f452d-8eba-488c-bcfe-8dd8728130f1",related,ticket,"",ec1f452d
+    digest: fedd8b6b7ddbb5bc487231bc33ce3654d2939e4f969e184be1fc5d128d42ee86
+    tags[3]: planned,ticket,unspecified
     generated_at: "1970-01-01T00:00:00Z"
   - id: "ec2e1048-4cf1-4129-bdf7-57ac45ebdac6"
     kind: ticket
