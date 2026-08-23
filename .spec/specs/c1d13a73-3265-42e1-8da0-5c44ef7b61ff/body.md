@@ -11,13 +11,15 @@
 The future persisted `component_id` is `worktree-provisioning-policy`. Use
 `ProvisionPolicy` and `SessionActivity`; criterion ids use the
 `worktree-provision-` prefix. `WorktreeGit` is an implemented library type, but
-the accurate Git-operation provider component boundary remains unresolved.
+the typed provider component model remains specified-but-not-built.
 
 ## Reading Order
 
 1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - consuming CLI.
-3. [workflow-tools/session/crates/session-worktree-provision/src/policy.rs](../../../workflow-tools/session/crates/session-worktree-provision/src/policy.rs) - policy provider.
+2. [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) - repository-operations provider.
+3. [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - consuming CLI.
+4. [585aa074 Session Worktree Lifecycle Rewrite](../585aa074-356a-4169-b08b-4e3aba659a72/body.md) - related hybrid-access evidence.
+5. [workflow-tools/session/crates/session-worktree-provision/src/policy.rs](../../../workflow-tools/session/crates/session-worktree-provision/src/policy.rs) - policy provider.
 
 ## Responsibility
 
@@ -25,7 +27,7 @@ If implemented, consumers can make consistent worktree reclaim and provision dec
 
 ## Interfaces And Dependencies
 
-`WorktreeGit` supplies repository operations, `SessionActivity` supplies activity state, and `ProvisionPolicy` supplies policy input. `evaluate_reclaim_candidate` evaluates eligibility; `provision_for_session` produces the provision outcome.
+`WorktreeGit` supplies repository operations, `SessionActivity` supplies activity state, and `ProvisionPolicy` supplies policy input. `evaluate_reclaim_candidate` and `provision_for_session` consume `&WorktreeGit`; policy does not provide Git operations.
 
 ## Behavior
 
@@ -42,7 +44,7 @@ repository state or activity/policy errors return typed library failures.
 
 ## Provider/Consumer Contract
 
-Provides `worktree-provision-reclaim-decision` to [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md). `worktree-provision-session-provisioning` has no confirmed consumer in this pilot; sync and gitlink have no provisioning-policy or provisioning-function edge.
+Consumes `worktree-git-repository-operations` from [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) and provides `worktree-provision-reclaim-decision` to [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md). `worktree-provision-session-provisioning` has no confirmed consumer in this pilot; sync and gitlink have no provisioning-policy or provisioning-function edge.
 
 ## Examples
 

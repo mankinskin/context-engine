@@ -15,32 +15,34 @@ The future persisted `component_id` is `worktree-synchronization`. Use
 ## Reading Order
 
 1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) - gitlink provider.
+2. [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) - inspection-and-metadata provider.
+3. [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) - containment-and-status provider.
+4. [585aa074 Session Worktree Lifecycle Rewrite](../585aa074-356a-4169-b08b-4e3aba659a72/body.md) - related hybrid-access evidence.
 
 ## Responsibility
 
-If implemented, synchronization integrates worktree changes using the shared Git boundary while preserving required gitlink integrity checks.
+If implemented, synchronization integrates worktree changes using Git Operations for inspection and metadata while preserving required gitlink containment and status checks.
 
 ## Interfaces And Dependencies
 
-`handle_sync` opens and consumes `WorktreeGit`; its integration path consumes
-gitlink verification/status partitioning before committing rebased gitlinks.
-The pilot has not yet established the component that owns the Git-operation
-provider contract.
+`handle_sync` opens and consumes `WorktreeGit` for inspection and worktree
+metadata; its integration path consumes gitlink verification/status partitioning
+before committing rebased gitlinks. Local helpers perform rebase, merge, and
+stash writes.
 
 ## Behavior
 
-- `worktree-sync-uses-git`: route repository operations through `WorktreeGit`.
+- `worktree-sync-uses-git`: use `WorktreeGit` for inspection and worktree metadata.
 - `worktree-sync-preserves-gitlinks`: invoke gitlink integrity behavior before integration completes.
 - `worktree-sync-integration-coverage`: maintenance tests cover successful and rejected integration paths.
 
 ## Boundaries And Failure Cases
 
-Synchronization does not define reclaim policy or CLI parsing. Git/open failures and invalid gitlink states prevent mutation; a failed integrity decision cannot be bypassed by sync.
+Synchronization does not define reclaim policy or CLI parsing, and it does not route every repository mutation through `WorktreeGit`. Git/open failures and invalid gitlink states prevent mutation; a failed integrity decision cannot be bypassed by sync.
 
 ## Provider/Consumer Contract
 
-Consumes `worktree-gitlink-containment` from [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md). It uses `WorktreeGit`, but has no asserted provider edge for it until boundary research is complete; it does not consume `ProvisionPolicy` or `provision_for_session`.
+Consumes `worktree-git-inspection-metadata` from [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) and `worktree-gitlink-containment` from [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) for containment/status. It does not consume `ProvisionPolicy` or `provision_for_session`.
 
 ## Examples
 

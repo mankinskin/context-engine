@@ -15,7 +15,9 @@ The future persisted `component_id` is `worktree-gitlink-integrity`. Use
 ## Reading Order
 
 1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - integrity consumer.
+2. [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) - submodule-path-enumeration provider.
+3. [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - integrity consumer.
+4. [585aa074 Session Worktree Lifecycle Rewrite](../585aa074-356a-4169-b08b-4e3aba659a72/body.md) - related hybrid-access evidence.
 
 ## Responsibility
 
@@ -23,10 +25,10 @@ If implemented, integration consumers can verify gitlink containment and classif
 
 ## Interfaces And Dependencies
 
-`verify_gitlink_containment` opens `WorktreeGit` to inspect submodule/gitlink
-state; `partition_statuses` classifies reported status for caller decisions.
-The pilot has not yet established the component that owns the Git-operation
-provider contract.
+`verify_gitlink_containment` opens `WorktreeGit` only to enumerate
+`.gitmodules` submodule paths; it opens `git2::Repository` directly for
+containment/classification. `partition_statuses` classifies reported status for
+caller decisions.
 
 ## Behavior
 
@@ -40,7 +42,7 @@ This component does not select a provisioning candidate or dispatch commands. An
 
 ## Provider/Consumer Contract
 
-Provides `worktree-gitlink-containment` to [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md). It uses `WorktreeGit`, but has no asserted provider edge for it until boundary research is complete; it does not consume `ProvisionPolicy` or `provision_for_session`.
+Consumes `worktree-git-submodule-path-enumeration` from [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) only for submodule paths and provides `worktree-gitlink-containment` to [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md). It uses `git2` directly for containment/classification and does not consume `ProvisionPolicy` or `provision_for_session`.
 
 ## Examples
 

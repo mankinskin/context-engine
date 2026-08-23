@@ -15,8 +15,10 @@ including `worktree-cli-evaluates-reclaim-candidate`.
 ## Reading Order
 
 1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent and parent-owned criteria.
-2. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - shared provisioning-library provider.
-3. [workflow-tools/session/crates/worktree-ctl/src/main.rs](../../../workflow-tools/session/crates/worktree-ctl/src/main.rs) - implemented dispatch boundary.
+2. [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) - Git adapter operations provider.
+3. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - reclaim-evaluation provider.
+4. [585aa074 Session Worktree Lifecycle Rewrite](../585aa074-356a-4169-b08b-4e3aba659a72/body.md) - related hybrid-access evidence.
+5. [workflow-tools/session/crates/worktree-ctl/src/main.rs](../../../workflow-tools/session/crates/worktree-ctl/src/main.rs) - implemented dispatch boundary.
 
 ## Responsibility
 
@@ -27,9 +29,9 @@ without claiming session provisioning delegation.
 ## Interfaces And Dependencies
 
 `Cli` parses a `Command`; `dispatch(Command)` selects lifecycle handlers.
-`main.rs` consumes `WorktreeGit`, `WorktreeRef`, `ProvisionPolicy`, and
-`evaluate_reclaim_candidate` from `session-worktree-provision`; it does not
-call `provision_for_session`.
+`main.rs` consumes Git adapter operations from `WorktreeGit` across lifecycle
+handlers and consumes `ProvisionPolicy` with `evaluate_reclaim_candidate` only
+for reclaim display; it does not call `provision_for_session`.
 
 ## Behavior
 
@@ -45,7 +47,7 @@ rejected reclaim decision, or library error is surfaced as command failure.
 
 ## Provider/Consumer Contract
 
-Consumes only `worktree-provision-reclaim-decision` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides lifecycle behavior to operators. This is documented intended provider/consumer evidence, not a persisted edge until the typed model exists.
+Consumes `worktree-git-repository-operations` from [66fbd896 Worktree Git Operations](../66fbd896-19d4-4bb7-898c-7cdc76375a5e/body.md) and `worktree-provision-reclaim-decision` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) only for reclaim evaluation; provides lifecycle behavior to operators. This is documented intended provider/consumer evidence, not a persisted edge until the typed model exists.
 
 ## Examples
 
