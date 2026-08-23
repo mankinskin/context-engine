@@ -30,8 +30,9 @@ and hooks prevent committed specification navigation from drifting from stored l
 ## Interfaces And Dependencies
 
 `ValidationSpec` identifies a target; `ValidationExecution` carries outcome,
-time, and detail. Hook configuration invokes health/link validation once per
-repository root after relevant `.spec/specs/` writes. The health result is
+time, and detail. Hook configuration validates changed relevant roots plus
+impacted composition ancestors after relevant `.spec/` writes; explicit
+`spec health --all` remains the complete CI check. The health result is
 diagnostic and includes stable severity plus category/policy, including
 `violation` and `migration_notice`.
 
@@ -40,7 +41,7 @@ diagnostic and includes stable severity plus category/policy, including
 - `validation-criterion-link`: evidence identifies applicable spec/criterion targets.
 - `validation-observation-source`: outcomes expose `validation_spec_id`, `links.acceptance_criterion_ids`, status, `executed_at`, optional detail, and stable id. Ticket-gate consumers query executions by `validation_spec_id`, then filter `execution.links.acceptance_criterion_ids` for the criterion id; test-api adds no first-class criterion query or index. Newest `executed_at` wins, stable id resolves equal timestamps, absent is pending, passed satisfies, and failed or blocked revokes. Test-store identity, ticket id, and governing-spec id are not match inputs; a shared validation specification and criterion intentionally makes each matching ticket gate observe the same outcome.
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
-- `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. `spec health` returns structured diagnostic findings and does not globally fail because they exist. The hook alone applies configured blocking policy and a versioned `(spec_id, issue)` allowlist, blocking only policy-selected violations. `migration_notice` remains distinguishable from `violation`; the allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
+- `validation-hook-enforcement`: a PostToolUse hook validates changed relevant roots and impacted composition ancestors for link parity, hierarchy, Examples, navigation, and prefix registry. `spec health --all` is the complete CI/explicit check and its JSON exits zero for findings. The hook alone applies `.spec/health-policy.toml`, maps policy error findings to a blocking response, honors only versioned allowlist identities with rationale and expiry/review metadata, and fails closed when the validator itself fails. `migration_notice` remains distinguishable from `violation`; the allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
 
 Raw Markdown navigation is resolved relative to the owning `body.md`; hook
 evidence must therefore reject root-relative internal targets that escape the

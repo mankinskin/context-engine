@@ -61,7 +61,7 @@ criterion_ids = ["<provider-owned-criterion-id>"]
 - `component-root-membership`: resolve an optional parent component spec as hierarchy composition only.
 - `component-criterion-ownership`: exclusively own zero or more standard criteria; parent composition criteria have the ordinary artifact, validation, and evidence shape and do not duplicate child criteria.
 - `component-code-refs-required`: a code-facing component has at least one valid `CodeRef`, and its body has a non-empty `## Naming Conventions` section.
-- `component-outward-edge-ownership`: each provider component spec persists its own `[[outward_contract_edges]]` rows; `consumer_component_id` and `provider_component_id` are component ids, the provider equals the owning component, and no parent aggregation mirrors an authoritative edge.
+- `component-outward-edge-ownership`: each provider component spec persists its own `[[outward_contract_edges]]` rows; `consumer_component_id` and `provider_component_id` are component ids, the provider equals the owning component, and no parent aggregation mirrors an authoritative edge. Every row stays within that provider's composition root and workspace; the provider serializes unique `criterion_ids` lexicographically.
 
 Parent-owned ordinary criteria may evaluate the direct-child component set,
 required child shape, and required inter-child provider/consumer edges, but do

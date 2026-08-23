@@ -27,6 +27,7 @@ The interview is general-purpose. Depending on the objective and the answers it 
 - Ask only concise, decision-driving questions.
 - Ask about what requires human judgment; read the repository for everything else.
 - Keep the interview tied to the nearest ticket/spec/code anchor when one exists.
+- Define unfamiliar repository terms in plain language and show one local example before asking the user to choose their behavior.
 - Implement code only when the user explicitly asks.
 - Every question must satisfy the Question Quality contract below before it is sent.
 - Persist every confirmed answer and open decision to a store before ending a turn; treat that record, not the chat, as the state.
@@ -43,6 +44,7 @@ Mandatory per question:
 3. **One decision per question.** Split anything that requires two independent choices.
 4. **Concrete options with consequences.** Offer bounded options and say what each one causes; mark a recommended default and why.
 5. **Verifiable answer.** Every possible answer converts directly into an acceptance criterion. If one does not, sharpen the question before asking.
+6. **Ground terms locally.** Expand repository-specific or abstract terms in plain language and show a short local example that demonstrates what each option changes. Never ask the user to decide a model label, relationship, or lifecycle rule that has not been explained in the current question.
 
 Before sending, run the reader test: reread the question as someone who has seen none of your tool output. They should be able to tell which thing is being asked about, what currently happens, and what changes per answer.
 

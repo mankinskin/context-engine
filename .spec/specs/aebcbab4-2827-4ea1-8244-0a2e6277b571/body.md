@@ -33,7 +33,8 @@ acceptance obligation rather than copied consumer requirements.
 
 `CriterionArtifact` requires `criterion_id`, `owner_component_id`, `behavior`,
 and `measurement`; `validation_evidence[]` is optional. Optional template
-provenance is `template_id`, `template_version`, and `template_bindings`. The
+provenance is immutable `template_id`, integer `template_version`, and an exact
+version binding map whose string keys serialize lexicographically. The
 owner is one component id and no separate containing `spec_id` exists.
 Parent composition criteria use this unchanged shape, including normal
 validation and evidence links; they are not a second artifact class.
@@ -47,7 +48,7 @@ validation and evidence links; they are not a second artifact class.
 - `criterion-evidence-integrity`: resolve every named validation-evidence link in that root.
 - `criterion-naming-conventions-required`: require a documented owner-prefix naming convention for each code-facing criterion component.
 - `criterion-prefix-registry`: require each component to resolve to exactly one `.spec/criterion-prefixes.toml` entry, with unique component ids and prefixes across all registered scan roots; every criterion must match that entry's `<prefix>-<behavior>` form.
-- `criterion-template-materialization`: accept a deterministic template expansion only when its concrete artifact id, owner component id, template id/version, and bindings resolve; the template is not the owner.
+- `criterion-template-materialization`: accept a deterministic template expansion only when its concrete artifact id, owner component id, immutable template id, exact integer version, and lexicographically ordered string bindings resolve; the template is not the owner.
 - `criterion-composition-graph`: allow a parent-owned ordinary artifact to measure its direct-child component ids, required child shape, and required inter-child provider/consumer edges, while rejecting copied child-internal or provider-owned criteria.
 
 ## Boundaries And Failure Cases
@@ -69,7 +70,8 @@ never auto-populate it.
 
 Parameterized templates may generate provider-owned criterion artifacts for the `-api`, `-cli`, `-mcp`,
 `-http`, and `-viewer` families, but a template remains a definition rather
-than a component or provider/consumer edge.
+than a component or provider/consumer edge. A later template version never
+rewrites a materialized artifact; it must be represented by a declared binding-map migration and a review-required result.
 
 ## Provider/Consumer Contract
 

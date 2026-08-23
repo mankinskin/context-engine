@@ -43,7 +43,8 @@ presence is not version detection. The index renderer
 receives raw bodies and manifests to derive the existing hierarchy catalog. The
 `.spec` index root owns the committed system-wide
 `.spec/criterion-prefixes.toml` registry across all registered scan roots in
-the same `SpecStore`. A reusable shared operation journal, specified-but-not-built,
+the same `SpecStore`; each composition root also owns
+`.spec/criterion-templates.toml` and `.spec/health-policy.toml`. A reusable shared operation journal, specified-but-not-built,
 is a prerequisite for spec migration and cross-store ticket governance. It owns
 planned and inverse writes, operation-scoped locks, collision detection,
 apply/resume/rollback, and recovery tests; it is not an extension of the
@@ -56,10 +57,11 @@ folder-move journal and it is not two domain-specific journals.
 - `store-preserves-baselines`: preserve sections, hierarchy, and `TicketRef`.
 - `store-removes-retired-model`: retire `contract_mode`, expected properties, mandatory evidence requirements, and fulfillment summaries.
 - `store-parent-navigation-verification`: verify, but never generate or rewrite, each handwritten parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
-- `store-template-expansion-persistence`: persist `CriterionTemplateBinding`
-    records with `template_id`, `template_version`, parameter `bindings`,
-    `owner_component_id`, and concrete `criterion_id`; deterministic expansion,
-    owner identity, and collisions are reportable rather than silently repaired.
+- `store-template-expansion-persistence`: persist exact-version `CriterionTemplateBinding`
+    records with immutable `template_id`, integer `template_version`, lexically
+    ordered string parameter `bindings`, `owner_component_id`, and concrete
+    `criterion_id`; definitions reside in root-local `.spec/criterion-templates.toml`, while declared old-to-new binding-map migrations report review-required artifacts rather than silently repairing them.
+- `store-typed-target-persistence`: persist shared `TypedTarget` references with source field and normalized target rather than parser-specific path strings; valid targets cannot cross a composition root or workspace where the referenced contract requires local identity.
 - `store-criterion-prefix-registry`: preserve the committed registry mapping each stable component id to one unique prefix across every registered scan root. Migration first populates the registry and renames affected criteria; it never infers entries automatically.
 - `store-journaled-recovery`: use the shared operation journal for every local multi-file mutation before changing `spec.toml`, `body.md`, or `.spec/criterion-prefixes.toml`; after interruption, expose recovery status and deterministic resume or rollback. Cross-store governance uses the same shared prerequisite, reports recoverable drift, and never silently repairs. A global transaction is not required.
 - `store-schema-migration`: expose schema/data migration only through explicit, idempotent `spec migrate` operations: `spec migrate --dry-run`, `spec migrate --resume <journal-id>`, and `spec migrate --rollback <journal-id>`, with matching `spec_migrate_*` MCP operations. A migration reads a reviewed explicit mapping file from each legacy spec UUID to its immutable `component_id`; missing, duplicate, or generated mappings fail before writes. Migration is journal-backed and is neither `spec move`, query CLI behavior, nor automatic work performed by scan or open.

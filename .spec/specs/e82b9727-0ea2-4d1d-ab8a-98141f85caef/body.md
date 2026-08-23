@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use `CriterionTemplate`, `CriterionTemplateVersion`, `CriterionTemplateBinding`, and `template-<family>-v<version>` identities. A binding record carries `template_id`, `template_version`, `bindings`, `owner_component_id`, and concrete `criterion_id`. Instantiated provider-owned artifacts retain the owner prefix and use deterministic ids such as `<owner-prefix>-<binding>-<behavior>`.
+Use root-local `.spec/criterion-templates.toml` for definitions and `CriterionTemplate`, `CriterionTemplateVersion`, `CriterionTemplateBinding`, and `template-<family>-v<version>` identities. `template_id` is immutable and `version` is an integer. A binding record carries `template_id`, exact `template_version`, lexicographically ordered string `bindings`, `owner_component_id`, and concrete `criterion_id`. Instantiated provider-owned artifacts retain the owner prefix and use deterministic ids such as `<owner-prefix>-<binding>-<behavior>`.
 
 ## Requester Input
 
@@ -26,7 +26,7 @@ If implemented, component graphs can reuse a versioned generic criterion definit
 
 ## Interfaces And Dependencies
 
-A template has stable identity, version, typed parameter names, a criterion-id recipe, and behavior/measurement recipes. An instantiation binds one version and complete parameters to one concrete provider-owned `CriterionArtifact`, preserving matching provenance fields on that artifact. Initial families cover `-api`, `-cli`, `-mcp`, `-http`, and `-viewer`; they are templates, not components or edges.
+A template has immutable identity, integer version, typed parameter names, a criterion-id recipe, and behavior/measurement recipes. Only `string`, `identifier`, and `component_id` parameter kinds are valid. An instantiation binds one exact version and complete parameters to one concrete provider-owned `CriterionArtifact`, preserving matching provenance fields on that artifact. Recipes permit literal `${parameter}` substitution only in criterion id, statement, and measurement; they have no expression or condition language. Initial families cover `-api`, `-cli`, `-mcp`, `-http`, and `-viewer`; they are templates, not components or edges.
 
 Template expansion produces the same ordinary `CriterionArtifact` shape for a
 parent composition criterion as for a component-internal criterion; templates
@@ -34,15 +34,15 @@ do not introduce a composition-specific artifact class.
 
 ## Behavior
 
-- `template-definition`: reject duplicate parameter names and ambiguous id recipes.
-- `template-deterministic-expansion`: identical template version, bindings, and owner produce identical criterion ids and statements.
+- `template-definition`: load definitions only from root-local `.spec/criterion-templates.toml`; reject duplicate parameter names, unsupported parameter kinds, mutable template ids, non-integer versions, and ambiguous id recipes.
+- `template-deterministic-expansion`: identical template id/version, lexically ordered binding map, and owner produce identical criterion ids, statements, and measurements through literal substitution only.
 - `template-owner-materialization`: expansion creates concrete criterion artifacts owned by the bound `owner_component_id`, never by the template or parent.
 - `template-collision-handling`: collision with a non-identical existing criterion fails; identical repeated expansion is idempotent.
-- `template-version-migration`: a version is immutable; a migration declares old-to-new bindings and reports criteria requiring review rather than silently rewriting them.
+- `template-version-migration`: a version is immutable; a separate declarative old-to-new binding-map migration record reports each review-required artifact and never rewrites materialized criteria automatically.
 
 ## Boundaries And Failure Cases
 
-Templates neither create components nor encode provider/consumer dependencies. Missing bindings, unknown template/version, invalid generated ids, owner outside the composed hierarchy, mismatched artifact provenance, or a collision with differing content is invalid. Template upgrade is explicit migration, not implicit latest-version selection.
+Templates neither create components nor encode provider/consumer dependencies. Missing bindings, unknown template/version, an expression or condition, substitution outside id/statement/measurement, invalid generated ids, owner outside the composed hierarchy, mismatched artifact provenance, or a collision with differing content is invalid. Template upgrade is explicit migration, not implicit latest-version selection or automatic rewriting.
 
 ## Provider/Consumer Contract
 

@@ -13,7 +13,11 @@ Use `health-` criterion ids and stable finding categories/policies such as
 `parent_cycle`, `missing_examples`, `criterion_prefix_registry`,
 `component_identity`, `composition_criteria`, `contract_edge`, and
 `template_binding`, `manifest_version`, and `migration_mapping`. Every
-finding carries stable `severity`, `category`, and policy metadata. This child
+finding carries stable `severity`, `category`, and policy metadata. Root-local
+`.spec/health-policy.toml` has `policy_version = 1`, severity `info`, `warning`,
+or `error`, maps `migration_notice` to `warning` and `violation` to `error`, and
+defines allowlists as `v1:<spec-id>:<category>:<normalized-detail-fingerprint>`
+with rationale plus expiry/review metadata. This child
 owns `health-validates-references`, `health-allows-unvalidated-criteria`,
 `health-no-fulfillment-gate`, `health-hierarchy-integrity`, `health-link-parity`, and `health-examples-section`.
 
@@ -42,7 +46,8 @@ ordinary composition criteria, structured provider edges, criterion artifacts, t
 bindings, and structured links; it returns `SpecHealthReport` findings through
 the CLI. Each finding includes a stable severity, category/policy, and detail;
 at minimum `violation` denotes a contract breach and `migration_notice` denotes
-distinguishable migration guidance.
+distinguishable migration guidance. Health JSON exits zero for findings; the
+PostToolUse hook is the policy-controlled blocking decision.
 
 ## Behavior
 
@@ -58,6 +63,7 @@ distinguishable migration guidance.
 - `health-parent-navigation`: verify handwritten root Reading Order and Component Relationship Map content without generating or rewriting `body.md`.
 - `health-criterion-prefix-registry`: require exactly one committed registry entry per component, unique ids and prefixes, matching criterion ids, and no orphan entries across all registered scan roots.
 - `health-diagnostic-result`: return structured findings, including stable severity and category/policy, without globally rejecting the command solely because findings exist; migration notices remain distinguishable from violations.
+- `health-policy`: load only `.spec/health-policy.toml` with `policy_version = 1`, validate severity and category mappings, and accept an exemption only when its versioned identity, rationale, and expiry/review metadata match a normalized finding detail fingerprint.
 - `health-template-and-annotation-integrity`: report unresolved template
 	version/bindings/generated ids and invalid source annotations without
 	pretending that either model is implemented today.
@@ -85,7 +91,7 @@ If `body.md` links `[55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b9
 
 ## Evidence
 
-Position: `partial`; existing `health_issues` checks field presence and generic dangling `depends_on`, while `health_all` aggregates reports. Planned tests cover TOML/body drift, missing and extra links, every hierarchy defect, and empty Examples; command: `./target/debug/spec.exe --workspace . health --all`. Current baseline is exactly three unrelated `9f0b9e30` findings.
+Position: `partial`; existing `health_issues` checks field presence and generic dangling `depends_on`, while `health_all` aggregates reports. Planned tests cover TOML/body drift, missing and extra links, every hierarchy defect, policy severity/allowlist validation, and empty Examples; command: `./target/debug/spec.exe --workspace . health --all`. Current baseline is exactly three unrelated `9f0b9e30` findings.
 
 The command remains diagnostic and may exit successfully with findings. The
 specified PostToolUse hook, not `spec health`, applies configured blocking

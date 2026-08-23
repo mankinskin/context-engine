@@ -93,8 +93,8 @@ flowchart TD
 	and `spec-mcp`; CLI/MCP parity may require both transports to consume shared
 	API behavior rather than duplicate it. Those component specs are
 	specified-but-not-built until separately authored.
-- Provider-owned `outward_contract_edges` persist distinct provider/consumer
-	records whose endpoints are `component_id` values. `CriterionTemplateBinding`
+- Provider-owned `outward_contract_edges` persist distinct root-local provider/consumer
+	records whose deterministic ids are `edge-<consumer>-consumes-<provider>-<name>`, whose provider is the owning component, and whose lexicographically serialized criterion ids do not overlap across named rows for a pair. `CriterionTemplateBinding`
 	records bind a template id/version and parameters to one concrete provider
 	criterion artifact; templates are neither components nor edges. Health
 	independently validates composition, edges, bindings, deterministic expansion,
