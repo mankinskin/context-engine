@@ -9,7 +9,10 @@
 ## Naming Conventions
 
 Use `ComponentArtifact` for the future record, not `SpecManifest.component`.
-Component criterion ids use `component-`; this child owns `component-required-fields`, `component-optional-fields`, `component-root-membership`, `component-criterion-ownership`, and `component-code-refs-required`.
+Component criterion ids use the registered system-wide prefix; this child owns
+`component-required-fields`, `component-optional-fields`,
+`component-root-membership`, `component-criterion-ownership`,
+`component-code-refs-required`, and `component-outward-edge-ownership`.
 
 ## Requester Input
 
@@ -30,7 +33,15 @@ without conflating it with the root manifest classifier.
 ## Interfaces And Dependencies
 
 `ComponentArtifact` requires `id`, `spec_id`, `title`, and `purpose`; optional
-fields are `context`, related spec/evidence ids, and `code_refs`.
+fields are `context`, related spec/evidence ids, `code_refs`, and provider-owned
+outward contract edges. Provider identity is implicit in the owning manifest:
+
+```toml
+[[outward_contract_edges]]
+name = "health reads persisted artifacts"
+consumer_spec_id = "<consumer-spec-id>"
+criterion_ids = ["<registered-prefix>-persists-artifacts"]
+```
 
 ## Behavior
 
@@ -39,12 +50,14 @@ fields are `context`, related spec/evidence ids, and `code_refs`.
 - `component-root-membership`: resolve the declared root.
 - `component-criterion-ownership`: exclusively own zero or more criteria.
 - `component-code-refs-required`: a code-facing component has at least one valid `CodeRef`, and its body has a non-empty `## Naming Conventions` section.
+- `component-outward-edge-ownership`: each provider persists its own `[[outward_contract_edges]]` rows; root aggregation is read-only and never mirrors an authoritative edge.
 
 ## Boundaries And Failure Cases
 
 A component is not the root classifier and owns neither consumer edges nor another
-component's criteria. Missing root, required field, code reference, or naming
-section is invalid for a code-facing component; empty owned criteria are valid.
+component's criteria. Missing root, required field, code reference, naming
+section, or registry entry is invalid for a code-facing component; empty owned
+criteria are valid.
 
 ## Provider/Consumer Contract
 

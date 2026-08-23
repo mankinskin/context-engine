@@ -38,8 +38,10 @@ and store-root identity.
 ## Boundaries And Failure Cases
 
 Evidence is neither an observation nor success claim. Missing identity,
-unresolvable declared store metadata, or cross-root reference is invalid; an
-unavailable document is not a health fulfillment gate.
+unresolvable declared store metadata, or cross-root reference is invalid.
+Document `Missing` and `Unsupported` resolution outcomes are not success and
+cannot establish a successful observation; an unavailable document is not
+itself a health fulfillment gate.
 
 ## Provider/Consumer Contract
 

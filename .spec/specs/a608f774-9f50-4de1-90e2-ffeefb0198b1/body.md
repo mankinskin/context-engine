@@ -30,14 +30,17 @@ The root extends `SpecManifest`; [55d8f2eb Specification Store Contract](.spec/s
 
 ## Behavior
 
-- `root-surviving-fields`: retain `id`, lifecycle, `title`, `slug`, `type`, `state`, `scope`, `parent`, `code_refs`, sections, hierarchy, and `TicketRef`.
+- `root-surviving-fields`: retain `id`, lifecycle, `title`, `slug`, `type`, `state`, `scope`, `parent`, `code_refs`, sections, hierarchy, `TicketRef`, and distinct `governs_ticket` relations.
 - `root-component-classification`: preserve the manifest classifier independently of a Component Artifact.
 - `root-artifact-namespace`: place every new artifact in exactly one root.
 
 ## Boundaries And Failure Cases
 
-The root neither owns a participant criterion nor evidence state. Missing root
-identity and cross-root artifacts are invalid; migration policy is out of scope.
+The root neither owns a participant criterion nor evidence state. A
+`governs_ticket` relation is not a `ComponentContractEdge` or an informational
+`related_tickets`/`related_specs` link. Missing root identity, cross-root
+artifacts, or a missing typed ticket-side gate are invalid; legacy generic
+forms are detect-and-report only and never infer a semantic equivalent.
 
 ## Provider/Consumer Contract
 

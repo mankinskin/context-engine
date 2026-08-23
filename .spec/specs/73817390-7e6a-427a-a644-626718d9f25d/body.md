@@ -23,19 +23,21 @@ a stable document identity and review location without using availability as ful
 
 ## Interfaces And Dependencies
 
-A document target supplies a stable reference and optional locator; resolution
-returns identity plus review location or a resolvable failure result.
+A document target supplies a stable reference and optional locator. Resolution
+returns exactly `Resolved { record }`, `Missing { id }`, or `Unsupported { target }`.
 
 ## Behavior
 
 - `document-stable-target`: a document has a stable target reference.
-- `document-resolution-result`: resolution exposes identity and review location.
+- `document-resolution-result`: `Resolved { record }` exposes identity and review location; `Missing { id }` and `Unsupported { target }` are typed non-success outcomes.
 - `document-evidence-nongating`: unavailable or unobserved material is not a mandatory-evidence health failure.
 
 ## Boundaries And Failure Cases
 
 The document store neither decides criterion success nor manufactures a locator.
-Missing documents yield a resolvable failure result, not changed health policy.
+Missing documents yield `Missing { id }`, unsupported targets yield
+`Unsupported { target }`, and neither outcome establishes success or changes
+health policy.
 
 ## Provider/Consumer Contract
 
@@ -49,7 +51,8 @@ Reference can record without claiming a criterion was fulfilled.
 
 ## Evidence
 
-Position: `not-implemented` in this repository; validate a locatable document
+Position: `not-implemented` in this repository: no document resolver or index
+exists. Validate a locatable document
 and missing-target result in the owning document API test suite when it is linked.
 
 ## Scope

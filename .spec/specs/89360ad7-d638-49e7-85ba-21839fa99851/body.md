@@ -30,14 +30,15 @@ and hooks prevent committed specification navigation from drifting from stored l
 ## Interfaces And Dependencies
 
 `ValidationSpec` identifies a target; `ValidationExecution` carries outcome,
-time, and detail. Hook configuration invokes health/link validation on spec edits.
+time, and detail. Hook configuration invokes health/link validation once per
+repository root after relevant `.spec/specs/` writes.
 
 ## Behavior
 
 - `validation-criterion-link`: evidence identifies applicable spec/criterion targets.
 - `validation-observation-source`: outcomes expose status and optional time/detail.
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
-- `validation-hook-enforcement`: configured hooks run link-parity, hierarchy, and Examples health checks and fail the change on a finding.
+- `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. It parses `issues_count` and issues because `spec health` currently exits successfully with findings, then blocks any finding not in a versioned `(spec_id, issue)` allowlist. The allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
 
 ## Boundaries And Failure Cases
 
@@ -49,9 +50,10 @@ Consumes [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b8
 
 ## Examples
 
-A pre-commit hook invokes `./target/debug/spec.exe --workspace . health --all`.
-If a body link has no TOML counterpart, the health finding stops the commit; a
-manual validation entry can still exist where no executable test is available.
+A PostToolUse hook invokes `./target/debug/spec.exe --workspace . health --all`.
+If a body link has no TOML counterpart, parsing its health finding stops the
+write; a manual validation entry can still exist where no executable test is
+available.
 
 ## Evidence
 

@@ -27,12 +27,12 @@ If implemented, a CLI or MCP caller can obtain a complete structured projection 
 
 ## Interfaces And Dependencies
 
-`spec dump <id> --json` returns id, timestamps, fields, code refs, components, criteria, evidence, observations, edges, sections, and body. `spec links <id> --json` returns link kind, source field, target, resolution result, and failure detail.
+`spec dump <id> --json` returns id, timestamps, fields, code refs, components, criteria, evidence, observations, edges, sections, and body. `spec links <id> --json` returns normalized link kind, source field, target `{kind, repo_relative_ref, optional_locator}`, resolution result, and failure detail.
 
 ## Behavior
 
 - `query-spec-dump`: emit all persisted data for an unambiguous spec id, including structured extras and `code_refs`.
-- `query-resolved-links`: enumerate and resolve every TOML-backed spec, code, ticket, document, and component-edge link; do not infer body-only links as structured data.
+- `query-resolved-links`: enumerate and resolve every TOML-backed spec, code, ticket, document, and component-edge link; compare kinds explicitly and do not infer body-only links as structured data.
 
 ## Boundaries And Failure Cases
 

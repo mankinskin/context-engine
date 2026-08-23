@@ -24,13 +24,15 @@ can be reviewed as one traceable contract.
 12. [73817390 Document Store Evidence Integration](.spec/specs/73817390-7e6a-427a-a644-626718d9f25d/body.md) - stable document targets.
 13. [89360ad7 Validation Store Evidence Integration](.spec/specs/89360ad7-d638-49e7-85ba-21839fa99851/body.md) - validation evidence and hook enforcement.
 14. [ef4cbcd7 Specification Query And Link Resolution CLI](.spec/specs/ef4cbcd7-9544-4c43-9095-59822b4211b6/body.md) - full persisted-data projection and TOML link resolution.
+15. [Presentation automation planning dossier](transcripts/20-08-2026_presentation-automation-planning/README.md) - external related effort owning source locks, fact/projector extraction, and Slidev generation/validation through planned [1500a9e6 Conceptual deck contract](.ticket/tickets/1500a9e6-293f-4803-969d-0dcabeaa470a), [693763fc Typed projections](.ticket/tickets/693763fc-e4c1-4c93-b39f-5e0958b57d19), and [ec1f452d Deck materialization](.ticket/tickets/ec1f452d-8eba-488c-bcfe-8dd8728130f1), coordinated by [0ee95228 Presentation epic](.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098) under Presentation System spec `2ccde9ee`.
 
 ## Component Relationship Map
 
 ```mermaid
 flowchart TD
 		Root[Specification Root] -->|root-artifact-namespace| Store[Specification Store]
-		Root -->|ticket-governing-spec| Ticket[Ticket Store]
+		Root -->|governs_ticket| Ticket[Ticket Store]
+		Ticket -->|typed specification gate| Root
 		Component[Component Artifact] -->|root-artifact-namespace| Root
 		Criterion[Criterion Artifact] -->|component-criterion-ownership| Component
 		Criterion -->|root-artifact-namespace| Root
@@ -61,6 +63,16 @@ flowchart TD
 	checks do not parse body links or persist component edges.
 - An unvalidated criterion remains structurally complete. Health reports shape,
 	reference, hierarchy, and authored-document drift rather than fulfillment.
+- A governing specification's `governs_ticket` relation and the ticket store's
+	typed gate record are distinct, bidirectional traceability records. Neither
+	is a `ComponentContractEdge` nor generic `related_tickets`/`related_specs`
+	metadata.
+- Parent Reading Order links and Component Relationship Map graphs are
+	handwritten authored navigation. Health verifies them and never rewrites
+	`body.md`.
+- Presentation derivation is outside this tree: `presentation-viewer` and
+	presentation-api paths are not materialized in this checkout and remain
+	specified-but-not-built in the related Presentation System effort.
 
 ## Examples
 

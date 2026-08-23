@@ -8,8 +8,8 @@
 
 ## Naming Conventions
 
-Use `CriterionArtifact`; ids are `<owner-prefix>-<behavior>` and are unique per
-root. This child owns `criterion-required-fields`, `criterion-single-owner`,
+Use `CriterionArtifact`; ids are `<registered-prefix>-<behavior>` and are unique
+per root. This child owns `criterion-required-fields`, `criterion-single-owner`,
 `criterion-root-unique`, `criterion-optional-validation`, `criterion-evidence-integrity`, and `criterion-naming-conventions-required`.
 
 ## Requester Input
@@ -41,12 +41,23 @@ acceptance obligation rather than copied consumer requirements.
 - `criterion-optional-validation`: accept an empty `validated_by` list.
 - `criterion-evidence-integrity`: resolve every named evidence id in that root.
 - `criterion-naming-conventions-required`: require a documented owner-prefix naming convention for each code-facing criterion component.
+- `criterion-prefix-registry`: require each component to resolve to exactly one `.spec/criterion-prefixes.toml` entry, with unique component ids and prefixes across all registered scan roots; every criterion must match that entry's `<prefix>-<behavior>` form.
 
 ## Boundaries And Failure Cases
 
 Criteria do not copy provider claims into consumer contracts or require an
 observation. Missing owner, duplicate id, cross-root owner, dangling evidence,
-or undocumented code-facing naming convention is invalid.
+an unregistered/mismatched/duplicate/orphan prefix entry, or undocumented
+code-facing naming convention is invalid. The target registry schema is:
+
+```toml
+[component_prefixes]
+"<stable-component-id>" = "<prefix>"
+```
+
+This is specified-but-not-built: create the file only after materialized stable
+component ids allow real entries, then migrate and rename affected criteria;
+never auto-populate it.
 
 ## Provider/Consumer Contract
 

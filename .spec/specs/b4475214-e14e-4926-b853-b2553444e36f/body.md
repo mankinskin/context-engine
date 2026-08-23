@@ -9,7 +9,8 @@
 ## Naming Conventions
 
 Use `health-` criterion ids and stable finding categories such as `link_parity`,
-`missing_parent`, `orphan`, `parent_cycle`, and `missing_examples`. This child
+`missing_parent`, `orphan`, `parent_cycle`, `missing_examples`, and
+`criterion_prefix_registry`. This child
 owns `health-validates-references`, `health-allows-unvalidated-criteria`,
 `health-no-fulfillment-gate`, `health-hierarchy-integrity`, `health-link-parity`, and `health-examples-section`.
 
@@ -41,15 +42,19 @@ the CLI.
 - `health-validates-references`: check required fields, root membership, ownership, uniqueness, and artifact references.
 - `health-allows-unvalidated-criteria` and `health-no-fulfillment-gate`: accept absent validation and never require satisfied evidence.
 - `health-hierarchy-integrity`: reject missing parents, orphans, and parent cycles.
-- `health-link-parity`: parse `body.md` Markdown links and fail when the resolved spec, code, ticket, document, or component-edge links differ from structured TOML links.
+- `health-link-parity`: parse Markdown links only under `## Target Code Location`, `## Reading Order`, and `## Provider/Consumer Contract`; normalize recognized targets to `{kind, repo_relative_ref, optional_locator}` and compare kind explicitly against structured TOML links. Ordinary prose links are navigation-only.
 - `health-examples-section`: require each spec to have a non-empty `## Examples` section.
+- `health-parent-navigation`: verify handwritten root Reading Order and Component Relationship Map content without generating or rewriting `body.md`.
+- `health-criterion-prefix-registry`: require exactly one committed registry entry per component, unique ids and prefixes, matching criterion ids, and no orphan entries across all registered scan roots.
 
 ## Boundaries And Failure Cases
 
 Health reports structural findings, not fulfillment. Invalid Markdown, unknown
-link target, unrepresented TOML link, duplicate body link semantics, missing
-examples, missing parent, orphan, or cycle must be a finding. Current hierarchy
-traversal and health code do not implement these checks.
+link target, unrepresented TOML link, duplicate structured `{relation,target}`
+tuple, missing examples, missing parent, orphan, cycle, or prefix-registry drift
+must be a finding. Repeated navigation links normalize once; different relations
+to the same target are valid. Current hierarchy traversal and health code do not
+implement these checks.
 
 ## Provider/Consumer Contract
 
@@ -62,6 +67,11 @@ If `body.md` links `[55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb
 ## Evidence
 
 Position: `partial`; existing `health_issues` checks field presence and generic dangling `depends_on`, while `health_all` aggregates reports. Planned tests cover TOML/body drift, missing and extra links, every hierarchy defect, and empty Examples; command: `./target/debug/spec.exe --workspace . health --all`. Current baseline is exactly three unrelated `9f0b9e30` findings.
+
+The current command exits successfully with findings, so the specified PostToolUse
+hook must parse `issues_count` and issues, run once per repo root after relevant
+`.spec/specs/` writes, and block every finding except a versioned `(spec_id, issue)`
+allowlist containing only the three unrelated `9f0b9e30` baseline findings.
 
 ## Scope
 

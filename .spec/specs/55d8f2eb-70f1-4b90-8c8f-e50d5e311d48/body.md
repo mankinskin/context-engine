@@ -10,7 +10,8 @@
 
 Use `SpecStore` for persistence, `spec.toml` for structured contract data, and
 `body.md` for human navigation. This child owns `store-persists-artifacts`,
-`store-preserves-baselines`, `store-removes-retired-model`, and `store-parent-navigation-rendering`.
+`store-preserves-baselines`, `store-removes-retired-model`,
+`store-parent-navigation-verification`, and `store-criterion-prefix-registry`.
 
 ## Requester Input
 
@@ -31,20 +32,27 @@ from `spec.toml`, while parent navigation remains mechanically verifiable.
 ## Interfaces And Dependencies
 
 `SpecStore` persists `SpecManifest` and `body.md`; the index renderer receives
-raw bodies and manifests to derive the existing hierarchy catalog.
+raw bodies and manifests to derive the existing hierarchy catalog. The `.spec`
+index root owns the committed system-wide `.spec/criterion-prefixes.toml`
+registry across all registered scan roots in the same `SpecStore`.
 
 ## Behavior
 
-- `store-persists-artifacts`: round-trip components, criteria, evidence, typed edges, and observations with their root.
+- `store-persists-artifacts`: round-trip components, criteria, evidence, typed edges, observations, and distinct `governs_ticket` relations with their root.
 - `store-preserves-baselines`: preserve sections, hierarchy, and `TicketRef`.
 - `store-removes-retired-model`: retire `contract_mode`, expected properties, mandatory evidence requirements, and fulfillment summaries.
-- `store-parent-navigation-rendering`: emit or verify each parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
+- `store-parent-navigation-verification`: verify, but never generate or rewrite, each handwritten parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
+- `store-criterion-prefix-registry`: preserve the committed registry mapping each stable component id to one unique prefix across every registered scan root. Migration first populates the registry and renames affected criteria; it never infers entries automatically.
 
 ## Boundaries And Failure Cases
 
 The store does not decide health policy or migration. Failed parse, missing root,
-invalid persisted reference, child list omission, or graph/body mismatch returns
-an error; retained baselines must not silently change semantics.
+invalid persisted reference, child list omission, graph/body mismatch, missing
+or duplicate registry entry, duplicate prefix, or malformed criterion id returns
+an error; retained baselines must not silently change semantics. No manifest
+schema-version field exists today; legacy generic forms are detect-and-report
+only, following the ticket metadata precedent that detects `related_specs` when
+`refs` is absent.
 
 ## Provider/Consumer Contract
 

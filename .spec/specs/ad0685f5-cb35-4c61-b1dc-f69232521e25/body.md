@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use `ComponentContractEdge { consumer_component_id, provider_component_id, provider_criterion_ids, name }`. Edge ids use `edge-<consumer>-consumes-<provider>`; this child owns `edge-required-fields`, `edge-nonempty-provider-criteria`, `edge-provider-ownership`, `edge-distinct-endpoints`, `edge-cycles-allowed`, `edge-unique-claim`, `edge-consumer-does-not-copy`, and `edge-persisted-typed-model`.
+Use provider-owned `outward_contract_edges { name, consumer_spec_id, criterion_ids }`; provider identity is implicit in the owning manifest. Edge ids use `edge-<consumer>-consumes-<provider>`; this child owns `edge-required-fields`, `edge-nonempty-provider-criteria`, `edge-provider-ownership`, `edge-distinct-endpoints`, `edge-cycles-allowed`, `edge-unique-claim`, `edge-consumer-does-not-copy`, and `edge-persisted-typed-model`.
 
 ## Requester Input
 
@@ -28,9 +28,10 @@ provider-owned criteria and tooling can read the same data without parsing prose
 
 ## Interfaces And Dependencies
 
-Each edge has root `spec_id`, consumer and provider component ids, nonempty
-`provider_criterion_ids[]`, and `name`; its serialized TOML is the authoritative
-structured representation mirrored in the parent graph and child links.
+Each provider-owned row has nonempty `criterion_ids[]`, `consumer_spec_id`, and
+`name`; its owning manifest supplies provider identity. Its serialized TOML is
+authoritative; root aggregation is read-only and parent navigation remains
+handwritten.
 
 ## Behavior
 
@@ -38,13 +39,14 @@ structured representation mirrored in the parent graph and child links.
 - `edge-distinct-endpoints` rejects self dependencies; `edge-cycles-allowed` permits multi-component cycles.
 - `edge-unique-claim` rejects duplicate `(consumer, provider, criterion)` claims.
 - `edge-consumer-does-not-copy` preserves provider ownership.
-- `edge-persisted-typed-model`: store the directed `(consumer, provider, provider_criterion_ids[], name)` record in `spec.toml`, not only Markdown.
+- `edge-persisted-typed-model`: store provider-owned `[[outward_contract_edges]]` rows in `spec.toml`, not only Markdown.
 
 ## Boundaries And Failure Cases
 
-An edge is neither a copied criterion nor hierarchy edge. A self edge, empty
-list, foreign criterion, missing endpoint, duplicate claim, or prose-only edge
-is invalid.
+An edge is neither a copied criterion, hierarchy edge, nor a governing
+specification's `governs_ticket` relation. A self edge, empty list, foreign
+criterion, missing endpoint, duplicate claim, mirrored root authority, or
+prose-only edge is invalid.
 
 ## Provider/Consumer Contract
 

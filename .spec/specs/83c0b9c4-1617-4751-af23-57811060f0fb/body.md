@@ -53,3 +53,7 @@ Position: `not-implemented`; planned replacement of fulfillment-summary tests in
 ## Scope
 
 Owns optional result linkage, not criterion ownership or executable validation storage.
+
+## Open Decisions
+
+G2 (owning components: `83c0b9c4-1617-4751-af23-57811060f0fb` and [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md)): when validation reruns, which execution is authoritative? Options: the gate explicitly selects an execution; latest wins; first pass remains. Recommended pending answer: an explicit execution pointer, updated on rerun while test-api retains full history.
