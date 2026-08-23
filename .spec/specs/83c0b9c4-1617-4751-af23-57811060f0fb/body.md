@@ -31,6 +31,7 @@ An observation requires `id`, `criterion_id`, `evidence_reference_id`, and
 - `observation-required-fields` and `observation-optional-detail` define shape.
 - `observation-reference-integrity` resolves criterion and evidence in one root.
 - `observation-does-not-gate-health` accepts omitted observations and unsatisfied evidence.
+- `observation-latest-execution`: evaluate a validation gate against the latest matching `ValidationExecution`; no selected-execution pointer is stored. A later `failed` or `blocked` execution revokes a prior satisfied state, while test-api retains complete execution history.
 
 ## Boundaries And Failure Cases
 
@@ -46,6 +47,10 @@ Consumes [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8
 An observation for `health-link-parity` points to `evidence-health-command` with
 status `passed` and no detail. Deleting the observation remains structurally valid.
 
+When matching validation runs pass and then fail, the latest failed execution
+is authoritative and the gate is unsatisfied; test-api retains both executions
+in its history.
+
 ## Evidence
 
 Position: `not-implemented`; planned replacement of fulfillment-summary tests in spec-api manifest/store suites, then `./target/debug/spec.exe --workspace . health --all`.
@@ -53,7 +58,3 @@ Position: `not-implemented`; planned replacement of fulfillment-summary tests in
 ## Scope
 
 Owns optional result linkage, not criterion ownership or executable validation storage.
-
-## Open Decisions
-
-G2 (owning components: `83c0b9c4-1617-4751-af23-57811060f0fb` and [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md)): when validation reruns, which execution is authoritative? Options: the gate explicitly selects an execution; latest wins; first pass remains. Recommended pending answer: an explicit execution pointer, updated on rerun while test-api retains full history.
