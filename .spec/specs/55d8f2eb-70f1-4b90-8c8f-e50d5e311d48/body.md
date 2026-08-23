@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) owns `SpecStore`; [workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs](workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs) and [workflow-tools/spec/crates/spec-api/src/store/sections.rs](workflow-tools/spec/crates/spec-api/src/store/sections.rs) own preserved child behavior; [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](workflow-tools/spec/crates/spec-api/src/store_index_render.rs) renders catalog Markdown.
+[workflow-tools/spec/crates/spec-api/src/store.rs](../../../workflow-tools/spec/crates/spec-api/src/store.rs) owns `SpecStore`; [workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs](../../../workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs) and [workflow-tools/spec/crates/spec-api/src/store/sections.rs](../../../workflow-tools/spec/crates/spec-api/src/store/sections.rs) own preserved child behavior; [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](../../../workflow-tools/spec/crates/spec-api/src/store_index_render.rs) renders catalog Markdown.
 
 ## Naming Conventions
 
@@ -20,10 +20,10 @@ structured contract data, and `body.md` for human navigation. This child owns `s
 
 ## Reading Order
 
-1. [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - persisted edge provider.
-2. [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) - persistence consumer.
-3. [workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) - store boundary.
-4. [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](workflow-tools/spec/crates/spec-api/src/store_index_render.rs) - catalog renderer.
+1. [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - persisted edge provider.
+2. [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md) - persistence consumer.
+3. [workflow-tools/spec/crates/spec-api/src/store.rs](../../../workflow-tools/spec/crates/spec-api/src/store.rs) - store boundary.
+4. [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](../../../workflow-tools/spec/crates/spec-api/src/store_index_render.rs) - catalog renderer.
 
 ## Responsibility
 
@@ -50,6 +50,9 @@ folder-move journal and it is not two domain-specific journals.
 - `store-preserves-baselines`: preserve sections, hierarchy, and `TicketRef`.
 - `store-removes-retired-model`: retire `contract_mode`, expected properties, mandatory evidence requirements, and fulfillment summaries.
 - `store-parent-navigation-verification`: verify, but never generate or rewrite, each handwritten parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
+- `store-template-expansion-persistence`: persist template identity/version,
+  bindings, owner, and expanded criterion ids so expansion is deterministic and
+  collisions are reportable rather than silently repaired.
 - `store-criterion-prefix-registry`: preserve the committed registry mapping each stable component id to one unique prefix across every registered scan root. Migration first populates the registry and renames affected criteria; it never infers entries automatically.
 - `store-journaled-recovery`: use the shared operation journal for every local multi-file mutation before changing `spec.toml`, `body.md`, or `.spec/criterion-prefixes.toml`; after interruption, expose recovery status and deterministic resume or rollback. Cross-store governance uses the same shared prerequisite, reports recoverable drift, and never silently repairs. A global transaction is not required.
 - `store-schema-migration`: expose schema/data migration only through explicit, idempotent `spec migrate` operations: `spec migrate --dry-run`, `spec migrate --resume <journal-id>`, and `spec migrate --rollback <journal-id>`, with matching `spec_migrate_*` MCP operations. Migration is journal-backed and is neither `spec move`, query CLI behavior, nor automatic work performed by scan or open.
@@ -68,9 +71,12 @@ No manifest schema-version field exists today; legacy generic forms are
 detect-and-report only, following the ticket metadata precedent that detects
 `related_specs` when `refs` is absent.
 
+The store distinguishes `parent` composition from outward provider/consumer
+edges and from a ticket governing relation; none may be inferred from another.
+
 ## Provider/Consumer Contract
 
-Consumes [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) `edge-persisted-typed-model`; provides `store-persists-artifacts` to [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md), [a608f774 Specification Root Contract](.spec/specs/a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md), and the future CLI query child.
+Consumes [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) `edge-persisted-typed-model`; provides `store-persists-artifacts` to [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md), [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md), and the future CLI query child.
 
 ## Examples
 
@@ -91,7 +97,7 @@ the store. A later apply interrupted by a collision leaves its shared journal fo
 
 ## Evidence
 
-Position: `partial`; [workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) persists current manifests and [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](workflow-tools/spec/crates/spec-api/src/store_index_render.rs) renders catalog trees, but component-only endpoint validation, journals, recovery status, and resume/rollback are specified-but-not-built. Planned `cargo test -p spec-api` store, hierarchy, renderer, local-interruption, and cross-store-drift tests.
+Position: `partial`; [workflow-tools/spec/crates/spec-api/src/store.rs](../../../workflow-tools/spec/crates/spec-api/src/store.rs) persists current manifests and [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](../../../workflow-tools/spec/crates/spec-api/src/store_index_render.rs) renders catalog trees, but component-only endpoint validation, journals, recovery status, and resume/rollback are specified-but-not-built. Planned `cargo test -p spec-api` store, hierarchy, renderer, local-interruption, and cross-store-drift tests.
 
 ## Scope
 

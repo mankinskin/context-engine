@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) currently defines `AcceptanceCriterion`; it is the replacement location for a provider-owned criterion artifact.
+[workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) currently defines `AcceptanceCriterion`; it is the replacement location for a provider-owned criterion artifact.
 
 ## Naming Conventions
 
@@ -18,10 +18,10 @@ per root. This child owns `criterion-required-fields`, `criterion-single-owner`,
 
 ## Reading Order
 
-1. [fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - owner provider.
-2. [7498bed7 Evidence Reference Contract](.spec/specs/7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - `validated_by` evidence provider.
-3. [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - criterion-edge consumer.
-4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) - current criterion model.
+1. [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - owner provider.
+2. [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - `validated_by` evidence provider.
+3. [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - criterion-edge consumer.
+4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) - current criterion model.
 
 ## Responsibility
 
@@ -44,6 +44,7 @@ component spec's hierarchy.
 - `criterion-evidence-integrity`: resolve every named evidence id in that root.
 - `criterion-naming-conventions-required`: require a documented owner-prefix naming convention for each code-facing criterion component.
 - `criterion-prefix-registry`: require each component to resolve to exactly one `.spec/criterion-prefixes.toml` entry, with unique component ids and prefixes across all registered scan roots; every criterion must match that entry's `<prefix>-<behavior>` form.
+- `criterion-template-materialization`: accept a deterministic template expansion only when its resulting ids, owner component, version, and bindings resolve; the template is not the owner.
 
 ## Boundaries And Failure Cases
 
@@ -62,9 +63,13 @@ This is specified-but-not-built: create the file only after materialized stable
 component ids allow real entries, then migrate and rename affected criteria;
 never auto-populate it.
 
+Parameterized templates may generate criteria for the `-api`, `-cli`, `-mcp`,
+`-http`, and `-viewer` families, but a template remains a definition rather
+than a component or provider/consumer edge.
+
 ## Provider/Consumer Contract
 
-Consumes [fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-criterion-ownership`; provides `criterion-single-owner` and `criterion-root-unique` to [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md), and `criterion-required-fields` to [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+Consumes [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-criterion-ownership`; provides `criterion-single-owner` and `criterion-root-unique` to [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md), and `criterion-required-fields` to [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
 
 ## Examples
 
@@ -74,7 +79,7 @@ may consume that id but may not restate its statement.
 
 ## Evidence
 
-Position: `not-implemented`; [workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) stores the retired `AcceptanceCriterion`. Planned manifest/store tests cover round-trip, duplicate id, foreign owner, and empty `validated_by`.
+Position: `not-implemented`; [workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) stores the retired `AcceptanceCriterion`. Planned manifest/store tests cover round-trip, duplicate id, foreign owner, and empty `validated_by`.
 
 ## Scope
 

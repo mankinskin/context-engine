@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) owns `SpecManifest::health_issues`; [workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) owns `SpecStore::health` and `SpecStore::health_all`; [workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs](workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs) traverses parents; [workflow-tools/spec/src/cli/commands/query.rs](workflow-tools/spec/src/cli/commands/query.rs) exposes `spec health`.
+[workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) owns `SpecManifest::health_issues`; [workflow-tools/spec/crates/spec-api/src/store.rs](../../../workflow-tools/spec/crates/spec-api/src/store.rs) owns `SpecStore::health` and `SpecStore::health_all`; [workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs](../../../workflow-tools/spec/crates/spec-api/src/store/hierarchy.rs) traverses parents; [workflow-tools/spec/src/cli/commands/query.rs](../../../workflow-tools/spec/src/cli/commands/query.rs) exposes `spec health`.
 
 ## Naming Conventions
 
@@ -21,11 +21,11 @@ owns `health-validates-references`, `health-allows-unvalidated-criteria`,
 
 ## Reading Order
 
-1. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - persisted artifacts and parent navigation provider.
-2. [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - structured-edge provider.
-3. [89360ad7 Validation Store Evidence Integration](.spec/specs/89360ad7-d638-49e7-85ba-21839fa99851/body.md) - enforcement consumer.
-4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) - existing manifest health.
-5. [workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) - aggregate health.
+1. [55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - persisted artifacts and parent navigation provider.
+2. [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - structured-edge provider.
+3. [89360ad7 Validation Store Evidence Integration](../../89360ad7-d638-49e7-85ba-21839fa99851/body.md) - enforcement consumer.
+4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) - existing manifest health.
+5. [workflow-tools/spec/crates/spec-api/src/store.rs](../../../workflow-tools/spec/crates/spec-api/src/store.rs) - aggregate health.
 
 ## Responsibility
 
@@ -51,6 +51,9 @@ distinguishable migration guidance.
 - `health-parent-navigation`: verify handwritten root Reading Order and Component Relationship Map content without generating or rewriting `body.md`.
 - `health-criterion-prefix-registry`: require exactly one committed registry entry per component, unique ids and prefixes, matching criterion ids, and no orphan entries across all registered scan roots.
 - `health-diagnostic-result`: return structured findings, including stable severity and category/policy, without globally rejecting the command solely because findings exist; migration notices remain distinguishable from violations.
+- `health-template-and-annotation-integrity`: report unresolved template
+	version/bindings/generated ids and invalid source annotations without
+	pretending that either model is implemented today.
 
 ## Boundaries And Failure Cases
 
@@ -65,11 +68,11 @@ implement these checks.
 
 ## Provider/Consumer Contract
 
-Consumes [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) `store-persists-artifacts` and [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) `edge-persisted-typed-model`; provides all health criteria to [89360ad7 Validation Store Evidence Integration](.spec/specs/89360ad7-d638-49e7-85ba-21839fa99851/body.md) for hook enforcement.
+Consumes [55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) `store-persists-artifacts` and [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) `edge-persisted-typed-model`; provides all health criteria to [89360ad7 Validation Store Evidence Integration](../../89360ad7-d638-49e7-85ba-21839fa99851/body.md) for hook enforcement.
 
 ## Examples
 
-If `body.md` links `[55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md)` but the TOML omits its structured provider edge, `spec health` returns a `violation` with category `link_parity`; if a child has no `## Examples` content, it returns a `violation` with category `missing_examples`. A registry-transition advisory returns a `migration_notice`, not a violation.
+If `body.md` links `[55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md)` but the TOML omits its structured provider edge, `spec health` returns a `violation` with category `link_parity`; if a child has no `## Examples` content, it returns a `violation` with category `missing_examples`. A registry-transition advisory returns a `migration_notice`, not a violation.
 
 ## Evidence
 

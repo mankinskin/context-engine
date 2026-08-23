@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) owns each component specification; [workflow-tools/spec/crates/spec-api/src/code_ref.rs](workflow-tools/spec/crates/spec-api/src/code_ref.rs) owns `CodeRef` serialization and range validation.
+[workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) owns each component specification; [workflow-tools/spec/crates/spec-api/src/code_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/code_ref.rs) owns `CodeRef` serialization and range validation.
 
 ## Naming Conventions
 
@@ -22,10 +22,10 @@ ids use the registered system-wide prefix; this child owns
 
 ## Reading Order
 
-1. [.agents/instructions/spec/spec-system.instructions.md](.agents/instructions/spec/spec-system.instructions.md) - code-first child format.
-2. [a608f774 Specification Root Contract](.spec/specs/a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root namespace provider.
-3. [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - owned criterion consumer.
-4. [workflow-tools/spec/crates/spec-api/src/code_ref.rs](workflow-tools/spec/crates/spec-api/src/code_ref.rs) - `CodeRef` contract.
+1. [.agents/instructions/spec/spec-system.instructions.md](../../../.agents/instructions/spec/spec-system.instructions.md) - code-first child format.
+2. [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root namespace provider.
+3. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - owned criterion consumer.
+4. [workflow-tools/spec/crates/spec-api/src/code_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/code_ref.rs) - `CodeRef` contract.
 
 ## Responsibility
 
@@ -57,6 +57,9 @@ criterion_ids = ["<registered-prefix>-persists-artifacts"]
 - `component-code-refs-required`: a code-facing component has at least one valid `CodeRef`, and its body has a non-empty `## Naming Conventions` section.
 - `component-outward-edge-ownership`: each provider component spec persists its own `[[outward_contract_edges]]` rows in its `spec.toml`; every `consumer_spec_id` is a consumer component spec id, and no parent aggregation mirrors an authoritative edge.
 
+Parent-owned criteria may evaluate the direct-child component set and its
+relationships, but do not make the parent an identity provider for children.
+
 ## Boundaries And Failure Cases
 
 A component spec is not its `component` classifier and owns neither consumer
@@ -67,7 +70,7 @@ component; empty owned criteria are valid.
 
 ## Provider/Consumer Contract
 
-Consumes [a608f774 Specification Root Contract](.spec/specs/a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) `root-component-composition`; provides `component-criterion-ownership` to [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) and `component-root-membership` to [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md).
+Consumes [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) `root-component-composition`; provides `component-criterion-ownership` to [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) and `component-root-membership` to [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md).
 
 ## Examples
 
@@ -78,7 +81,7 @@ spec id is used in `consumer_spec_id` by providers; its parent's
 
 ## Evidence
 
-Position: `partial`; current [workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) persists specs and parent hierarchy but does not yet validate component-only endpoint identity or provider-owned edges. Planned checks: manifest round-trip and invalid separate-`spec_id`, non-component endpoint, and missing-`code_refs` cases in `cargo test -p spec-api`.
+Position: `partial`; current [workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) persists specs and parent hierarchy but does not yet validate component-only endpoint identity or provider-owned edges. Planned checks: manifest round-trip and invalid separate-`spec_id`, non-component endpoint, and missing-`code_refs` cases in `cargo test -p spec-api`.
 
 ## Scope
 

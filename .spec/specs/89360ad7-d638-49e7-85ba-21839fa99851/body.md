@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/test/crates/test-api/src/store.rs](workflow-tools/test/crates/test-api/src/store.rs) owns `TestStoreConfig`; [workflow-tools/test/crates/test-api/src/lib.rs](workflow-tools/test/crates/test-api/src/lib.rs) owns `ValidationSpec` and `ValidationExecution`; [.github/hooks/hooks.json](.github/hooks/hooks.json) registers current hooks.
+[workflow-tools/test/crates/test-api/src/store.rs](../../../workflow-tools/test/crates/test-api/src/store.rs) owns `TestStoreConfig`; [workflow-tools/test/crates/test-api/src/lib.rs](../../../workflow-tools/test/crates/test-api/src/lib.rs) owns `ValidationSpec` and `ValidationExecution`; [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) registers current hooks.
 
 ## Naming Conventions
 
@@ -17,10 +17,10 @@ This child owns `validation-criterion-link`, `validation-observation-source`, `v
 
 ## Reading Order
 
-1. [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural validation provider.
-2. [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - outcome consumer.
-3. [.github/hooks/hooks.json](.github/hooks/hooks.json) - current registration surface.
-4. [tools/agent-hooks](tools/agent-hooks) - hook implementation directory.
+1. [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural validation provider.
+2. [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - outcome consumer.
+3. [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) - current registration surface.
+4. [tools/agent-hooks](../../../tools/agent-hooks) - hook implementation directory.
 
 ## Responsibility
 
@@ -42,6 +42,10 @@ diagnostic and includes stable severity plus category/policy, including
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
 - `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. `spec health` returns structured diagnostic findings and does not globally fail because they exist. The hook alone applies configured blocking policy and a versioned `(spec_id, issue)` allowlist, blocking only policy-selected violations. `migration_notice` remains distinguishable from `violation`; the allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
 
+Raw Markdown navigation is resolved relative to the owning `body.md`; hook
+evidence must therefore reject root-relative internal targets that escape the
+component tree's required `../../` or `../../../` base.
+
 ## Boundaries And Failure Cases
 
 The store does not own criteria, declare fulfillment, make health globally fail
@@ -52,7 +56,7 @@ test-store, ticket, or governing-spec qualifiers to ticket gate matching.
 
 ## Provider/Consumer Contract
 
-Consumes [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) `health-link-parity`, `health-hierarchy-integrity`, and `health-examples-section`; provides outcomes to [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+Consumes [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md) `health-link-parity`, `health-hierarchy-integrity`, and `health-examples-section`; provides outcomes to [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
 
 ## Examples
 
@@ -70,7 +74,7 @@ of the execution's test-store location; this shared outcome is intentional.
 
 ## Evidence
 
-Position: `partial`; test-api persists validation artifacts, but [.github/hooks/hooks.json](.github/hooks/hooks.json) currently runs no spec health command. Planned hook integration and target/absent-automation tests.
+Position: `partial`; test-api persists validation artifacts, but [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) currently runs no spec health command. Planned hook integration and target/absent-automation tests.
 
 ## Scope
 

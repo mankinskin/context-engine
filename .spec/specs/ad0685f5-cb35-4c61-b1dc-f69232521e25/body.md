@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) owns typed manifest extras, and [workflow-tools/spec/crates/spec-api/schemas/specification.toml](workflow-tools/spec/crates/spec-api/schemas/specification.toml) owns declared edge rules.
+[workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) owns typed manifest extras, and [workflow-tools/spec/crates/spec-api/schemas/specification.toml](../../../workflow-tools/spec/crates/spec-api/schemas/specification.toml) owns declared edge rules.
 
 ## Naming Conventions
 
@@ -16,10 +16,10 @@ Use provider-owned `outward_contract_edges { name, consumer_spec_id, criterion_i
 
 ## Reading Order
 
-1. [fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - endpoint provider.
-2. [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - provider-criterion provider.
-3. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - TOML persistence provider.
-4. [workflow-tools/spec/crates/spec-api/schemas/specification.toml](workflow-tools/spec/crates/spec-api/schemas/specification.toml) - current generic edge rules.
+1. [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - endpoint provider.
+2. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - provider-criterion provider.
+3. [55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - TOML persistence provider.
+4. [workflow-tools/spec/crates/spec-api/schemas/specification.toml](../../../workflow-tools/spec/crates/spec-api/schemas/specification.toml) - current generic edge rules.
 
 ## Responsibility
 
@@ -44,7 +44,8 @@ composition and parent navigation remain handwritten.
 
 ## Boundaries And Failure Cases
 
-An edge is neither a copied criterion, hierarchy edge, nor a governing
+An edge is neither a copied criterion, hierarchy composition edge, criterion
+template expansion, nor a governing
 specification's `governs_ticket` relation. A self edge, empty list, foreign
 criterion, missing or non-component-spec endpoint, separate containing
 `spec_id`, duplicate claim, mirrored parent authority, or prose-only edge is
@@ -52,7 +53,7 @@ invalid.
 
 ## Provider/Consumer Contract
 
-Consumes [fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-root-membership` and [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-single-owner`, `criterion-root-unique`; provides persisted edge data to [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) and [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md).
+Consumes [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-root-membership` and [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-single-owner`, `criterion-root-unique`; provides persisted edge data to [55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) and [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md).
 
 ## Examples
 

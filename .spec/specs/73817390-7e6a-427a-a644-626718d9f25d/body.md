@@ -4,7 +4,7 @@
 
 ## Target Code Location
 
-[workflow-tools/doc/crates/doc-api/src/evidence.rs](workflow-tools/doc/crates/doc-api/src/evidence.rs) contains the current document evidence record; [workflow-tools/doc/crates/doc-api/src/workspace.rs](workflow-tools/doc/crates/doc-api/src/workspace.rs) contains the deterministic workspace-discovery baseline.
+[workflow-tools/doc/crates/doc-api/src/evidence.rs](../../../workflow-tools/doc/crates/doc-api/src/evidence.rs) contains the current document evidence record; [workflow-tools/doc/crates/doc-api/src/workspace.rs](../../../workflow-tools/doc/crates/doc-api/src/workspace.rs) contains the deterministic workspace-discovery baseline.
 
 ## Naming Conventions
 
@@ -15,8 +15,8 @@ child owns identity, parser, repository, and resolver criteria.
 
 ## Reading Order
 
-1. [224f9384 Document API Repository, Identity, and Typed Resolver Contract](.spec/specs/224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) - required doc-api provider.
-2. [7498bed7 Evidence Reference Contract](.spec/specs/7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - document-target consumer.
+1. [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) - required doc-api provider.
+2. [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - document-target consumer.
 
 ## Component Relationship Map
 
@@ -34,7 +34,7 @@ fulfillment status.
 
 ## Interfaces And Dependencies
 
-The [224f9384 Document API Repository, Identity, and Typed Resolver Contract](.spec/specs/224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) owns the document repository/index, identity, grammar, and typed resolver before spec evidence resolution ships. Its identity is exactly `(workspace_slug, repo_relative_path)` and its resolver returns `Resolved { record }`, `Missing { identity }`, or `Unsupported { target }`. This is a specified-but-not-built prerequisite: spec-api consumes outcomes only and introduces neither an adapter grammar nor free-form path semantics.
+The [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) owns the document repository/index, identity, grammar, and typed resolver before spec evidence resolution ships. Its identity is exactly `(workspace_slug, repo_relative_path)` and its resolver returns `Resolved { record }`, `Missing { identity }`, or `Unsupported { target }`. This is a specified-but-not-built prerequisite: spec-api consumes outcomes only and introduces neither an adapter grammar nor free-form path semantics.
 
 ## Behavior
 
@@ -52,7 +52,7 @@ evidence-reference behavior cannot claim document resolution.
 
 ## Provider/Consumer Contract
 
-Consumes `document-identity`, `document-target-grammar`, `document-resolver-outcomes`, and `document-index-lifecycle` from [224f9384 Document API Repository, Identity, and Typed Resolver Contract](.spec/specs/224f9384-c38f-4d8b-855e-a8b2457887ca/body.md); provides `document-stable-target` and `document-resolution-result` to [7498bed7 Evidence Reference Contract](.spec/specs/7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md).
+Consumes `document-identity`, `document-target-grammar`, `document-resolver-outcomes`, and `document-index-lifecycle` from [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md); provides `document-stable-target` and `document-resolution-result` to [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md).
 
 ## Examples
 
