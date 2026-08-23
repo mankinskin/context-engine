@@ -38,7 +38,7 @@ diagnostic and includes stable severity plus category/policy, including
 ## Behavior
 
 - `validation-criterion-link`: evidence identifies applicable spec/criterion targets.
-- `validation-observation-source`: outcomes expose status and optional time/detail.
+- `validation-observation-source`: outcomes expose `validation_spec_id`, criterion id, status, `executed_at`, optional detail, and stable id. Ticket gate selection matches only `validation_spec_id` plus criterion id: newest `executed_at` wins, stable id resolves equal timestamps, absent is pending, passed satisfies, and failed or blocked revokes. Test-store identity, ticket id, and governing-spec id are not match inputs; a shared validation specification and criterion intentionally satisfies each matching ticket gate.
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
 - `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. `spec health` returns structured diagnostic findings and does not globally fail because they exist. The hook alone applies configured blocking policy and a versioned `(spec_id, issue)` allowlist, blocking only policy-selected violations. `migration_notice` remains distinguishable from `violation`; the allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
 
@@ -47,7 +47,8 @@ diagnostic and includes stable severity plus category/policy, including
 The store does not own criteria, declare fulfillment, make health globally fail
 when findings exist, or decide hook blocking policy. Invalid target/status or
 hook-command failure is rejected; no result remains valid when no automated
-check exists.
+check exists. It records and exposes execution history but does not add
+test-store, ticket, or governing-spec qualifiers to ticket gate matching.
 
 ## Provider/Consumer Contract
 
@@ -60,6 +61,10 @@ If a body link has no TOML counterpart, health returns a `violation` finding
 and configured PostToolUse policy stops the write; a `migration_notice` is
 reported separately and a manual validation entry can still exist where no
 executable test is available.
+
+Two tickets with gates for the same validation specification and criterion both
+observe one `passed` execution as satisfying, then both observe a newer `failed`
+execution as revoking, regardless of the execution's test-store location.
 
 ## Evidence
 

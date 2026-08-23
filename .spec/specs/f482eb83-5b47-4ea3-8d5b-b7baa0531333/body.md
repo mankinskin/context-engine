@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use `TicketRef` for a governing component-spec target, `SpecificationGate` for the ticket-side typed record, and `ticket-` criterion ids. This child owns `ticket-governing-spec`, `ticket-explicit-spec-target`, `ticket-spec-before-plan`, `ticket-bidirectional-governance`, `ticket-governance-recovery`, and `edge-spec-consumes-ticket-gate`.
+Use `TicketRef` for a governing component-spec target, `SpecificationGate` for the ticket-side typed record, and `ticket-` criterion ids. This child owns `ticket-governing-spec`, `ticket-explicit-spec-target`, `ticket-spec-before-plan`, `ticket-bidirectional-governance`, `ticket-gate-lifecycle`, `ticket-governance-recovery`, and `edge-spec-consumes-ticket-gate`.
 
 ## Reading Order
 
@@ -41,8 +41,8 @@ that specification. Neither side uses generic `related_specs` semantics.
 - `ticket-explicit-spec-target`: identify the target without implicit resolution.
 - `ticket-spec-before-plan`: create a ticket after, never instead of, its spec.
 - `ticket-bidirectional-governance`: require the governing spec's `governs_ticket` relation and the ticket's typed gate record to resolve to each other.
-- `ticket-gate-lifecycle`: a passed latest matching validation execution satisfies the selected gate; failed or blocked leaves it unsatisfied. Gate outcomes never transition ticket lifecycle state; the existing review-controlled workflow alone does so.
-- `ticket-governance-recovery`: a cross-store governance mutation records enough journal state to report recoverable drift after interruption and exposes resume or rollback; it never silently repairs ticket/spec divergence and does not require a global transaction.
+- `ticket-gate-lifecycle`: a validation execution matches a governed ticket criterion gate by `validation_spec_id` plus criterion id only. No ticket id, governing-spec id, or `.test` store identity participates. With several matches, newest `executed_at` wins and deterministic id ordering resolves equal timestamps; absent matching execution is unsatisfied `pending`, `passed` satisfies, and `failed` or `blocked` revokes. A validation specification and criterion shared across tickets intentionally satisfies every matching gate. Gate outcomes never transition ticket lifecycle state; the existing review-controlled workflow alone does so.
+- `ticket-governance-recovery`: cross-store governance consumes the reusable shared operation journal prerequisite from [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md). It records planned and inverse writes, locks, collisions, and recovery state to expose resume or rollback; it never silently repairs ticket/spec divergence and does not require a global transaction.
 - `edge-spec-consumes-ticket-gate`: Specification Root consumes all three ticket criteria.
 
 ## Boundaries And Failure Cases
@@ -54,7 +54,8 @@ Missing target identity, wrong store root, missing reverse typed gate,
 pre-spec planning, or a cross-store interruption silently repaired without an
 explicit resume/rollback choice is invalid. A recovered operation reports its
 status and preserves the original divergent state until the selected recovery
-action runs.
+action runs. The validation match predicate does not gain ticket,
+governing-spec, or test-store qualifiers.
 
 ## Provider/Consumer Contract
 
@@ -66,10 +67,12 @@ An implementation ticket records a `TicketRef` for its governing spec before
 planning begins; `validate-links` rejects it if the referenced ticket does not
 link back to that spec or its declared `.ticket` store is wrong.
 
-A gate with a latest matching `passed` validation execution is satisfied, but
-the ticket remains in its current lifecycle state until the normal
-review-controlled workflow transitions it. A latest matching `failed` or
-`blocked` execution leaves the gate unsatisfied.
+A gate shared by two tickets matches executions solely by its
+`validation_spec_id` and criterion id. Its newest `executed_at` execution wins,
+with deterministic id ordering for equal times: absent is `pending`, `passed`
+satisfies, and `failed` or `blocked` revokes both matching gates. The tickets
+remain in their current lifecycle states until the normal review-controlled
+workflow transitions them.
 
 If writing the governing spec relation succeeds but the ticket-side gate write
 is interrupted, the operation reports recoverable drift. Resume completes the

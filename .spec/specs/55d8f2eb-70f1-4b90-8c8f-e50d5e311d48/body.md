@@ -12,7 +12,7 @@ Use `SpecStore` for persistence, `spec.toml` for each component spec's
 structured contract data, and `body.md` for human navigation. This child owns `store-persists-artifacts`,
 `store-preserves-baselines`, `store-removes-retired-model`,
 `store-parent-navigation-verification`, `store-criterion-prefix-registry`, and
-`store-journaled-recovery`.
+`store-journaled-recovery`, and `store-schema-migration`.
 
 ## Requester Input
 
@@ -38,8 +38,11 @@ without silent repair.
 receives raw bodies and manifests to derive the existing hierarchy catalog. The
 `.spec` index root owns the committed system-wide
 `.spec/criterion-prefixes.toml` registry across all registered scan roots in
-the same `SpecStore`. A local mutation journal records intended and completed
-changes to `spec.toml`, `body.md`, and `.spec/criterion-prefixes.toml`.
+the same `SpecStore`. A reusable shared operation journal, specified-but-not-built,
+is a prerequisite for spec migration and cross-store ticket governance. It owns
+planned and inverse writes, operation-scoped locks, collision detection,
+apply/resume/rollback, and recovery tests; it is not an extension of the
+folder-move journal and it is not two domain-specific journals.
 
 ## Behavior
 
@@ -48,7 +51,8 @@ changes to `spec.toml`, `body.md`, and `.spec/criterion-prefixes.toml`.
 - `store-removes-retired-model`: retire `contract_mode`, expected properties, mandatory evidence requirements, and fulfillment summaries.
 - `store-parent-navigation-verification`: verify, but never generate or rewrite, each handwritten parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
 - `store-criterion-prefix-registry`: preserve the committed registry mapping each stable component id to one unique prefix across every registered scan root. Migration first populates the registry and renames affected criteria; it never infers entries automatically.
-- `store-journaled-recovery`: journal every local multi-file mutation before changing `spec.toml`, `body.md`, or `.spec/criterion-prefixes.toml`; after interruption, expose recovery status and a deterministic resume or rollback action. Cross-store governance operations report recoverable drift with the same explicit resume/rollback choices and never silently repair. A global transaction is not required.
+- `store-journaled-recovery`: use the shared operation journal for every local multi-file mutation before changing `spec.toml`, `body.md`, or `.spec/criterion-prefixes.toml`; after interruption, expose recovery status and deterministic resume or rollback. Cross-store governance uses the same shared prerequisite, reports recoverable drift, and never silently repairs. A global transaction is not required.
+- `store-schema-migration`: expose schema/data migration only through explicit, idempotent `spec migrate` operations: `spec migrate --dry-run`, `spec migrate --resume <journal-id>`, and `spec migrate --rollback <journal-id>`, with matching `spec_migrate_*` MCP operations. Migration is journal-backed and is neither `spec move`, query CLI behavior, nor automatic work performed by scan or open.
 
 ## Boundaries And Failure Cases
 
@@ -57,7 +61,9 @@ component spec, invalid persisted reference, child list omission, graph/body
 mismatch, missing or duplicate registry entry, duplicate prefix, malformed
 criterion id, absent journal record for a multi-file mutation, or recovery
 attempt that would silently repair cross-store drift returns an error or
-recoverable-drift status; retained baselines must not silently change semantics.
+recoverable-drift status. `spec migrate` detects journal collision before writes
+and requires its explicit resume or rollback path; scan/open never migrates.
+Retained baselines must not silently change semantics.
 No manifest schema-version field exists today; legacy generic forms are
 detect-and-report only, following the ticket metadata precedent that detects
 `related_specs` when `refs` is absent.
@@ -77,6 +83,11 @@ journal record with recovery status; resume completes the recorded mutation or
 rollback restores the recorded prior state. An interrupted ticket/spec
 governance update reports recoverable drift and presents resume/rollback rather
 than changing either store automatically.
+
+`spec migrate --dry-run` reports the planned schema/data writes without changing
+the store. A later apply interrupted by a collision leaves its shared journal for
+`spec migrate --resume <journal-id>` or `spec migrate --rollback <journal-id>`;
+`spec scan` and `spec open` only report the current state.
 
 ## Evidence
 

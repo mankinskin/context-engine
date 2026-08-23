@@ -17,8 +17,8 @@ is a component spec `id`. This child owns `root-surviving-fields`,
 ## Reading Order
 
 1. [.agents/instructions/spec/spec-system.instructions.md](.agents/instructions/spec/spec-system.instructions.md) - root/child authoring rule.
-2. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - persistence provider.
-3. [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) - governed-work provider.
+2. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - persistence provider and specified-but-not-built shared operation journal prerequisite.
+3. [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) - governed-work consumer of that shared journal prerequisite.
 4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) - current manifest shape.
 
 ## Responsibility
@@ -30,7 +30,7 @@ the existing hierarchy rather than enclosing component records.
 ## Interfaces And Dependencies
 
 Each component extends `SpecManifest`; a parent component spec composes direct
-child component specs through their `parent` field. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) gates governed work on its governing component spec.
+child component specs through their `parent` field. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and specifies the shared operation journal prerequisite consumed by [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md), which gates governed work on its governing component spec.
 
 ## Behavior
 

@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use `spec dump <id>` for the complete projection, `spec links <id>` for resolved links, and `spec health` for diagnostic findings. This child owns `query-spec-dump`, `query-resolved-links`, and `query-health-findings`.
+Use `spec dump <id>` for the complete projection, `spec links <id>` for resolved links, and `spec health` for diagnostic findings. This child owns `query-spec-dump`, `query-resolved-links`, and `query-health-findings`; all are read-only.
 
 ## Requester Input
 
@@ -16,7 +16,7 @@ Use `spec dump <id>` for the complete projection, `spec links <id>` for resolved
 
 ## Reading Order
 
-1. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - persisted manifest and edges provider.
+1. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - persisted manifest and edges provider; its separate `spec migrate`/`spec_migrate_*` operation owns explicit mutation.
 2. [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - structured edge provider.
 3. [workflow-tools/spec/src/cli/commands/crud.rs](workflow-tools/spec/src/cli/commands/crud.rs) - current get output.
 4. [workflow-tools/spec/src/cli/commands/refs.rs](workflow-tools/spec/src/cli/commands/refs.rs) - current code-ref-only output.
@@ -42,6 +42,8 @@ diagnostic results, not a global CLI rejection; configured PostToolUse policy is
 the only blocking decision. Unknown/ambiguous id, unparseable field, missing
 store, dangling target, and cross-workspace target return a typed resolution
 failure while preserving the source record.
+This child never exposes or aliases `spec migrate`, `spec_migrate_*`, `spec move`,
+scan, or open as a mutation path.
 
 ## Provider/Consumer Contract
 
@@ -57,4 +59,5 @@ Position: `partial`; `get --full` emits manifest/body and `refs` emits only code
 
 ## Scope
 
-Owns read-only query projection and resolution, not persistence or health policy.
+Owns read-only query projection and resolution, not persistence, health policy,
+or the separate migration interface.

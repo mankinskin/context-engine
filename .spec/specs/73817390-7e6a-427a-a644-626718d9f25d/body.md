@@ -8,8 +8,9 @@
 
 ## Naming Conventions
 
-Use `document-<repository>-<name>` target refs and `document-` criterion ids.
-This child owns `document-stable-target`, `document-resolution-result`, and `document-evidence-nongating`.
+Use Document API-owned typed document target grammar and `document-` criterion
+ids. This child owns `document-stable-target`, `document-resolution-result`, and
+`document-evidence-nongating`.
 
 ## Reading Order
 
@@ -18,13 +19,18 @@ This child owns `document-stable-target`, `document-resolution-result`, and `doc
 
 ## Responsibility
 
-If implemented by the adjacent document subsystem, evidence consumers can resolve
-a stable document identity and review location without using availability as fulfillment status.
+If implemented by the adjacent Document API, evidence consumers can resolve a
+stable document identity and review location without using availability as
+fulfillment status.
 
 ## Interfaces And Dependencies
 
-A document target supplies a stable reference and optional locator. Resolution
-returns exactly `Resolved { record }`, `Missing { id }`, or `Unsupported { target }`.
+The Document API owns the document repository/index and typed resolver grammar
+before spec evidence resolution ships. A typed target supplies stable identity
+and optional locator; resolution returns exactly `Resolved { record }`,
+`Missing { id }`, or `Unsupported { target }`. This is a specified-but-not-built
+prerequisite: spec-api does not introduce an initial adapter grammar or free-form
+path semantics.
 
 ## Behavior
 
@@ -37,7 +43,8 @@ returns exactly `Resolved { record }`, `Missing { id }`, or `Unsupported { targe
 The document store neither decides criterion success nor manufactures a locator.
 Missing documents yield `Missing { id }`, unsupported targets yield
 `Unsupported { target }`, and neither outcome establishes success or changes
-health policy.
+health policy. Before the Document API repository/index and grammar exist,
+evidence-reference behavior cannot claim document resolution.
 
 ## Provider/Consumer Contract
 
@@ -45,15 +52,16 @@ Provides `document-stable-target` and `document-resolution-result` to [7498bed7 
 
 ## Examples
 
-A document reference resolves `transcripts/spec-template.md#health` to its stable
-identity and heading. A missing file returns a missing-target result that Evidence
-Reference can record without claiming a criterion was fulfilled.
+A Document API typed target resolves to its stable identity and heading. A
+missing target returns `Missing { id }`, which Evidence Reference can consume
+without claiming a criterion was fulfilled.
 
 ## Evidence
 
-Position: `not-implemented` in this repository: no document resolver or index
-exists. Validate a locatable document
-and missing-target result in the owning document API test suite when it is linked.
+Position: `not-implemented` in this repository: the Document API repository,
+index, and typed resolver grammar do not exist. Validate `Resolved`, `Missing`,
+and `Unsupported` in the owning Document API test suite before spec evidence
+resolution is implemented.
 
 ## Scope
 
