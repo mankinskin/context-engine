@@ -7,3 +7,10 @@ parent = "f1b8f01a-c7da-4a71-97c5-39519a7d7f38"
 scope = "internal"
 slug = "spec-system/component-oriented-contracts/validation-store"
 type = "specification"
+[[code_refs]]
+file = "workflow-tools/test/crates/test-api/src/store.rs"
+symbol = "TestStoreConfig"
+kind = "struct"
+line_start = 46
+line_end = 49
+description = "Validation store configuration and persistence boundary."

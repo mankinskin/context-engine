@@ -4,42 +4,74 @@
 
 ## Motivation
 
-Define the reviewed target artifact model for specifications without conflating
-component contracts, evidence, or adjacent-store responsibilities in one file.
+Define a code-first, component-owned specification model whose durable manifest
+data, markdown navigation, generated index, CLI output, and health enforcement
+can be reviewed as one traceable contract.
 
-## Dependent Expectation
+## Reading Order
 
-If implemented, dependents can rely on root-scoped component contracts,
-provider-owned criteria, explicit evidence, and directed dependencies.
-
-## Shared Invariants
-
-- A provider exclusively owns its criteria and outward obligations.
-- A consumer owns only an edge that names provider criteria; it never copies them.
-- An unvalidated criterion is complete; health is structural, not fulfillment gating.
-- `component` remains root classification, distinct from the Component artifact.
+1. [.agents/instructions/spec/spec-system.instructions.md](.agents/instructions/spec/spec-system.instructions.md) - canonical authoring and relationship-traceability rules.
+2. [90e4fb79 Production Workflow Cycle](.spec/specs/90e4fb79-2c60-42a6-ab10-91d243693150/body.md) - governing request-to-spec-to-ticket workflow neighbor.
+3. [a608f774 Specification Root Contract](.spec/specs/a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root namespace and surviving manifest fields.
+4. [fdb7645d Component Artifact Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - code-facing component participant and required location metadata.
+5. [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - provider-owned acceptance obligations.
+6. [7498bed7 Evidence Reference Contract](.spec/specs/7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - external evidence identity and location.
+7. [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - persisted consumer-to-provider criterion edges.
+8. [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - optional criterion evidence outcomes.
+9. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - manifest persistence, hierarchy, and catalog rendering.
+10. [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural, parity, hierarchy, and example checks.
+11. [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) - governed-ticket prerequisite.
+12. [73817390 Document Store Evidence Integration](.spec/specs/73817390-7e6a-427a-a644-626718d9f25d/body.md) - stable document targets.
+13. [89360ad7 Validation Store Evidence Integration](.spec/specs/89360ad7-d638-49e7-85ba-21839fa99851/body.md) - validation evidence and hook enforcement.
+14. [ef4cbcd7 Specification Query And Link Resolution CLI](.spec/specs/ef4cbcd7-9544-4c43-9095-59822b4211b6/body.md) - full persisted-data projection and TOML link resolution.
 
 ## Component Relationship Map
 
-| Consumer child | Provider child | Criteria consumed |
-| --- | --- | --- |
-| Component Artifact | Specification Root | `root-artifact-namespace` |
-| Criterion Artifact | Component Artifact; Specification Root | `component-criterion-ownership`; `root-artifact-namespace` |
-| Evidence Reference | Specification Root; Document Store | `root-artifact-namespace`; `document-stable-target`, `document-resolution-result` |
-| Directed Contract Edge | Component Artifact; Criterion Artifact | `component-root-membership`, `component-criterion-ownership`; `criterion-single-owner`, `criterion-root-unique` |
-| Validation Observation | Criterion Artifact; Evidence Reference; Validation Store | `criterion-required-fields`; `evidence-required-fields`; `validation-criterion-link`, `validation-observation-source`, `validation-best-effort` |
-| Specification Root | Specification Store; Ticket Store | `store-persists-artifacts`, `store-preserves-baselines`; `ticket-governing-spec`, `ticket-explicit-spec-target`, `ticket-spec-before-plan` |
-| Health Check | Specification Store | `store-persists-artifacts` |
+```mermaid
+flowchart TD
+		Root[Specification Root] -->|root-artifact-namespace| Store[Specification Store]
+		Root -->|ticket-governing-spec| Ticket[Ticket Store]
+		Component[Component Artifact] -->|root-artifact-namespace| Root
+		Criterion[Criterion Artifact] -->|component-criterion-ownership| Component
+		Criterion -->|root-artifact-namespace| Root
+		Evidence[Evidence Reference] -->|root-artifact-namespace| Root
+		Evidence -->|document-stable-target, document-resolution-result| Document[Document Store]
+		Edge[Directed Contract Edge] -->|component-root-membership| Component
+		Edge -->|criterion-single-owner, criterion-root-unique| Criterion
+		Edge -->|stored typed edges| Store
+		Observation[Validation Observation] -->|criterion-required-fields| Criterion
+		Observation -->|evidence-required-fields| Evidence
+		Observation -->|validation-observation-source| Validation[Validation Store]
+		Health[Health Check] -->|store-persists-artifacts, parent integrity| Store
+		Health -->|toml-body link parity, examples| Edge
+		Validation -->|hook enforcement| Health
+		Store -->|parent link list and graph verification| Component
+		Query[Specification Query CLI] -->|store-persists-artifacts| Store
+		Query -->|edge-persisted-typed-model| Edge
+```
 
-## Positions And Evidence
+## Shared Invariants
 
-`workflow-tools/spec/crates/spec-api/src/manifest.rs` currently implements the
-retired model; this draft defines its replacement. The children name focused
-schema, manifest, store, and CLI evidence. `90e4fb79-2c60-42a6-ab10-91d243693150`
-is the related production-workflow neighbor. Governing rule:
-`.agents/instructions/spec/spec-system.instructions.md`.
+- A provider exclusively owns criteria; a consumer stores only its directed edge
+	to provider criterion ids and never copies provider statements.
+- Every code-facing child has a manifest `code_refs` location and a concrete
+	naming convention; every parent body lists and graphs its direct children.
+- The future structured links in `spec.toml` and the clickable links in `body.md`
+	must represent the same edge set. This is a draft requirement: current health
+	checks do not parse body links or persist component edges.
+- An unvalidated criterion remains structurally complete. Health reports shape,
+	reference, hierarchy, and authored-document drift rather than fulfillment.
+
+## Examples
+
+A specification root with component `spec-api` declares a `Health Check`
+component. Its manifest stores the component's `code_refs`, its body links the
+Specification Store provider, and its `health-link-parity` criterion is consumed
+by a Validation Store hook edge. The catalog renderer then verifies that this
+root lists the Health Check child and includes the matching graph node and edge.
 
 ## Scope
 
-This root owns only the cross-component invariant and relationship map. Its
-eleven direct children own acceptance behavior, boundaries, and evidence.
+This draft root owns only the cross-component navigation and invariants. The
+the twelve children own behavior, failure cases, provider criteria, and
+evidence; no implementation ticket is linked pending user review.

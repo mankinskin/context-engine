@@ -7,3 +7,10 @@ parent = "f1b8f01a-c7da-4a71-97c5-39519a7d7f38"
 scope = "internal"
 slug = "spec-system/component-oriented-contracts/component-artifact"
 type = "specification"
+[[code_refs]]
+file = "workflow-tools/spec/crates/spec-api/src/code_ref.rs"
+symbol = "CodeRef"
+kind = "struct"
+line_start = 29
+line_end = 44
+description = "Code-facing component target-location record."

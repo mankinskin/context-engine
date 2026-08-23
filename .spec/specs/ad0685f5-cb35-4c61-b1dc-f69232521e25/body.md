@@ -2,28 +2,62 @@
 
 # Directed Contract Edge
 
-## Responsibility And Interface
+## Target Code Location
 
-Record one consumer dependency on provider-owned criteria. The edge requires
-`id`, `spec_id`, consumer/provider component IDs, nonempty
-`provider_criterion_ids[]`, and `name`.
+[workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) owns typed manifest extras, and [workflow-tools/spec/crates/spec-api/schemas/specification.toml](workflow-tools/spec/crates/spec-api/schemas/specification.toml) owns declared edge rules.
 
-## Behavior And Contract
+## Naming Conventions
 
-- `edge-required-fields`, `edge-nonempty-provider-criteria`, and
-	`edge-provider-ownership` validate shape and provider ownership.
-- `edge-distinct-endpoints` rejects self dependencies; `edge-cycles-allowed`
-	permits multi-component cycles.
+Use `ComponentContractEdge { consumer_component_id, provider_component_id, provider_criterion_ids, name }`. Edge ids use `edge-<consumer>-consumes-<provider>`; this child owns `edge-required-fields`, `edge-nonempty-provider-criteria`, `edge-provider-ownership`, `edge-distinct-endpoints`, `edge-cycles-allowed`, `edge-unique-claim`, `edge-consumer-does-not-copy`, and `edge-persisted-typed-model`.
+
+## Requester Input
+
+> Stored typed component edges: the store must persist directed `(consumer, provider, provider_criterion_ids[], name)` edges in the toml, not just markdown.
+
+## Reading Order
+
+1. [fdb7645d Component Artifact Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - endpoint provider.
+2. [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - provider-criterion provider.
+3. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - TOML persistence provider.
+4. [workflow-tools/spec/crates/spec-api/schemas/specification.toml](workflow-tools/spec/crates/spec-api/schemas/specification.toml) - current generic edge rules.
+
+## Responsibility
+
+If implemented, consumers can persist one directed dependency on named
+provider-owned criteria and tooling can read the same data without parsing prose.
+
+## Interfaces And Dependencies
+
+Each edge has root `spec_id`, consumer and provider component ids, nonempty
+`provider_criterion_ids[]`, and `name`; its serialized TOML is the authoritative
+structured representation mirrored in the parent graph and child links.
+
+## Behavior
+
+- `edge-required-fields`, `edge-nonempty-provider-criteria`, and `edge-provider-ownership` validate shape and provider ownership.
+- `edge-distinct-endpoints` rejects self dependencies; `edge-cycles-allowed` permits multi-component cycles.
 - `edge-unique-claim` rejects duplicate `(consumer, provider, criterion)` claims.
-- `edge-consumer-does-not-copy` preserves the root ownership invariant.
-- Consume Component membership/ownership and Criterion single-owner/uniqueness.
+- `edge-consumer-does-not-copy` preserves provider ownership.
+- `edge-persisted-typed-model`: store the directed `(consumer, provider, provider_criterion_ids[], name)` record in `spec.toml`, not only Markdown.
 
 ## Boundaries And Failure Cases
 
-An edge is not a copied criterion or a hierarchy edge. Self-edge, empty list,
-foreign criterion, missing endpoint, and duplicate claim are invalid.
+An edge is neither a copied criterion nor hierarchy edge. A self edge, empty
+list, foreign criterion, missing endpoint, duplicate claim, or prose-only edge
+is invalid.
 
-## Acceptance Evidence And Position
+## Provider/Consumer Contract
 
-Add a two-component cycle and each rejected case to `src/store/tests.rs`.
-Current schema only declares generic `depends_on`, `linked`, and `parent_of` rules.
+Consumes [fdb7645d Component Artifact Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-root-membership` and [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-single-owner`, `criterion-root-unique`; provides persisted edge data to [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) and [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md).
+
+## Examples
+
+`{ consumer: "health", provider: "spec-store", provider_criterion_ids: ["store-persists-artifacts"], name: "health reads persisted artifacts" }` is valid TOML data and is mirrored by `Health --> Store` in the parent graph.
+
+## Evidence
+
+Position: `not-implemented`; the current schema declares only `depends_on`, `linked`, and `parent_of`. Planned store tests cover a two-component cycle, TOML round-trip, and every rejected case.
+
+## Scope
+
+Owns directed component-edge shape; it does not own hierarchy or health policy.

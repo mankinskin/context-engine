@@ -2,26 +2,61 @@
 
 # Validation Store Evidence Integration
 
-## Responsibility And Interface
+## Target Code Location
 
-Supply executable or recorded evidence to Validation Observation without
-requiring automation for every criterion. It exposes a criterion target, status,
-and optional time/detail to the observation boundary.
+[workflow-tools/test/crates/test-api/src/store.rs](workflow-tools/test/crates/test-api/src/store.rs) owns `TestStoreConfig`; [workflow-tools/test/crates/test-api/src/lib.rs](workflow-tools/test/crates/test-api/src/lib.rs) owns `ValidationSpec` and `ValidationExecution`; [.github/hooks/hooks.json](.github/hooks/hooks.json) registers current hooks.
 
-## Behavior And Contract
+## Naming Conventions
+
+Use `ValidationSpec`, `ValidationExecution`, and `validation-` criterion ids.
+This child owns `validation-criterion-link`, `validation-observation-source`, `validation-best-effort`, and `validation-hook-enforcement`.
+
+## Requester Input
+
+> Hook enforcement: a git hook runs the link-parity + structure validation so markdown links stay accurate in the database.
+
+## Reading Order
+
+1. [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural validation provider.
+2. [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - outcome consumer.
+3. [.github/hooks/hooks.json](.github/hooks/hooks.json) - current registration surface.
+4. [tools/agent-hooks](tools/agent-hooks) - hook implementation directory.
+
+## Responsibility
+
+If implemented, validation outcomes remain traceable whether automated or manual,
+and hooks prevent committed specification navigation from drifting from stored links.
+
+## Interfaces And Dependencies
+
+`ValidationSpec` identifies a target; `ValidationExecution` carries outcome,
+time, and detail. Hook configuration invokes health/link validation on spec edits.
+
+## Behavior
 
 - `validation-criterion-link`: evidence identifies applicable spec/criterion targets.
 - `validation-observation-source`: outcomes expose status and optional time/detail.
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
-- Validation Observation consumes all three criteria through the root map.
+- `validation-hook-enforcement`: configured hooks run link-parity, hierarchy, and Examples health checks and fail the change on a finding.
 
 ## Boundaries And Failure Cases
 
-The store does not own criteria, declare fulfillment, or make health fail when
-automation is absent. An invalid target/status is rejected; no result is valid.
+The store does not own criteria, declare fulfillment, or make health fail when automation is absent. Invalid target/status or hook-command failure is rejected; no result remains valid when no automated check exists.
 
-## Acceptance Evidence And Position
+## Provider/Consumer Contract
 
-Add test-api cases for targeted evidence and absent automation under reviewed
-implementation work. `90e4fb79-2c60-42a6-ab10-91d243693150` supplies the
-existing workflow rule for recording validation evidence.
+Consumes [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) `health-link-parity`, `health-hierarchy-integrity`, and `health-examples-section`; provides outcomes to [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+
+## Examples
+
+A pre-commit hook invokes `./target/debug/spec.exe --workspace . health --all`.
+If a body link has no TOML counterpart, the health finding stops the commit; a
+manual validation entry can still exist where no executable test is available.
+
+## Evidence
+
+Position: `partial`; test-api persists validation artifacts, but [.github/hooks/hooks.json](.github/hooks/hooks.json) currently runs no spec health command. Planned hook integration and target/absent-automation tests.
+
+## Scope
+
+Owns validation evidence and enforcement wiring, not health finding semantics.
