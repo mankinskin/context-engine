@@ -16,9 +16,9 @@ Use provider-owned `outward_contract_edges { name, consumer_spec_id, criterion_i
 
 ## Reading Order
 
-1. [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - endpoint provider.
-2. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - provider-criterion provider.
-3. [55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - TOML persistence provider.
+1. [fdb7645d Component Specification Contract](../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - endpoint provider.
+2. [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - provider-criterion provider.
+3. [55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - TOML persistence provider.
 4. [workflow-tools/spec/crates/spec-api/schemas/specification.toml](../../../workflow-tools/spec/crates/spec-api/schemas/specification.toml) - current generic edge rules.
 
 ## Responsibility
@@ -53,7 +53,7 @@ invalid.
 
 ## Provider/Consumer Contract
 
-Consumes [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-root-membership` and [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-single-owner`, `criterion-root-unique`; provides persisted edge data to [55d8f2eb Specification Store Contract](../../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) and [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md).
+Consumes [fdb7645d Component Specification Contract](../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-root-membership` and [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-single-owner`, `criterion-root-unique`; provides persisted edge data to [55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) and [b4475214 Specification Health Check](../b4475214-e14e-4926-b853-b2553444e36f/body.md).
 
 ## Examples
 

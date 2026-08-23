@@ -16,9 +16,9 @@ Use `CriterionTemplate`, `CriterionTemplateVersion`, `CriterionTemplateBinding`,
 
 ## Reading Order
 
-1. [f1b8f01a Component-Oriented Specification System](../../f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md) - composing parent and shared invariants.
-2. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - instantiated criterion ownership.
-3. [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - consumer/provider edges after expansion.
+1. [f1b8f01a Component-Oriented Specification System](../f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md) - composing parent and shared invariants.
+2. [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - instantiated criterion ownership.
+3. [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - consumer/provider edges after expansion.
 
 ## Responsibility
 
@@ -42,7 +42,7 @@ Templates neither create components nor encode provider/consumer dependencies. M
 
 ## Provider/Consumer Contract
 
-Provides template expansion semantics to [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md); expanded criteria may then be consumed through [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md). No template itself is a provider endpoint.
+Provides template expansion semantics to [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md); expanded criteria may then be consumed through [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md). No template itself is a provider endpoint.
 
 ## Examples
 

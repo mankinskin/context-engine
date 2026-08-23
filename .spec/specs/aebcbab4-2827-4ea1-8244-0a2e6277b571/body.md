@@ -18,9 +18,9 @@ per root. This child owns `criterion-required-fields`, `criterion-single-owner`,
 
 ## Reading Order
 
-1. [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - owner provider.
-2. [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - `validated_by` evidence provider.
-3. [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - criterion-edge consumer.
+1. [fdb7645d Component Specification Contract](../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - owner provider.
+2. [7498bed7 Evidence Reference Contract](../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - `validated_by` evidence provider.
+3. [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - criterion-edge consumer.
 4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](../../../workflow-tools/spec/crates/spec-api/src/manifest.rs) - current criterion model.
 
 ## Responsibility
@@ -69,7 +69,7 @@ than a component or provider/consumer edge.
 
 ## Provider/Consumer Contract
 
-Consumes [fdb7645d Component Specification Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-criterion-ownership`; provides `criterion-single-owner` and `criterion-root-unique` to [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md), and `criterion-required-fields` to [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+Consumes [fdb7645d Component Specification Contract](../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-criterion-ownership`; provides `criterion-single-owner` and `criterion-root-unique` to [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md), and `criterion-required-fields` to [83c0b9c4 Validation Observation Contract](../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
 
 ## Examples
 

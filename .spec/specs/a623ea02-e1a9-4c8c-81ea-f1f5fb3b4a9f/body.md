@@ -12,9 +12,9 @@ Use `verify_gitlink_containment`, `partition_statuses`, and the `worktree-gitlin
 
 ## Reading Order
 
-1. [fa6e85c8 Worktree Control Component Pilot](../../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - `WorktreeGit` provider.
-3. [c40b790f Worktree Synchronization And Integration](../../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - integrity consumer.
+1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
+2. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - `WorktreeGit` provider.
+3. [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - integrity consumer.
 
 ## Responsibility
 
@@ -36,7 +36,7 @@ This component does not select a provisioning candidate or dispatch commands. An
 
 ## Provider/Consumer Contract
 
-Consumes `worktree-provision-library-reuse` from [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides `worktree-gitlink-containment` to [c40b790f Worktree Synchronization And Integration](../../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md).
+Consumes `worktree-provision-library-reuse` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides `worktree-gitlink-containment` to [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md).
 
 ## Examples
 

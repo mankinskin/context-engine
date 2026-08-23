@@ -16,9 +16,9 @@ Use source-side `#[implements(component_id = "...")]` and `#[validates(criterion
 
 ## Reading Order
 
-1. [f1b8f01a Component-Oriented Specification System](../../f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md) - composing parent.
-2. [fdb7645d Component Artifact Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - component identities.
-3. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - criterion identities.
+1. [f1b8f01a Component-Oriented Specification System](../f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md) - composing parent.
+2. [fdb7645d Component Artifact Contract](../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - component identities.
+3. [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - criterion identities.
 4. [workflow-tools/spec/crates/spec-api/src/code_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/code_ref.rs) - navigation fallback.
 
 ## Responsibility
@@ -42,7 +42,7 @@ These attributes are specified-but-not-built and do not imply existing proc macr
 
 ## Provider/Consumer Contract
 
-Consumes component identities from [fdb7645d Component Artifact Contract](../../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) and criterion identities from [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md); provides resolved source traceability to health and reviewer navigation. This is not a provider/consumer edge between Rust items.
+Consumes component identities from [fdb7645d Component Artifact Contract](../fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) and criterion identities from [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md); provides resolved source traceability to health and reviewer navigation. This is not a provider/consumer edge between Rust items.
 
 ## Examples
 

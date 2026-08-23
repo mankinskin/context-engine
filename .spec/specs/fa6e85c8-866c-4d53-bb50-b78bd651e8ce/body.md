@@ -16,12 +16,12 @@ Validate component composition, parent-owned criteria, provider/consumer interfa
 
 ## Reading Order
 
-1. [191ceae7 Worktree Control CLI Lifecycle](../../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - CLI lifecycle component.
-2. [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - provisioning library component.
-3. [c40b790f Worktree Synchronization And Integration](../../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - synchronization component.
-4. [a623ea02 Worktree Gitlink Integrity](../../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) - gitlink component.
-5. [e82b9727 Criterion Template Contract](../../e82b9727-0ea2-4d1d-ab8a-98141f85caef/body.md) - specified-but-not-built template model used by the pilot.
-6. [7766e61d Rust Source Annotation Traceability Contract](../../7766e61d-dea9-4292-bde5-dfc287b8da3b/body.md) - specified-but-not-built source-resolution workflow.
+1. [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - CLI lifecycle component.
+2. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - provisioning library component.
+3. [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - synchronization component.
+4. [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) - gitlink component.
+5. [e82b9727 Criterion Template Contract](../e82b9727-0ea2-4d1d-ab8a-98141f85caef/body.md) - specified-but-not-built template model used by the pilot.
+6. [7766e61d Rust Source Annotation Traceability Contract](../7766e61d-dea9-4292-bde5-dfc287b8da3b/body.md) - specified-but-not-built source-resolution workflow.
 
 ## Component Relationship Map
 

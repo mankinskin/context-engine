@@ -12,10 +12,10 @@ Use `EvidenceReference`; ids use `evidence-<target-kind>-<name>`. This child own
 
 ## Reading Order
 
-1. [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root provider.
-2. [73817390 Document Store Evidence Integration](../../73817390-7e6a-427a-a644-626718d9f25d/body.md) - document evidence integration provider.
-3. [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) - required typed document resolver provider.
-4. [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - evidence consumer.
+1. [a608f774 Specification Root Contract](../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root provider.
+2. [73817390 Document Store Evidence Integration](../73817390-7e6a-427a-a644-626718d9f25d/body.md) - document evidence integration provider.
+3. [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) - required typed document resolver provider.
+4. [83c0b9c4 Validation Observation Contract](../83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - evidence consumer.
 5. [workflow-tools/spec/crates/spec-api/src/ticket_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/ticket_ref.rs) - explicit-store reference model.
 
 ## Responsibility
@@ -28,7 +28,7 @@ embedding its fulfillment state.
 `EvidenceReference` requires `id`, `spec_id`, `target_kind`, `target_ref`, and
 `relation`; `locator` is optional. Store-backed targets carry explicit workspace
 and store-root identity. Document references consume typed outcomes from
-[224f9384 Document API Repository, Identity, and Typed Resolver Contract](../../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md), through [73817390 Document Store Evidence Integration](../../73817390-7e6a-427a-a644-626718d9f25d/body.md); they do not define an adapter grammar, free-form path semantics, filesystem access, repository scan, or index refresh.
+[224f9384 Document API Repository, Identity, and Typed Resolver Contract](../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md), through [73817390 Document Store Evidence Integration](../73817390-7e6a-427a-a644-626718d9f25d/body.md); they do not define an adapter grammar, free-form path semantics, filesystem access, repository scan, or index refresh.
 
 ## Behavior
 
@@ -50,7 +50,7 @@ must not add a spec-adapter grammar or free-form path interpretation.
 
 ## Provider/Consumer Contract
 
-Consumes [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) `root-artifact-namespace`, [73817390 Document Store Evidence Integration](../../73817390-7e6a-427a-a644-626718d9f25d/body.md) `document-stable-target`, and [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) `document-resolver-outcomes`; provides `evidence-required-fields` to [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+Consumes [a608f774 Specification Root Contract](../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) `root-artifact-namespace`, [73817390 Document Store Evidence Integration](../73817390-7e6a-427a-a644-626718d9f25d/body.md) `document-stable-target`, and [224f9384 Document API Repository, Identity, and Typed Resolver Contract](../224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) `document-resolver-outcomes`; provides `evidence-required-fields` to [83c0b9c4 Validation Observation Contract](../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
 
 ## Examples
 

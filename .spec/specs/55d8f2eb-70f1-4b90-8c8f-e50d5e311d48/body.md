@@ -20,8 +20,8 @@ structured contract data, and `body.md` for human navigation. This child owns `s
 
 ## Reading Order
 
-1. [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - persisted edge provider.
-2. [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md) - persistence consumer.
+1. [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - persisted edge provider.
+2. [b4475214 Specification Health Check](../b4475214-e14e-4926-b853-b2553444e36f/body.md) - persistence consumer.
 3. [workflow-tools/spec/crates/spec-api/src/store.rs](../../../workflow-tools/spec/crates/spec-api/src/store.rs) - store boundary.
 4. [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](../../../workflow-tools/spec/crates/spec-api/src/store_index_render.rs) - catalog renderer.
 
@@ -76,7 +76,7 @@ edges and from a ticket governing relation; none may be inferred from another.
 
 ## Provider/Consumer Contract
 
-Consumes [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) `edge-persisted-typed-model`; provides `store-persists-artifacts` to [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md), [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md), and the future CLI query child.
+Consumes [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) `edge-persisted-typed-model`; provides `store-persists-artifacts` to [b4475214 Specification Health Check](../b4475214-e14e-4926-b853-b2553444e36f/body.md), [a608f774 Specification Root Contract](../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md), and the future CLI query child.
 
 ## Examples
 

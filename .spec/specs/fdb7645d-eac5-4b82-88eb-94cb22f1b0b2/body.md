@@ -23,8 +23,8 @@ ids use the registered system-wide prefix; this child owns
 ## Reading Order
 
 1. [.agents/instructions/spec/spec-system.instructions.md](../../../.agents/instructions/spec/spec-system.instructions.md) - code-first child format.
-2. [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root namespace provider.
-3. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - owned criterion consumer.
+2. [a608f774 Specification Root Contract](../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) - root namespace provider.
+3. [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - owned criterion consumer.
 4. [workflow-tools/spec/crates/spec-api/src/code_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/code_ref.rs) - `CodeRef` contract.
 
 ## Responsibility
@@ -70,7 +70,7 @@ component; empty owned criteria are valid.
 
 ## Provider/Consumer Contract
 
-Consumes [a608f774 Specification Root Contract](../../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) `root-component-composition`; provides `component-criterion-ownership` to [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) and `component-root-membership` to [ad0685f5 Directed Contract Edge](../../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md).
+Consumes [a608f774 Specification Root Contract](../a608f774-9f50-4de1-90e2-ffeefb0198b1/body.md) `root-component-composition`; provides `component-criterion-ownership` to [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) and `component-root-membership` to [ad0685f5 Directed Contract Edge](../ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md).
 
 ## Examples
 

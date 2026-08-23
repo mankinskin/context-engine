@@ -12,9 +12,9 @@ Use `handle_sync` and `worktree-sync-` criterion ids, including `worktree-sync-p
 
 ## Reading Order
 
-1. [fa6e85c8 Worktree Control Component Pilot](../../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - `WorktreeGit` provider.
-3. [a623ea02 Worktree Gitlink Integrity](../../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) - gitlink provider.
+1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
+2. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - `WorktreeGit` provider.
+3. [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md) - gitlink provider.
 
 ## Responsibility
 
@@ -36,7 +36,7 @@ Synchronization does not define reclaim policy or CLI parsing. Git/open failures
 
 ## Provider/Consumer Contract
 
-Consumes `worktree-provision-library-reuse` from [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) and `worktree-gitlink-containment` from [a623ea02 Worktree Gitlink Integrity](../../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md).
+Consumes `worktree-provision-library-reuse` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) and `worktree-gitlink-containment` from [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md).
 
 ## Examples
 

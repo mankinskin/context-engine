@@ -12,8 +12,8 @@ Use `Cli`, `Command`, and `dispatch`; criterion ids use the `worktree-cli-` pref
 
 ## Reading Order
 
-1. [fa6e85c8 Worktree Control Component Pilot](../../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent and parent-owned criteria.
-2. [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - shared provisioning-library provider.
+1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent and parent-owned criteria.
+2. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - shared provisioning-library provider.
 3. [workflow-tools/session/crates/worktree-ctl/src/main.rs](../../../workflow-tools/session/crates/worktree-ctl/src/main.rs) - implemented dispatch boundary.
 
 ## Responsibility
@@ -36,7 +36,7 @@ The CLI does not own provisioning policy or invent an MCP/API parity surface. Pa
 
 ## Provider/Consumer Contract
 
-Consumes `worktree-provision-reclaim-decision` and `worktree-provision-session-provisioning` from [c1d13a73 Worktree Provisioning Policy](../../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides lifecycle behavior to operators.
+Consumes `worktree-provision-reclaim-decision` and `worktree-provision-session-provisioning` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides lifecycle behavior to operators.
 
 ## Examples
 

@@ -12,9 +12,9 @@ Use `ValidationObservation`; ids use `observation-<criterion>-<evidence>`. This 
 
 ## Reading Order
 
-1. [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - criterion provider.
-2. [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - evidence provider.
-3. [89360ad7 Validation Store Evidence Integration](../../89360ad7-d638-49e7-85ba-21839fa99851/body.md) - status provider.
+1. [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) - criterion provider.
+2. [7498bed7 Evidence Reference Contract](../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - evidence provider.
+3. [89360ad7 Validation Store Evidence Integration](../89360ad7-d638-49e7-85ba-21839fa99851/body.md) - status provider.
 
 ## Responsibility
 
@@ -40,7 +40,7 @@ Missing references and cross-root targets are invalid; absence is valid.
 
 ## Provider/Consumer Contract
 
-Consumes [aebcbab4 Criterion Artifact Contract](../../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-required-fields`, [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) `evidence-required-fields`, and [89360ad7 Validation Store Evidence Integration](../../89360ad7-d638-49e7-85ba-21839fa99851/body.md) `validation-observation-source`.
+Consumes [aebcbab4 Criterion Artifact Contract](../aebcbab4-2827-4ea1-8244-0a2e6277b571/body.md) `criterion-required-fields`, [7498bed7 Evidence Reference Contract](../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) `evidence-required-fields`, and [89360ad7 Validation Store Evidence Integration](../89360ad7-d638-49e7-85ba-21839fa99851/body.md) `validation-observation-source`.
 
 ## Examples
 

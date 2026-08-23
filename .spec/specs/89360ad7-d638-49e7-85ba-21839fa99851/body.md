@@ -17,8 +17,8 @@ This child owns `validation-criterion-link`, `validation-observation-source`, `v
 
 ## Reading Order
 
-1. [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural validation provider.
-2. [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - outcome consumer.
+1. [b4475214 Specification Health Check](../b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural validation provider.
+2. [83c0b9c4 Validation Observation Contract](../83c0b9c4-1617-4751-af23-57811060f0fb/body.md) - outcome consumer.
 3. [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) - current registration surface.
 4. [tools/agent-hooks](../../../tools/agent-hooks) - hook implementation directory.
 
@@ -56,7 +56,7 @@ test-store, ticket, or governing-spec qualifiers to ticket gate matching.
 
 ## Provider/Consumer Contract
 
-Consumes [b4475214 Specification Health Check](../../b4475214-e14e-4926-b853-b2553444e36f/body.md) `health-link-parity`, `health-hierarchy-integrity`, and `health-examples-section`; provides outcomes to [83c0b9c4 Validation Observation Contract](../../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+Consumes [b4475214 Specification Health Check](../b4475214-e14e-4926-b853-b2553444e36f/body.md) `health-link-parity`, `health-hierarchy-integrity`, and `health-examples-section`; provides outcomes to [83c0b9c4 Validation Observation Contract](../83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
 
 ## Examples
 

@@ -16,8 +16,8 @@ The planned public Rust-library types are `DocumentIdentity`, `DocumentRecord`, 
 
 ## Reading Order
 
-1. [73817390 Document Store Evidence Integration](../../73817390-7e6a-427a-a644-626718d9f25d/body.md) - parent consumer/integration contract.
-2. [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - outcome-only evidence consumer.
+1. [73817390 Document Store Evidence Integration](../73817390-7e6a-427a-a644-626718d9f25d/body.md) - parent consumer/integration contract.
+2. [7498bed7 Evidence Reference Contract](../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - outcome-only evidence consumer.
 3. [workflow-tools/doc/crates/doc-api/src/evidence.rs](../../../workflow-tools/doc/crates/doc-api/src/evidence.rs) - current record location that contains the deprecated free-form `document_paths` shape.
 4. [workflow-tools/doc/crates/doc-api/src/workspace.rs](../../../workflow-tools/doc/crates/doc-api/src/workspace.rs) - deterministic repository-discovery baseline.
 
@@ -45,7 +45,7 @@ If this spec is implemented, dependents can rely on doc-api to persist and resol
 
 ## Provider/Consumer Contract
 
-Provides `document-identity`, `document-target-grammar`, `document-resolver-outcomes`, and `document-index-lifecycle` to [73817390 Document Store Evidence Integration](../../73817390-7e6a-427a-a644-626718d9f25d/body.md), which in turn provides document evidence integration to [7498bed7 Evidence Reference Contract](../../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md). Evidence Reference consumes only `Resolved`, `Missing`, and `Unsupported`; it does not parse targets, read the filesystem, or decide index lifecycle.
+Provides `document-identity`, `document-target-grammar`, `document-resolver-outcomes`, and `document-index-lifecycle` to [73817390 Document Store Evidence Integration](../73817390-7e6a-427a-a644-626718d9f25d/body.md), which in turn provides document evidence integration to [7498bed7 Evidence Reference Contract](../7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md). Evidence Reference consumes only `Resolved`, `Missing`, and `Unsupported`; it does not parse targets, read the filesystem, or decide index lifecycle.
 
 ## Examples
 

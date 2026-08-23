@@ -12,8 +12,8 @@ Use library types `WorktreeGit`, `WorktreeRef`, `ProvisionPolicy`, and `SessionA
 
 ## Reading Order
 
-1. [fa6e85c8 Worktree Control Component Pilot](../../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [191ceae7 Worktree Control CLI Lifecycle](../../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - consuming CLI.
+1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
+2. [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - consuming CLI.
 3. [workflow-tools/session/crates/session-worktree-provision/src/policy.rs](../../../workflow-tools/session/crates/session-worktree-provision/src/policy.rs) - policy provider.
 
 ## Responsibility
@@ -36,7 +36,7 @@ The library does not parse CLI arguments, dispatch commands, or integrate gitlin
 
 ## Provider/Consumer Contract
 
-Provides `worktree-provision-reclaim-decision` and `worktree-provision-session-provisioning` to [191ceae7 Worktree Control CLI Lifecycle](../../191ceae7-663e-448b-bb04-46f46f38825d/body.md), [c40b790f Worktree Synchronization And Integration](../../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md), and [a623ea02 Worktree Gitlink Integrity](../../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md).
+Provides `worktree-provision-reclaim-decision` and `worktree-provision-session-provisioning` to [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md), [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md), and [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md).
 
 ## Examples
 
