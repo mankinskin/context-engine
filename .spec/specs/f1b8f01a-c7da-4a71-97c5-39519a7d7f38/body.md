@@ -8,6 +8,17 @@ Define a code-first, component-owned specification model whose durable manifest
 data, markdown navigation, generated index, CLI output, and health enforcement
 can be reviewed as one traceable contract.
 
+## Review Status
+
+Reviewed and explicitly approved by the user on 2026-08-23 as
+implementation-ready for Waypoint 6 ticket planning, together with the bounded
+[fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md).
+This approval covers the target contracts only. It does not claim that v2 typed
+persistence, migration, component edges, templates, `TypedTarget`, annotations,
+health/hook enforcement, the shared operation journal, document resolution, or
+proportional ticket gating are implemented. Waypoint 6 is unblocked for ticket
+planning.
+
 ## Reading Order
 
 1. [.agents/instructions/spec/spec-system.instructions.md](../../../.agents/instructions/spec/spec-system.instructions.md) - canonical authoring and relationship-traceability rules.

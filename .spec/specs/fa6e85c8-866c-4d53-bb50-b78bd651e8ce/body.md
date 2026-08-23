@@ -20,6 +20,17 @@ not claims that typed persistence is implemented.
 
 Validate component composition, parent-owned criteria, provider/consumer interfaces, reusable criterion templates, and the source-annotation workflow against implemented worktree control code before broad adoption.
 
+## Review Status
+
+Reviewed and explicitly approved by the user on 2026-08-23 as the bounded
+Waypoint 5a pilot implementation-ready for Waypoint 6 ticket planning, together
+with the reviewed [f1b8f01a Component-Oriented Specification System](../f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md).
+This approval covers the target contracts only. It does not claim that v2 typed
+persistence, migration, component edges, templates, `TypedTarget`, annotations,
+health/hook enforcement, the shared operation journal, document resolution, or
+proportional ticket gating are implemented. Waypoint 6 is unblocked for ticket
+planning.
+
 ## Reading Order
 
 1. [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md) - CLI lifecycle component.
