@@ -9,9 +9,10 @@
 ## Naming Conventions
 
 `SpecManifest` is one component specification; `component` remains its
-classification field, not a nested record. A parent component spec
-composes child component specs through `parent`; every outward-contract endpoint
-is a component spec `id`. This child owns `root-surviving-fields`,
+classification field, not a nested record. `component_id` is its immutable,
+human-readable domain identity; manifest `id` is storage identity and `slug` is
+renameable navigation. A parent composes children through `parent`; every
+outward-contract endpoint is a `component_id`. This child owns `root-surviving-fields`,
 `root-component-classification`, and `root-component-composition`.
 
 ## Reading Order
@@ -24,19 +25,22 @@ is a component spec `id`. This child owns `root-surviving-fields`,
 ## Responsibility
 
 If implemented, dependents can rely on each component being represented by one
-independently addressable spec, with parent specs composing child specs through
-the existing hierarchy rather than enclosing component records.
+independently addressable, immutable `component_id`, with parent specs composing
+child specs through hierarchy rather than enclosing component records.
 
 ## Interfaces And Dependencies
 
-Each component extends `SpecManifest`; a parent component spec composes direct
-child component specs through their `parent` field. [55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and specifies the shared operation journal prerequisite consumed by [f482eb83 Ticket Store Integration](../f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md), which gates governed work on its governing component spec.
+Each component extends `SpecManifest` with `component_id`; the `SpecStore`
+enforces global uniqueness and rejects a mutation of that field except through
+an explicit journaled migration. A parent composes direct children through
+`parent`; parent-owned composition criteria name expected child `component_id`
+values and required relationships. [55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and its shared operation journal prerequisite.
 
 ## Behavior
 
-- `root-surviving-fields`: retain `id`, lifecycle, `title`, `slug`, `type`, `state`, `scope`, `parent`, `code_refs`, sections, hierarchy, `TicketRef`, and distinct `governs_ticket` relations.
+- `root-surviving-fields`: retain storage `id`, immutable `component_id`, lifecycle, `title`, `slug`, `type`, `state`, `scope`, `parent`, `code_refs`, sections, hierarchy, `TicketRef`, and distinct `governs_ticket` relations.
 - `root-component-classification`: preserve the manifest classifier independently of component-spec identity.
-- `root-component-composition`: represent each component as one spec; a parent composes child component specs through `parent` and no separate containing `spec_id` exists for a component.
+- `root-component-composition`: represent each component as one spec; a parent composes child component specs through `parent`, validates its expected child `component_id` set and relationships through parent-owned criteria, and has no separate containing `spec_id`.
 
 Parent-owned criteria may test the required existence, shape, and relationships
 of composed children. They do not turn hierarchy composition into a
@@ -45,7 +49,9 @@ acceptance gate.
 
 ## Boundaries And Failure Cases
 
-This contract neither owns a participant criterion nor evidence state. A
+This contract neither owns a participant criterion nor evidence state. A missing,
+duplicate, or post-creation-mutated `component_id` is invalid unless an explicit
+journaled migration records the change. A
 `governs_ticket` relation is not a `ComponentContractEdge` or an informational
 `related_tickets`/`related_specs` link. Missing component spec identity,
 an endpoint that is not a component spec id, a separate containing `spec_id`,
@@ -58,10 +64,11 @@ detect-and-report only and never infer a semantic equivalent.
 
 ## Examples
 
-The `f1b8f01a...` parent component spec retains `component = "spec-system"`.
-Its Health Check child is a separate component spec whose `parent` is
-`f1b8f01a...`; a provider edge stores that child spec id as its endpoint, while
-neither spec replaces the other's classifier or hierarchy relationship.
+The `f1b8f01a...` parent component spec retains `component = "spec-system"` and
+persists `component_id = "component-oriented-specification-system"`. Its Health
+Check child is a separate component spec whose `parent` is `f1b8f01a...`; a
+provider edge uses the child `component_id`, while neither spec replaces the
+other's classifier or hierarchy relationship.
 
 ## Evidence
 

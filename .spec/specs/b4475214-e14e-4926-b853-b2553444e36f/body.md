@@ -10,7 +10,9 @@
 
 Use `health-` criterion ids and stable finding categories/policies such as
 `violation`, `migration_notice`, `link_parity`, `missing_parent`, `orphan`,
-`parent_cycle`, `missing_examples`, and `criterion_prefix_registry`. Every
+`parent_cycle`, `missing_examples`, `criterion_prefix_registry`,
+`component_identity`, `composition_criteria`, `contract_edge`, and
+`template_binding`. Every
 finding carries stable `severity`, `category`, and policy metadata. This child
 owns `health-validates-references`, `health-allows-unvalidated-criteria`,
 `health-no-fulfillment-gate`, `health-hierarchy-integrity`, `health-link-parity`, and `health-examples-section`.
@@ -35,17 +37,21 @@ without asserting fulfillment or globally failing merely because findings exist.
 
 ## Interfaces And Dependencies
 
-Health consumes `SpecManifest`, `body.md`, hierarchy records, structured links,
-and persisted component edges; it returns `SpecHealthReport` findings through
+Health consumes `SpecManifest`, `body.md`, hierarchy records, parent-owned
+composition criteria, structured provider edges, criterion artifacts, template
+bindings, and structured links; it returns `SpecHealthReport` findings through
 the CLI. Each finding includes a stable severity, category/policy, and detail;
 at minimum `violation` denotes a contract breach and `migration_notice` denotes
 distinguishable migration guidance.
 
 ## Behavior
 
-- `health-validates-references`: check required fields, root membership, ownership, uniqueness, and artifact references.
+- `health-validates-references`: check required fields, globally unique immutable `component_id`, root membership, ownership, uniqueness, and artifact references.
 - `health-allows-unvalidated-criteria` and `health-no-fulfillment-gate`: accept absent validation and never require satisfied evidence.
 - `health-hierarchy-integrity`: reject missing parents, orphans, and parent cycles.
+- `health-composition-criteria`: independently validate each parent's expected child `component_id` set, child shape, and required component relationships.
+- `health-provider-consumer-edges`: independently validate provider-owned edge endpoint ids, provider ownership, criterion ownership, and duplicate claims; never infer an edge from hierarchy.
+- `health-template-bindings`: independently validate template id/version, parameters, artifact owner identity and provenance, deterministic expansion, and collisions.
 - `health-link-parity`: parse Markdown links only under `## Target Code Location`, `## Reading Order`, and `## Provider/Consumer Contract`; normalize recognized targets to `{kind, repo_relative_ref, optional_locator}` and compare kind explicitly against structured TOML links. Ordinary prose links are navigation-only.
 - `health-examples-section`: require each spec to have a non-empty `## Examples` section.
 - `health-parent-navigation`: verify handwritten root Reading Order and Component Relationship Map content without generating or rewriting `body.md`.
@@ -59,7 +65,9 @@ distinguishable migration guidance.
 
 Health reports diagnostic structural findings, not fulfillment and not a global
 write decision. Invalid Markdown, unknown
-link target, unrepresented TOML link, duplicate structured `{relation,target}`
+link target, unrepresented TOML link, duplicate structured `{relation,target}`,
+duplicate or mutated `component_id`, failed composition criterion, invalid edge,
+or invalid template binding
 tuple, missing examples, missing parent, orphan, cycle, or prefix-registry drift
 must be a `violation` finding. Migration guidance must be a `migration_notice`
 finding. Repeated navigation links normalize once; different relations to the

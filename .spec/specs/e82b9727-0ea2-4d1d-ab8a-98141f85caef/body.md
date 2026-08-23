@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use `CriterionTemplate`, `CriterionTemplateVersion`, `CriterionTemplateBinding`, and `template-<family>-v<version>` identities. Instantiated criteria retain the owning component prefix and use deterministic ids such as `<owner-prefix>-<binding>-<behavior>`.
+Use `CriterionTemplate`, `CriterionTemplateVersion`, `CriterionTemplateBinding`, and `template-<family>-v<version>` identities. A binding record carries `template_id`, `template_version`, `bindings`, `owner_component_id`, and concrete `criterion_id`. Instantiated provider-owned artifacts retain the owner prefix and use deterministic ids such as `<owner-prefix>-<binding>-<behavior>`.
 
 ## Requester Input
 
@@ -26,19 +26,19 @@ If implemented, component graphs can reuse a versioned generic criterion definit
 
 ## Interfaces And Dependencies
 
-A template has stable identity, version, typed parameter names, a criterion-id recipe, and statement recipe. An instantiation records the template identity/version, complete parameter bindings, owner component id, and expanded criterion ids. Initial families cover `-api`, `-cli`, `-mcp`, `-http`, and `-viewer`; they are templates, not components or edges.
+A template has stable identity, version, typed parameter names, a criterion-id recipe, and behavior/measurement recipes. An instantiation binds one version and complete parameters to one concrete provider-owned `CriterionArtifact`, preserving matching provenance fields on that artifact. Initial families cover `-api`, `-cli`, `-mcp`, `-http`, and `-viewer`; they are templates, not components or edges.
 
 ## Behavior
 
 - `template-definition`: reject duplicate parameter names and ambiguous id recipes.
 - `template-deterministic-expansion`: identical template version, bindings, and owner produce identical criterion ids and statements.
-- `template-owner-materialization`: expansion creates criteria owned by the bound component, never by the template or parent.
+- `template-owner-materialization`: expansion creates concrete criterion artifacts owned by the bound `owner_component_id`, never by the template or parent.
 - `template-collision-handling`: collision with a non-identical existing criterion fails; identical repeated expansion is idempotent.
 - `template-version-migration`: a version is immutable; a migration declares old-to-new bindings and reports criteria requiring review rather than silently rewriting them.
 
 ## Boundaries And Failure Cases
 
-Templates neither create components nor encode provider/consumer dependencies. Missing bindings, unknown template/version, invalid generated ids, owner outside the composed hierarchy, or a collision with differing content is invalid. Template upgrade is explicit migration, not implicit latest-version selection.
+Templates neither create components nor encode provider/consumer dependencies. Missing bindings, unknown template/version, invalid generated ids, owner outside the composed hierarchy, mismatched artifact provenance, or a collision with differing content is invalid. Template upgrade is explicit migration, not implicit latest-version selection.
 
 ## Provider/Consumer Contract
 

@@ -8,7 +8,10 @@
 
 ## Naming Conventions
 
-Use library types `WorktreeGit`, `WorktreeRef`, `ProvisionPolicy`, and `SessionActivity`; criterion ids use the `worktree-provision-` prefix.
+The future persisted `component_id` is `worktree-provisioning-policy`. Use
+`ProvisionPolicy` and `SessionActivity`; criterion ids use the
+`worktree-provision-` prefix. `WorktreeGit` is an implemented library type, but
+the accurate Git-operation provider component boundary remains unresolved.
 
 ## Reading Order
 
@@ -28,15 +31,18 @@ If implemented, consumers can make consistent worktree reclaim and provision dec
 
 - `worktree-provision-reclaim-decision`: evaluate a candidate from repository, activity, and policy inputs.
 - `worktree-provision-session-provisioning`: provision or reuse a worktree through the shared library.
-- `worktree-provision-library-reuse`: consumers use these functions instead of duplicate policy selection.
 
 ## Boundaries And Failure Cases
 
-The library does not parse CLI arguments, dispatch commands, or integrate gitlinks. Invalid repository state or activity/policy errors return typed library failures; consumers must not silently substitute local policy.
+The library does not parse CLI arguments, dispatch commands, or integrate
+gitlinks. This component must not claim that sync or gitlink consume
+`ProvisionPolicy` or `provision_for_session`; the accurate Git-operation
+provider component is deliberately not introduced by this pilot. Invalid
+repository state or activity/policy errors return typed library failures.
 
 ## Provider/Consumer Contract
 
-Provides `worktree-provision-reclaim-decision` and `worktree-provision-session-provisioning` to [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md), [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md), and [a623ea02 Worktree Gitlink Integrity](../a623ea02-e1a9-4c8c-81ea-f1f5fb3b4a9f/body.md).
+Provides `worktree-provision-reclaim-decision` to [191ceae7 Worktree Control CLI Lifecycle](../191ceae7-663e-448b-bb04-46f46f38825d/body.md). `worktree-provision-session-provisioning` has no confirmed consumer in this pilot; sync and gitlink have no provisioning-policy or provisioning-function edge.
 
 ## Examples
 

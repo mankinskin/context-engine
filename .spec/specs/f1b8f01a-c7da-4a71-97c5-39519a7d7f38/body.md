@@ -36,7 +36,7 @@ flowchart TD
 		Root[Specification Root] -->|root-artifact-namespace| Store[Specification Store]
 		Root -->|governing specification only: ticket goal/acceptance gate| Ticket[Ticket Store]
 		Ticket -->|typed specification gate| Root
-		System[Component-Oriented Specification System parent] -->|composes via parent| Root
+		System[Component-Oriented Specification System parent] -->|parent composition criteria| Root
 		System -->|composes via parent| Component
 		System -->|composes via parent| Criterion
 		System -->|composes via parent| Template[Criterion Template]
@@ -47,8 +47,8 @@ flowchart TD
 		Evidence[Evidence Reference] -->|root-artifact-namespace| Root
 		Evidence -->|document-stable-target, document-resolution-result| Document[Document Store]
 		Document -->|document-identity, document-target-grammar, document-resolver-outcomes, document-index-lifecycle| DocumentProvider[Document API Repository and Typed Resolver]
-		Edge[Directed Contract Edge] -->|component-root-membership| Component
-		Edge -->|criterion-single-owner, criterion-root-unique| Criterion
+		Edge[Directed Contract Edge] -->|provider/consumer endpoint component_id| Component
+		Edge -->|provider-owned criterion_id| Criterion
 		Edge -->|stored typed edges| Store
 		Observation[Validation Observation] -->|criterion-required-fields| Criterion
 		Observation -->|evidence-required-fields| Evidence
@@ -59,29 +59,38 @@ flowchart TD
 		Store -->|parent link list and graph verification| Component
 		Query[Specification Query CLI] -->|store-persists-artifacts| Store
 		Query -->|edge-persisted-typed-model| Edge
-		Template -->|deterministic owner criteria| Criterion
-		Annotation -->|component identity resolution| Component
-		Annotation -->|criterion identity resolution| Criterion
+		Template -->|binding provenance and deterministic owner artifacts| Criterion
+		Annotation -->|persisted component_id resolution| Component
+		Annotation -->|provider-owned criterion_id resolution| Criterion
 ```
 
 ## Shared Invariants
 
-- Every component is a spec. A parent component spec composes child component
-	specs only through `parent`; containment is not a provider/consumer edge and
-	no governing spec is contained in component identity.
+- Every component is a spec with an immutable, human-readable `component_id`.
+	The manifest UUID remains storage identity and `slug` remains renameable
+	navigation only. `component_id` is unique across the `SpecStore` and changes
+	only through an explicit journaled migration.
+- `parent` is the typed composition relation. Parent-owned composition criteria
+	assert expected child `component_id` values, child shape, and required
+	component relationships. Containment is not a provider/consumer edge.
 - A governing specification is reserved for ticket goal/acceptance gating.
 	Parent-owned criteria may require a child component's existence, structure,
 	or relationship, without taking ownership of that child's criteria.
-- A provider exclusively owns criteria; a consumer stores only its directed edge
-	to provider criterion ids and never copies provider statements.
+- A provider exclusively owns `CriterionArtifact` records. Each artifact has a
+	stable `criterion_id`, `owner_component_id`, behavior, measurement, optional
+	template provenance and binding values, and validation-evidence links; a
+	consumer stores only its directed edge to provider criterion ids.
 - The concrete `workflow-tools/spec` parent may compose `spec-api`, `spec-cli`,
 	and `spec-mcp`; CLI/MCP parity may require both transports to consume shared
 	API behavior rather than duplicate it. Those component specs are
 	specified-but-not-built until separately authored.
-- Parameterized templates define generic criteria and deterministic bindings;
-	they are neither components nor provider/consumer edges. Rust annotations are
-	specified-but-not-built source declarations resolved against existing
-	component/criterion identities; `CodeRef` remains a fallback.
+- Provider-owned `outward_contract_edges` persist distinct provider/consumer
+	records whose endpoints are `component_id` values. `CriterionTemplateBinding`
+	records bind a template id/version and parameters to one concrete provider
+	criterion artifact; templates are neither components nor edges. Health
+	independently validates composition, edges, bindings, deterministic expansion,
+	collisions, and owner identity. Rust annotations resolve persisted
+	`component_id` and `criterion_id` values; `CodeRef` remains a fallback.
 - Every code-facing child has a manifest `code_refs` location and a concrete
 	naming convention; every parent body lists and graphs its direct children.
 - The future structured links in `spec.toml` and the clickable links in `body.md`

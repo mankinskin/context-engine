@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use source-side `#[implements(component_id = "...")]` and `#[validates(criterion_id = "...")]`. The resolver emits `ResolvedImplementation` and `ResolvedValidation` records keyed by the stable spec identity and parsed Rust item identity.
+Use source-side `#[implements(component_id = "...")]` and `#[validates(criterion_id = "...")]`. The resolver emits `ResolvedImplementation` keyed by persisted immutable `component_id`, and `ResolvedValidation` keyed by provider-owned criterion artifact `criterion_id` and parsed Rust item identity.
 
 ## Requester Input
 
@@ -27,11 +27,11 @@ If implemented, dependents can rely on parsed Rust items to declare their implem
 
 ## Interfaces And Dependencies
 
-The resolver validates every `component_id` against an existing component spec and every `criterion_id` against an existing criterion. Supported stable Rust items are structs, enums, traits, impl methods and associated functions, free functions, consts, and statics. A successful annotation result includes parsed item kind/name and current file/line range.
+The resolver validates every `component_id` against an existing persisted component identity, not its manifest UUID or slug, and every `criterion_id` against an existing provider-owned criterion artifact. Supported stable Rust items are structs, enums, traits, impl methods and associated functions, free functions, consts, and statics. A successful annotation result includes parsed item kind/name and current file/line range.
 
 ## Behavior
 
-- `annotation-identity-resolution`: validate the declared id before reporting a location.
+- `annotation-identity-resolution`: resolve `component_id` and provider-owned `criterion_id` before reporting a location.
 - `annotation-current-location`: derive location from the parsed Rust item on each resolution pass.
 - `annotation-authoritative-when-present`: use a valid annotation as the authoritative implementation or validation link; retain `CodeRef` as a navigation fallback when no annotation exists.
 - `annotation-health`: report unknown ids, malformed attributes, duplicate conflicting declarations, unsupported item kinds, and unresolved source as health findings.

@@ -9,8 +9,10 @@
 ## Naming Conventions
 
 Use `ComponentSpec` for a `SpecManifest` that represents one component; do not
-introduce a separate component record or a containing `spec_id`. A component
-spec's `id` is its outward-contract endpoint identifier. Component criterion
+introduce a separate component record or a containing `spec_id`. `component_id`
+is the immutable, unique `SpecStore` domain identity and every outward-contract
+endpoint; manifest `id` remains storage identity and `slug` remains navigation.
+Component criterion
 ids use the registered system-wide prefix; this child owns
 `component-required-fields`, `component-optional-fields`,
 `component-root-membership`, `component-criterion-ownership`,
@@ -35,27 +37,30 @@ with a parent component spec.
 
 ## Interfaces And Dependencies
 
-Each component is its own `SpecManifest` and requires its `id`, `title`, and
-purpose-bearing body. `parent` is optional composition metadata, not an endpoint
-identity. Optional fields are `context`, related spec/evidence ids, `code_refs`,
-and provider-owned outward contract edges in that component spec's `spec.toml`.
-Provider identity is the owning component spec id:
+Each component is its own `SpecManifest` and requires storage `id`,
+`component_id`, `title`, and purpose-bearing body. `parent` is composition,
+not an endpoint identity; parent-owned criteria validate expected children and
+relationships. Optional fields are `context`, related spec/evidence ids,
+`code_refs`, and provider-owned outward contract edges. Provider identity is
+the owning `component_id`:
 
 ```toml
 [[outward_contract_edges]]
+edge_id = "edge-health-consumes-spec-store"
 name = "health reads persisted artifacts"
-consumer_spec_id = "<consumer-component-spec-id>"
-criterion_ids = ["<registered-prefix>-persists-artifacts"]
+consumer_component_id = "<consumer-component-id>"
+provider_component_id = "<owning-component-id>"
+criterion_ids = ["<provider-owned-criterion-id>"]
 ```
 
 ## Behavior
 
-- `component-required-fields`: require the component spec identity and purpose fields; reject a separate containing `spec_id`.
+- `component-required-fields`: require immutable `component_id`, storage identity, and purpose fields; reject a separate containing `spec_id`.
 - `component-optional-fields`: retain only declared optional context links.
 - `component-root-membership`: resolve an optional parent component spec as hierarchy composition only.
 - `component-criterion-ownership`: exclusively own zero or more criteria.
 - `component-code-refs-required`: a code-facing component has at least one valid `CodeRef`, and its body has a non-empty `## Naming Conventions` section.
-- `component-outward-edge-ownership`: each provider component spec persists its own `[[outward_contract_edges]]` rows in its `spec.toml`; every `consumer_spec_id` is a consumer component spec id, and no parent aggregation mirrors an authoritative edge.
+- `component-outward-edge-ownership`: each provider component spec persists its own `[[outward_contract_edges]]` rows; `consumer_component_id` and `provider_component_id` are component ids, the provider equals the owning component, and no parent aggregation mirrors an authoritative edge.
 
 Parent-owned criteria may evaluate the direct-child component set and its
 relationships, but do not make the parent an identity provider for children.
@@ -63,7 +68,8 @@ relationships, but do not make the parent an identity provider for children.
 ## Boundaries And Failure Cases
 
 A component spec is not its `component` classifier and owns neither consumer
-edges nor another component spec's criteria. A missing component spec id,
+edges nor another component spec's criteria. A missing, duplicate, or mutable
+`component_id`,
 separate containing `spec_id`, non-component endpoint, required field, code
 reference, naming section, or registry entry is invalid for a code-facing
 component; empty owned criteria are valid.
@@ -76,7 +82,7 @@ Consumes [a608f774 Specification Root Contract](../a608f774-9f50-4de1-90e2-ffeef
 
 The Health Check component spec declares a `CodeRef` to `SpecStore::health`,
 names the `health-` criterion namespace, and owns `health-link-parity`. Its
-spec id is used in `consumer_spec_id` by providers; its parent's
+`component_id` is used in `consumer_component_id` by providers; its parent's
 `component = "spec-api"` remains unrelated classification metadata.
 
 ## Evidence

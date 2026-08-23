@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use provider-owned `outward_contract_edges { name, consumer_spec_id, criterion_ids }`; the owning provider component spec's `id` is the provider endpoint and `consumer_spec_id` is the consumer component spec's id. Edge ids use `edge-<consumer>-consumes-<provider>`; this child owns `edge-required-fields`, `edge-nonempty-provider-criteria`, `edge-provider-ownership`, `edge-distinct-endpoints`, `edge-cycles-allowed`, `edge-unique-claim`, `edge-consumer-does-not-copy`, and `edge-persisted-typed-model`.
+Use provider-owned `outward_contract_edges { edge_id, name, consumer_component_id, provider_component_id, criterion_ids }`; both endpoints are immutable `component_id` values and the provider equals the owning component. Edge ids use `edge-<consumer>-consumes-<provider>`; this child owns `edge-required-fields`, `edge-nonempty-provider-criteria`, `edge-provider-ownership`, `edge-distinct-endpoints`, `edge-cycles-allowed`, `edge-unique-claim`, `edge-consumer-does-not-copy`, and `edge-persisted-typed-model`.
 
 ## Requester Input
 
@@ -28,26 +28,27 @@ provider-owned criteria and tooling can read the same data without parsing prose
 
 ## Interfaces And Dependencies
 
-Each provider component spec's row has nonempty `criterion_ids[]`,
-`consumer_spec_id`, and `name`; its owning `spec.toml` supplies the provider
-component spec id. Both endpoint values are component spec ids, never a parent
-or containing-spec identifier. Its serialized TOML is authoritative; hierarchy
-composition and parent navigation remain handwritten.
+Each provider component's row has nonempty `criterion_ids[]`, `edge_id`,
+`consumer_component_id`, `provider_component_id`, and `name`; both endpoint
+values are `component_id`s, never manifest UUIDs, parents, or containing-spec
+identifiers. Its serialized TOML is authoritative; hierarchy composition and
+parent navigation remain separate.
 
 ## Behavior
 
-- `edge-required-fields`, `edge-nonempty-provider-criteria`, and `edge-provider-ownership` validate shape, component-spec endpoints, and provider ownership.
+- `edge-required-fields`, `edge-nonempty-provider-criteria`, and `edge-provider-ownership` validate shape, `component_id` endpoints, and provider ownership.
 - `edge-distinct-endpoints` rejects self dependencies; `edge-cycles-allowed` permits multi-component cycles.
 - `edge-unique-claim` rejects duplicate `(consumer, provider, criterion)` claims.
 - `edge-consumer-does-not-copy` preserves provider ownership.
-- `edge-persisted-typed-model`: store provider-owned `[[outward_contract_edges]]` rows in `spec.toml`, not only Markdown.
+- `edge-persisted-typed-model`: store provider-owned `[[outward_contract_edges]]` rows in `spec.toml`, not only Markdown, and validate them separately from `parent` composition.
 
 ## Boundaries And Failure Cases
 
 An edge is neither a copied criterion, hierarchy composition edge, criterion
 template expansion, nor a governing
 specification's `governs_ticket` relation. A self edge, empty list, foreign
-criterion, missing or non-component-spec endpoint, separate containing
+criterion, missing or non-component-id endpoint, provider not equal to the
+owning component, separate containing
 `spec_id`, duplicate claim, mirrored parent authority, or prose-only edge is
 invalid.
 
@@ -57,9 +58,10 @@ Consumes [fdb7645d Component Specification Contract](../fdb7645d-eac5-4b82-88eb-
 
 ## Examples
 
-The provider component spec `spec-store-id` persists `{ consumer_spec_id:
-"health-id", criterion_ids: ["store-persists-artifacts"], name: "health reads
-persisted artifacts" }`; both values are component spec ids and the dependency
+The provider component `spec-store` persists `{ consumer_component_id:
+"spec-health", provider_component_id: "spec-store", criterion_ids:
+["spec-store-persists-artifacts"], name: "health reads persisted artifacts" }`;
+both values are component ids and the dependency
 is mirrored by `Health --> Store` in the parent graph.
 
 ## Evidence

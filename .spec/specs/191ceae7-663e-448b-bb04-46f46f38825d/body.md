@@ -8,7 +8,9 @@
 
 ## Naming Conventions
 
-Use `Cli`, `Command`, and `dispatch`; criterion ids use the `worktree-cli-` prefix, including `worktree-cli-delegates-provisioning-policy`.
+The future persisted `component_id` is `worktree-control-cli`. Use `Cli`,
+`Command`, and `dispatch`; criterion ids use the `worktree-cli-` prefix,
+including `worktree-cli-evaluates-reclaim-candidate`.
 
 ## Reading Order
 
@@ -18,33 +20,43 @@ Use `Cli`, `Command`, and `dispatch`; criterion ids use the `worktree-cli-` pref
 
 ## Responsibility
 
-If implemented, operators can invoke the supported lifecycle commands and rely on the CLI dispatch layer to route provisioning decisions through the shared policy library.
+If implemented, operators can invoke supported lifecycle commands and rely on
+the CLI dispatch layer to use the implemented Git and reclaim-evaluation calls
+without claiming session provisioning delegation.
 
 ## Interfaces And Dependencies
 
-`Cli` parses a `Command`; `dispatch(Command)` selects lifecycle handlers. Lifecycle handlers consume `WorktreeGit`, `WorktreeRef`, `ProvisionPolicy`, `evaluate_reclaim_candidate`, and `provision_for_session` from `session-worktree-provision`.
+`Cli` parses a `Command`; `dispatch(Command)` selects lifecycle handlers.
+`main.rs` consumes `WorktreeGit`, `WorktreeRef`, `ProvisionPolicy`, and
+`evaluate_reclaim_candidate` from `session-worktree-provision`; it does not
+call `provision_for_session`.
 
 ## Behavior
 
 - `worktree-cli-dispatches-lifecycle`: each supported command reaches its intended handler.
-- `worktree-cli-delegates-provisioning-policy`: handlers use the provisioning library for reclaim/provision decisions rather than reproducing policy logic.
+- `worktree-cli-evaluates-reclaim-candidate`: the implemented reclaim path uses `evaluate_reclaim_candidate` with `ProvisionPolicy`; it does not establish a session-provisioning edge.
 - `worktree-cli-contract-coverage`: integration tests exercise user-visible lifecycle behavior.
 
 ## Boundaries And Failure Cases
 
-The CLI does not own provisioning policy or invent an MCP/API parity surface. Parse failure, invalid checkout, rejected policy decision, or library error is surfaced as command failure without duplicating library policy.
+The CLI does not own provisioning policy, does not call `provision_for_session`,
+and does not invent an MCP/API parity surface. Parse failure, invalid checkout,
+rejected reclaim decision, or library error is surfaced as command failure.
 
 ## Provider/Consumer Contract
 
-Consumes `worktree-provision-reclaim-decision` and `worktree-provision-session-provisioning` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides lifecycle behavior to operators.
+Consumes only `worktree-provision-reclaim-decision` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides lifecycle behavior to operators. This is documented intended provider/consumer evidence, not a persisted edge until the typed model exists.
 
 ## Examples
 
-A lifecycle command reaches `dispatch`, opens `WorktreeGit`, and calls `provision_for_session` with `ProvisionPolicy::default()` rather than selecting a reclaim candidate in CLI-local code.
+A lifecycle command reaches `dispatch`, opens `WorktreeGit`, and the reclaim
+path calls `evaluate_reclaim_candidate` with `ProvisionPolicy::default()`; it
+does not call `provision_for_session`.
 
 ## Evidence
 
-Position: `implemented` for the named CLI/library calls. Run `cargo test --manifest-path workflow-tools/session/Cargo.toml -p worktree-ctl --test worktree_contracts`.
+Position: `partial`: the named Git and reclaim-evaluation calls are implemented,
+but the persisted component/criterion/edge model is not. Run `cargo test --manifest-path workflow-tools/session/Cargo.toml -p worktree-ctl --test worktree_contracts`.
 
 ## Scope
 

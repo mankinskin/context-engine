@@ -8,7 +8,12 @@
 
 ## Naming Conventions
 
-Use `worktree-ctl` for the composed parent component, `worktree-cli-`, `worktree-provision-`, `worktree-sync-`, and `worktree-gitlink-` criterion prefixes, and the child component identities linked below.
+The future persisted parent `component_id` is `worktree-control-pilot`; child
+identities are `worktree-control-cli`, `worktree-provisioning-policy`,
+`worktree-synchronization`, and `worktree-gitlink-integrity`. Use the existing
+`worktree-cli-`, `worktree-provision-`, `worktree-sync-`, and `worktree-gitlink-`
+criterion prefixes; these identifiers are contract targets, not claims that the
+typed model is implemented.
 
 ## Motivation
 
@@ -32,23 +37,35 @@ flowchart TD
 	Pilot -->|composes| Provision[Provisioning Policy]
 	Pilot -->|composes| Sync[Synchronization And Integration]
 	Pilot -->|composes| Gitlink[Gitlink Integrity]
-	Cli -->|worktree-provision-library-delegation| Provision
-	Sync -->|worktree-sync-uses-git| Provision
-	Gitlink -->|worktree-gitlink-uses-git| Provision
+	Cli -->|worktree-provision-reclaim-decision| Provision
 	Sync -->|worktree-sync-preserves-gitlinks| Gitlink
 ```
 
 ## Shared Invariants
 
-Parent-owned criteria require all four child components to exist with the shown relationships, CLI lifecycle handlers to delegate provisioning policy to the shared library rather than duplicate it, and [workflow-tools/session/crates/worktree-ctl/tests/worktree_contracts.rs](../../../workflow-tools/session/crates/worktree-ctl/tests/worktree_contracts.rs) plus [workflow-tools/session/crates/worktree-ctl/tests/maintenance.rs](../../../workflow-tools/session/crates/worktree-ctl/tests/maintenance.rs) to cover integration behavior. There is no MCP surface, so no CLI/MCP/API parity criterion is claimed.
+Parent-owned composition criteria must require all four persisted child
+`component_id` values, their expected shape, and only the shown relationships.
+The documented intended provisioning relationship is distinct from implemented
+delegation: `main.rs` uses `WorktreeGit` and `evaluate_reclaim_candidate`, but
+does not call `provision_for_session`; `sync.rs` and `gitlink.rs` use
+`WorktreeGit`, not `ProvisionPolicy` or provisioning behavior. The pilot is
+blocked until composition, provider edges, and template bindings are persisted
+and health-validated, and research establishes an accurate Git-operation
+provider boundary. There is no MCP surface, so no CLI/MCP/API parity criterion is claimed.
 
 ## Examples
 
-The expected composition graph is the Mermaid graph above. A specified-but-not-built template binds `owner = worktree-ctl`, `cli = worktree-ctl`, and `provider = session-worktree-provision` to generate a criterion requiring lifecycle commands to delegate policy. A future manual/source-resolution review associates `dispatch` and policy functions with component/criterion ids, but no annotations or macros are claimed to exist.
+The expected composition graph is the Mermaid graph above. A future template
+may bind a concrete provider-owned criterion artifact, but no template output,
+annotation, or macro exists today. A manual source review may associate
+`dispatch` with `worktree-control-cli` and a provider-owned `criterion_id` only
+after the persistent model exists.
 
 ## Evidence
 
-Position: `partial`: code and integration tests are implemented; template persistence and source annotations are specified-but-not-built. Validate with `cargo test --manifest-path workflow-tools/session/Cargo.toml -p worktree-ctl` and a manual review that confirms the graph, parent criteria, and source-resolution workflow.
+Position: `partial`: code and integration tests are implemented; typed identity,
+composition criteria, provider edges, template persistence, health validation,
+and source annotations are specified-but-not-built. Validate with `cargo test --manifest-path workflow-tools/session/Cargo.toml -p worktree-ctl` and a manual source review that confirms the graph does not claim provisioning delegation.
 
 ## Scope
 

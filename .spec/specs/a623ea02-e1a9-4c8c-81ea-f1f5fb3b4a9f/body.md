@@ -8,13 +8,14 @@
 
 ## Naming Conventions
 
-Use `verify_gitlink_containment`, `partition_statuses`, and the `worktree-gitlink-` criterion prefix.
+The future persisted `component_id` is `worktree-gitlink-integrity`. Use
+`verify_gitlink_containment`, `partition_statuses`, and the
+`worktree-gitlink-` criterion prefix.
 
 ## Reading Order
 
 1. [fa6e85c8 Worktree Control Component Pilot](../fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md) - composing parent.
-2. [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md) - `WorktreeGit` provider.
-3. [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - integrity consumer.
+2. [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md) - integrity consumer.
 
 ## Responsibility
 
@@ -22,7 +23,10 @@ If implemented, integration consumers can verify gitlink containment and classif
 
 ## Interfaces And Dependencies
 
-`verify_gitlink_containment` opens `WorktreeGit` to inspect submodule/gitlink state; `partition_statuses` classifies reported status for caller decisions.
+`verify_gitlink_containment` opens `WorktreeGit` to inspect submodule/gitlink
+state; `partition_statuses` classifies reported status for caller decisions.
+The pilot has not yet established the component that owns the Git-operation
+provider contract.
 
 ## Behavior
 
@@ -36,7 +40,7 @@ This component does not select a provisioning candidate or dispatch commands. An
 
 ## Provider/Consumer Contract
 
-Consumes `worktree-provision-library-reuse` from [c1d13a73 Worktree Provisioning Policy](../c1d13a73-3265-42e1-8da0-5c44ef7b61ff/body.md); provides `worktree-gitlink-containment` to [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md).
+Provides `worktree-gitlink-containment` to [c40b790f Worktree Synchronization And Integration](../c40b790f-6704-4a5e-bc62-ae7599521a7c/body.md). It uses `WorktreeGit`, but has no asserted provider edge for it until boundary research is complete; it does not consume `ProvisionPolicy` or `provision_for_session`.
 
 ## Examples
 

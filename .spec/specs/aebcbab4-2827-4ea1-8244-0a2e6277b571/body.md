@@ -8,8 +8,9 @@
 
 ## Naming Conventions
 
-Use `CriterionArtifact`; ids are `<registered-prefix>-<behavior>` and are unique
-per root. This child owns `criterion-required-fields`, `criterion-single-owner`,
+Use `CriterionArtifact`; `criterion_id` values are `<registered-prefix>-<behavior>`
+and are unique per root. Each artifact is provider-owned, not a legacy generic
+`AcceptanceCriterion`. This child owns `criterion-required-fields`, `criterion-single-owner`,
 `criterion-root-unique`, `criterion-optional-validation`, `criterion-evidence-integrity`, and `criterion-naming-conventions-required`.
 
 ## Requester Input
@@ -30,26 +31,26 @@ acceptance obligation rather than copied consumer requirements.
 
 ## Interfaces And Dependencies
 
-`CriterionArtifact` requires `id`, `owner_component_spec_id`, and `statement`;
-the owner is one component spec id and no separate containing `spec_id` exists.
-`validated_by[]` is optional and references evidence reachable through that
-component spec's hierarchy.
+`CriterionArtifact` requires `criterion_id`, `owner_component_id`, `behavior`,
+and `measurement`; `validation_evidence[]` is optional. Optional template
+provenance is `template_id`, `template_version`, and `template_bindings`. The
+owner is one component id and no separate containing `spec_id` exists.
 
 ## Behavior
 
-- `criterion-required-fields`: require identity, owner, and statement.
-- `criterion-single-owner`: resolve exactly one owner component spec.
+- `criterion-required-fields`: require identity, owner, behavior, and measurement.
+- `criterion-single-owner`: resolve exactly one owner `component_id`.
 - `criterion-root-unique`: require an id once within the composed component-spec hierarchy.
 - `criterion-optional-validation`: accept an empty `validated_by` list.
-- `criterion-evidence-integrity`: resolve every named evidence id in that root.
+- `criterion-evidence-integrity`: resolve every named validation-evidence link in that root.
 - `criterion-naming-conventions-required`: require a documented owner-prefix naming convention for each code-facing criterion component.
 - `criterion-prefix-registry`: require each component to resolve to exactly one `.spec/criterion-prefixes.toml` entry, with unique component ids and prefixes across all registered scan roots; every criterion must match that entry's `<prefix>-<behavior>` form.
-- `criterion-template-materialization`: accept a deterministic template expansion only when its resulting ids, owner component, version, and bindings resolve; the template is not the owner.
+- `criterion-template-materialization`: accept a deterministic template expansion only when its concrete artifact id, owner component id, template id/version, and bindings resolve; the template is not the owner.
 
 ## Boundaries And Failure Cases
 
 Criteria do not copy provider claims into consumer contracts or require an
-observation. Missing owner component spec, duplicate id, an owner outside the
+observation. Missing owner component id, duplicate `criterion_id`, an owner outside the
 composed hierarchy, a separate containing `spec_id`, dangling evidence, an
 unregistered/mismatched/duplicate/orphan prefix entry, or undocumented
 code-facing naming convention is invalid. The target registry schema is:
@@ -63,7 +64,7 @@ This is specified-but-not-built: create the file only after materialized stable
 component ids allow real entries, then migrate and rename affected criteria;
 never auto-populate it.
 
-Parameterized templates may generate criteria for the `-api`, `-cli`, `-mcp`,
+Parameterized templates may generate provider-owned criterion artifacts for the `-api`, `-cli`, `-mcp`,
 `-http`, and `-viewer` families, but a template remains a definition rather
 than a component or provider/consumer edge.
 
@@ -73,9 +74,10 @@ Consumes [fdb7645d Component Specification Contract](../fdb7645d-eac5-4b82-88eb-
 
 ## Examples
 
-The Health Check component owns `health-link-parity` with a statement requiring
-one structured manifest link for each parsed `body.md` markdown link; an edge
-may consume that id but may not restate its statement.
+The Health Check component owns `health-link-parity` with behavior requiring
+one structured manifest link for each parsed `body.md` Markdown link and a
+measurement naming the health finding; an edge may consume its `criterion_id`
+but may not restate the artifact.
 
 ## Evidence
 
