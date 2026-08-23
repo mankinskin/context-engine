@@ -1,29 +1,61 @@
 <!-- aligned-structure:v2 -->
 
-# Implementation
+# Production Workflow: Implementation
 
-## Responsibility And Interface
+## Target Code Location
 
-Execute one planned ticket with its validation approach and produce review-ready
-code, documentation, and evidence. Consume Tests' three criteria and complete
-handoff; use `.test/` for records and `target/test-logs/` for full failure logs;
-provide the three criteria consumed by Validated response.
+[.agents/instructions/orchestration/escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md) owns deficient-handoff escalation; [AGENTS.md](AGENTS.md) owns validation, logs, and commit requirements.
 
-## Behavior And Contract
+## Naming Conventions
 
-- `implementation-planned-scope`: changes only approved scope and non-goals.
-- `implementation-review-evidence`: exposes changed paths, docs, and validation verdict.
-- `implementation-escalation`: stops when handoff lacks criteria, owning paths, or context.
+Use `target/test-logs/` for complete failure logs and `.test/` executions for
+validation records. This component owns `implementation-planned-scope`, `implementation-review-evidence`, and `implementation-escalation`.
+
+## Requester Input
+
+> Work every ticket created under Waypoint 6 through the standard ticket lifecycle to `done`.
+
+## Reading Order
+
+1. [.agents/instructions/orchestration/escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md) — incomplete-handoff owner.
+2. [18c1b04d Production Workflow: Tests](.spec/specs/18c1b04d-d23f-4047-9793-5c2af0ee04c1/body.md) — validation provider.
+3. [0013fe78 Production Workflow: Validated Response](.spec/specs/0013fe78-9279-4bb2-8707-e86b6a3dd3b8/body.md) — review-evidence consumer.
+
+## Responsibility
+
+If implemented, Validated Response can rely on an approved-scope change with
+its changed paths, documentation, validation verdict, and escalations exposed.
+
+## Interfaces And Dependencies
+
+Consumes all `tests-*` criteria and a complete ticket/spec handoff. Produces
+review material and test evidence for the response stage.
+
+## Behavior
+
+- `implementation-planned-scope` changes only approved scope and non-goals.
+- `implementation-review-evidence` reports paths, documentation, and validation outcome.
+- `implementation-escalation` stops when criteria, owners, or context are missing.
 
 ## Boundaries And Failure Cases
 
-`.agents/instructions/orchestration/phase-separation.instructions.md` forbids
-broad search or inline clarification during execution. Incomplete/ambiguous
-handoffs escalate via `escalation-gate.instructions.md`; required failing tests
-cannot be reported as complete, and unrelated failures cannot expand scope.
+An incomplete or ambiguous handoff escalates; it does not trigger invented requirements.
+Required failing checks cannot be called complete, and unrelated failures do not expand scope.
 
-## Acceptance Evidence And Position
+## Provider/Consumer Contract
 
-Run required ticket commands, inspect `target/test-logs/`, and record applicable
-outcomes before review. Verify ticket spec/doc/evidence pointers. This draft has
-no run and no `validated_by`; phase separation and escalation are implemented rules.
+Consumes all `tests-*` criteria from [18c1b04d Production Workflow: Tests](.spec/specs/18c1b04d-d23f-4047-9793-5c2af0ee04c1/body.md); provides all three `implementation-*` criteria to [0013fe78 Production Workflow: Validated Response](.spec/specs/0013fe78-9279-4bb2-8707-e86b6a3dd3b8/body.md).
+
+## Examples
+
+After a planned change, inspect `target/test-logs/`, record the command result in
+`.test/`, and provide changed paths plus any remaining limitation to review.
+
+## Evidence
+
+Position: `implemented` governing guidance. Required ticket commands and recorded
+outcomes are evidence; this draft has no associated implementation run.
+
+## Scope
+
+Owns execution of approved work, not request clarification or user judgment.
