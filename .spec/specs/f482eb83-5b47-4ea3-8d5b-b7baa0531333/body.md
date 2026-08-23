@@ -8,7 +8,7 @@
 
 ## Naming Conventions
 
-Use `TicketRef` for a governing target, `SpecificationGate` for the ticket-side typed record, and `ticket-` criterion ids. This child owns `ticket-governing-spec`, `ticket-explicit-spec-target`, `ticket-spec-before-plan`, `ticket-bidirectional-governance`, and `edge-spec-consumes-ticket-gate`.
+Use `TicketRef` for a governing component-spec target, `SpecificationGate` for the ticket-side typed record, and `ticket-` criterion ids. This child owns `ticket-governing-spec`, `ticket-explicit-spec-target`, `ticket-spec-before-plan`, `ticket-bidirectional-governance`, `ticket-governance-recovery`, and `edge-spec-consumes-ticket-gate`.
 
 ## Reading Order
 
@@ -23,7 +23,7 @@ the specification that defines its goal and acceptance criteria.
 
 ## Interfaces And Dependencies
 
-The governing specification persists a distinct relation, for example:
+The governing component specification persists a distinct relation, for example:
 
 ```toml
 [[governs_ticket]]
@@ -42,6 +42,7 @@ that specification. Neither side uses generic `related_specs` semantics.
 - `ticket-spec-before-plan`: create a ticket after, never instead of, its spec.
 - `ticket-bidirectional-governance`: require the governing spec's `governs_ticket` relation and the ticket's typed gate record to resolve to each other.
 - `ticket-gate-lifecycle`: a passed latest matching validation execution satisfies the selected gate; failed or blocked leaves it unsatisfied. Gate outcomes never transition ticket lifecycle state; the existing review-controlled workflow alone does so.
+- `ticket-governance-recovery`: a cross-store governance mutation records enough journal state to report recoverable drift after interruption and exposes resume or rollback; it never silently repairs ticket/spec divergence and does not require a global transaction.
 - `edge-spec-consumes-ticket-gate`: Specification Root consumes all three ticket criteria.
 
 ## Boundaries And Failure Cases
@@ -49,8 +50,11 @@ that specification. Neither side uses generic `related_specs` semantics.
 This child neither authors requirements nor permits an ungoverned ticket to claim
 governed work. The pair is not a `ComponentContractEdge`; legacy generic forms
 are detect-and-report only and must never silently infer the typed relation.
-Missing target identity, wrong store root, missing reverse typed gate, or
-pre-spec planning is invalid.
+Missing target identity, wrong store root, missing reverse typed gate,
+pre-spec planning, or a cross-store interruption silently repaired without an
+explicit resume/rollback choice is invalid. A recovered operation reports its
+status and preserves the original divergent state until the selected recovery
+action runs.
 
 ## Provider/Consumer Contract
 
@@ -67,9 +71,14 @@ the ticket remains in its current lifecycle state until the normal
 review-controlled workflow transitions it. A latest matching `failed` or
 `blocked` execution leaves the gate unsatisfied.
 
+If writing the governing spec relation succeeds but the ticket-side gate write
+is interrupted, the operation reports recoverable drift. Resume completes the
+recorded counterpart write; rollback removes the recorded first write. Neither
+store is silently changed merely because the mismatch is observed.
+
 ## Evidence
 
-Position: `partial`; explicit `TicketRef` and bidirectional validation exist, while the workflow gate remains draft. Planned focused ticket/spec relationship tests under a later reviewed ticket; no implementation ticket is linked now.
+Position: `partial`; explicit `TicketRef` and bidirectional validation exist, while the workflow gate and journaled cross-store recovery are specified-but-not-built. Planned focused ticket/spec relationship, interruption, recoverable-drift, resume, and rollback tests under a later reviewed ticket; no implementation ticket is linked now.
 
 ## Scope
 

@@ -18,7 +18,7 @@ per root. This child owns `criterion-required-fields`, `criterion-single-owner`,
 
 ## Reading Order
 
-1. [fdb7645d Component Artifact Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - owner provider.
+1. [fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) - owner provider.
 2. [7498bed7 Evidence Reference Contract](.spec/specs/7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - `validated_by` evidence provider.
 3. [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md) - criterion-edge consumer.
 4. [workflow-tools/spec/crates/spec-api/src/manifest.rs](workflow-tools/spec/crates/spec-api/src/manifest.rs) - current criterion model.
@@ -30,14 +30,16 @@ acceptance obligation rather than copied consumer requirements.
 
 ## Interfaces And Dependencies
 
-`CriterionArtifact` requires `id`, `spec_id`, `owner_component_id`, and
-`statement`; `validated_by[]` is optional and references same-root evidence.
+`CriterionArtifact` requires `id`, `owner_component_spec_id`, and `statement`;
+the owner is one component spec id and no separate containing `spec_id` exists.
+`validated_by[]` is optional and references evidence reachable through that
+component spec's hierarchy.
 
 ## Behavior
 
 - `criterion-required-fields`: require identity, owner, and statement.
-- `criterion-single-owner`: resolve exactly one same-root component.
-- `criterion-root-unique`: require an id once per root.
+- `criterion-single-owner`: resolve exactly one owner component spec.
+- `criterion-root-unique`: require an id once within the composed component-spec hierarchy.
 - `criterion-optional-validation`: accept an empty `validated_by` list.
 - `criterion-evidence-integrity`: resolve every named evidence id in that root.
 - `criterion-naming-conventions-required`: require a documented owner-prefix naming convention for each code-facing criterion component.
@@ -46,8 +48,9 @@ acceptance obligation rather than copied consumer requirements.
 ## Boundaries And Failure Cases
 
 Criteria do not copy provider claims into consumer contracts or require an
-observation. Missing owner, duplicate id, cross-root owner, dangling evidence,
-an unregistered/mismatched/duplicate/orphan prefix entry, or undocumented
+observation. Missing owner component spec, duplicate id, an owner outside the
+composed hierarchy, a separate containing `spec_id`, dangling evidence, an
+unregistered/mismatched/duplicate/orphan prefix entry, or undocumented
 code-facing naming convention is invalid. The target registry schema is:
 
 ```toml
@@ -61,7 +64,7 @@ never auto-populate it.
 
 ## Provider/Consumer Contract
 
-Consumes [fdb7645d Component Artifact Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-criterion-ownership`; provides `criterion-single-owner` and `criterion-root-unique` to [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md), and `criterion-required-fields` to [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
+Consumes [fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) `component-criterion-ownership`; provides `criterion-single-owner` and `criterion-root-unique` to [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f69232521e25/body.md), and `criterion-required-fields` to [83c0b9c4 Validation Observation Contract](.spec/specs/83c0b9c4-1617-4751-af23-57811060f0fb/body.md).
 
 ## Examples
 

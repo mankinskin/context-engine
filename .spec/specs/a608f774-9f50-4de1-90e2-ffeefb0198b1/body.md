@@ -8,9 +8,11 @@
 
 ## Naming Conventions
 
-`SpecManifest` is the root record; `component` remains its classification field,
-not a Component Artifact. Root-owned criterion ids use `root-`; this child owns
-`root-surviving-fields`, `root-component-classification`, and `root-artifact-namespace`.
+`SpecManifest` is one component specification; `component` remains its
+classification field, not a nested record. A parent component spec
+composes child component specs through `parent`; every outward-contract endpoint
+is a component spec `id`. This child owns `root-surviving-fields`,
+`root-component-classification`, and `root-component-composition`.
 
 ## Reading Order
 
@@ -21,36 +23,40 @@ not a Component Artifact. Root-owned criterion ids use `root-`; this child owns
 
 ## Responsibility
 
-If implemented, dependents can rely on one root namespace for components,
-criteria, evidence references, directed edges, and observations.
+If implemented, dependents can rely on each component being represented by one
+independently addressable spec, with parent specs composing child specs through
+the existing hierarchy rather than enclosing component records.
 
 ## Interfaces And Dependencies
 
-The root extends `SpecManifest`; [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists it and [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) gates governed work on it.
+Each component extends `SpecManifest`; a parent component spec composes direct
+child component specs through their `parent` field. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) gates governed work on its governing component spec.
 
 ## Behavior
 
 - `root-surviving-fields`: retain `id`, lifecycle, `title`, `slug`, `type`, `state`, `scope`, `parent`, `code_refs`, sections, hierarchy, `TicketRef`, and distinct `governs_ticket` relations.
-- `root-component-classification`: preserve the manifest classifier independently of a Component Artifact.
-- `root-artifact-namespace`: place every new artifact in exactly one root.
+- `root-component-classification`: preserve the manifest classifier independently of component-spec identity.
+- `root-component-composition`: represent each component as one spec; a parent composes child component specs through `parent` and no separate containing `spec_id` exists for a component.
 
 ## Boundaries And Failure Cases
 
-The root neither owns a participant criterion nor evidence state. A
+This contract neither owns a participant criterion nor evidence state. A
 `governs_ticket` relation is not a `ComponentContractEdge` or an informational
-`related_tickets`/`related_specs` link. Missing root identity, cross-root
-artifacts, or a missing typed ticket-side gate are invalid; legacy generic
-forms are detect-and-report only and never infer a semantic equivalent.
+`related_tickets`/`related_specs` link. Missing component spec identity,
+an endpoint that is not a component spec id, a separate containing `spec_id`,
+or a missing typed ticket-side gate is invalid; legacy generic forms are
+detect-and-report only and never infer a semantic equivalent.
 
 ## Provider/Consumer Contract
 
-[fdb7645d Component Artifact Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) consumes `root-artifact-namespace`; [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) provides persistence; [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) provides `ticket-governing-spec`.
+[fdb7645d Component Specification Contract](.spec/specs/fdb7645d-eac5-4b82-88eb-94cb22f1b0b2/body.md) consumes `root-component-composition`; [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) provides persistence; [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) provides `ticket-governing-spec`.
 
 ## Examples
 
-A root with id `f1b8f01a...` retains `component = "spec-system"`; its
-Component Artifact and Directed Contract Edge records each carry that root id,
-while neither replaces the root's classifier or parent relationship.
+The `f1b8f01a...` parent component spec retains `component = "spec-system"`.
+Its Health Check child is a separate component spec whose `parent` is
+`f1b8f01a...`; a provider edge stores that child spec id as its endpoint, while
+neither spec replaces the other's classifier or hierarchy relationship.
 
 ## Evidence
 
@@ -58,4 +64,5 @@ Position: `partial`; [workflow-tools/spec/crates/spec-api/src/manifest.rs](workf
 
 ## Scope
 
-Owns root identity and namespace only; artifact shape and persistence belong to sibling children.
+Owns component-spec identity and hierarchy composition only; criterion shape,
+edge shape, and persistence belong to sibling children.

@@ -8,10 +8,11 @@
 
 ## Naming Conventions
 
-Use `SpecStore` for persistence, `spec.toml` for structured contract data, and
-`body.md` for human navigation. This child owns `store-persists-artifacts`,
+Use `SpecStore` for persistence, `spec.toml` for each component spec's
+structured contract data, and `body.md` for human navigation. This child owns `store-persists-artifacts`,
 `store-preserves-baselines`, `store-removes-retired-model`,
-`store-parent-navigation-verification`, and `store-criterion-prefix-registry`.
+`store-parent-navigation-verification`, `store-criterion-prefix-registry`, and
+`store-journaled-recovery`.
 
 ## Requester Input
 
@@ -26,33 +27,40 @@ Use `SpecStore` for persistence, `spec.toml` for structured contract data, and
 
 ## Responsibility
 
-If implemented, readers can round-trip each root's artifacts and contract edges
-from `spec.toml`, while parent navigation remains mechanically verifiable.
+If implemented, readers can round-trip each component spec's criteria and
+provider-owned contract edges from its `spec.toml`, compose component specs
+through hierarchy, and recover interrupted local or cross-store operations
+without silent repair.
 
 ## Interfaces And Dependencies
 
-`SpecStore` persists `SpecManifest` and `body.md`; the index renderer receives
-raw bodies and manifests to derive the existing hierarchy catalog. The `.spec`
-index root owns the committed system-wide `.spec/criterion-prefixes.toml`
-registry across all registered scan roots in the same `SpecStore`.
+`SpecStore` persists each `SpecManifest` and `body.md`; the index renderer
+receives raw bodies and manifests to derive the existing hierarchy catalog. The
+`.spec` index root owns the committed system-wide
+`.spec/criterion-prefixes.toml` registry across all registered scan roots in
+the same `SpecStore`. A local mutation journal records intended and completed
+changes to `spec.toml`, `body.md`, and `.spec/criterion-prefixes.toml`.
 
 ## Behavior
 
-- `store-persists-artifacts`: round-trip components, criteria, evidence, typed edges, observations, and distinct `governs_ticket` relations with their root.
+- `store-persists-artifacts`: round-trip each component spec, its criteria, evidence, provider-owned typed edges, observations, and distinct `governs_ticket` relations; every outward-edge endpoint is a component spec id.
 - `store-preserves-baselines`: preserve sections, hierarchy, and `TicketRef`.
 - `store-removes-retired-model`: retire `contract_mode`, expected properties, mandatory evidence requirements, and fulfillment summaries.
 - `store-parent-navigation-verification`: verify, but never generate or rewrite, each handwritten parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
 - `store-criterion-prefix-registry`: preserve the committed registry mapping each stable component id to one unique prefix across every registered scan root. Migration first populates the registry and renames affected criteria; it never infers entries automatically.
+- `store-journaled-recovery`: journal every local multi-file mutation before changing `spec.toml`, `body.md`, or `.spec/criterion-prefixes.toml`; after interruption, expose recovery status and a deterministic resume or rollback action. Cross-store governance operations report recoverable drift with the same explicit resume/rollback choices and never silently repair. A global transaction is not required.
 
 ## Boundaries And Failure Cases
 
-The store does not decide health policy or migration. Failed parse, missing root,
-invalid persisted reference, child list omission, graph/body mismatch, missing
-or duplicate registry entry, duplicate prefix, or malformed criterion id returns
-an error; retained baselines must not silently change semantics. No manifest
-schema-version field exists today; legacy generic forms are detect-and-report
-only, following the ticket metadata precedent that detects `related_specs` when
-`refs` is absent.
+The store does not decide health policy or migration. Failed parse, missing
+component spec, invalid persisted reference, child list omission, graph/body
+mismatch, missing or duplicate registry entry, duplicate prefix, malformed
+criterion id, absent journal record for a multi-file mutation, or recovery
+attempt that would silently repair cross-store drift returns an error or
+recoverable-drift status; retained baselines must not silently change semantics.
+No manifest schema-version field exists today; legacy generic forms are
+detect-and-report only, following the ticket metadata precedent that detects
+`related_specs` when `refs` is absent.
 
 ## Provider/Consumer Contract
 
@@ -60,13 +68,19 @@ Consumes [ad0685f5 Directed Contract Edge](.spec/specs/ad0685f5-cb35-4c61-b1dc-f
 
 ## Examples
 
-When the root has 12 direct children, renderer verification rejects a body whose
+When a parent component spec has 12 direct children, renderer verification rejects a body whose
 Reading Order links only 11 children or whose Mermaid graph omits the CLI child;
 the persisted `parent` fields are the comparison source.
 
+An interrupted update after writing `spec.toml` but before `body.md` leaves a
+journal record with recovery status; resume completes the recorded mutation or
+rollback restores the recorded prior state. An interrupted ticket/spec
+governance update reports recoverable drift and presents resume/rollback rather
+than changing either store automatically.
+
 ## Evidence
 
-Position: `partial`; [workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) persists current manifests and [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](workflow-tools/spec/crates/spec-api/src/store_index_render.rs) renders catalog trees, but neither models artifacts nor checks authored maps. Planned `cargo test -p spec-api` store, hierarchy, and renderer tests.
+Position: `partial`; [workflow-tools/spec/crates/spec-api/src/store.rs](workflow-tools/spec/crates/spec-api/src/store.rs) persists current manifests and [workflow-tools/spec/crates/spec-api/src/store_index_render.rs](workflow-tools/spec/crates/spec-api/src/store_index_render.rs) renders catalog trees, but component-only endpoint validation, journals, recovery status, and resume/rollback are specified-but-not-built. Planned `cargo test -p spec-api` store, hierarchy, renderer, local-interruption, and cross-store-drift tests.
 
 ## Scope
 

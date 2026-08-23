@@ -31,18 +31,23 @@ and hooks prevent committed specification navigation from drifting from stored l
 
 `ValidationSpec` identifies a target; `ValidationExecution` carries outcome,
 time, and detail. Hook configuration invokes health/link validation once per
-repository root after relevant `.spec/specs/` writes.
+repository root after relevant `.spec/specs/` writes. The health result is
+diagnostic and includes stable severity plus category/policy, including
+`violation` and `migration_notice`.
 
 ## Behavior
 
 - `validation-criterion-link`: evidence identifies applicable spec/criterion targets.
 - `validation-observation-source`: outcomes expose status and optional time/detail.
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
-- `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. It parses `issues_count` and issues because `spec health` currently exits successfully with findings, then blocks any finding not in a versioned `(spec_id, issue)` allowlist. The allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
+- `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. `spec health` returns structured diagnostic findings and does not globally fail because they exist. The hook alone applies configured blocking policy and a versioned `(spec_id, issue)` allowlist, blocking only policy-selected violations. `migration_notice` remains distinguishable from `violation`; the allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
 
 ## Boundaries And Failure Cases
 
-The store does not own criteria, declare fulfillment, or make health fail when automation is absent. Invalid target/status or hook-command failure is rejected; no result remains valid when no automated check exists.
+The store does not own criteria, declare fulfillment, make health globally fail
+when findings exist, or decide hook blocking policy. Invalid target/status or
+hook-command failure is rejected; no result remains valid when no automated
+check exists.
 
 ## Provider/Consumer Contract
 
@@ -51,9 +56,10 @@ Consumes [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b8
 ## Examples
 
 A PostToolUse hook invokes `./target/debug/spec.exe --workspace . health --all`.
-If a body link has no TOML counterpart, parsing its health finding stops the
-write; a manual validation entry can still exist where no executable test is
-available.
+If a body link has no TOML counterpart, health returns a `violation` finding
+and configured PostToolUse policy stops the write; a `migration_notice` is
+reported separately and a manual validation entry can still exist where no
+executable test is available.
 
 ## Evidence
 

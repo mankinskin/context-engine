@@ -4,11 +4,11 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/src/cli/args.rs](workflow-tools/spec/src/cli/args.rs) declares CLI arguments; [workflow-tools/spec/src/cli/commands/crud.rs](workflow-tools/spec/src/cli/commands/crud.rs) implements `cmd_get`; [workflow-tools/spec/src/cli/commands/refs.rs](workflow-tools/spec/src/cli/commands/refs.rs) implements code-reference output; [workflow-tools/spec/src/cli/commands/validate_links.rs](workflow-tools/spec/src/cli/commands/validate_links.rs) resolves current ticket links.
+[workflow-tools/spec/src/cli/args.rs](workflow-tools/spec/src/cli/args.rs) declares CLI arguments; [workflow-tools/spec/src/cli/commands/crud.rs](workflow-tools/spec/src/cli/commands/crud.rs) implements `cmd_get`; [workflow-tools/spec/src/cli/commands/refs.rs](workflow-tools/spec/src/cli/commands/refs.rs) implements code-reference output; [workflow-tools/spec/src/cli/commands/query.rs](workflow-tools/spec/src/cli/commands/query.rs) exposes `spec health`; [workflow-tools/spec/src/cli/commands/validate_links.rs](workflow-tools/spec/src/cli/commands/validate_links.rs) resolves current ticket links.
 
 ## Naming Conventions
 
-Use `spec dump <id>` for the complete projection and `spec links <id>` for resolved links. This child owns `query-spec-dump` and `query-resolved-links`.
+Use `spec dump <id>` for the complete projection, `spec links <id>` for resolved links, and `spec health` for diagnostic findings. This child owns `query-spec-dump`, `query-resolved-links`, and `query-health-findings`.
 
 ## Requester Input
 
@@ -27,16 +27,21 @@ If implemented, a CLI or MCP caller can obtain a complete structured projection 
 
 ## Interfaces And Dependencies
 
-`spec dump <id> --json` returns id, timestamps, fields, code refs, components, criteria, evidence, observations, edges, sections, and body. `spec links <id> --json` returns normalized link kind, source field, target `{kind, repo_relative_ref, optional_locator}`, resolution result, and failure detail.
+`spec dump <id> --json` returns id, timestamps, fields, code refs, criteria, evidence, observations, provider-owned edges, sections, and body for one component spec. `spec links <id> --json` returns normalized link kind, source field, target `{kind, repo_relative_ref, optional_locator}`, resolution result, and failure detail. `spec health --json` returns diagnostic findings with stable severity and category/policy; it does not globally fail merely because findings exist.
 
 ## Behavior
 
 - `query-spec-dump`: emit all persisted data for an unambiguous spec id, including structured extras and `code_refs`.
 - `query-resolved-links`: enumerate and resolve every TOML-backed spec, code, ticket, document, and component-edge link; compare kinds explicitly and do not infer body-only links as structured data.
+- `query-health-findings`: emit the structured diagnostic report, preserving distinct `violation` and `migration_notice` categories for hook policy evaluation.
 
 ## Boundaries And Failure Cases
 
-The commands are read-only and do not claim body parity. Unknown/ambiguous id, unparseable field, missing store, dangling target, and cross-workspace target return a typed resolution failure while preserving the source record.
+The commands are read-only and do not claim body parity. Health findings are
+diagnostic results, not a global CLI rejection; configured PostToolUse policy is
+the only blocking decision. Unknown/ambiguous id, unparseable field, missing
+store, dangling target, and cross-workspace target return a typed resolution
+failure while preserving the source record.
 
 ## Provider/Consumer Contract
 
@@ -44,7 +49,7 @@ Consumes [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-
 
 ## Examples
 
-`spec dump f1b8f01a --json` returns root fields and twelve children. `spec links f1b8f01a --json` reports a resolved Health Check spec link and `SpecStore::health_all` code link, while a dangling document link appears with `resolution = "missing"`.
+`spec dump f1b8f01a --json` returns the parent component spec fields and its hierarchy. `spec links f1b8f01a --json` reports a resolved Health Check component spec link and `SpecStore::health_all` code link, while a dangling document link appears with `resolution = "missing"`. `spec health --json` returns a `migration_notice` separately from a `violation`, leaving blocking to the PostToolUse hook.
 
 ## Evidence
 

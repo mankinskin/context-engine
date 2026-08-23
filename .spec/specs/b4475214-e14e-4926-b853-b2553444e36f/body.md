@@ -8,9 +8,10 @@
 
 ## Naming Conventions
 
-Use `health-` criterion ids and stable finding categories such as `link_parity`,
-`missing_parent`, `orphan`, `parent_cycle`, `missing_examples`, and
-`criterion_prefix_registry`. This child
+Use `health-` criterion ids and stable finding categories/policies such as
+`violation`, `migration_notice`, `link_parity`, `missing_parent`, `orphan`,
+`parent_cycle`, `missing_examples`, and `criterion_prefix_registry`. Every
+finding carries stable `severity`, `category`, and policy metadata. This child
 owns `health-validates-references`, `health-allows-unvalidated-criteria`,
 `health-no-fulfillment-gate`, `health-hierarchy-integrity`, `health-link-parity`, and `health-examples-section`.
 
@@ -28,14 +29,17 @@ owns `health-validates-references`, `health-allows-unvalidated-criteria`,
 
 ## Responsibility
 
-If implemented, `spec health` reports every structural problem needed to trust
-the persisted contract and its authored Markdown navigation, without asserting fulfillment.
+If implemented, `spec health` diagnostically returns every structured finding
+needed to trust the persisted contract and its authored Markdown navigation,
+without asserting fulfillment or globally failing merely because findings exist.
 
 ## Interfaces And Dependencies
 
 Health consumes `SpecManifest`, `body.md`, hierarchy records, structured links,
 and persisted component edges; it returns `SpecHealthReport` findings through
-the CLI.
+the CLI. Each finding includes a stable severity, category/policy, and detail;
+at minimum `violation` denotes a contract breach and `migration_notice` denotes
+distinguishable migration guidance.
 
 ## Behavior
 
@@ -46,14 +50,17 @@ the CLI.
 - `health-examples-section`: require each spec to have a non-empty `## Examples` section.
 - `health-parent-navigation`: verify handwritten root Reading Order and Component Relationship Map content without generating or rewriting `body.md`.
 - `health-criterion-prefix-registry`: require exactly one committed registry entry per component, unique ids and prefixes, matching criterion ids, and no orphan entries across all registered scan roots.
+- `health-diagnostic-result`: return structured findings, including stable severity and category/policy, without globally rejecting the command solely because findings exist; migration notices remain distinguishable from violations.
 
 ## Boundaries And Failure Cases
 
-Health reports structural findings, not fulfillment. Invalid Markdown, unknown
+Health reports diagnostic structural findings, not fulfillment and not a global
+write decision. Invalid Markdown, unknown
 link target, unrepresented TOML link, duplicate structured `{relation,target}`
 tuple, missing examples, missing parent, orphan, cycle, or prefix-registry drift
-must be a finding. Repeated navigation links normalize once; different relations
-to the same target are valid. Current hierarchy traversal and health code do not
+must be a `violation` finding. Migration guidance must be a `migration_notice`
+finding. Repeated navigation links normalize once; different relations to the
+same target are valid. Current hierarchy traversal and health code do not
 implement these checks.
 
 ## Provider/Consumer Contract
@@ -62,16 +69,17 @@ Consumes [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-
 
 ## Examples
 
-If `body.md` links `[55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md)` but the TOML omits its structured provider edge, `spec health` returns `link_parity`; if a child has no `## Examples` content, it returns `missing_examples`.
+If `body.md` links `[55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md)` but the TOML omits its structured provider edge, `spec health` returns a `violation` with category `link_parity`; if a child has no `## Examples` content, it returns a `violation` with category `missing_examples`. A registry-transition advisory returns a `migration_notice`, not a violation.
 
 ## Evidence
 
 Position: `partial`; existing `health_issues` checks field presence and generic dangling `depends_on`, while `health_all` aggregates reports. Planned tests cover TOML/body drift, missing and extra links, every hierarchy defect, and empty Examples; command: `./target/debug/spec.exe --workspace . health --all`. Current baseline is exactly three unrelated `9f0b9e30` findings.
 
-The current command exits successfully with findings, so the specified PostToolUse
-hook must parse `issues_count` and issues, run once per repo root after relevant
-`.spec/specs/` writes, and block every finding except a versioned `(spec_id, issue)`
-allowlist containing only the three unrelated `9f0b9e30` baseline findings.
+The command remains diagnostic and may exit successfully with findings. The
+specified PostToolUse hook, not `spec health`, applies configured blocking
+policy and its versioned `(spec_id, issue)` allowlist after relevant
+`.spec/specs/` writes. It blocks only findings selected by that policy;
+`migration_notice` findings are distinguishable from `violation` findings.
 
 ## Scope
 
