@@ -46,7 +46,7 @@ Consumes component identities from [fdb7645d Component Artifact Contract](../fdb
 
 ## Examples
 
-`#[implements(component_id = "worktree-control-cli")]` on a free `dispatch` function resolves to that parsed function's current span. `#[validates(criterion_id = "worktree-gitlink-integrity")]` on an integration-test helper resolves only when the criterion exists. A local `let candidate` is outside this contract.
+`#[implements(component_id = "worktree-control-cli")]` on a free `dispatch` function resolves to that parsed function's current span. `#[validates(criterion_id = "worktree-gitlink-containment")]` on an integration-test helper resolves only when the criterion exists. A local `let candidate` is outside this contract.
 
 ## Evidence
 
