@@ -32,18 +32,15 @@ Your job is to create or refine the smallest complete specification slice that c
 1. Anchor on the requested behavior, affected feature, or existing spec.
 2. Search existing specs first, then related tickets, to avoid duplicates and enumerate the component map. Decide explicitly whether the request needs a shared root and component children under [the spec hierarchy rule](../instructions/spec/spec-system.instructions.md#component-hierarchy).
 3. Decide whether to update an existing spec or create draft specs. When the hierarchy rule applies, create the root first, then create each component child with `--parent <root-id-or-slug>`.
-4. Write or refine the spec so it captures:
-   - required components
-   - component shapes and behavior contracts
-   - explicit acceptance criteria as a test matrix
-   - required traceability and evidence
-5. Link the spec to:
+4. Author the component map using the canonical [code-first structure and relationship traceability rule](../instructions/spec/spec-system.instructions.md#code-first-structure-and-relationship-traceability): begin every child by identifying target code locations and naming conventions before prose, finish it with `## Examples` and `## Reading Order` links, and emit every parent's child-link list and `flowchart TD` subcomponent graph.
+5. Capture required components, component shapes and behavior contracts, explicit acceptance criteria as a test matrix, and required traceability and evidence.
+6. Link the spec to:
    - exact related ticket folder paths returned by ticket tools; do not synthesize ticket paths
    - ticket references rendered per the Clickable Reference Policy in `AGENTS.md`
    - validation commands, planned evidence, or completed results
    - related specs that define prerequisites, neighbors, or shared contracts
-6. Before finishing, verify the spec is reviewable: the acceptance criteria are testable, the evidence plan is concrete, and the linked tickets/specs are sufficient for implementation follow-through.
-7. Recommend the next workflow step: create tickets, update tickets, implement, or validate.
+7. Before finishing, verify the spec is reviewable: the acceptance criteria are testable, the evidence plan is concrete, and the linked tickets/specs are sufficient for implementation follow-through.
+8. Recommend the next workflow step: create tickets, update tickets, implement, or validate.
 
 ## Output Format
 

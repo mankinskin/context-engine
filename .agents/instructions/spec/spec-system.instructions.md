@@ -66,6 +66,106 @@ spec create --workspace <repo-root> --title "<child-title>" --slug <child-slug> 
 
 Use the [spec-editor hierarchy](../../../.spec/specs/788e91e4-32d7-4ff5-bf68-485235f8211f/body.md) as the imitable precedent.
 
+### Code-First Structure and Relationship Traceability
+
+Every code-facing spec MUST use the applicable section template below. The
+existing aligned-structure requirements remain mandatory content: place the
+dependent expectation, guards, positions, and governing rule where the
+prescribed headings make that evidence clearest.
+
+Child specs start with concrete code, not abstract prose. They MUST use these
+sections in order:
+
+1. `## Target Code Location` — repo-root-relative owning paths as clickable
+	links; this is the first substantive section.
+2. `## Naming Conventions` — concrete public types, identifiers, file names,
+	and the component's criterion-id scheme.
+3. `## Requester Input` — only when a human directive drove the component;
+	use an H2 decision/task heading followed immediately by a verbatim
+	blockquote.
+4. `## Reading Order` — clickable links to governing docs, target code, and
+	every sibling or provider spec the component consumes.
+5. `## Responsibility`, `## Interfaces And Dependencies`, `## Behavior`, and
+	`## Boundaries And Failure Cases` — the component contract required below.
+6. `## Provider/Consumer Contract` — directed consumer-to-provider links and
+	the provider criteria consumed.
+7. `## Examples` — at least one concrete worked example that describes exactly
+	what the component must do.
+8. `## Evidence` and `## Scope`.
+
+Parent specs carry shared motivation and cross-component invariants only. They
+MUST include a `## Reading Order` numbered clickable link list to every child
+and governing document, plus a `## Component Relationship Map` with a
+`flowchart TD` Mermaid graph of subcomponents and their directed edges. They
+MUST NOT carry per-component criteria.
+
+Every reference to another spec, ticket, doc, or code file MUST be a clickable markdown link following the [Clickable Reference Policy](../../../AGENTS.md#clickable-reference-policy) in `AGENTS.md`.
+
+Directed component edges are the durable contract between components and MUST be authored to mirror one-to-one onto the typed edge model: consumer -> provider -> provider criteria. Until the store persists typed edges and `spec health` validates TOML-to-body link parity, record edges in the parent `flowchart TD` map and each child's `## Reading Order` provider links; this parity is review-enforced today and will become health-enforced later by the [Component-Oriented Specification System](../../../.spec/specs/f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md).
+
+Omit a mandated section that would only hold a placeholder. A `## Target Code
+Location` or `## Examples` section that names no real path, type, or behavior
+is incomplete and MUST be rejected in review.
+
+Copy this structure rather than inventing a new one:
+
+````markdown
+# Parent Title
+
+## Motivation
+
+## Reading Order
+
+1. <governing document link> — <purpose>
+2. <child spec link> — <purpose>
+
+## Component Relationship Map
+
+```mermaid
+flowchart TD
+	 ConsumerChild -->|provider criteria| ProviderChild
+```
+
+## Shared Invariants
+
+## Examples
+
+## Scope
+````
+
+```markdown
+# Child Title
+
+## Target Code Location
+
+## Naming Conventions
+
+## Requester Input
+
+> <verbatim human directive>
+
+## Reading Order
+
+1. <governing document link> — <purpose>
+2. <provider spec link> — <criteria consumed>
+
+## Responsibility
+
+## Interfaces And Dependencies
+
+## Behavior
+
+## Boundaries And Failure Cases
+
+## Provider/Consumer Contract
+
+## Examples
+
+## Evidence
+
+## Scope
+```
+
 ### Choose Component, Slug, and Parent
 
 - Use the owning subsystem or workflow area as the component.
@@ -75,7 +175,7 @@ Use the [spec-editor hierarchy](../../../.spec/specs/788e91e4-32d7-4ff5-bf68-485
 
 ### Structure the Spec (aligned-structure:v2)
 
-Each spec must act as a dependable, verifiable contract. Every spec must start with the `<!-- aligned-structure:v2 -->` template marker and define the following five required sections:
+Each spec must act as a dependable, verifiable contract. Every spec must start with the `<!-- aligned-structure:v2 -->` template marker and include the following five required content items within the applicable code-first template:
 
 1. **Motivation ("why")** — The user requirement or behavior need this spec satisfies, with optional links to feedback explaining its origin.
 2. **Dependent expectation** — An explicit, clear contract clause: "If this spec is implemented, dependents can rely on behavior X."
