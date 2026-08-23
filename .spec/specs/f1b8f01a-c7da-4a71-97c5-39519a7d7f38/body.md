@@ -21,10 +21,11 @@ can be reviewed as one traceable contract.
 9. [55d8f2eb Specification Store Contract](.spec/specs/55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) - manifest persistence, hierarchy, and catalog rendering.
 10. [b4475214 Specification Health Check](.spec/specs/b4475214-e14e-4926-b853-b2553444e36f/body.md) - structural, parity, hierarchy, and example checks.
 11. [f482eb83 Ticket Store Integration](.spec/specs/f482eb83-5b47-4ea3-8d5b-b7baa0531333/body.md) - governed-ticket prerequisite.
-12. [73817390 Document Store Evidence Integration](.spec/specs/73817390-7e6a-427a-a644-626718d9f25d/body.md) - stable document targets.
-13. [89360ad7 Validation Store Evidence Integration](.spec/specs/89360ad7-d638-49e7-85ba-21839fa99851/body.md) - validation evidence and hook enforcement.
-14. [ef4cbcd7 Specification Query And Link Resolution CLI](.spec/specs/ef4cbcd7-9544-4c43-9095-59822b4211b6/body.md) - full persisted-data projection and TOML link resolution.
-15. [Presentation automation planning dossier](transcripts/20-08-2026_presentation-automation-planning/README.md) - external related effort owning source locks, fact/projector extraction, and Slidev generation/validation through planned [1500a9e6 Conceptual deck contract](.ticket/tickets/1500a9e6-293f-4803-969d-0dcabeaa470a), [693763fc Typed projections](.ticket/tickets/693763fc-e4c1-4c93-b39f-5e0958b57d19), and [ec1f452d Deck materialization](.ticket/tickets/ec1f452d-8eba-488c-bcfe-8dd8728130f1), coordinated by [0ee95228 Presentation epic](.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098) under Presentation System spec `2ccde9ee`.
+12. [73817390 Document Store Evidence Integration](.spec/specs/73817390-7e6a-427a-a644-626718d9f25d/body.md) - stable document-target integration.
+13. [224f9384 Document API Repository, Identity, and Typed Resolver Contract](.spec/specs/224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) - doc-api repository, identity, target parser, and outcome provider.
+14. [89360ad7 Validation Store Evidence Integration](.spec/specs/89360ad7-d638-49e7-85ba-21839fa99851/body.md) - validation evidence and hook enforcement.
+15. [ef4cbcd7 Specification Query And Link Resolution CLI](.spec/specs/ef4cbcd7-9544-4c43-9095-59822b4211b6/body.md) - full persisted-data projection and TOML link resolution.
+16. [Presentation automation planning dossier](transcripts/20-08-2026_presentation-automation-planning/README.md) - external related effort owning source locks, fact/projector extraction, and Slidev generation/validation through planned [1500a9e6 Conceptual deck contract](.ticket/tickets/1500a9e6-293f-4803-969d-0dcabeaa470a), [693763fc Typed projections](.ticket/tickets/693763fc-e4c1-4c93-b39f-5e0958b57d19), and [ec1f452d Deck materialization](.ticket/tickets/ec1f452d-8eba-488c-bcfe-8dd8728130f1), coordinated by [0ee95228 Presentation epic](.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098) under Presentation System spec `2ccde9ee`.
 
 ## Component Relationship Map
 
@@ -38,6 +39,7 @@ flowchart TD
 		Criterion -->|root-artifact-namespace| Root
 		Evidence[Evidence Reference] -->|root-artifact-namespace| Root
 		Evidence -->|document-stable-target, document-resolution-result| Document[Document Store]
+		Document -->|document-identity, document-target-grammar, document-resolver-outcomes, document-index-lifecycle| DocumentProvider[Document API Repository and Typed Resolver]
 		Edge[Directed Contract Edge] -->|component-root-membership| Component
 		Edge -->|criterion-single-owner, criterion-root-unique| Criterion
 		Edge -->|stored typed edges| Store

@@ -31,7 +31,7 @@ An observation requires `id`, `criterion_id`, `evidence_reference_id`, and
 - `observation-required-fields` and `observation-optional-detail` define shape.
 - `observation-reference-integrity` resolves criterion and evidence in one root.
 - `observation-does-not-gate-health` accepts omitted observations and unsatisfied evidence.
-- `observation-latest-execution`: evaluate a validation gate by `validation_spec_id` plus criterion id only; no selected-execution pointer, ticket id, governing-spec id, or `.test` store identity is stored or matched. Newest `executed_at` wins, deterministic id ordering resolves equal timestamps, and absent matching execution is unsatisfied `pending`. `passed` satisfies, while a later `failed` or `blocked` revokes; test-api retains complete execution history. A validation specification and criterion shared across tickets intentionally satisfies each matching gate.
+- `observation-latest-execution`: evaluate a validation gate by querying test-api executions with `validation_spec_id` and consumer-side filtering `execution.links.acceptance_criterion_ids` for the criterion id. No selected-execution pointer, first-class criterion query/index, ticket id, governing-spec id, or `.test` store identity is stored or matched. Newest `executed_at` wins, deterministic id ordering resolves equal timestamps, and absent matching execution is unsatisfied `pending`. `passed` satisfies, while a later `failed` or `blocked` revokes; test-api retains complete execution history. A validation specification and criterion shared across tickets intentionally makes each matching gate observe the same outcome.
 
 ## Boundaries And Failure Cases
 
@@ -47,9 +47,11 @@ Consumes [aebcbab4 Criterion Artifact Contract](.spec/specs/aebcbab4-2827-4ea1-8
 An observation for `health-link-parity` points to `evidence-health-command` with
 status `passed` and no detail. Deleting the observation remains structurally valid.
 
-When matching validation runs pass and then fail, the latest failed execution
-is authoritative and the gate is unsatisfied; equal timestamps use deterministic
-id ordering, and test-api retains both executions in its history.
+Two tickets sharing one validation specification and criterion query the same
+execution set and filter the same `acceptance_criterion_ids` link. When matching
+validation runs pass and then fail, the latest failed execution is authoritative
+and both gates are unsatisfied; equal timestamps use deterministic id ordering,
+and test-api retains both executions in its history.
 
 ## Evidence
 

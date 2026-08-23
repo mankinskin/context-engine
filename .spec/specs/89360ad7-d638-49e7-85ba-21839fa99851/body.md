@@ -38,7 +38,7 @@ diagnostic and includes stable severity plus category/policy, including
 ## Behavior
 
 - `validation-criterion-link`: evidence identifies applicable spec/criterion targets.
-- `validation-observation-source`: outcomes expose `validation_spec_id`, criterion id, status, `executed_at`, optional detail, and stable id. Ticket gate selection matches only `validation_spec_id` plus criterion id: newest `executed_at` wins, stable id resolves equal timestamps, absent is pending, passed satisfies, and failed or blocked revokes. Test-store identity, ticket id, and governing-spec id are not match inputs; a shared validation specification and criterion intentionally satisfies each matching ticket gate.
+- `validation-observation-source`: outcomes expose `validation_spec_id`, `links.acceptance_criterion_ids`, status, `executed_at`, optional detail, and stable id. Ticket-gate consumers query executions by `validation_spec_id`, then filter `execution.links.acceptance_criterion_ids` for the criterion id; test-api adds no first-class criterion query or index. Newest `executed_at` wins, stable id resolves equal timestamps, absent is pending, passed satisfies, and failed or blocked revokes. Test-store identity, ticket id, and governing-spec id are not match inputs; a shared validation specification and criterion intentionally makes each matching ticket gate observe the same outcome.
 - `validation-best-effort`: missing executable validation remains documented and reviewable.
 - `validation-hook-enforcement`: a PostToolUse hook runs link-parity, hierarchy, Examples, navigation, and prefix-registry health checks once per repo root. `spec health` returns structured diagnostic findings and does not globally fail because they exist. The hook alone applies configured blocking policy and a versioned `(spec_id, issue)` allowlist, blocking only policy-selected violations. `migration_notice` remains distinguishable from `violation`; the allowlist contains only the three unrelated `9f0b9e30` baseline findings and is never a blanket exemption.
 
@@ -63,8 +63,10 @@ reported separately and a manual validation entry can still exist where no
 executable test is available.
 
 Two tickets with gates for the same validation specification and criterion both
-observe one `passed` execution as satisfying, then both observe a newer `failed`
-execution as revoking, regardless of the execution's test-store location.
+query the same validation-spec executions and consumer-side filter the same
+`acceptance_criterion_ids` link. They observe one `passed` execution as
+satisfying, then both observe a newer `failed` execution as revoking, regardless
+of the execution's test-store location; this shared outcome is intentional.
 
 ## Evidence
 
