@@ -18,6 +18,14 @@ child owns identity, parser, repository, and resolver criteria.
 1. [224f9384 Document API Repository, Identity, and Typed Resolver Contract](.spec/specs/224f9384-c38f-4d8b-855e-a8b2457887ca/body.md) - required doc-api provider.
 2. [7498bed7 Evidence Reference Contract](.spec/specs/7498bed7-ac74-4484-b50e-8a9cf96d8431/body.md) - document-target consumer.
 
+## Component Relationship Map
+
+```mermaid
+flowchart TD
+	Evidence[Evidence Reference / spec-api] -->|document-stable-target, document-resolution-result| Integration[Document Store Evidence Integration / spec-api]
+	Integration -->|document-identity, document-target-grammar, document-resolver-outcomes, document-index-lifecycle| Provider[Document API Repository, Identity, and Typed Resolver / doc-api]
+```
+
 ## Responsibility
 
 If implemented by the adjacent Document API, evidence consumers can resolve a
