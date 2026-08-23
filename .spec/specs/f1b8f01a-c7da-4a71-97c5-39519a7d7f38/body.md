@@ -70,9 +70,18 @@ flowchart TD
 	The manifest UUID remains storage identity and `slug` remains renameable
 	navigation only. `component_id` is unique across the `SpecStore` and changes
 	only through an explicit journaled migration.
+- The new canonical layout has `format_version = 2`. Every component spec
+	persists canonical typed artifact tables; a parser recognizes v2 only from
+	that explicit version, never from the presence or absence of fields. Legacy
+	migration consumes a reviewed explicit mapping file from legacy spec UUID to
+	immutable `component_id`; it is journaled and idempotent and never invents a
+	component identity.
 - `parent` is the typed composition relation. Parent-owned composition criteria
-	assert expected child `component_id` values, child shape, and required
-	component relationships. Containment is not a provider/consumer edge.
+	are ordinary `CriterionArtifact` records with the normal validation and
+	evidence shape. They assert expected child `component_id` values, child
+	shape, and required inter-child provider/consumer edges. Containment is not a
+	provider/consumer edge, and these criteria do not restate child-internal or
+	provider-owned criteria.
 - A governing specification is reserved for ticket goal/acceptance gating.
 	Parent-owned criteria may require a child component's existence, structure,
 	or relationship, without taking ownership of that child's criteria.

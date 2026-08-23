@@ -51,9 +51,11 @@ flowchart TD
 
 ## Shared Invariants
 
-After typed persistence implementation, parent-owned composition criteria must
+After typed persistence implementation, the parent owns ordinary
+`CriterionArtifact` records, with normal validation/evidence shape, that
 require all five child `component_id` values, their expected shape, and only
-the shown provider/consumer relationships. `main.rs` uses `WorktreeGit` and
+the shown provider/consumer relationships. They must not restate child-internal
+or provider-owned criteria. `main.rs` uses `WorktreeGit` and
 `evaluate_reclaim_candidate`, but does not call `provision_for_session`;
 `sync.rs` and `gitlink.rs` have only the scoped Git Operations edges shown
 above. The pilot is blocked until composition, provider edges, and template

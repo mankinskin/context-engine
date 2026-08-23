@@ -28,6 +28,10 @@ If implemented, component graphs can reuse a versioned generic criterion definit
 
 A template has stable identity, version, typed parameter names, a criterion-id recipe, and behavior/measurement recipes. An instantiation binds one version and complete parameters to one concrete provider-owned `CriterionArtifact`, preserving matching provenance fields on that artifact. Initial families cover `-api`, `-cli`, `-mcp`, `-http`, and `-viewer`; they are templates, not components or edges.
 
+Template expansion produces the same ordinary `CriterionArtifact` shape for a
+parent composition criterion as for a component-internal criterion; templates
+do not introduce a composition-specific artifact class.
+
 ## Behavior
 
 - `template-definition`: reject duplicate parameter names and ambiguous id recipes.

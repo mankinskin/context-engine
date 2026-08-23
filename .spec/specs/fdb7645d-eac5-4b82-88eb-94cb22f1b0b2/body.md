@@ -39,8 +39,9 @@ with a parent component spec.
 
 Each component is its own `SpecManifest` and requires storage `id`,
 `component_id`, `title`, and purpose-bearing body. `parent` is composition,
-not an endpoint identity; parent-owned criteria validate expected children and
-relationships. Optional fields are `context`, related spec/evidence ids,
+not an endpoint identity. Components own standard `CriterionArtifact` records;
+a parent uses those same records, rather than a separate class, for expected
+direct children, child shape, and required inter-child edges. Optional fields are `context`, related spec/evidence ids,
 `code_refs`, and provider-owned outward contract edges. Provider identity is
 the owning `component_id`:
 
@@ -58,12 +59,14 @@ criterion_ids = ["<provider-owned-criterion-id>"]
 - `component-required-fields`: require immutable `component_id`, storage identity, and purpose fields; reject a separate containing `spec_id`.
 - `component-optional-fields`: retain only declared optional context links.
 - `component-root-membership`: resolve an optional parent component spec as hierarchy composition only.
-- `component-criterion-ownership`: exclusively own zero or more criteria.
+- `component-criterion-ownership`: exclusively own zero or more standard criteria; parent composition criteria have the ordinary artifact, validation, and evidence shape and do not duplicate child criteria.
 - `component-code-refs-required`: a code-facing component has at least one valid `CodeRef`, and its body has a non-empty `## Naming Conventions` section.
 - `component-outward-edge-ownership`: each provider component spec persists its own `[[outward_contract_edges]]` rows; `consumer_component_id` and `provider_component_id` are component ids, the provider equals the owning component, and no parent aggregation mirrors an authoritative edge.
 
-Parent-owned criteria may evaluate the direct-child component set and its
-relationships, but do not make the parent an identity provider for children.
+Parent-owned ordinary criteria may evaluate the direct-child component set,
+required child shape, and required inter-child provider/consumer edges, but do
+not make the parent an identity provider for children or own their internal
+criteria.
 
 ## Boundaries And Failure Cases
 

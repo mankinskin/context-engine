@@ -13,7 +13,8 @@ structured contract data, and `body.md` for human navigation. `component_id`
 is globally unique and immutable except through a journaled migration. This child owns `store-persists-artifacts`,
 `store-preserves-baselines`, `store-removes-retired-model`,
 `store-parent-navigation-verification`, `store-criterion-prefix-registry`, and
-`store-journaled-recovery`, and `store-schema-migration`.
+`store-journaled-recovery`, `store-schema-migration`, and
+`store-v2-canonical-tables`.
 
 ## Requester Input
 
@@ -35,7 +36,10 @@ without silent repair.
 
 ## Interfaces And Dependencies
 
-`SpecStore` persists each `SpecManifest` and `body.md`; the index renderer
+`SpecStore` persists each `SpecManifest` and `body.md`. The new layout requires
+`format_version = 2` and canonical typed tables for criteria, evidence,
+provider-owned contract edges, template bindings, and observations; table
+presence is not version detection. The index renderer
 receives raw bodies and manifests to derive the existing hierarchy catalog. The
 `.spec` index root owns the committed system-wide
 `.spec/criterion-prefixes.toml` registry across all registered scan roots in
@@ -47,7 +51,8 @@ folder-move journal and it is not two domain-specific journals.
 
 ## Behavior
 
-- `store-persists-artifacts`: round-trip each component's storage `id`, immutable `component_id`, criteria, evidence, provider-owned typed edges, template bindings, observations, and distinct `governs_ticket` relations. Edge endpoints are `component_id` values; criterion artifacts carry `criterion_id`, `owner_component_id`, behavior, measurement, template provenance/bindings when present, and evidence links.
+- `store-persists-artifacts`: round-trip each component's storage `id`, immutable `component_id`, criteria, evidence, provider-owned typed edges, template bindings, observations, and distinct `governs_ticket` relations. Parent composition assertions are ordinary parent-owned criteria, not a table or artifact kind of their own. Edge endpoints are `component_id` values; criterion artifacts carry `criterion_id`, `owner_component_id`, behavior, measurement, template provenance/bindings when present, and evidence links.
+- `store-v2-canonical-tables`: accept the new canonical layout only with explicit `format_version = 2` and its typed tables; never infer v2 from a field combination.
 - `store-preserves-baselines`: preserve sections, hierarchy, and `TicketRef`.
 - `store-removes-retired-model`: retire `contract_mode`, expected properties, mandatory evidence requirements, and fulfillment summaries.
 - `store-parent-navigation-verification`: verify, but never generate or rewrite, each handwritten parent body's complete direct-child link list and `flowchart TD` graph against its structured hierarchy and component edges.
@@ -57,7 +62,7 @@ folder-move journal and it is not two domain-specific journals.
     owner identity, and collisions are reportable rather than silently repaired.
 - `store-criterion-prefix-registry`: preserve the committed registry mapping each stable component id to one unique prefix across every registered scan root. Migration first populates the registry and renames affected criteria; it never infers entries automatically.
 - `store-journaled-recovery`: use the shared operation journal for every local multi-file mutation before changing `spec.toml`, `body.md`, or `.spec/criterion-prefixes.toml`; after interruption, expose recovery status and deterministic resume or rollback. Cross-store governance uses the same shared prerequisite, reports recoverable drift, and never silently repairs. A global transaction is not required.
-- `store-schema-migration`: expose schema/data migration only through explicit, idempotent `spec migrate` operations: `spec migrate --dry-run`, `spec migrate --resume <journal-id>`, and `spec migrate --rollback <journal-id>`, with matching `spec_migrate_*` MCP operations. Migration is journal-backed and is neither `spec move`, query CLI behavior, nor automatic work performed by scan or open.
+- `store-schema-migration`: expose schema/data migration only through explicit, idempotent `spec migrate` operations: `spec migrate --dry-run`, `spec migrate --resume <journal-id>`, and `spec migrate --rollback <journal-id>`, with matching `spec_migrate_*` MCP operations. A migration reads a reviewed explicit mapping file from each legacy spec UUID to its immutable `component_id`; missing, duplicate, or generated mappings fail before writes. Migration is journal-backed and is neither `spec move`, query CLI behavior, nor automatic work performed by scan or open.
 
 ## Boundaries And Failure Cases
 
@@ -69,9 +74,10 @@ attempt that would silently repair cross-store drift returns an error or
 recoverable-drift status. `spec migrate` detects journal collision before writes
 and requires its explicit resume or rollback path; scan/open never migrates.
 Retained baselines must not silently change semantics.
-No manifest schema-version field exists today; legacy generic forms are
-detect-and-report only, following the ticket metadata precedent that detects
-`related_specs` when `refs` is absent.
+Current manifests have no schema-version field; the target v2 layout requires
+an explicit `format_version = 2`. Legacy generic forms are detect-and-report
+only, following the ticket metadata precedent that detects `related_specs` when
+`refs` is absent, and no legacy UUID receives an inferred `component_id`.
 
 The store distinguishes `parent` composition, provider-owned outward
 provider/consumer edges, and template bindings from a ticket governing relation;
@@ -97,6 +103,10 @@ than changing either store automatically.
 the store. A later apply interrupted by a collision leaves its shared journal for
 `spec migrate --resume <journal-id>` or `spec migrate --rollback <journal-id>`;
 `spec scan` and `spec open` only report the current state.
+
+The reviewed mapping explicitly pairs legacy UUID `a1b2...` with
+`component_id = "spec-health"`; dry-run rejects a legacy UUID absent from that
+mapping instead of deriving an id from its slug or fields.
 
 ## Evidence
 

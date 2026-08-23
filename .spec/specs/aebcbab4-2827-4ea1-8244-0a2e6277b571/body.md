@@ -35,6 +35,8 @@ acceptance obligation rather than copied consumer requirements.
 and `measurement`; `validation_evidence[]` is optional. Optional template
 provenance is `template_id`, `template_version`, and `template_bindings`. The
 owner is one component id and no separate containing `spec_id` exists.
+Parent composition criteria use this unchanged shape, including normal
+validation and evidence links; they are not a second artifact class.
 
 ## Behavior
 
@@ -46,6 +48,7 @@ owner is one component id and no separate containing `spec_id` exists.
 - `criterion-naming-conventions-required`: require a documented owner-prefix naming convention for each code-facing criterion component.
 - `criterion-prefix-registry`: require each component to resolve to exactly one `.spec/criterion-prefixes.toml` entry, with unique component ids and prefixes across all registered scan roots; every criterion must match that entry's `<prefix>-<behavior>` form.
 - `criterion-template-materialization`: accept a deterministic template expansion only when its concrete artifact id, owner component id, template id/version, and bindings resolve; the template is not the owner.
+- `criterion-composition-graph`: allow a parent-owned ordinary artifact to measure its direct-child component ids, required child shape, and required inter-child provider/consumer edges, while rejecting copied child-internal or provider-owned criteria.
 
 ## Boundaries And Failure Cases
 
@@ -78,6 +81,10 @@ The Health Check component owns `health-link-parity` with behavior requiring
 one structured manifest link for each parsed `body.md` Markdown link and a
 measurement naming the health finding; an edge may consume its `criterion_id`
 but may not restate the artifact.
+
+A parent may own `spec-system-composition` as a normal criterion artifact. Its
+measurement checks required direct child ids and their required edges; it does
+not copy any child's `health-link-parity` behavior.
 
 ## Evidence
 

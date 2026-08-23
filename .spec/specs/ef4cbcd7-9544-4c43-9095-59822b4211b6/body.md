@@ -27,7 +27,15 @@ If implemented, a CLI or MCP caller can obtain the same complete structured proj
 
 ## Interfaces And Dependencies
 
-`spec dump <id> --json` accepts a storage UUID selector and returns storage `id`, immutable `component_id`, renameable `slug`, timestamps, fields, code refs, provider-owned criterion artifacts, template binding provenance, evidence, observations, provider-owned edges, sections, and body. `spec links <id> --json` returns normalized link kind, source field, target `{kind, repo_relative_ref, optional_locator}`, resolution result, and failure detail. `spec health --json` returns diagnostic findings with stable severity and category/policy; it does not globally fail merely because findings exist.
+`spec dump <id> --json` accepts a storage UUID selector and returns explicit
+`format_version`, storage `id`, immutable `component_id`, renameable `slug`,
+timestamps, canonical typed tables, code refs, provider-owned criterion
+artifacts, template binding provenance, evidence, observations, provider-owned
+edges, sections, and body. `spec links <id> --json` returns normalized link
+kind, source field, target `{kind, repo_relative_ref, optional_locator}`,
+resolution result, and failure detail. `spec health --json` returns diagnostic
+findings with stable severity and category/policy; it does not globally fail
+merely because findings exist.
 
 The `workflow-tools/spec` parent is the component composition boundary for
 `spec-api`, `spec-cli`, and `spec-mcp`; those concrete child component specs
@@ -36,7 +44,7 @@ surface already exists.
 
 ## Behavior
 
-- `query-spec-dump`: emit all persisted data for an unambiguous storage id, including `component_id`, provider-owned criterion artifacts, template bindings, structured edges, and `code_refs`; never alias a slug as identity.
+- `query-spec-dump`: emit all persisted v2 data for an unambiguous storage id, including explicit `format_version`, canonical typed tables, `component_id`, provider-owned criterion artifacts, template bindings, structured edges, and `code_refs`; never infer v2 from fields or alias a slug as identity.
 - `query-resolved-links`: enumerate and resolve every TOML-backed spec, code, ticket, document, and component-edge link; compare kinds explicitly and do not infer body-only links as structured data.
 - `query-health-findings`: emit the structured diagnostic report, preserving distinct `violation` and `migration_notice` categories for hook policy evaluation.
 

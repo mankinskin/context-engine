@@ -93,11 +93,15 @@ sections in order:
 	what the component must do.
 8. `## Evidence` and `## Scope`.
 
-Parent specs carry shared motivation and cross-component invariants only. They
+Parent specs carry shared motivation and cross-component invariants. They
 MUST include a `## Reading Order` numbered clickable link list to every child
 and governing document, plus a `## Component Relationship Map` with a
-`flowchart TD` Mermaid graph of subcomponents and their directed edges. They
-MUST NOT carry per-component criteria.
+`flowchart TD` Mermaid graph of subcomponents and their directed edges. A
+parent MAY own ordinary `CriterionArtifact` records for its composition graph:
+the expected direct-child `component_id` values, required child shape, and
+required inter-child provider/consumer edges. These use the normal criterion
+artifact, validation, and evidence shape. A parent MUST NOT restate or own a
+child's internal criteria or provider-owned criteria.
 
 Every reference to another spec, ticket, doc, or code file MUST be a clickable markdown link following the [Clickable Reference Policy](../../../AGENTS.md#clickable-reference-policy) in `AGENTS.md`.
 
@@ -170,7 +174,7 @@ flowchart TD
 
 - Use the owning subsystem or workflow area as the component.
 - Keep slugs lowercase, use `-` within segments, and `/` between segments.
-- Every component child MUST set `parent` to its root. Root specs are reserved for shared scope and MUST NOT carry per-component criteria.
+- Every component child MUST set `parent` to its root. Root specs are reserved for shared scope; they may own ordinary composition criteria but MUST NOT restate a child's internal or provider-owned criteria.
 - Avoid creating shallow duplicate siblings with overlapping goals.
 
 ### Structure the Spec (aligned-structure:v2)

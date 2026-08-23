@@ -4,11 +4,14 @@
 
 ## Target Code Location
 
-[workflow-tools/spec/crates/spec-api/src/code_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/code_ref.rs) defines the current `CodeRef` fallback; no annotation attribute or Rust-item resolver exists today.
+[workflow-tools/spec/crates/spec-api/src/code_ref.rs](../../../workflow-tools/spec/crates/spec-api/src/code_ref.rs) defines the current `CodeRef` fallback. The specified-but-not-built dedicated `spec-annotation` proc-macro crate belongs under [workflow-tools/spec/crates/](../../../workflow-tools/spec/crates/); no annotation attribute or Rust-item resolver exists today.
 
 ## Naming Conventions
 
 Use source-side `#[implements(component_id = "...")]` and `#[validates(criterion_id = "...")]`. The resolver emits `ResolvedImplementation` keyed by persisted immutable `component_id`, and `ResolvedValidation` keyed by provider-owned criterion artifact `criterion_id` and parsed Rust item identity.
+The dedicated crate is `spec-annotation`; it validates attribute syntax at
+compile time and emits discoverable registration metadata for offline resolver
+and health processing.
 
 ## Requester Input
 
@@ -27,18 +30,30 @@ If implemented, dependents can rely on parsed Rust items to declare their implem
 
 ## Interfaces And Dependencies
 
-The resolver validates every `component_id` against an existing persisted component identity, not its manifest UUID or slug, and every `criterion_id` against an existing provider-owned criterion artifact. Supported stable Rust items are structs, enums, traits, impl methods and associated functions, free functions, consts, and statics. A successful annotation result includes parsed item kind/name and current file/line range.
+The `spec-annotation` proc macro validates attribute syntax at compile time and
+emits discoverable registration metadata. The offline resolver and health
+processing validate every `component_id` against an existing persisted component
+identity, not its manifest UUID or slug, and every `criterion_id` against an
+existing provider-owned criterion artifact. Supported stable Rust items are
+structs, enums, traits, impl methods and associated functions, free functions,
+consts, and statics. A successful annotation result includes parsed item
+kind/name and current file/line range.
 
 ## Behavior
 
-- `annotation-identity-resolution`: resolve `component_id` and provider-owned `criterion_id` before reporting a location.
+- `annotation-syntax-and-registration`: the dedicated proc-macro crate rejects malformed supported attributes at compile time and emits registration metadata discoverable without executing the annotated crate.
+- `annotation-identity-resolution`: resolve `component_id` and provider-owned `criterion_id` from that registration before reporting a location.
 - `annotation-current-location`: derive location from the parsed Rust item on each resolution pass.
 - `annotation-authoritative-when-present`: use a valid annotation as the authoritative implementation or validation link; retain `CodeRef` as a navigation fallback when no annotation exists.
 - `annotation-health`: report unknown ids, malformed attributes, duplicate conflicting declarations, unsupported item kinds, and unresolved source as health findings.
 
 ## Boundaries And Failure Cases
 
-These attributes are specified-but-not-built and do not imply existing proc macros. Local variables are explicitly excluded from proc-macro coverage; any local discovery is a separate future source-model concern. An annotation neither creates an identity nor changes criterion ownership, and a `CodeRef` does not become authoritative when a valid annotation is present.
+These attributes and the dedicated proc-macro crate are specified-but-not-built.
+Local variables are explicitly excluded from proc-macro coverage; any local
+discovery is a separate future source-model concern. An annotation neither
+creates an identity nor changes criterion ownership, and a `CodeRef` does not
+become authoritative when a valid annotation is present.
 
 ## Provider/Consumer Contract
 
@@ -50,8 +65,14 @@ Consumes component identities from [fdb7645d Component Artifact Contract](../fdb
 
 ## Evidence
 
-Position: `not-implemented`. Planned resolver fixtures cover each supported item kind, stale location movement, unknown identities, duplicate conflicts, and `CodeRef` fallback. Health must distinguish invalid annotation from absent annotation.
+Position: `not-implemented`. Planned proc-macro compile fixtures cover supported
+and malformed attribute syntax; offline resolver fixtures cover each supported
+item kind, registration discovery, stale location movement, unknown identities,
+duplicate conflicts, and `CodeRef` fallback. Health must distinguish invalid
+annotation from absent annotation.
 
 ## Scope
 
-Owns source annotation declaration and resolution semantics, not proc-macro implementation, local-variable discovery, or component/criterion creation.
+Owns source annotation declaration, dedicated proc-macro, registration, and
+offline-resolution semantics, not local-variable discovery or
+component/criterion creation.

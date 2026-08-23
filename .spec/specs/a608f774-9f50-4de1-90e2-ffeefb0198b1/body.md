@@ -13,7 +13,8 @@ classification field, not a nested record. `component_id` is its immutable,
 human-readable domain identity; manifest `id` is storage identity and `slug` is
 renameable navigation. A parent composes children through `parent`; every
 outward-contract endpoint is a `component_id`. This child owns `root-surviving-fields`,
-`root-component-classification`, and `root-component-composition`.
+`root-component-classification`, `root-component-composition`, and
+`root-format-version`.
 
 ## Reading Order
 
@@ -30,15 +31,19 @@ child specs through hierarchy rather than enclosing component records.
 
 ## Interfaces And Dependencies
 
-Each component extends `SpecManifest` with `component_id`; the `SpecStore`
+Each v2 component extends `SpecManifest` with `format_version = 2` and
+`component_id`; the `SpecStore`
 enforces global uniqueness and rejects a mutation of that field except through
-an explicit journaled migration. A parent composes direct children through
-`parent`; parent-owned composition criteria name expected child `component_id`
-values and required relationships. [55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and its shared operation journal prerequisite.
+an explicit journaled migration using a reviewed legacy-UUID-to-`component_id`
+mapping file. A parent composes direct children through `parent`; its ordinary
+parent-owned `CriterionArtifact` records name expected child `component_id`
+values, child shape, and required inter-child provider/consumer edges.
+[55d8f2eb Specification Store Contract](../55d8f2eb-70f1-4b90-8c8f-e50d5e311d48/body.md) persists each component spec and its shared operation journal prerequisite.
 
 ## Behavior
 
 - `root-surviving-fields`: retain storage `id`, immutable `component_id`, lifecycle, `title`, `slug`, `type`, `state`, `scope`, `parent`, `code_refs`, sections, hierarchy, `TicketRef`, and distinct `governs_ticket` relations.
+- `root-format-version`: require `format_version = 2` for the new canonical layout; do not classify a manifest as v2 from incidental fields.
 - `root-component-classification`: preserve the manifest classifier independently of component-spec identity.
 - `root-component-composition`: represent each component as one spec; a parent composes child component specs through `parent`, validates its expected child `component_id` set and relationships through parent-owned criteria, and has no separate containing `spec_id`.
 
@@ -55,8 +60,10 @@ journaled migration records the change. A
 `governs_ticket` relation is not a `ComponentContractEdge` or an informational
 `related_tickets`/`related_specs` link. Missing component spec identity,
 an endpoint that is not a component spec id, a separate containing `spec_id`,
-or a missing typed ticket-side gate is invalid; legacy generic forms are
-detect-and-report only and never infer a semantic equivalent.
+or a missing typed ticket-side gate, a v2 manifest without its explicit version,
+or a legacy record without an explicit reviewed UUID mapping is invalid. Legacy
+generic forms are detect-and-report only and never infer a semantic equivalent
+or component identity.
 
 ## Provider/Consumer Contract
 
