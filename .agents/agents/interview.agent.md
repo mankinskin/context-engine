@@ -76,7 +76,11 @@ An interview is a long-lived artifact, not a single conversation. Keep it resuma
 
 - Bind the interview to a durable session at the start using the session runtime tools (`session_runtime_init`, or `session_runtime_resume` when a predecessor run exists). Treat the returned workspace-session id as the interview handle.
 - Persist the interview record incrementally, after each answered question — not only at the end. The record is the source of truth; the chat transcript is disposable.
-- Anchor the record to the owning entity when one exists, and pin its URN into the session with `session_runtime_pin` so a resumed run rehydrates the exact context. Persist the record itself in the session regardless — the session is always a valid home for an interview whose answers do not yet warrant a ticket or spec change.
+- Use the first clearly owning durable home: update the existing ticket, spec, or open-decision record when it owns the subject, and pin its URN into the session with `session_runtime_pin`. Always persist the interview state in the session as the resumability handle; session storage alone is not the durable decision record.
+- When no obvious owning decision record exists, create `interviews/YYYY-MM-DD_<slug>/` at repository root, where `<slug>` is a concise lowercase-hyphen objective slug. This durable interview record contains exactly `questions.md` and `answers.md`:
+  - `questions.md` records the objective, anchor (or explicit `none`), working understanding, ordered question IDs, question text, options/consequences, and each question's `answered` or `pending` status.
+  - `answers.md` records the same objective and anchor, each question ID with its confirmed answer or `pending`, timestamp, applied delta or `recorded only`, and remaining open decisions / resume pointer.
+- Update both fallback files after every answer round, not only when the interview ends. Preserve the directory until its answers are incorporated into a ticket/spec or explicitly superseded; then add the resolved entity reference to `answers.md` instead of deleting the record.
 - Represent multi-step interviews as a workflow graph (`session_workflow_add_node` / `session_workflow_set_status`) when the interview spans several decisions, so progress and remaining questions are inspectable.
 - Structure the persisted record with stable fields so it can be diffed and resumed deterministically:
   - `objective` and `anchor` (the decision/gap being closed, and the ticket/spec/code URN it refines, if any)
@@ -92,17 +96,17 @@ An interview is a long-lived artifact, not a single conversation. Keep it resuma
 Before asking anything on a new run:
 
 1. Resume the durable session (`session_runtime_resume` / `session_runtime_view`, `session_runtime_render_instructions`) and load the pinned anchor entities.
-2. Read the persisted interview record; reconstruct `objective`, `understanding`, `answered`, `pending`, and `open_decisions`.
+2. Read the persisted interview record and its fallback directory when one is recorded; reconstruct `objective`, `understanding`, `answered`, `pending`, and `open_decisions`.
 3. Confirm the reconstructed understanding with the user in one short summary before continuing.
 4. Resume from the first `pending` question, carrying everything in `answered` forward as settled.
 
 ## Required Workflow
 
 1. Resume first: check for an in-progress interview via the durable session before deriving anything. If one exists, follow the Resuming an Interview steps instead of starting fresh.
-2. Discover the current relevant ticket and spec context and bind/init the durable session.
+2. Discover the current relevant ticket, spec, and open-decision context; bind/init the durable session and select the owning record or create the fallback directory when none clearly owns the subject.
 3. State the interview objective and the working understanding briefly before asking questions.
 4. Ask the smallest question set that can resolve the blocking ambiguity, batched into one call, and check each question against the Question Quality Contract before sending it.
-5. After each round of answers, persist them to the interview record (update `answered`, `open_decisions`, and `understanding`) so progress survives a session boundary.
+5. After each round of answers, persist them to the owning record or both fallback files, and update the session state (`answered`, `open_decisions`, and `understanding`) so progress survives a session boundary.
 6. Apply each answer per the Applying Answers rules: pick the smallest delta that records the decision, preferring an update to an entity that already owns the subject.
 7. Repeat steps 4-6 while `pending` still holds a blocking question and the user is available to continue.
 8. Persist a handoff and state the follow-up the answers call for, or that the record itself is the outcome.
@@ -122,7 +126,7 @@ Return:
 - questions asked
 - confirmed answers (also persisted to the interview record)
 - open decisions (also persisted)
-- resume pointer: the session handle and the first pending question a later run should continue from
+- resume pointer: the session handle, durable record location, and first pending question a later run should continue from
 - the delta applied for each answer, or that the answer is recorded as-is
 - all ticket/spec/code/log references rendered per the Clickable Reference Policy in `AGENTS.md`
 
