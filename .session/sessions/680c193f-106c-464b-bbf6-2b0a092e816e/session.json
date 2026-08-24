@@ -3,10 +3,11 @@
   "session_id": "680c193f-106c-464b-bbf6-2b0a092e816e",
   "source": "copilot-hook",
   "started_at": "2026-08-23T15:18:03.070Z",
-  "captured_at": "2026-08-24T18:52:36.627415200Z",
+  "captured_at": "2026-08-24T21:40:46.587Z",
   "metadata": {
     "workspace_slug": "default",
-    "trigger": "PreToolUse",
+    "agent_id": "copilot-agent",
+    "trigger": "Stop",
     "provisioning": {
       "outcome": "skipped",
       "reason": "trigger_not_session_start",
@@ -17,7 +18,10 @@
     "vscode_version": "1.134.0",
     "protocol_version": 1,
     "worktree": {
-      "branch": "agent/0bb08ff1-agent-builder-mvp"
+      "path": "",
+      "branch": "agent/0bb08ff1-agent-builder-mvp",
+      "allocation_mode": "new",
+      "status": "active"
     }
   },
   "links": {},
