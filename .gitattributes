@@ -21,6 +21,7 @@ Cargo.lock text eol=lf
 # `git config merge.session-record.*` in setup_git.sh.
 .session/sessions/**/session.json merge=session-record
 .session/sessions/**/transcript.json merge=session-record
+.session/sessions/**/events.json merge=session-record
 
 # Ticket manifests and append-only revisions are reconciled structurally by
 # the ticket driver. Part files retain Git's normal fail-closed merge behavior.

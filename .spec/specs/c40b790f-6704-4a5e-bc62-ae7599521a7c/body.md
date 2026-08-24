@@ -36,7 +36,7 @@ stash writes.
 - `worktree-sync-preserves-gitlinks`: invoke gitlink integrity behavior before integration completes.
 - `worktree-sync-integration-coverage`: maintenance tests cover successful and rejected integration paths.
 - `worktree-sync-orders-batches`: batch `sync` orders its selected worktrees by filesystem modification time, oldest first, and completes each worktree's rebase followed by merge before moving to the next.
-- `worktree-sync-respects-domain-merge-policy`: sync relies on the installed `session-record-merge` driver only for `.session/sessions/**/session.json` and `transcript.json`; it does not apply generic automatic resolution to ticket artifacts.
+- `worktree-sync-respects-domain-merge-policy`: sync relies on the installed `session-record-merge` driver only for `.session/sessions/**/session.json`, `transcript.json`, and `events.json`; it does not apply generic automatic resolution to ticket artifacts.
 
 ## Boundaries And Failure Cases
 

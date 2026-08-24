@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "session_id": "b5bef826-153b-4095-95fc-2f09efe28def",
+  "source": "copilot-hook",
+  "started_at": "2026-08-23T16:36:35.692Z",
+  "captured_at": "2026-08-24T13:59:12.196Z",
+  "metadata": {
+    "workspace_slug": "default",
+    "agent_id": "copilot-agent",
+    "trigger": "PostToolUse",
+    "provisioning": {
+      "outcome": "failed",
+      "reason": "worktree cap 8 reached with 8 registered worktrees; no reclaimable candidate: all registered worktrees are active, dirty, ahead of main, detached, or outside .worktrees",
+      "hook_event_name": "UserPromptSubmit"
+    },
+    "producer": "copilot-agent",
+    "copilot_version": "0.62.0",
+    "vscode_version": "1.134.0",
+    "protocol_version": 1,
+    "worktree": {
+      "path": "C:/Users/linus/git/3/context-engine",
+      "branch": "main",
+      "allocation_mode": "new",
+      "status": "active"
+    }
+  },
+  "links": {}
+}
