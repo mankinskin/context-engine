@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "session_id": "8c604338-28fb-4601-910e-fe7ee7e6b03d",
+  "captured_at": "2026-08-23T01:48:50.074904500Z",
+  "events": [
+    {
+      "event_type": "UserPromptSubmit",
+      "data_json": {
+        "prompt": "There is a compile error in a peek-cli test, because it requires the viewer-api to make a JsonQuery (because the viewer-api server introduced it, this is where it still lives). The JqFilter api in viewer_api::query seems like a fundamental feature for any backend binary, not only the server of the viewer-api. the responsible crate is memory-kernel. There are probably many other features in the viewer-api server which could be integrated into the memory-kernel for ergonomics."
+      }
+    }
+  ]
+}

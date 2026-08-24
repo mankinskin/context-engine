@@ -51,6 +51,7 @@ This contract is governed by `.agents/instructions/spec/spec-system.instructions
 - Ticket nodes resolve current state live; session-only nodes may represent discovered actions and later be promoted to tickets.
 - Handoff records persist before prompt rendering and always supply an exact resume command.
 - Durable session artifacts (transcript, hook events including submitted prompts, pins, workflow, handoffs, and finish) are owned by `.session/sessions/<session_id>/` and git-tracked for feedback/research loops; handoffs persist in folders with both JSON and rendered markdown; only machine-local locks stay git-ignored.
+- The only session artifacts with concurrent writers across the main-checkout mirror and the session worktree are `session.json` and `transcript.json`. `.gitattributes` assigns both to the installed `session-record-merge` driver, which performs a typed, field-aware three-way merge and fails closed when it cannot produce a valid record. Other session artifacts remain worktree-owned and have no automatic merge driver; an unexpected conflict in one of them remains manual rather than being silently unioned.
 - Finish is explicit and requires all required nodes and validation gates to be satisfied.
 - Finish is terminal: runtime mutation and new lineage reject afterward, while ordinary init is read-only and byte-stable.
 - Runtime mutation, init/resume, and finish share an OS-held exclusive workspace lock that cannot be stolen based solely on age.
@@ -63,6 +64,7 @@ This contract is governed by `.agents/instructions/spec/spec-system.instructions
 - Gating core session functionality on the full feedback program.
 - Semantic auto-pinning from vague text matches.
 - Claiming stronger cross-platform replacement or power-loss durability than platform-specific evidence establishes.
+- Applying ticket-history reconciliation rules to session artifacts, or treating the session-record driver as a generic JSON merge mechanism.
 
 # Acceptance Criteria
 

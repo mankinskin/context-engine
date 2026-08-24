@@ -35,10 +35,16 @@ stash writes.
 - `worktree-sync-uses-git`: use `WorktreeGit` for inspection and worktree metadata.
 - `worktree-sync-preserves-gitlinks`: invoke gitlink integrity behavior before integration completes.
 - `worktree-sync-integration-coverage`: maintenance tests cover successful and rejected integration paths.
+- `worktree-sync-orders-batches`: batch `sync` orders its selected worktrees by filesystem modification time, oldest first, and completes each worktree's rebase followed by merge before moving to the next.
+- `worktree-sync-respects-domain-merge-policy`: sync relies on the installed `session-record-merge` driver only for `.session/sessions/**/session.json` and `transcript.json`; it does not apply generic automatic resolution to ticket artifacts.
 
 ## Boundaries And Failure Cases
 
 Synchronization does not define reclaim policy or CLI parsing, and it does not route every repository mutation through `WorktreeGit`. Git/open failures and invalid gitlink states prevent mutation; a failed integrity decision cannot be bypassed by sync.
+Batch sync stops at the first failed rebase or merge, so users resolve only one
+worktree conflict at a time and later worktrees remain untouched.
+
+Ticket artifacts require a separate ticket-store-owned reconciliation capability before sync can resolve their conflicts automatically. That capability must merge a ticket bundle (`ticket.toml`, `history.ndjson`, and referenced parts) through typed parsing and validation: it may deduplicate or preserve independently appended history and distinct part identities, but it must fail closed when both sides make incompatible edits to a scalar ticket field or competing amendment lineage. A per-file text merge driver is insufficient because it cannot ensure the resulting bundle is internally consistent.
 
 ## Provider/Consumer Contract
 
@@ -46,7 +52,9 @@ Consumes `worktree-git-inspection-metadata` from [66fbd896 Worktree Git Operatio
 
 ## Examples
 
-`handle_sync` performs its integration through `WorktreeGit`; an unresolved gitlink state reported by the integrity component stops the integration path before a commit.
+`handle_sync` performs its integration through `WorktreeGit`; an unresolved gitlink state reported by the integrity component stops the integration path before a commit. Batch sync processes the oldest selected worktree first and stops before attempting the next worktree when that one fails.
+
+The repository configures `session-record-merge` through `setup_git.sh`, and `.gitattributes` selects it for the two mirrored session JSON artifacts. A conflicting ticket manifest/history pair remains a blocking sync failure until the ticket-store reconciler described above is implemented and validates the complete merged ticket bundle.
 
 ## Evidence
 

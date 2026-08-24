@@ -38,12 +38,17 @@ for reclaim display; it does not call `provision_for_session`.
 - `worktree-cli-dispatches-lifecycle`: each supported command reaches its intended handler.
 - `worktree-cli-evaluates-reclaim-candidate`: the implemented reclaim path uses `evaluate_reclaim_candidate` with `ProvisionPolicy`; it does not establish a session-provisioning edge.
 - `worktree-cli-contract-coverage`: integration tests exercise user-visible lifecycle behavior.
+- `worktree-cli-selects-worktrees`: `clean`, `commit`, `rebase`, `merge`, and `sync` accept one or more positional selectors or repeatable `--worktree <selector>` options. `--all` selects every managed worktree and is mutually exclusive with explicit selectors.
+- `worktree-cli-commits-selected-paths`: `commit` stages all changes by default, or stages trailing `-- <pathspec>...` arguments with `git add` semantics before committing each selected worktree.
+- `worktree-cli-cleans-inactive-worktrees`: `clean` removes only selected clean worktrees that have no commits ahead of local `main`; a fully behind worktree is removable.
 
 ## Boundaries And Failure Cases
 
 The CLI does not own provisioning policy, does not call `provision_for_session`,
 and does not invent an MCP/API parity surface. Parse failure, invalid checkout,
-rejected reclaim decision, or library error is surfaced as command failure.
+rejected reclaim decision, invalid selector combination, or library error is
+surfaced as command failure. Batch commands stop on the first failed selected
+worktree, leaving later selections untouched.
 
 ## Provider/Consumer Contract
 
@@ -51,9 +56,11 @@ Consumes `worktree-git-repository-operations` from [66fbd896 Worktree Git Operat
 
 ## Examples
 
-A lifecycle command reaches `dispatch`, opens `WorktreeGit`, and the reclaim
-path calls `evaluate_reclaim_candidate` with `ProvisionPolicy::default()`; it
-does not call `provision_for_session`.
+`worktree-ctl commit <worktree> -- src/lib.rs` commits only `src/lib.rs` in the
+selected worktree. `worktree-ctl clean --all` safely removes every eligible
+inactive worktree. A lifecycle command reaches `dispatch`, opens `WorktreeGit`,
+and the reclaim path calls `evaluate_reclaim_candidate` with
+`ProvisionPolicy::default()`; it does not call `provision_for_session`.
 
 ## Evidence
 
@@ -62,4 +69,5 @@ but the persisted component/criterion/edge model is not. Run `cargo test --manif
 
 ## Scope
 
-Owns CLI dispatch/lifecycle behavior, not synchronization, gitlink checks, or policy semantics.
+Owns CLI dispatch, selection, cleanup, and commit behavior, not low-level
+synchronization writes, gitlink checks, or policy semantics.
