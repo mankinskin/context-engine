@@ -29,6 +29,16 @@ bin = "session-capture-hook"
 features = ["capture-hook"]
 
 [[artifact]]
+id = "session-record-merge"
+category = "misc"
+kind = "rust-binary"
+source_path = "workflow-tools/session/crates/session-record-merge"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
+bin = "session-record-merge"
+
+[[artifact]]
 id = "ticket"
 category = "cli"
 kind = "rust-binary"
@@ -38,6 +48,16 @@ lifecycle = ["install", "inspect"]
 safety = "approval-required"
 bin = "ticket"
 features = ["cli"]
+
+[[artifact]]
+id = "ticket-record-merge"
+category = "misc"
+kind = "rust-binary"
+source_path = "workflow-tools/ticket"
+owner = "tooling"
+lifecycle = ["install", "inspect"]
+safety = "approval-required"
+bin = "ticket-record-merge"
 
 [[artifact]]
 id = "spec-cli"
@@ -257,14 +277,14 @@ safety = "approval-required"
 npm_script = "install:vsix"
 
 [[artifact]]
- id = "worktree-ctl"
+id = "worktree-ctl"
 category = "misc"
- kind = "rust-binary"
- source_path = "workflow-tools/session/crates/worktree-ctl"
+kind = "rust-binary"
+source_path = "workflow-tools/session/crates/worktree-ctl"
 owner = "tooling"
 lifecycle = ["inspect"]
 safety = "safe"
- bin = "worktree-ctl"
+bin = "worktree-ctl"
 
 [[artifact]]
 id = "storeless-startup-matrix"

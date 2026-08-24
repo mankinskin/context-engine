@@ -12,13 +12,23 @@ git config core.safecrlf warn
 git config merge.renormalize true
 git config core.hooksPath .githooks
 
-# Reconcile session.json/transcript.json conflicts between the main-checkout
-# registry mirror and each session's own worktree branch (see .gitattributes)
-# instead of leaving textual conflict markers. Shared across worktrees since
-# they use the same repo config.
+# Reconcile the typed Git artifacts declared in .gitattributes. Drivers are
+# installed repository tools, so setup fails early rather than leaving a later
+# merge to invoke an implicit source-tree cargo build.
+for driver in session-record-merge ticket-record-merge; do
+    if ! command -v "$driver" >/dev/null 2>&1; then
+        echo "setup_git.sh: required merge driver '$driver' is not installed; run 'install-ctl install $driver'" >&2
+        exit 1
+    fi
+done
+
 git config merge.session-record.name "context-engine session record merge"
 git config merge.session-record.driver \
-    "cargo run --manifest-path \"$repo_root/Cargo.toml\" --quiet -p session-record-merge -- %O %A %B %P"
+    "session-record-merge %O %A %B %P"
+
+git config merge.ticket-record.name "context-engine ticket record merge"
+git config merge.ticket-record.driver \
+    "ticket-record-merge %O %A %B %P"
 
 # `git submodule update --init --recursive` aborts the whole command the
 # instant one submodule fails (e.g. a stale/unreachable pinned commit), and

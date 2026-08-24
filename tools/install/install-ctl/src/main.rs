@@ -23,6 +23,7 @@ use registry::{
     Artifact,
     ArtifactKind,
     load_registry,
+    sync_catalog,
 };
 use selection::resolve_selection;
 
@@ -53,6 +54,11 @@ enum Command {
         /// Skip passing --force to `cargo install` for rust-binary artifacts.
         #[arg(long)]
         no_force: bool,
+    },
+    /// Render the registry projection to COMMANDS.md, or verify it is current.
+    Catalog {
+        #[arg(long)]
+        check: bool,
     },
     /// Start a viewer server (alias for `viewer start`; kept top-level so
     /// existing `install-ctl start <viewer>` invocations, e.g. from
@@ -108,6 +114,11 @@ fn main() {
                 print_plan(&selected, force);
             } else {
                 run_install(&selected, force);
+            }
+        },
+        Some(Command::Catalog { check }) => {
+            if let Err(error) = sync_catalog(check) {
+                fail(&error);
             }
         },
         Some(Command::Start {

@@ -100,6 +100,29 @@ pub fn load_registry() -> Result<Registry, String> {
     Ok(adapt_registry_v2(registry_v2))
 }
 
+/// Render the canonical command catalog from the runtime registry and either
+/// write it to the repository root or verify the committed projection.
+pub fn sync_catalog(check: bool) -> Result<(), String> {
+    let registry_path = resolve_registry_path()?;
+    let text = std::fs::read_to_string(&registry_path)
+        .map_err(|error| format!("failed to read {}: {error}", registry_path.display()))?;
+    let registry = parse_registry_v2(&text)
+        .map_err(|errors| format!("failed to parse {}: {errors:?}", registry_path.display()))?;
+    let catalog_path = resolve_repo_root()?.join("COMMANDS.md");
+    let rendered = render_catalog(&registry);
+    if check {
+        let committed = std::fs::read_to_string(&catalog_path)
+            .map_err(|error| format!("failed to read {}: {error}", catalog_path.display()))?;
+        if committed != rendered {
+            return Err(format!("{} is stale; run 'install-ctl catalog'", catalog_path.display()));
+        }
+    } else {
+        std::fs::write(&catalog_path, rendered)
+            .map_err(|error| format!("failed to write {}: {error}", catalog_path.display()))?;
+    }
+    Ok(())
+}
+
 /// Migration adapter (spec 97322185-2bda-4f25-85f7-f975a0b3fbad): project the
 /// v2 registry down to the legacy `Registry`/`Artifact` shape that `main.rs`
 /// still consumes for install/list. Entries whose `EntryKind` has no legacy

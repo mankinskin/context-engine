@@ -16,27 +16,47 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Misc
 - Kind: RustBinary
-- Source: `memory-api/crates/session-capture-hook`
+- Source: `workflow-tools/session`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `session-capture-hook`
+- Lifecycle: Install, Inspect
+
+## session-record-merge
+
+- Category: Misc
+- Kind: RustBinary
+- Source: `workflow-tools/session/crates/session-record-merge`
+- Owner: tooling
+- Safety: ApprovalRequired
+- Bin: `session-record-merge`
 - Lifecycle: Install, Inspect
 
 ## ticket
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/crates/ticket`
+- Source: `workflow-tools/ticket`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `ticket`
+- Lifecycle: Install, Inspect
+
+## ticket-record-merge
+
+- Category: Misc
+- Kind: RustBinary
+- Source: `workflow-tools/ticket`
+- Owner: tooling
+- Safety: ApprovalRequired
+- Bin: `ticket-record-merge`
 - Lifecycle: Install, Inspect
 
 ## spec-cli
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/tools/cli/spec-cli`
+- Source: `workflow-tools/spec`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `spec`
@@ -46,7 +66,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/tools/cli/audit-cli`
+- Source: `workflow-tools/audit/crates/audit-cli`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `audit`
@@ -56,7 +76,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/tools/cli/rule-cli`
+- Source: `workflow-tools/rule`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `rule`
@@ -66,7 +86,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/tools/cli/feedback-cli`
+- Source: `workflow-tools/feedback/crates/feedback-cli`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `feedback`
@@ -76,7 +96,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Cli
 - Kind: RustBinary
-- Source: `memory-api/tools/cli/session-cli`
+- Source: `workflow-tools/session`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `session`
@@ -96,7 +116,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/crates/ticket`
+- Source: `workflow-tools/ticket`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `ticket-mcp`
@@ -106,7 +126,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/spec-mcp`
+- Source: `workflow-tools/spec`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `spec-mcp`
@@ -116,7 +136,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/test-mcp`
+- Source: `workflow-tools/test/crates/test-mcp`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `test-mcp`
@@ -126,7 +146,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/feedback-mcp`
+- Source: `workflow-tools/feedback/crates/feedback-mcp`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `feedback-mcp`
@@ -136,7 +156,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/session-mcp`
+- Source: `workflow-tools/session`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `session-mcp`
@@ -146,7 +166,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/peek-mcp`
+- Source: `workflow-tools/peek/crates/peek-mcp`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `peek-mcp`
@@ -156,7 +176,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/rule-mcp`
+- Source: `workflow-tools/rule`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `rule-mcp`
@@ -166,7 +186,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Mcp
 - Kind: RustBinary
-- Source: `memory-api/tools/mcp/audit-mcp`
+- Source: `workflow-tools/audit/crates/audit-mcp`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `audit-mcp`
@@ -196,7 +216,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Service
 - Kind: RustBinary
-- Source: `memory-viewers/doc-viewer`
+- Source: `workflow-tools/doc/crates/doc-viewer`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `doc-viewer`
@@ -206,7 +226,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Service
 - Kind: RustBinary
-- Source: `memory-viewers/log-viewer`
+- Source: `workflow-tools/log/crates/log-viewer`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `log-viewer`
@@ -216,7 +236,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Service
 - Kind: RustBinary
-- Source: `memory-viewers/spec-viewer`
+- Source: `workflow-tools/spec/spec-viewer`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `spec-viewer`
@@ -226,7 +246,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Service
 - Kind: RustBinary
-- Source: `memory-viewers/ticket-viewer`
+- Source: `workflow-tools/ticket/ticket-viewer`
 - Owner: tooling
 - Safety: ApprovalRequired
 - Bin: `ticket-viewer`
@@ -266,7 +286,7 @@ Generated from `tools/install/artifacts.toml` (schema version 1). Do not edit by
 
 - Category: Hook
 - Kind: Hook
-- Source: `memory-api/crates/session-api`
+- Source: `workflow-tools/session`
 - Owner: tooling
 - Safety: Safe
 - Bin: `session-capture-hook --from-hook-stdin`
