@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "session_id": "0ff8f99c-dab9-4d9c-9dcd-4ca59da54138",
-  "captured_at": "2026-08-24T13:45:18.893057100Z",
+  "captured_at": "2026-08-24T14:32:45.023479100Z",
   "events": [
     {
       "event_type": "UserPromptSubmit",
@@ -61,6 +61,12 @@
       "event_type": "UserPromptSubmit",
       "data_json": {
         "prompt": "runnint worktree-ctl rebase --all now hangs after printing\r\n\"resolved stale controller gitlink checkpoint in workflow-tools: retained the recorded rebased base\"\r\n\r\nTry running worktree-ctl-rebase --all"
+      }
+    },
+    {
+      "event_type": "UserPromptSubmit",
+      "data_json": {
+        "prompt": "okay, now i encountered an issue in the worktree-ctl output,\r\n```\r\nerror: merge ef63f74b-8d7b-44d9-914b-5d7d0f984f90/session failed: changes were stashed in \\\\?\\C:\\Users\\linus\\git\\3\\context-engine before this operation but could not be restored automatically (No stash entries found.); run `git -C \\\\?\\C:\\Users\\linus\\git\\3\\context-engine stash list` to recover them\r\n```\r\n\r\nmain was clean with no changes, so nothing was stashed, but merge outputs a failure."
       }
     }
   ]
