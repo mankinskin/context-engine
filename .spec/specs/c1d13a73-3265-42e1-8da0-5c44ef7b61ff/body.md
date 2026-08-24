@@ -33,6 +33,8 @@ If implemented, consumers can make consistent worktree reclaim and provision dec
 
 - `worktree-provision-reclaim-decision`: evaluate a candidate from repository, activity, and policy inputs.
 - `worktree-provision-session-provisioning`: provision or reuse a worktree through the shared library.
+- `worktree-provision-owned-session-checkpoint`: an inactive, singly owned nested worktree may checkpoint its own session artifacts before dirty-state evaluation. Reclaim accepts exactly one verified tool-created checkpoint commit; unrelated or pre-existing ahead commits remain rejected.
+- `worktree-provision-session-mirror-checkpoint`: consumers may checkpoint a validated main-checkout mirror for a selected worktree session by staging only that session directory; unrelated main changes remain outside the checkpoint.
 
 ## Boundaries And Failure Cases
 
@@ -41,6 +43,14 @@ gitlinks. This component must not claim that sync or gitlink consume
 `ProvisionPolicy` or `provision_for_session`; the accurate Git-operation
 provider component is deliberately not introduced by this pilot. Invalid
 repository state or activity/policy errors return typed library failures.
+Checkpoint eligibility requires the recorded owner id, nested worktree id, and
+local session record id to agree, and requires every dirty superproject path to
+stay under that session directory. It never checkpoints dirty submodules or
+unrelated files. A checkpoint commit is accepted only when its sole parent and
+all changed paths prove it is the fixed tool-created session checkpoint.
+Main mirror checkpointing also requires the mirror record's session id and
+recorded worktree path to match the selected worktree; it never stages other
+main-checkout changes.
 
 ## Provider/Consumer Contract
 
@@ -49,6 +59,9 @@ Consumes `worktree-git-repository-operations` from [66fbd896 Worktree Git Operat
 ## Examples
 
 `provision_for_session(&git, activity, &policy, session)` decides reuse/reclaim/create from the same `ProvisionPolicy` regardless of which CLI lifecycle path consumes it.
+An inactive worktree containing only its own uncommitted session record is
+checkpointed, then eligible for reclamation; a worktree already ahead of local
+`main` for any other reason remains ineligible.
 
 ## Evidence
 

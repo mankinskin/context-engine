@@ -41,6 +41,8 @@ for reclaim display; it does not call `provision_for_session`.
 - `worktree-cli-selects-worktrees`: `clean`, `commit`, `rebase`, `merge`, and `sync` accept one or more positional selectors or repeatable `--worktree <selector>` options. `--all` selects every managed worktree and is mutually exclusive with explicit selectors.
 - `worktree-cli-commits-selected-paths`: `commit` stages all changes by default, or stages trailing `-- <pathspec>...` arguments with `git add` semantics before committing each selected worktree.
 - `worktree-cli-cleans-inactive-worktrees`: `clean` removes only selected clean worktrees that have no commits ahead of local `main`; a fully behind worktree is removable.
+- `worktree-cli-checkpoints-owned-session-records`: before clean, rebase, or merge mutates a worktree, the CLI may create a fixed-message checkpoint commit only when every dirty superproject path is beneath `.session/sessions/<owner-session-id>/`, the nested worktree UUID and the registered owner agree, and that local `session.json` declares the same id. Active worktrees are preserved by clean even when checkpointable.
+- `worktree-cli-checkpoints-session-mirrors`: sync checkpoints a dirty validated main-checkout mirror of the selected session before rebasing the worktree. It stages only `.session/sessions/<owner-session-id>/`, leaving unrelated main changes for the existing stash/restore guard, so the mirror cannot collide with its own later fast-forward.
 
 ## Boundaries And Failure Cases
 
@@ -49,6 +51,11 @@ and does not invent an MCP/API parity surface. Parse failure, invalid checkout,
 rejected reclaim decision, invalid selector combination, or library error is
 surfaced as command failure. Batch commands stop on the first failed selected
 worktree, leaving later selections untouched.
+An unrelated dirty superproject path, any dirty submodule, a missing or malformed
+session record, ambiguous ownership, or an owner/path mismatch prevents the
+session-record checkpoint and retains the normal dirty-worktree failure.
+The main mirror checkpoint uses the same owner and worktree-path validation;
+it does not stage unrelated main-checkout changes.
 
 ## Provider/Consumer Contract
 
