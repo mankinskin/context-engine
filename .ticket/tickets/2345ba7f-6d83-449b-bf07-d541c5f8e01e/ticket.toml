@@ -6,5 +6,6 @@ component = "workflow-tools"
 depends_on = ["67e254b5-8eac-4251-b640-ec3649f250dd", "92741a14-d718-4f49-8843-040432a3d8da"]
 effort = "2200"
 priority = "high"
+related_specs = [{ spec_id = "bc639ab3-8eda-4268-a7a2-34289bfeba4d", workspace = "default", store_root = ".spec" }]
 risk_level = "high"
 type = "task"
