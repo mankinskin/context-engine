@@ -29,7 +29,8 @@ None requiring a requester decision. The requester approved `minimal-demo` as a 
 - An unqualified workflow operation from the meta-workspace root fails without mutating a consumer store.
 - An explicit `minimal-demo` consumer-root selector reads back only `minimal-demo` ticket/spec artifacts.
 - `cargo metadata --format-version 1 --no-deps` from `minimal-demo` has no local workflow-tools path or `[patch]` override.
-- `bash workflow-tools/fixtures/minimal-demo/run-tutorial.sh` bootstraps workflow-skill and the selected workflow transport in a clean temporary directory.
+- The Docker fixture fetches a fresh `workflow-minimal-demo` checkout, runs the commit-pinned GitHub `install.sh` through one `curl | bash` entry point, and drives `install-ctl` with `ratatui-testlib` in a fresh image.
+- The Docker fixture verifies the configured tools, instructions, hooks, and binaries below `<installation-home>/.workflow-tools/bin/`, while reusing prebuilt delivered binaries instead of compiling workflow-tools from source.
 - `cargo build --manifest-path minimal-demo/Cargo.toml` succeeds after bootstrap.
 - The tutorial's selected installed transport completes the documented ticket/spec operation.
 - The scenario reads back expected ticket/spec store artifacts rather than treating command exit status as evidence of persisted data.
@@ -44,9 +45,9 @@ None requiring a requester decision. The requester approved `minimal-demo` as a 
 
 3. **[Ticket-backed] Publish the minimal install contract and workflow-skill bootstrap.** Execute [01 install contract](01-install-contract-and-skill.md) through the umbrella and skill owners. Acceptance: a documented, version-pinned command sequence installs the selected tool set and resolves the `minimal-demo` public Cargo dependency without local paths. Depends on Waypoint 2.
 
-4. **[Ticket-backed] Build the tiny top-level external consumer and tutorial.** Execute [02 minimal fixture](02-minimal-consumer-fixture.md). Acceptance: a fresh directory can follow the tutorial to build `minimal-demo` and read back its few ticket/spec records. Depends on Waypoint 3.
+4. **[Ticket-backed] Build the tiny top-level external consumer and Docker tutorial fixture.** Execute [02 minimal fixture](02-minimal-consumer-fixture.md). Acceptance: a fresh Docker image fetches `workflow-minimal-demo`, completes the commit-pinned installer and TUI configuration flow with prebuilt binary reuse, builds `minimal-demo`, and reads back its few ticket/spec records. Depends on Waypoint 3.
 
-5. **[Ticket-backed] Add clean-install continuous integration.** Execute [03 continuous validation](03-continuous-clean-install.md). Acceptance: workflow-tools GitHub Actions runs the exact tutorial scenario on Linux for pull requests and main. Depends on Waypoint 4.
+5. **[Ticket-backed] Add clean-install continuous integration.** Execute [03 continuous validation](03-continuous-clean-install.md). Acceptance: workflow-tools GitHub Actions runs the exact Docker tutorial scenario on Linux for pull requests and main. Depends on Waypoint 4.
 
 6. **[Ticket-backed] Establish artifact-store ownership and migrate scoped artifacts.** Execute [47a0bcc3 artifact stores](../../.ticket/tickets/47a0bcc3-f42d-475e-b05a-777293c4698e/ticket.toml) followed by [47f2a664 artifact migration](../../.ticket/tickets/47f2a664-7803-4074-b40c-f41d3caf0c54/ticket.toml). Acceptance: workflow-tools and each domain own their stores, and migration batches preserve references. Waypoint 6 may run in parallel with Waypoints 3-5 after the umbrella repository is ready.
 
