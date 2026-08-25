@@ -20,20 +20,24 @@ Obtain the UUID from the Copilot hook payload and supply it explicitly. The prim
 
 The result contains `context.session_id`, `active_run_id`, and `runs[]`. There is no fallback session-identity resolution.
 
-Resolve the positionally discovered worktree for any session:
+Resolve an explicitly registered worktree when the task requires one:
 
 ```bash
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. Lookup discovers the worktree positionally: exactly one nested `.worktrees/<session-uuid>/<slug>` directory wins over a valid legacy flat candidate. No candidate returns `MissingSessionWorktree`; multiple valid candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. On either error, inspect the layouts described in [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) and repair or create the worktree before running worktree-backed mutations. A small, self-contained main-checkout change may proceed without a session-to-worktree assignment and must not call worktree-scoped session or board mutations. `git rev-parse --show-toplevel` is a hint, not an answer: a session commonly runs from the repository root while the provisioned worktree is elsewhere.
+The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. No assignment is normal for a small task: tools run in the main checkout. For worktree-backed work, create the worktree, register it with `session_check_in`, and then use the returned assignment for all tools and commands. A missing or ambiguous assignment blocks only worktree-backed mutations. `git rev-parse --show-toplevel` confirms the current execution checkout.
 
 ## Opening Declaration
 
-The first substantive response for a worktree-backed task must begin with the session declaration before any other content. Use this exact template:
+The first substantive response must state the session and execution checkout. Use one of these templates:
 
 ```text
 session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug>
+```
+
+```text
+session: <uuid> | checkout: main
 ```
 
 Resolve every placeholder from the current session; never copy an identifier, worktree, or branch from a previous transcript.
@@ -47,20 +51,19 @@ session lookup with the actual execution context:
 session_id | code_worktree | git_toplevel | branch | entity_store_root | command_cwd
 ```
 
-`code_worktree`, `git_toplevel`, and `branch` must match the authoritative
-session assignment. `entity_store_root` must equal the explicit value in the
-handoff package; never derive it from the current directory. A mismatch stops
-the unit before any further read, write, build, or validation command. The main
-checkout may be used only for an explicitly labeled read-only source-baseline
-probe.
+When a session has an assignment, `code_worktree`, `git_toplevel`, and `branch`
+must match it. When it has none, they must identify the main checkout. `entity_store_root`
+must equal the explicit value in the handoff package; never derive it from the
+current directory. A mismatch stops the unit before any further read, write,
+build, or validation command.
 
 ## Claim Order
 
-For a worktree-backed task, bootstrap the worktree, rename to the topic slug, run `session_check_in` and `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is the canonical owner of the commands. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<uuid>/session` placeholder. A small main-checkout change skips those worktree-specific claims after checking that no active board entry owns the path.
+For a worktree-backed task, create the worktree with its final topic slug, run `session_check_in` and `board_check_in`, then make the first edit. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) owns the commands. A small main-checkout change skips those worktree-specific claims after checking that no active board entry owns the path.
 
-### Check-in targets the worktree, not the main checkout
+### Check-in registers an explicit worktree
 
-Mutations resolved against the main checkout are refused by `require_mutation_target` in `memory-api/crates/session-workspace-resolver/src/lib.rs` with `main checkout mutations are blocked`. The guard inspects the resolved workspace, not the `worktree_path` argument. Passing a correct `worktree_path` while leaving `workspace` defaulted to the repository root still fails. Pass the worktree path as the `workspace` selector on both `session_check_in` and `board_check_in`. There is no environment-variable bypass.
+Use `session_check_in` only after creating a worktree for a worktree-backed task. Pass the created `worktree_path` and branch exactly as created. Normal tools may execute in the main checkout while no session worktree is registered; once registered, they must execute in that assignment.
 
 ## Closing Traceability Footer
 

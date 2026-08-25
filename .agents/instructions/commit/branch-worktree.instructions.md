@@ -4,7 +4,7 @@ description: "Use when starting, committing, or integrating any implementation t
 
 ## Why
 
-A worktree may already have been provisioned automatically by the capture hook before an implementation session begins. [worktree-provisioning.instructions.md](../session/worktree-provisioning.instructions.md) documents the automatic bootstrap policy, diagnostics, and manual fallback; this guide owns the manual branch, claim, rebase, and merge protocol.
+The capture hook never provisions worktrees. For qualifying implementation work, the implementation agent explicitly creates a worktree and registers it with the session tool. [worktree-provisioning.instructions.md](../session/worktree-provisioning.instructions.md) documents the decision and registration policy; this guide owns the branch, claim, rebase, and merge protocol.
 
 Multiple agents editing the same checkout at the same time is the failure mode this protocol exists to prevent: one agent's `cargo fmt`, revert, or `git add -A` silently swallows another agent's in-progress work, and the resulting commit cannot be attributed to either session. Isolation is structural — each implementation session gets its own git worktree on its own branch, so two agents physically cannot write the same file.
 
@@ -16,7 +16,7 @@ Use this protocol when [AGENTS.md](../../../AGENTS.md#task-routing)'s Task Routi
 
 One worktree-backed implementation task, start to merge:
 
-1. **Bootstrap** — the root orchestrator creates the worktree and branch from `main`.
+1. **Bootstrap** — the implementation agent creates the worktree and branch from `main`, then registers it with `session_check_in`.
 2. **Claim** — the implementation agent checks in on the session store and the ticket board.
 3. **Work** — all edits, builds, and tests for the worktree-backed task happen inside the worktree.
 4. **Commit** — commits land on the feature branch, never on `main`.
@@ -24,7 +24,7 @@ One worktree-backed implementation task, start to merge:
 6. **Mark ready** — the agent checks out of the board with a `ready-to-merge:` reason and moves the ticket to `in-review`.
 7. **Merge** — the implementation session itself fast-forwards every affected `main` (submodules first, superproject last) and tears its own worktree down.
 
-Step 1 belongs to the root orchestrator session. Steps 2 through 7 belong to the implementation session — the same session that did the work also finishes the merge, since it is the one holding the rebased, validated branch.
+All steps belong to the implementation session — the same session that creates the worktree does the work and finishes the merge.
 
 ## Naming
 
@@ -35,13 +35,11 @@ Step 1 belongs to the root orchestrator session. Steps 2 through 7 belong to the
 
 `<full-session-uuid>` is the complete session UUID. `<slug>` is a lowercase hyphenated shortening of the task title, 40 characters or fewer. One session, one active slug directory, one branch, one worktree — never two active slug directories for one session UUID.
 
-For auto-provisioned sessions, use `<full-session-uuid>/<topic-slug>` for the worktree and `agent/<full-session-uuid>/<topic-slug>` for the branch. `<topic-slug>` is lowercase kebab-case, describes the work rather than the ticket id, has 2-4 words, and is 40 characters or fewer. Do not use dates, agent names, or `tmp`, `test`, or `scratch`; a bare ticket id is not a slug because `<full-session-uuid>` already carries identity and the slug must add meaning.
-
-`<full-session-uuid>/session` is the hook-assigned placeholder meaning "topic not yet declared". Rename the placeholder before session check-in. Existing flat `.worktrees/<short-id>-<slug>` worktrees remain supported during transition and are not migrated; nested layout wins when both layouts resolve for one UUID. More than one valid nested or legacy candidate is the deterministic `AmbiguousSessionWorktree` error, not a selection.
+Use the final topic slug when creating the worktree; no hook-created `session` placeholder exists. Existing flat `.worktrees/<short-id>-<slug>` worktrees remain supported during transition and are not migrated. More than one valid candidate is an `AmbiguousSessionWorktree` error, not a selection.
 
 `.worktrees/` is git-ignored at the repository root. Never commit a worktree directory.
 
-## 1. Bootstrap (root orchestrator)
+## 1. Bootstrap (implementation agent)
 
 Run from the repository root, on `main`, before dispatching the implementation agent:
 
@@ -73,9 +71,9 @@ worktree. Git mutates the shared submodule `core.worktree` setting and can
 orphan the main checkout or another session's nested checkout. `worktree-ctl`
 already creates detached nested submodule worktrees from the recorded gitlinks.
 
-## 1b. Name the topic (rename the worktree)
+## 1b. Rename Only When Scope Changes
 
-As soon as the implementation agent knows the topic, rename the hook-provisioned placeholder exactly once for that topic, before the first edit and before step 2 (Claim). Run the sequence from the repository root, with no shell or other process using the worktree as its current directory. Before renaming, check for uncommitted tracked changes:
+Create the worktree with its final topic slug. Rename only when the task scope materially changes, before the first edit and before step 2 (Claim). Run the sequence from the repository root, with no shell or other process using the worktree as its current directory. Before renaming, check for uncommitted tracked changes:
 
 ```bash
 git -C .worktrees/<name> diff --stat          # unstaged tracked changes
@@ -85,7 +83,7 @@ git -C .worktrees/<name> diff --stat --cached # staged tracked changes
 Both commands must be empty; otherwise commit or stash the tracked changes first. Untracked `.session/sessions/` entries do not block a rename: the capture hook writes those continuously as background noise.
 
 ```bash
-./target/debug/worktree-ctl.exe rename <full-session-uuid>/session <full-session-uuid>/<topic-slug>
+./target/debug/worktree-ctl.exe rename <full-session-uuid>/<current-slug> <full-session-uuid>/<topic-slug>
 ```
 
 `git worktree move` is unusable in this repository because every worktree contains five submodule linked worktrees. `worktree-ctl rename` uses filesystem relocation, top-level repair, and branch rename instead.

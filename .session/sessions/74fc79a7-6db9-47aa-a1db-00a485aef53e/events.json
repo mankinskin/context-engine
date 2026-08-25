@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "session_id": "74fc79a7-6db9-47aa-a1db-00a485aef53e",
+  "captured_at": "2026-08-25T17:21:05.759706200Z",
+  "events": [
+    {
+      "event_type": "UserPromptSubmit",
+      "data_json": {
+        "prompt": "currently every single session creates a worktree. We do not want to create worktrees automatically from a session hook anymore, agents should create and register their worktrees with the session tool only for large implementation tasks. Tools should be allowed to execute on the main checkout, but they should be directed to the worktree if a worktree is registered in the session record."
+      }
+    },
+    {
+      "event_type": "UserPromptSubmit",
+      "data_json": {
+        "prompt": "also update the instructions with the new workflow"
+      }
+    }
+  ]
+}

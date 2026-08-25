@@ -14,7 +14,7 @@ Global working rules for this repository. Keep this file small and stable.
 - Use Unix-style paths (`/`) in commands and docs.
 - Read test logs in `target/test-logs/` for debugging instead of relying on truncated test stdout.
 - Keep scope tight: do not add extra features or broad refactors unless requested.
-- Declare the session identity and assigned worktree at the start of each session, then repeat both in the final response; follow [session-identity-and-handoff.instructions.md](.agents/instructions/session/session-identity-and-handoff.instructions.md).
+- Declare the session identity and execution checkout at the start of each session, then repeat both in the final response; use the main checkout unless the session has an explicitly registered worktree. Follow [session-identity-and-handoff.instructions.md](.agents/instructions/session/session-identity-and-handoff.instructions.md).
 
 ## Discovery Protocol (Before Editing)
 
@@ -43,7 +43,7 @@ Use static references as support:
 - Simple fix (1-2 files, behavior requirements unchanged): gather context, implement, validate, and update docs directly — no ticket required.
 - Bug fix: if it stays within the small-change threshold above, fix directly; otherwise create the tracking ticket first and follow `.agents/prompts/debug-test.prompt.md` when available.
 - Feature or refactor (>5 files, >100 LOC, spans multiple sessions, or unclear scope): create or update the spec first — directly from the free-form request or dossier, capturing the goal and its definition of success, via `.agents/prompts/spec.prompt.md` — then use `.agents/prompts/tickets.prompt.md` to establish the implementation ticket(s) that reference the spec and plan how to reach it. Do not create a ticket to author spec content; a ticket describes how to get to the goal, not the goal itself, and referencing the spec (not restating it) is the ticket's responsibility.
-- Worktree-backed work is required for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. Create a worktree branch, claim the session and board, and use `worktree-ctl` for bootstrap, rebase, merge, and teardown; see [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Rebase and integrate affected submodules before the superproject.
+- Worktree-backed work is required for changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes. The implementation agent creates the worktree branch with `worktree-ctl`, registers it with `session_check_in`, then claims the board. Tools run from the main checkout by default, but must use the registered worktree for that session when one exists. See [branch-worktree.instructions.md](.agents/instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). Rebase and integrate affected submodules before the superproject.
 - Unfamiliar module or unclear behavior: follow `.agents/prompts/research.prompt.md` when available before locking the spec or implementation plan.
 
 ## Quality Gates
