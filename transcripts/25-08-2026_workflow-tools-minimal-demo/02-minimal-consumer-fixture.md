@@ -2,14 +2,14 @@
 
 ## Outcome
 
-Create a checked-in, small consumer project that demonstrates an application, a few ticket records, a few specifications, and one useful workflow operation end to end.
+Create `minimal-demo`, a checked-in top-level meta-workspace consumer project that demonstrates an application, a few ticket records, a few specifications, and one useful workflow operation end to end.
 
 ## Requirements
 
-- The fixture lives in the workflow-tools repository and is intentionally smaller than context-engine.
+- `minimal-demo` is an independent top-level meta-workspace consumer submodule beside `workflow-tools` and context-engine, and is intentionally smaller than context-engine.
 - The fixture contains a tiny Rust application with one public workflow-tools domain dependency.
 - The fixture includes only enough ticket and specification data to demonstrate discovery and one mutation or query described in the tutorial.
-- The fixture is reproducible from an empty working directory without borrowing context-engine's submodules or local patches.
+- The fixture is reproducible from an empty working directory without borrowing context-engine's submodules, workflow-tools source paths, or local patches.
 - The tutorial explains setup, execution, expected output, and teardown in the same order used by CI.
 
 ## Non-Goal

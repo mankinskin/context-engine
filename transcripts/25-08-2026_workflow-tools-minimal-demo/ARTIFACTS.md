@@ -12,6 +12,8 @@
 | [92741a14 context-engine consumer cutover](../../.ticket/tickets/92741a14-d718-4f49-8843-040432a3d8da/ticket.toml) | Phase E task, open | Owns removal of vendored workflow tooling and context-engine's installed-dependency contract. |
 | [2345ba7f end-to-end cutover validation](../../.ticket/tickets/2345ba7f-6d83-449b-bf07-d541c5f8e01e/ticket.toml) | Phase F task, open | Owns final cross-repository validation; the minimal fixture becomes its earliest repeatable proof. |
 | [0b527d28 migration and dependency-install documentation](../../.ticket/tickets/0b527d28-9487-4a6c-8c7a-835b4a5d9582/ticket.toml) | Phase F task, open | Owns the general installation guide and context-engine worked example. |
+| [72b641b1 consumer topology](../../.spec/specs/72b641b1-6620-4043-b956-102d826ce8ea/spec.toml) | Draft specification | Defines meta-workspace ownership, top-level consumer workspaces, and explicit consumer-root selection. |
+| [389f90d9 consumer topology implementation](../../.ticket/tickets/389f90d9-fb06-49b7-948b-0dbd14dcfeca/ticket.toml) | Task, open | Implements `minimal-demo` as the first top-level consumer and blocks wrong-workspace tool operations. |
 | [workflow-tools README](../../workflow-tools/README.md) | Present but empty | Confirms there is no current install tutorial or consumer quickstart. |
 | [workflow-tools contract reference](../../workflow-tools/contract-reference/README.md) | Present | Demonstrates crate, transport, viewer, and VS Code shapes, but is not an external installed-consumer fixture. |
 | [workflow-tools .gitmodules](../../workflow-tools/.gitmodules) | Present | Confirms the umbrella aggregates extracted tool repositories and memory-kernel as submodules. |
