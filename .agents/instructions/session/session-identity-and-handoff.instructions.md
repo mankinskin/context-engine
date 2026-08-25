@@ -68,13 +68,17 @@ Use `session_check_in` only after creating a worktree for a worktree-backed task
 
 ## Closing Traceability Footer
 
-Every agent final response ends with this footer so lineage is greppable from the chat transcript alone, rather than only from the board and session store:
+Every agent final response ends with a traceability footer so lineage is greppable from the chat transcript alone, rather than only from the board and session store. Use the form that matches the selected execution mode:
 
 ```
 session: <uuid> | worktree: .worktrees/<uuid>/<slug> | branch: agent/<uuid>/<slug> | ticket: <short-id> <title>
 ```
 
-Resolve every placeholder from the current session and its claimed ticket; never copy values from a previous transcript or instruction example.
+```text
+session: <uuid> | checkout: main | ticket: <short-id> <title>
+```
+
+Resolve every placeholder from the current session and its claimed ticket; never copy values from a previous transcript or instruction example. Main-checkout tasks do not invent a worktree or branch in the footer.
 
 The footer applies to sub-agents too: a sub-agent's single returned message carries the footer, so a write-and-die Worker's one step remains attributable after the session is gone. See [write-and-die.instructions.md](../orchestration/write-and-die.instructions.md).
 

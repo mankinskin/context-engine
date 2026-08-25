@@ -29,11 +29,17 @@ owned. Check in when starting implementation; check out when done.
   --toon
 ```
 
-A board entry has no dedicated branch column, so record the branch and worktree in
-the `--intent` text using this fixed prefix:
+A board entry has no dedicated branch column. For a worktree-backed task, record
+the branch and worktree in the `--intent` text using this fixed prefix:
 
 ```bash
 --intent "branch=agent/<ticket-short-id>-<slug> worktree=.worktrees/<ticket-short-id>-<slug> — <planned work>"
+```
+
+For a main-checkout task, identify the checkout without inventing a branch:
+
+```bash
+--intent "checkout=main — <planned work>"
 ```
 
 Signal that a branch is integrable by checking out with a `ready-to-merge:` reason:
