@@ -5,9 +5,9 @@ applyTo: "**"
 
 ## Default Execution Context
 
-Sessions start and tools execute in the main checkout. The capture hook records transcripts there when the session has no registered worktree. It never creates, reuses, renames, or registers a worktree.
+The capture hook can provision a session worktree before the session's first tool call. Provisioning makes an isolated checkout available; it does not select the execution mode for the session. An agent uses a worktree only when the task needs explicit isolation under [AGENTS.md](../../../AGENTS.md#task-routing). VS Code loads [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) through the `.chat.hookFilesLocations` setting in [.vscode/settings.json](../../../.vscode/settings.json). The registered binary is `session-capture-hook`, installed on `PATH` at `~/.cargo/bin/session-capture-hook`.
 
-When a session has a registered worktree assignment, routing resolves that assignment and capture writes to its `.session` store. Tools and implementation commands for that session must use the registered worktree rather than the main checkout. A lookup that finds no assignment is normal for small tasks and does not block work in the main checkout.
+`SessionStart` is the event eager provisioning is primarily attached to, so a provisioned worktree may exist before the first prompt. If `SessionStart` was missed for a session (e.g. hooks were reconfigured mid-session, or the event never fired), the hook lazily provisions instead on the first later event that carries a session id and isn't `Stop` (`UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `SubagentStart`, `SubagentStop`) — `Stop` intentionally never provisions, so a session that never began capturing does not spring a fresh worktree into existence only at its end. The `UserPromptSubmit` timeout is 300 seconds to allow a cold provision.
 
 ## When To Create A Worktree
 

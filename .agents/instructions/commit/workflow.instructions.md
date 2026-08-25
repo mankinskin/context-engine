@@ -2,7 +2,7 @@
 description: "Use when performing the repository commit workflow. Covers checking status, regenerating generated outputs, staging logical batches, committing, and verifying clean state."
 ---
 
-**Branch precondition.** For a worktree-backed task, before step 1 confirm you are committing inside the task's own worktree on its own feature branch: `git branch --show-current` must print `agent/<ticket-short-id>-<slug>`, not `main`. Stage only files the task's board entry claims; `git add -A` from an implementation session is forbidden. `./target/debug/worktree-ctl.exe list`, run from the main checkout, shows the registered worktrees and their branches. The small-change main-checkout exception is defined in [AGENTS.md](../../../AGENTS.md#task-routing)'s Task Routing threshold; see [branch-worktree.instructions.md](./branch-worktree.instructions.md) for the full protocol.
+**Branch precondition.** The main checkout is the default execution mode. Before committing there, check the board for overlapping ownership and stage only the task's explicit paths. For a worktree-backed task, confirm you are inside the chosen worktree on its feature branch: `git branch --show-current` must print `agent/<ticket-short-id>-<slug>`, not `main`. `git add -A` from an implementation session is forbidden in either mode. `./target/debug/worktree-ctl.exe list`, run from the main checkout, shows the registered worktrees and their branches. See [AGENTS.md](../../../AGENTS.md#task-routing) for the selection rule and [branch-worktree.instructions.md](./branch-worktree.instructions.md) for the worktree protocol.
 
 1. Check status before staging:
 

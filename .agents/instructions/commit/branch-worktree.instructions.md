@@ -6,11 +6,11 @@ description: "Use when starting, committing, or integrating any implementation t
 
 The capture hook never provisions worktrees. For qualifying implementation work, the implementation agent explicitly creates a worktree and registers it with the session tool. [worktree-provisioning.instructions.md](../session/worktree-provisioning.instructions.md) documents the decision and registration policy; this guide owns the branch, claim, rebase, and merge protocol.
 
-Multiple agents editing the same checkout at the same time is the failure mode this protocol exists to prevent: one agent's `cargo fmt`, revert, or `git add -A` silently swallows another agent's in-progress work, and the resulting commit cannot be attributed to either session. Isolation is structural — each implementation session gets its own git worktree on its own branch, so two agents physically cannot write the same file.
+Multiple agents editing the same checkout at the same time is the failure mode this protocol exists to prevent: one agent's `cargo fmt`, revert, or `git add -A` silently swallows another agent's in-progress work, and the resulting commit cannot be attributed to either session. A worktree provides structural isolation when a task needs that protection; it is not the default execution mode for every implementation session.
 
 ## When This Applies
 
-Use this protocol when [AGENTS.md](../../../AGENTS.md#task-routing)'s Task Routing worktree threshold applies (changes spanning multiple files or components, submodules, active concurrent work, or risky behavior changes). The small main-checkout path does not require worktree provisioning, session check-in, or board check-in; stage only the changed path and validate before committing.
+Use this protocol only after choosing a worktree for concrete isolation: overlapping active file ownership, requester-required branch isolation, or a planned Git operation that needs an independent branch. [AGENTS.md](../../../AGENTS.md#task-routing) makes the main checkout the default after a board check. Ticket size, file count, submodules, and risk alone do not trigger this protocol.
 
 ## The Loop
 
