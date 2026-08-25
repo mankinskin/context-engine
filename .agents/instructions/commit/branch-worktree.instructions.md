@@ -68,6 +68,11 @@ The branch is always cut from `main`, never from another feature branch. If the 
 
 Pass the resolved worktree path to the implementation agent in its context bundle. The agent does not derive the path itself.
 
+Never run `git submodule update --init --recursive` inside a linked session
+worktree. Git mutates the shared submodule `core.worktree` setting and can
+orphan the main checkout or another session's nested checkout. `worktree-ctl`
+already creates detached nested submodule worktrees from the recorded gitlinks.
+
 ## 1b. Name the topic (rename the worktree)
 
 As soon as the implementation agent knows the topic, rename the hook-provisioned placeholder exactly once for that topic, before the first edit and before step 2 (Claim). Run the sequence from the repository root, with no shell or other process using the worktree as its current directory. Before renaming, check for uncommitted tracked changes:
