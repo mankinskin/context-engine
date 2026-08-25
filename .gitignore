@@ -20,8 +20,6 @@ tools/log-viewer/demo-logs/
 # Direnv configuration for personal environment overrides
 .envrc
 
-.serena/
-
 # Local cargo configuration
 # Note: Cargo doesn't support config.local.toml - use .envrc or ~/.cargo/config.toml instead
 # Keeping this in gitignore in case someone creates it by mistake
@@ -74,3 +72,6 @@ entities/
 .github/agents/
 .github/prompts/
 .github/instructions/
+
+.agents/skills/vercel-*
+.agents/skills/deploy-to-vercel

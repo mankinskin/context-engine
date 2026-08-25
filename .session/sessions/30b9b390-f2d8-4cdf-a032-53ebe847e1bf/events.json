@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "session_id": "30b9b390-f2d8-4cdf-a032-53ebe847e1bf",
+  "captured_at": "2026-08-24T23:06:41.536778Z",
+  "events": [
+    {
+      "event_type": "UserPromptSubmit",
+      "data_json": {
+        "prompt": "The policy path in workspace_policy is rendered with windows backslashes in the tracing output in agent-builder. arent we using a wrapper crate for the rust Path libraries to always enforce forward slashes when joining paths?"
+      }
+    },
+    {
+      "event_type": "UserPromptSubmit",
+      "data_json": {
+        "prompt": "i think we should not normalize, but enforce all of the path types are using forward slashes natively. is there not a crate for this?"
+      }
+    }
+  ]
+}
