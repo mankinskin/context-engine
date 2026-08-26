@@ -1,0 +1,12 @@
+id = "55b90291-1624-46c6-a31d-d5b3e33d4d3d"
+created_at = "2026-08-26T01:35:27.440351500+00:00"
+title = "[workflow-tools][stores] Adopt canonical resolver across domain tools"
+state = "planned"
+component = "workflow-tools"
+depends_on = ["a9a18a7d-9eb3-41bf-b697-1e1418641908"]
+effort = "2400"
+parts = [{ id = "56461900-2ba2-4da1-b133-b7429d90b095", kind = "objective", path = "parts/56461900-2ba2-4da1-b133-b7429d90b095.md", frozen = true, created_at = "2026-08-26T01:36:40.515660Z" }, { id = "444645d3-c257-4bbb-906e-44572070ffc8", kind = "design", path = "parts/444645d3-c257-4bbb-906e-44572070ffc8.md", frozen = true, created_at = "2026-08-26T01:36:40.557471400Z" }, { id = "369ccd66-1bab-4546-9ea1-dbabd68dbcbc", kind = "acceptance_criteria", path = "parts/369ccd66-1bab-4546-9ea1-dbabd68dbcbc.md", frozen = true, created_at = "2026-08-26T01:36:40.595211100Z" }, { id = "c4fac132-1c8b-4f0e-bc41-a60fa014f485", kind = "requirements", path = "parts/c4fac132-1c8b-4f0e-bc41-a60fa014f485.md", frozen = true, created_at = "2026-08-26T01:39:50.279437100Z" }, { id = "1ef2c8b0-04c1-42cd-894e-91ac3eb0e35c", kind = "examples", path = "parts/1ef2c8b0-04c1-42cd-894e-91ac3eb0e35c.md", frozen = true, created_at = "2026-08-26T01:43:28.418681200Z" }]
+plan_revision = 2
+priority = "high"
+risk_level = "high"
+type = "task"

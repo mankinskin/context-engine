@@ -1,0 +1,1 @@
+Implements spec 02c6700d-6ab2-44a8-aa69-4052ad2f76bb. Canonical entity stores move under `.workflow-tools/<domain>`; legacy stores remain readable only when canonical paths are absent and must never receive writes. Completion requires resolver support, transport adoption, checked relocation, and artifact read-back.

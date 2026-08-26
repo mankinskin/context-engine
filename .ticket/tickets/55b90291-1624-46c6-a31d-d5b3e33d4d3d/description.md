@@ -1,0 +1,1 @@
+Adopts the shared store resolver across workflow-tools APIs and every CLI, MCP, HTTP, viewer, hook, and configuration surface. All mutations must route to canonical paths.
