@@ -99,16 +99,12 @@ The companion installer in [install-extensions.sh](install-extensions.sh) packag
 their configured tracking branches. Once initialization completes, continue from
 [context-stack/README.md](context-stack/README.md) and [memory-viewers/README.md](memory-viewers/README.md) for repository-local commands.
 
-### Development-Only Submodules
+### Workflow Tools
 
-The `workflow-tools/memory-kernel/` submodule is **development-only**. It provides a local checkout of the production [memory-kernel](https://github.com/mankinskin/memory-kernel) repository so contributors can browse and edit the shared `transport-harness` crate alongside the [workflow-tools/contract-reference](workflow-tools/contract-reference/) example.
-
-- Ordinary consumers do not need to initialize `workflow-tools/memory-kernel/`. The reference resolves `transport-harness` through a branch-pinned Git dependency (see [workflow-tools/contract-reference/crates/example/Cargo.toml](workflow-tools/contract-reference/crates/example/Cargo.toml)), so Cargo fetches the harness from the pinned `main` branch without the submodule checkout.
-- Contributors editing the harness should initialize it explicitly:
-
-  ```bash
-  git submodule update --init workflow-tools/memory-kernel
-  ```
+`context-engine` consumes workflow-tool domain crates through their canonical
+Git sources and invokes installed workflow-tool binaries. Install the
+commit-pinned workflow-tools bundle before running commands that require
+`install-ctl`, `session-capture-hook`, or an MCP transport.
 
 ## Workspace Validation
 

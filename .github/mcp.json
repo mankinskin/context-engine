@@ -8,7 +8,7 @@
         "context-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -21,7 +21,7 @@
         "ticket-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -34,7 +34,7 @@
         "spec-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -47,7 +47,7 @@
         "test-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -60,7 +60,7 @@
         "feedback-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -73,7 +73,7 @@
         "session-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -86,7 +86,7 @@
         "peek-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -99,7 +99,7 @@
         "audit-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -112,7 +112,7 @@
         "compact-terminal-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -125,7 +125,7 @@
         "fs-mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }
@@ -139,7 +139,7 @@
         "--mcp"
       ],
       "env": {
-        "COST_GATE_TABLE": "workflow-tools/session/crates/model-prices/model_prices.json",
+        "COST_GATE_TABLE": "",
         "COST_GATE_TOOL_METRICS": ".session/tool-metrics-rollup.json",
         "COST_GATE_GRANTS_DIR": ".session/grants"
       }

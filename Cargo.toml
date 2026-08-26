@@ -21,47 +21,8 @@ members = [
   "memory-api/tools/mcp/fs-mcp",
   "memory-api/crates/compact-terminal-api",
   "memory-api/crates/fs-api",
-  "workflow-tools/agent-builder",
-  "workflow-tools/ticket/ticket-viewer",
-  "workflow-tools/spec/spec-viewer",
-  "workflow-tools/spec/spec-viewer/frontend/dioxus",
-  "workflow-tools/ticket/ticket-viewer/frontend/dioxus",
-  "workflow-tools/spec",
-  "workflow-tools/ticket",
-  "workflow-tools/rule",
-  "workflow-tools/rule/crates/rule-api",
-  "workflow-tools/session",
-  "workflow-tools/session/crates/session-api",
-  "workflow-tools/session/crates/session-worktree-provision",
-  "workflow-tools/session/crates/session-record-merge",
-  "workflow-tools/session/crates/session-workspace-resolver",
-  "workflow-tools/session/crates/toolmon-policy-api",
-  "workflow-tools/session/crates/toolmon-costgate",
-  "workflow-tools/session/crates/mcp-toolmon",
-  "workflow-tools/session/crates/worktree-ctl",
-  "workflow-tools/audit/crates/audit-api",
-  "workflow-tools/audit/crates/audit-cli",
-  "workflow-tools/audit/crates/audit-mcp",
-  "workflow-tools/test/crates/test-api",
-  "workflow-tools/test/crates/test-cli",
-  "workflow-tools/test/crates/test-mcp",
-  "workflow-tools/doc/crates/doc-api",
-  "workflow-tools/doc/crates/doc-http",
-  "workflow-tools/doc/crates/doc-viewer",
-  "workflow-tools/log/crates/log-api",
-  "workflow-tools/log/crates/log-viewer",
-  "workflow-tools/log/crates/log-viewer/frontend/dioxus",
-  "workflow-tools/feedback/crates/feedback-api",
-  "workflow-tools/feedback/crates/feedback-http",
-  "workflow-tools/feedback/crates/feedback-cli",
-  "workflow-tools/feedback/crates/feedback-mcp",
-  "workflow-tools/peek/crates/peek-api",
-  "workflow-tools/peek/crates/peek-cli",
-  "workflow-tools/peek/crates/peek-mcp",
   "viewer-api",
   "viewer-api/frontend/dioxus",
-  "tools/migrate-edges",
-  "tools/install/install-ctl",
   "tools/tracing-analyzer",
   "tools/dungeon-crawler",
   "tools/cli/crane-cli",
@@ -76,16 +37,6 @@ opt-level = 2 # fast and small wasm
 
 [workspace.metadata.docs.rs]
 no-deps = true
-
-# Local-development overrides so crates published from repos that are also
-# checked out as submodules resolve to a single version instead of being
-# duplicated once via `path` (in-tree members) and once via `git` (pulled in
-# transitively by other extracted repos). Domain manifests keep their
-# canonical git declarations; these patches are workspace composition only
-# and must be removed to prove patch-free remote resolution.
-[patch."https://github.com/mankinskin/memory-kernel"]
-memory-kernel = { path = "workflow-tools/memory-kernel" }
-transport-harness = { path = "workflow-tools/memory-kernel/crates/transport-harness" }
 
 [patch."https://github.com/mankinskin/context-stack"]
 context-api = { path = "context-stack/context-api" }
@@ -103,46 +54,3 @@ viewer-api = { path = "viewer-api" }
 # empty_workspace/EmptyWorkspace); patch to the local copy until republished.
 [patch."https://github.com/mankinskin/memory-fixtures"]
 memory-fixtures = { path = "memory-api/crates/memory-fixtures" }
-
-[patch."https://github.com/mankinskin/ticket"]
-ticket = { path = "workflow-tools/ticket" }
-ticket-api = { path = "workflow-tools/ticket/crates/ticket-api" }
-
-[patch."https://github.com/mankinskin/spec"]
-spec = { path = "workflow-tools/spec" }
-spec-api = { path = "workflow-tools/spec/crates/spec-api" }
-
-[patch."https://github.com/mankinskin/rule"]
-rule = { path = "workflow-tools/rule" }
-rule-api = { path = "workflow-tools/rule/crates/rule-api" }
-
-[patch."https://github.com/mankinskin/session"]
-session = { path = "workflow-tools/session" }
-session-api = { path = "workflow-tools/session/crates/session-api" }
-session-worktree-provision = { path = "workflow-tools/session/crates/session-worktree-provision" }
-session-workspace-resolver = { path = "workflow-tools/session/crates/session-workspace-resolver" }
-session-record-merge = { path = "workflow-tools/session/crates/session-record-merge" }
-toolmon-policy-api = { path = "workflow-tools/session/crates/toolmon-policy-api" }
-toolmon-costgate = { path = "workflow-tools/session/crates/toolmon-costgate" }
-mcp-toolmon = { path = "workflow-tools/session/crates/mcp-toolmon" }
-worktree-ctl = { path = "workflow-tools/session/crates/worktree-ctl" }
-
-[patch."https://github.com/mankinskin/audit"]
-audit-api = { path = "workflow-tools/audit/crates/audit-api" }
-
-[patch."https://github.com/mankinskin/test"]
-test-api = { path = "workflow-tools/test/crates/test-api" }
-
-[patch."https://github.com/mankinskin/doc"]
-doc-api = { path = "workflow-tools/doc/crates/doc-api" }
-doc-http = { path = "workflow-tools/doc/crates/doc-http" }
-
-[patch."https://github.com/mankinskin/log"]
-log-api = { path = "workflow-tools/log/crates/log-api" }
-
-[patch."https://github.com/mankinskin/feedback"]
-feedback-api = { path = "workflow-tools/feedback/crates/feedback-api" }
-feedback-http = { path = "workflow-tools/feedback/crates/feedback-http" }
-
-[patch."https://github.com/mankinskin/peek"]
-peek-api = { path = "workflow-tools/peek/crates/peek-api" }

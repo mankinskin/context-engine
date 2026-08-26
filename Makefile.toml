@@ -62,9 +62,9 @@ command = "cargo"
 args = ["build", "--release", "-p", "context-mcp", "-p", "spec-mcp", "-p", "ticket", "-p", "audit-mcp", "--features", "ticket/mcp"]
 
 [tasks.build-install-ctl]
-description = "Build the install-ctl lifecycle manager binary (release)"
-command = "cargo"
-args = ["build", "--release", "-p", "install-ctl"]
+description = "Verify the installed install-ctl lifecycle manager"
+command = "install-ctl"
+args = ["--help"]
 
 [tasks.build-misc-tools]
 description = "Build tracing-analyzer (release)"
@@ -107,9 +107,9 @@ args = ["viewer", "build", "spec-viewer"]
 # ─────────────────────────────────────────────────────────────────────────────
 
 [tasks.install-install-ctl]
-description = "Install install-ctl to ~/.cargo/bin (lifecycle manager)"
-command = "cargo"
-args = ["install", "--path", "tools/install/install-ctl", "--force"]
+description = "Install workflow tooling with the public workflow-tools bootstrap"
+command = "bash"
+args = ["-lc", "echo 'Run the commit-pinned workflow-tools install.sh bootstrap before invoking this task.' >&2; exit 1"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Build — compile viewer server binaries in release mode only.

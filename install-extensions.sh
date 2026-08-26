@@ -159,18 +159,17 @@ resolve_installed_extension_dir() {
     printf '%s\n' "${matches[@]}" | sort | tail -n 1
 }
 
-# Locate install-ctl: prefer an already-installed binary on PATH, otherwise
-# run it straight from source via cargo. install-ctl performs the actual
+# Locate installed install-ctl. install-ctl performs the actual
 # `npm ci` (if needed) + `npm run install:vsix` steps; this script keeps only
 # the extension-specific pre/post hash verification that install-ctl's
 # generic artifact registry does not model.
 install_ctl_cmd=()
 resolve_install_ctl() {
-    if command -v install-ctl >/dev/null 2>&1; then
-        install_ctl_cmd=(install-ctl)
-    else
-        install_ctl_cmd=(cargo run --manifest-path "$repo_root/tools/install/install-ctl/Cargo.toml" --quiet --)
+    if ! command -v install-ctl >/dev/null 2>&1; then
+        printf 'error: install-ctl is not installed; run the commit-pinned workflow-tools install.sh bootstrap first\n' >&2
+        exit 1
     fi
+    install_ctl_cmd=(install-ctl)
 }
 
 while [[ $# -gt 0 ]]; do

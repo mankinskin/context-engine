@@ -1,0 +1,12 @@
+id = "4d6d6301-0b2c-4da0-9c01-4c9f7d1a1006"
+created_at = "2026-08-26T00:15:00.497718900+00:00"
+title = "[workflow-tools][installer] Add consumer configuration TUI and prebuilt artifact source"
+state = "planned"
+component = "workflow-tools"
+depends_on = ["4d6d6301-0b2c-4da0-9c01-4c9f7d1a1001"]
+effort = "1800"
+parts = [{ id = "8cb69b8a-e31f-4d47-bf12-339c4e1f5072", kind = "objective", path = "parts/8cb69b8a-e31f-4d47-bf12-339c4e1f5072.md", frozen = true, created_at = "2026-08-26T00:15:00.710177700Z" }, { id = "1b78bcf3-5e87-487e-84b0-9986bbb688bd", kind = "requirements", path = "parts/1b78bcf3-5e87-487e-84b0-9986bbb688bd.md", frozen = true, created_at = "2026-08-26T00:15:00.748777100Z" }, { id = "305ebe70-ba0a-4c34-b886-3ff7fa719b7c", kind = "design", path = "parts/305ebe70-ba0a-4c34-b886-3ff7fa719b7c.md", frozen = true, created_at = "2026-08-26T00:15:00.749117200Z" }, { id = "f0d7a9ca-ca96-4b88-9668-2627520d6f7f", kind = "examples", path = "parts/f0d7a9ca-ca96-4b88-9668-2627520d6f7f.md", frozen = true, created_at = "2026-08-26T00:15:00.749340200Z" }, { id = "5c773622-1409-459e-afe2-a921184e0b90", kind = "acceptance_criteria", path = "parts/5c773622-1409-459e-afe2-a921184e0b90.md", frozen = true, created_at = "2026-08-26T00:15:00.749486300Z" }]
+plan_revision = 1
+priority = "high"
+risk_level = "high"
+type = "task"

@@ -1,0 +1,12 @@
+id = "4d6d6301-0b2c-4da0-9c01-4c9f7d1a1005"
+created_at = "2026-08-26T00:11:30.384507700+00:00"
+title = "[workflow-tools][ci] Adapt install-validation Docker harness for minimal consumer"
+state = "planned"
+component = "workflow-tools"
+depends_on = ["389f90d9-fb06-49b7-948b-0dbd14dcfeca", "4d6d6301-0b2c-4da0-9c01-4c9f7d1a1004", "4d6d6301-0b2c-4da0-9c01-4c9f7d1a1006"]
+effort = "1800"
+parts = [{ id = "c9dde423-d471-4a87-8bef-f9de2feee971", kind = "objective", path = "parts/c9dde423-d471-4a87-8bef-f9de2feee971.md", frozen = true, created_at = "2026-08-26T00:11:31.073235200Z" }, { id = "56d5191f-cc43-463b-9e65-03a84e604d3b", kind = "requirements", path = "parts/56d5191f-cc43-463b-9e65-03a84e604d3b.md", frozen = true, created_at = "2026-08-26T00:11:31.122350500Z" }, { id = "81af91be-b74c-4517-8225-2d44a5d47917", kind = "design", path = "parts/81af91be-b74c-4517-8225-2d44a5d47917.md", frozen = true, created_at = "2026-08-26T00:11:31.122651200Z" }, { id = "9e805bc8-cf31-40d3-84d1-f5ea1f4bac07", kind = "examples", path = "parts/9e805bc8-cf31-40d3-84d1-f5ea1f4bac07.md", frozen = true, created_at = "2026-08-26T00:11:31.122911500Z" }, { id = "ef7031f8-7ba5-4715-9cd2-854626d2f479", kind = "acceptance_criteria", path = "parts/ef7031f8-7ba5-4715-9cd2-854626d2f479.md", frozen = true, created_at = "2026-08-26T00:11:31.123100100Z" }]
+plan_revision = 1
+priority = "high"
+risk_level = "high"
+type = "task"

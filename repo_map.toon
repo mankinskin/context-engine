@@ -3,13 +3,13 @@ description: "Compact workspace structural map for low-token orientation"
 usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
-  root: "//?/C:/Users/linus/git/3/context-engine"
-top_level_dirs[9]: config,"context-stack","duplication-reviews","memory-api","memory-viewers",tools,transcripts,"viewer-api","workflow-tools"
+  root: "//?/C:/Users/linus/git/3/meta-workspace/context-engine"
+top_level_dirs[8]: config,"context-stack","duplication-reviews","memory-api","memory-viewers",tools,transcripts,"viewer-api"
 crates:
   name: crates
   kind: dir
   path: crates
-  children[5]:
+  children[4]:
     - name: "context-stack"
       kind: dir
       path: "crates/context-stack"
@@ -98,7 +98,7 @@ crates:
     - name: tools
       kind: dir
       path: crates/tools
-      children[5]:
+      children[3]:
         - name: cli
           kind: dir
           path: crates/tools/cli
@@ -108,15 +108,6 @@ crates:
           kind: dir
           path: "crates/tools/dungeon-crawler"
           note: "crate=dungeon-crawler"
-        - name: install
-          kind: dir
-          path: crates/tools/install
-          children[1]{name,kind,path,note}:
-            "install-ctl",dir,"crates/tools/install/install-ctl","crate=install-ctl"
-        - name: "migrate-edges"
-          kind: dir
-          path: "crates/tools/migrate-edges"
-          note: "crate=migrate-edges"
         - name: "tracing-analyzer"
           kind: dir
           path: "crates/tools/tracing-analyzer"
@@ -131,145 +122,6 @@ crates:
           path: "crates/viewer-api/frontend"
           children[1]{name,kind,path,note}:
             dioxus,dir,"crates/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
-    - name: "workflow-tools"
-      kind: dir
-      path: "crates/workflow-tools"
-      children[10]:
-        - name: audit
-          kind: dir
-          path: "crates/workflow-tools/audit"
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/audit/crates"
-              children[3]{name,kind,path,note}:
-                "audit-api",dir,"crates/workflow-tools/audit/crates/audit-api","crate=audit-api"
-                "audit-cli",dir,"crates/workflow-tools/audit/crates/audit-cli","crate=audit-cli"
-                "audit-mcp",dir,"crates/workflow-tools/audit/crates/audit-mcp","crate=audit-mcp"
-        - name: doc
-          kind: dir
-          path: "crates/workflow-tools/doc"
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/doc/crates"
-              children[3]{name,kind,path,note}:
-                "doc-api",dir,"crates/workflow-tools/doc/crates/doc-api","crate=doc-api"
-                "doc-http",dir,"crates/workflow-tools/doc/crates/doc-http","crate=doc-http"
-                "doc-viewer",dir,"crates/workflow-tools/doc/crates/doc-viewer","crate=doc-viewer"
-        - name: feedback
-          kind: dir
-          path: "crates/workflow-tools/feedback"
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/feedback/crates"
-              children[4]{name,kind,path,note}:
-                "feedback-api",dir,"crates/workflow-tools/feedback/crates/feedback-api","crate=feedback-api"
-                "feedback-cli",dir,"crates/workflow-tools/feedback/crates/feedback-cli","crate=feedback-cli"
-                "feedback-http",dir,"crates/workflow-tools/feedback/crates/feedback-http","crate=feedback-http"
-                "feedback-mcp",dir,"crates/workflow-tools/feedback/crates/feedback-mcp","crate=feedback-mcp"
-        - name: log
-          kind: dir
-          path: "crates/workflow-tools/log"
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/log/crates"
-              children[2]:
-                - name: "log-api"
-                  kind: dir
-                  path: "crates/workflow-tools/log/crates/log-api"
-                  note: "crate=log-api"
-                - name: "log-viewer"
-                  kind: dir
-                  path: "crates/workflow-tools/log/crates/log-viewer"
-                  note: "crate=log-viewer"
-                  children[1]:
-                    - name: frontend
-                      kind: dir
-                      path: "crates/workflow-tools/log/crates/log-viewer/frontend"
-                      children[1]{name,kind,path,note}:
-                        dioxus,dir,"crates/workflow-tools/log/crates/log-viewer/frontend/dioxus","crate=log-viewer-dioxus"
-        - name: peek
-          kind: dir
-          path: "crates/workflow-tools/peek"
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/peek/crates"
-              children[3]{name,kind,path,note}:
-                "peek-api",dir,"crates/workflow-tools/peek/crates/peek-api","crate=peek-api"
-                "peek-cli",dir,"crates/workflow-tools/peek/crates/peek-cli","crate=peek-cli"
-                "peek-mcp",dir,"crates/workflow-tools/peek/crates/peek-mcp","crate=peek-mcp"
-        - name: rule
-          kind: dir
-          path: "crates/workflow-tools/rule"
-          note: crate=rule
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/rule/crates"
-              children[1]{name,kind,path,note}:
-                "rule-api",dir,"crates/workflow-tools/rule/crates/rule-api","crate=rule-api"
-        - name: session
-          kind: dir
-          path: "crates/workflow-tools/session"
-          note: crate=session
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/session/crates"
-              children[8]{name,kind,path,note}:
-                "mcp-toolmon",dir,"crates/workflow-tools/session/crates/mcp-toolmon","crate=mcp-toolmon"
-                "session-api",dir,"crates/workflow-tools/session/crates/session-api","crate=session-api"
-                "session-record-merge",dir,"crates/workflow-tools/session/crates/session-record-merge","crate=session-record-merge"
-                "session-workspace-resolver",dir,"crates/workflow-tools/session/crates/session-workspace-resolver","crate=session-workspace-resolver"
-                "session-worktree-provision",dir,"crates/workflow-tools/session/crates/session-worktree-provision","crate=session-worktree-provision"
-                "toolmon-costgate",dir,"crates/workflow-tools/session/crates/toolmon-costgate","crate=toolmon-costgate"
-                "toolmon-policy-api",dir,"crates/workflow-tools/session/crates/toolmon-policy-api","crate=toolmon-policy-api"
-                "worktree-ctl",dir,"crates/workflow-tools/session/crates/worktree-ctl","crate=worktree-ctl"
-        - name: spec
-          kind: dir
-          path: "crates/workflow-tools/spec"
-          note: crate=spec
-          children[1]:
-            - name: "spec-viewer"
-              kind: dir
-              path: "crates/workflow-tools/spec/spec-viewer"
-              note: "crate=spec-viewer"
-              children[1]:
-                - name: frontend
-                  kind: dir
-                  path: "crates/workflow-tools/spec/spec-viewer/frontend"
-                  children[1]{name,kind,path,note}:
-                    dioxus,dir,"crates/workflow-tools/spec/spec-viewer/frontend/dioxus","crate=spec-viewer-dioxus"
-        - name: test
-          kind: dir
-          path: "crates/workflow-tools/test"
-          children[1]:
-            - name: crates
-              kind: dir
-              path: "crates/workflow-tools/test/crates"
-              children[3]{name,kind,path,note}:
-                "test-api",dir,"crates/workflow-tools/test/crates/test-api","crate=test-api"
-                "test-cli",dir,"crates/workflow-tools/test/crates/test-cli","crate=test-cli"
-                "test-mcp",dir,"crates/workflow-tools/test/crates/test-mcp","crate=test-mcp"
-        - name: ticket
-          kind: dir
-          path: "crates/workflow-tools/ticket"
-          note: crate=ticket
-          children[1]:
-            - name: "ticket-viewer"
-              kind: dir
-              path: "crates/workflow-tools/ticket/ticket-viewer"
-              note: "crate=ticket-viewer"
-              children[1]:
-                - name: frontend
-                  kind: dir
-                  path: "crates/workflow-tools/ticket/ticket-viewer/frontend"
-                  children[1]{name,kind,path,note}:
-                    dioxus,dir,"crates/workflow-tools/ticket/ticket-viewer/frontend/dioxus","crate=ticket-viewer-dioxus"
 agent_guidance:
   name: "agent-guidance"
   kind: dir

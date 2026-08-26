@@ -63,11 +63,13 @@ tool_names=(
 )
 
 
-# Run install-ctl from source so a stale installed copy cannot shadow
-# a registry schema change.
 install_ctl_cmd=()
 resolve_install_ctl() {
-    install_ctl_cmd=(cargo run --manifest-path "$repo_root/tools/install/install-ctl/Cargo.toml" --quiet --)
+    if ! command -v install-ctl >/dev/null 2>&1; then
+        printf 'error: install-ctl is not installed; run the commit-pinned workflow-tools install.sh bootstrap first\n' >&2
+        exit 1
+    fi
+    install_ctl_cmd=(install-ctl)
 }
 
 usage() {
@@ -266,23 +268,23 @@ resolve_install_ctl
 # sibling artifact to batch it with).
 direct_path_for() {
     case "$1" in
-        install-ctl) printf 'tools/install/install-ctl' ;;
-        peek-cli) printf 'workflow-tools/peek/crates/peek-cli' ;;
-        test-cli) printf 'workflow-tools/test/crates/test-cli' ;;
         fs-cli) printf 'memory-api/tools/cli/fs-cli' ;;
         compact-terminal-cli) printf 'memory-api/tools/cli/compact-terminal-cli' ;;
         context-cli) printf 'context-stack/tools/cli/context-cli' ;;
+        context-mcp) printf 'context-stack/tools/mcp/context-mcp' ;;
+        compact-terminal-mcp) printf 'memory-api/tools/mcp/compact-terminal-mcp' ;;
+        fs-mcp) printf 'memory-api/tools/mcp/fs-mcp' ;;
     esac
 }
 
 direct_binary_for() {
     case "$1" in
-        install-ctl) printf 'install-ctl' ;;
-        peek-cli) printf 'peek' ;;
-        test-cli) printf 'test' ;;
         fs-cli) printf 'fs' ;;
         compact-terminal-cli) printf 'compact-terminal' ;;
         context-cli) printf 'context-cli' ;;
+        context-mcp) printf 'context-mcp' ;;
+        compact-terminal-mcp) printf 'compact-terminal-mcp' ;;
+        fs-mcp) printf 'fs-mcp' ;;
     esac
 }
 
@@ -352,7 +354,7 @@ direct_tools=()
 ctl_tools=()
 for tool in "${selected_tools[@]}"; do
     case "$tool" in
-        install-ctl|peek-cli|test-cli|fs-cli|compact-terminal-cli|context-cli)
+        fs-cli|compact-terminal-cli|context-cli|context-mcp|compact-terminal-mcp|fs-mcp)
             direct_tools+=("$tool")
             ;;
         *)
