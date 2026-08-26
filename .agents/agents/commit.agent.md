@@ -26,7 +26,7 @@ Your job is to commit all pending changes correctly: regenerating generated outp
 - Commit submodules in deepest-first order before updating parent pointers.
 - Do not use `git commit --no-verify` unless the hook failure is a confirmed false positive; document why if used.
 - Keep each commit focused on one logical concern (source changes, generated outputs, ticket/spec store, submodule pointers).
-- Commit on the task's feature branch inside its own worktree. Never commit to `main`, and never merge a feature branch into `main` — the root orchestrator session holds the merge monopoly. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
+- Commit on the task's feature branch inside its own worktree for worktree-backed work. Never commit that branch to `main`, and never merge a feature branch into `main` — the root orchestrator session holds the merge monopoly. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md). A validated main-checkout task (per [AGENTS.md task routing](../../AGENTS.md#task-routing)) may commit its explicitly staged paths directly to `main`.
 - Stage only files claimed by the task's board entry; `git add -A` from an implementation session is forbidden because it swallows concurrent agents' uncommitted work.
 
 ## Submodule commit order
@@ -55,15 +55,15 @@ Examples:
 
 ## Required Workflow
 
-1. Confirm the checkout: `git branch --show-current` must print the task's `agent/<ticket-short-id>-<slug>` branch. If it prints `main`, stop and escalate — the session is in the wrong checkout.
-2. Detect accidental `.ticket/`, `.spec/`, `.rule/`, `.test/`, or `.session/` records in the root checkout. Recreate or migrate each record through the store's CLI or MCP API with `workspace` set to the assigned worktree, then restore only the accidental root paths. Never hand-edit TOML or JSON records; `worktree_path` does not redirect the resolved workspace.
+1. Confirm the checkout matches the task's execution context per [AGENTS.md task routing](../../AGENTS.md#task-routing). For worktree-backed work, `git branch --show-current` must print the task's `agent/<ticket-short-id>-<slug>` branch — stop and escalate if it prints `main`. For a main-checkout task, `main` is expected.
+2. For worktree-backed work, detect accidental `.ticket/`, `.spec/`, `.rule/`, `.test/`, or `.session/` records in the root checkout. Recreate or migrate each record through the store's CLI or MCP API with `workspace` set to the assigned worktree, then restore only the accidental root paths. Never hand-edit TOML or JSON records; `worktree_path` does not redirect the resolved workspace.
 3. Survey changes: `git status --short` and `git submodule foreach --recursive 'git status --short'`.
 4. Identify dirty submodules and plan bottom-up commit order.
 5. Check for generated-output drift and regenerate before staging.
 6. Stage and commit each logical batch with a focused message, staging only board-claimed files.
 7. Update submodule pointers deepest-first.
-8. Rebase the feature branch onto local `main` (`./target/debug/worktree-ctl.exe rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here rather than on `main`, and re-run validation.
-9. Check out of the board with a `ready-to-merge: <branch> @ <sha>` reason and move the ticket to `in-review`.
+8. For worktree-backed work, rebase the feature branch onto local `main` (`./target/debug/worktree-ctl.exe rebase <name>` — no fetch, no `origin/main`), resolve any conflicts here rather than on `main`, and re-run validation.
+9. For worktree-backed work, check out of the board with a `ready-to-merge: <branch> @ <sha>` reason and move the ticket to `in-review`. For a main-checkout commit, check out of the board and close or update the ticket directly — there is no branch left to merge.
 10. Verify clean state: `git status --short`.
 
 ## Output Format
