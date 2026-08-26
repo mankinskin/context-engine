@@ -21,8 +21,6 @@ members = [
   "memory-api/tools/mcp/fs-mcp",
   "memory-api/crates/compact-terminal-api",
   "memory-api/crates/fs-api",
-  "viewer-api",
-  "viewer-api/frontend/dioxus",
   "tools/tracing-analyzer",
   "tools/dungeon-crawler",
   "tools/cli/crane-cli",
@@ -46,9 +44,6 @@ context-search = { path = "context-stack/context-search" }
 context-trace = { path = "context-stack/context-trace" }
 context-trace-macros = { path = "context-stack/context-trace-macros" }
 ngrams = { path = "context-stack/ngrams" }
-
-[patch."https://github.com/mankinskin/viewer-api"]
-viewer-api = { path = "viewer-api" }
 
 # The published memory-fixtures remote is behind the in-tree crate (missing
 # empty_workspace/EmptyWorkspace); patch to the local copy until republished.
