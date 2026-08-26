@@ -12,6 +12,14 @@ Multiple agents editing the same checkout at the same time is the failure mode t
 
 Use this protocol only after choosing a worktree for concrete isolation: overlapping active file ownership, requester-required branch isolation, or a planned Git operation that needs an independent branch. [AGENTS.md](../../../AGENTS.md#task-routing) makes the main checkout the default after a board check. Ticket size, file count, submodules, and risk alone do not trigger this protocol.
 
+Before this protocol starts, resolve the target repository from the active VS
+Code workspace root and verify the candidate with `git -C <candidate> rev-parse
+--show-toplevel`. The location of this instruction file, an absolute path in
+prompt metadata, a pasted artifact path, or the inherited current directory is
+not target-repository evidence. “Repository root” and “main checkout” below
+mean that verified target repository, never the repository containing guidance
+that happened to be loaded.
+
 ## The Loop
 
 One worktree-backed implementation task, start to merge:

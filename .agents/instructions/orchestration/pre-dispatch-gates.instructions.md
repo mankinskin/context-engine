@@ -35,6 +35,7 @@ Skip the gate for routine, well-scoped units where the orchestrator already has 
 gates, the gate agent MUST resolve and compare all of the following values:
 
 - `session_id`
+- `workspace_root` from the active VS Code workspace
 - `code_worktree` from authoritative session lookup
 - `git_toplevel` from the proposed command directory
 - `branch` from the proposed command directory
@@ -46,7 +47,7 @@ match the session assignment, when the prompt names a worktree owned by another
 session, or when an entity operation would use an undeclared shadow store. A
 main-checkout read is allowed only when the prompt labels it `read-only
 source-baseline`; that directory MUST NOT be reused for mutations, validation,
-or check-in. A passing bundle carries the six attested values forward unchanged.
+or check-in. A passing bundle carries the seven attested values forward unchanged.
 
 **Fail-fast semantics (binding)**: `pass: false` means the delegation is **NOT dispatched**, full stop. The orchestrator MUST do exactly one of:
 

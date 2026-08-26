@@ -5,15 +5,23 @@ applyTo: "**"
 
 ## Default Execution Context
 
+Resolve the target repository before considering a worktree. The active VS Code
+workspace root supplies the initial scope; a nested repository is selected only
+by an explicit task reference resolved from that workspace root and verified
+with `git -C <candidate> rev-parse --show-toplevel`. Never infer the target
+repository from the location of this instruction file, prompt absolute paths, a
+pasted artifact path, or an inherited current directory. “Main checkout” in
+this file means the selected target repository main checkout.
+
 The capture hook can provision a session worktree before the session's first tool call. Provisioning makes an isolated checkout available; it does not select the execution mode for the session. An agent uses a worktree only when the task needs explicit isolation under [AGENTS.md](../../../AGENTS.md#task-routing). VS Code loads [.github/hooks/hooks.json](../../../.github/hooks/hooks.json) through the `.chat.hookFilesLocations` setting in [.vscode/settings.json](../../../.vscode/settings.json). The registered binary is `session-capture-hook`, installed on `PATH` at `~/.cargo/bin/session-capture-hook`.
 
 `SessionStart` is the event eager provisioning is primarily attached to, so a provisioned worktree may exist before the first prompt. If `SessionStart` was missed for a session (e.g. hooks were reconfigured mid-session, or the event never fired), the hook lazily provisions instead on the first later event that carries a session id and isn't `Stop` (`UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `SubagentStart`, `SubagentStop`) — `Stop` intentionally never provisions, so a session that never began capturing does not spring a fresh worktree into existence only at its end. The `UserPromptSubmit` timeout is 300 seconds to allow a cold provision.
 
 ## When To Create A Worktree
 
-Create a worktree only for worktree-backed implementation work under [AGENTS.md](../../../AGENTS.md#task-routing): changes spanning multiple files or components, submodules, active concurrent work, risky behavior changes, or work expected to span sessions. Small, self-contained work stays in the main checkout and does not call `session_check_in` or `board_check_in`.
+Create a worktree only for worktree-backed implementation work under [AGENTS.md](../../../AGENTS.md#task-routing): overlapping active file ownership, requester-required branch isolation, or a planned Git operation requiring an independent branch. A multi-file change, a submodule, risk, or work expected to span sessions alone does not require a worktree. Small, self-contained work stays in the selected main checkout and does not call `session_check_in` or `board_check_in`.
 
-The agent that will perform the large task creates the worktree from the main checkout:
+The agent that will perform the isolated task creates the worktree from the selected main checkout:
 
 ```bash
 ./target/debug/worktree-ctl.exe bootstrap <full-session-uuid> <topic-slug>

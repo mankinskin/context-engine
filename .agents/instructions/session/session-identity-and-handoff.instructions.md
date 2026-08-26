@@ -10,6 +10,22 @@ applyTo: "**"
 - Runtime state (`active_run_id`, `runs`, `pinned_entities`, and `workflow`) lives in `.session/sessions/<session-uuid>/session.json`.
 - When a task chooses worktree isolation, new worktrees are named `.worktrees/<session-uuid>/<slug>` and branches are named `agent/<session-uuid>/<slug>`. Existing flat `.worktrees/<session-short-id>-<slug>` worktrees remain supported during transition and are not migrated. Positional discovery selects nested first; more than one valid slug directory for one UUID is `AmbiguousSessionWorktree`.
 
+## Resolve The Target Repository Before The Session Checkout
+
+Start from the active VS Code workspace root. Resolve a nested target repository
+only when the request or verified task artifact names that repository relative
+to the workspace root; otherwise the workspace root is the target candidate.
+Verify the selected candidate with `git -C <candidate> rev-parse
+--show-toplevel` before running session, Git, or worktree commands. The
+instruction-file location, absolute prompt metadata, a pasted artifact path,
+and an inherited `command_cwd` never establish a target repository.
+
+“Main checkout” below means the selected target repository main checkout.
+`git rev-parse --show-toplevel` verifies a candidate selected by the task; the
+command does not choose a candidate merely because the current directory lies
+inside one. Keep `workspace_root`, selected `git_toplevel`, and `command_cwd`
+distinct in every attestation.
+
 ## Resolve Your Own Identity First
 
 Obtain the UUID from the Copilot hook payload and supply it explicitly. The primary command initializes or resumes the UUID-owned runtime state:
@@ -26,7 +42,7 @@ Resolve an explicitly registered worktree when the task requires one:
 ./target/debug/session.exe lookup --session-id <uuid> --workspace . --toon
 ```
 
-The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. Lookup discovers the worktree positionally: exactly one nested `.worktrees/<session-uuid>/<slug>` directory wins over a valid legacy flat candidate. No candidate returns `MissingSessionWorktree`; multiple valid candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. Use lookup only after a task has chosen worktree isolation. A main-checkout task proceeds without a session-to-worktree assignment after checking board ownership and targeting its entity store explicitly. `git rev-parse --show-toplevel` is a hint, not an answer: a session may run from the repository root or from a chosen worktree.
+The lookup returns `session_id`, `owner_id`, `ticket_id`, `worktree_path`, `branch`, `allocation_mode`, and `status`. Lookup discovers the worktree positionally: exactly one nested `.worktrees/<session-uuid>/<slug>` directory wins over a valid legacy flat candidate. No candidate returns `MissingSessionWorktree`; multiple valid candidates return `AmbiguousSessionWorktree`. Lookup never silently resolves an unassigned session to the main checkout. Use lookup only after a task has chosen worktree isolation. A main-checkout task proceeds without a session-to-worktree assignment after checking board ownership and targeting its entity store explicitly. A session may run from the selected repository root or from a chosen worktree; an inherited directory inside a nested repository does not change the selected checkout.
 
 ## Opening Declaration
 
@@ -48,7 +64,7 @@ Before the first task command and after every sub-agent dispatch, compare the
 session lookup with the actual execution context:
 
 ```text
-session_id | code_worktree | git_toplevel | branch | entity_store_root | command_cwd
+session_id | workspace_root | code_worktree | git_toplevel | branch | entity_store_root | command_cwd
 ```
 
 For a worktree-backed task, `code_worktree`, `git_toplevel`, and `branch` must

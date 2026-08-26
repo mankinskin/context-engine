@@ -16,6 +16,23 @@ Global working rules for this repository. Keep this file small and stable.
 - Keep scope tight: do not add extra features or broad refactors unless requested.
 - Declare the session identity and execution checkout at the start of each session, then repeat both in the final response; use the main checkout unless the session has an explicitly registered worktree. Follow [session-identity-and-handoff.instructions.md](.agents/instructions/session/session-identity-and-handoff.instructions.md).
 
+## Checkout Resolution
+
+The active VS Code workspace root is the starting scope for every task. Before
+running a repository command, resolve the task target repository explicitly
+from that workspace root and verify the candidate with `git -C <candidate>
+rev-parse --show-toplevel`. If the request does not name a nested repository,
+the workspace root is the candidate. An instruction-file physical location, an
+absolute path embedded in prompt metadata, a pasted artifact path, and the
+shell inherited working directory are evidence about artifacts only; none
+selects the target repository or an execution checkout.
+
+In this guidance, “main checkout” means the verified target repository main
+checkout. A command may run from a nested directory, but that command directory
+does not reselect the target repository. Do not create, look up, or register a
+worktree until checkout resolution identifies the target repository and the
+task has independently met the worktree criteria below.
+
 ## Discovery Protocol (Before Editing)
 
 Use live sources first:

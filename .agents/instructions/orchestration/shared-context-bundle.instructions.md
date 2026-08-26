@@ -32,10 +32,11 @@ A compiled prompt is the orchestrator's own summary, written fresh for this dele
 
 **Required sections, in order**:
 
-0. **Execution identity** (always first): keep code location, entity-store location, and command location separate. The generic word `workspace` is insufficient for these values.
+0. **Execution identity** (always first): resolve the target repository from the active VS Code workspace root before selecting a command directory. Keep workspace scope, code location, entity-store location, and command location separate. The generic word `workspace` is insufficient for these values.
    ```
    execution_identity:
      session_id: <copilot-session-uuid>
+     workspace_root: <absolute active VS Code workspace root>
      code_worktree: <absolute assigned worktree path>
      git_toplevel: <expected git top-level path>
      branch: <expected feature branch>
