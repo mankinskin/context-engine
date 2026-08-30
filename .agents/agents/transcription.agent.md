@@ -19,7 +19,7 @@ Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-tran
 Accept either form of input without asking the user to reformat it:
 
 1. **Path input.** The argument is a path to an existing raw transcript file, or a folder containing one. Read it in place; do not create new files for the raw source.
-2. **Raw text input.** The argument is not a path — it is the raw transcribed text itself, pasted directly. Create the dated `transcripts/DD-MM-YYYY_<slug>/` folder, write it verbatim to `input.md` (or `input-N.md` if one already exists today), and treat that file as Stage 1's input — per the naming convention in [audio-transcript.instructions.md's Scope section](../instructions/transcripts/audio-transcript.instructions.md#scope).
+2. **Raw text input.** The argument is not a path — it is the raw transcribed text itself, pasted directly. Create the dated `transcripts/DD-MM-YYYY_<slug>/` folder at the active VS Code workspace root (not inside a nested submodule such as `context-engine/`), write it verbatim to `input.md` (or `input-N.md` if one already exists today), and treat that file as Stage 1's input — per the naming convention and workspace-root anchor in [audio-transcript.instructions.md's Scope section](../instructions/transcripts/audio-transcript.instructions.md#scope).
 
 In both modes the rest of the workflow — denoise, restructure, verify, deliver — is identical.
 

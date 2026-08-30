@@ -13,7 +13,7 @@ Follow [audio-transcript.instructions.md](../instructions/transcripts/audio-tran
 
 ## Input Resolution
 
-Resolve the slash-command argument using [Transcription Agent's Input Modes](../agents/transcription.agent.md#input-modes): a path to an existing file/folder, or raw transcribed text to save as a new dated `transcripts/DD-MM-YYYY_<slug>/input.md`. Note any requested target format (default: a single concise prompt/document). A request to merge or fold transcripts is an operation on existing clean artifacts, not raw transcript content — do not save it as an `input-N.md` file.
+Resolve the slash-command argument using [Transcription Agent's Input Modes](../agents/transcription.agent.md#input-modes): a path to an existing file/folder, or raw transcribed text to save as a new dated `transcripts/DD-MM-YYYY_<slug>/input.md` at the active VS Code workspace root (not inside a nested submodule such as `context-engine/`). Note any requested target format (default: a single concise prompt/document). A request to merge or fold transcripts is an operation on existing clean artifacts, not raw transcript content — do not save it as an `input-N.md` file.
 
 ## Workflow
 

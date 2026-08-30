@@ -10,6 +10,8 @@ The input is noisy: it contains filler words, false starts, mid-sentence correct
 
 The raw transcript can arrive two ways: as a path to an existing file or folder, or as the raw transcribed text pasted directly into the request. When it arrives as raw text, create the dated `transcripts/DD-MM-YYYY_<slug>/` folder (matching the existing convention), save the verbatim text as `input.md`, and treat that file as the source — the pipeline below is identical either way.
 
+**Resolve `transcripts/` at the active VS Code workspace root** — the top-level folder of the workspace the agent is currently operating in (e.g. `meta-workspace/transcripts/`) — never relative to a nested submodule such as `context-engine/`, nor relative to the location of this instruction file itself.
+
 ## Core Principle: Faithful Compression, Not Interpretation
 
 The transform is **lossless in intent and lossy only in noise**. Two failure modes are equally bad:
