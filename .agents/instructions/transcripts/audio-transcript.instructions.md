@@ -21,20 +21,29 @@ The transform is **lossless in intent and lossy only in noise**. Two failure mod
 
 When intent is genuinely ambiguous, do **not** guess. Preserve the ambiguity explicitly (inline note or a short "Open questions" section) rather than silently resolving it.
 
+## Resolve Target Output Language (before Stage 1)
+
+Before denoising, determine the **target output language** the cleaned artifact must be written in:
+
+- **Default: English.** Unless the transcript or the accompanying request explicitly says otherwise, the output is English regardless of what language the source transcript is in.
+- **Explicit override wins.** If the speaker or requester states a desired output language — as a meta-instruction inside the transcript ("write this up in German", "auf Deutsch bitte", "give me the summary in Spanish") or as part of the surrounding request that supplied the transcript — resolve the target output language to that instead of English. Treat this exactly like the other meta-instructions in [Common Problem Situations](#common-problem-situations-handle-explicitly): a directive about the deliverable, not transcript content to denoise.
+- **One resolved language per artifact.** The resolved target output language applies to the entire denoised-and-restructured output; do not mix languages in the final artifact except for the untranslatable tokens below.
+- **State the resolution when not the default.** When the resolved target output language is not English, say so explicitly in the delivered report (e.g. "Output language: German, per explicit request").
+
 ## Required Pipeline
 
 Process the transcript in three ordered stages. Do not collapse them into a single pass — the separation is what prevents noisy input from corrupting structured output.
 
 ### Stage 1 — Denoise (extract the clean signal)
 
-Goal: produce a faithful, still-linear **English** version of the transcript with obvious noise removed and corrections resolved. **Do not restructure or reformat yet.** Preserve the speaker's ordering and phrasing except where noise forces a change.
+Goal: produce a faithful, still-linear version of the transcript, rendered in the resolved target output language, with obvious noise removed and corrections resolved. **Do not restructure or reformat yet.** Preserve the speaker's ordering and phrasing except where noise forces a change.
 
-Resolve language to English first:
+Resolve language to the target output language first:
 
-- **Translate non-English content to English.** If any part of the transcript is in a language other than English, translate it into English as part of this stage so the entire denoised signal is in English. Mixed-language (code-switched) input must be unified into a single English output.
-- **Verify the translation is meaning-consistent.** After translating, compare the English rendering against the original wording and confirm the meaning is preserved — no constraint, entity, qualifier, or nuance changed or lost in translation. Do the verbal-noise stripping, false-start removal, and self-correction resolution described below on the English result (translation and denoising happen together in this stage, before any restructuring).
-- **Preserve untranslatable tokens verbatim.** Identifiers, file paths, command names, proper nouns, numbers, and code carry over unchanged; only natural-language content is translated.
-- **Flag ambiguous translations.** If a phrase has no unambiguous English equivalent or the intended meaning is genuinely unclear, keep the most likely reading and flag it — never invent a plausible-sounding replacement.
+- **Translate content that is not already in the target output language.** If any part of the transcript is in a different language than the resolved target output language, translate it as part of this stage so the entire denoised signal is in one language. Mixed-language (code-switched) input must be unified into that single output language.
+- **Verify the translation is meaning-consistent.** After translating, compare the rendering in the target output language against the original wording and confirm the meaning is preserved — no constraint, entity, qualifier, or nuance changed or lost in translation. Do the verbal-noise stripping, false-start removal, and self-correction resolution described below on the translated result (translation and denoising happen together in this stage, before any restructuring).
+- **Preserve untranslatable tokens verbatim.** Identifiers, file paths, command names, proper nouns, numbers, and code carry over unchanged regardless of target output language; only natural-language content is translated.
+- **Flag ambiguous translations.** If a phrase has no unambiguous equivalent in the target output language or the intended meaning is genuinely unclear, keep the most likely reading and flag it — never invent a plausible-sounding replacement.
 
 Remove or resolve:
 
@@ -72,7 +81,7 @@ Perform an explicit checklist:
 1. **Constraint inventory** — enumerate every atomic instruction, constraint, entity, requirement, and qualifier present in the original transcript. Confirm each one is represented in the final output (or intentionally dropped only because it was a superseded/self-corrected statement).
 2. **No-new-information check** — scan the final output and confirm every claim, item, and detail is traceable back to the input. Remove anything that is not.
 3. **Correction integrity** — confirm every self-correction resolved to the speaker's final choice, and superseded terms/values do not leak into the output.
-4. **Translation fidelity** — if the source contained non-English content, confirm the final output is entirely in English and that every translated statement preserves the original meaning, with no drift, loss, or invented detail introduced by translation.
+4. **Translation fidelity** — if the source contained content in a language other than the resolved target output language, confirm the final output is entirely in that resolved target output language and that every translated statement preserves the original meaning, with no drift, loss, or invented detail introduced by translation.
 5. **Intent equivalence** — read the output as if you were the downstream agent receiving the prompt, and confirm it would act on the speaker's actual goal.
 
 If any check fails, return to the responsible stage, fix it, and re-verify. Do not ship an output with an unresolved discrepancy; instead surface it as an explicit "Open questions" note.
@@ -97,12 +106,13 @@ The merged artifact is a maintained composition, not a substitute for the source
 - **Loose enumerations**: spoken lists ("do this, and this, and also this") — render as a clean list, preserving count and order.
 - **Emphasis vs. content**: repetition used for emphasis is not new information; collapse it but retain the emphasis only if it changes priority.
 - **Meta-instructions about the transcript itself**: if the speaker gives directions about how to process the transcript ("make this a bulleted list", "keep it short"), treat those as formatting directives for Stage 2, not as output content.
+- **Meta-instructions about output language**: a stated desired output language ("write this in German", "auf Deutsch") is a directive resolved before Stage 1 (see [Resolve Target Output Language](#resolve-target-output-language-before-stage-1)), not transcript content to translate or denoise.
 
 ## Output Requirements
 
 - Well-formed, grammatically correct markdown.
 - One coherent, concise artifact reflecting the speaker's intended structure.
-- Entirely in English, even when the source transcript was partly or wholly in another language.
+- Entirely in the resolved target output language (English by default, unless another language was explicitly requested), even when the source transcript was partly or wholly in a different language.
 - No filler, no corrections, no transcription artifacts remaining.
 - Every real requirement preserved; nothing invented.
 - Any unresolved ambiguity surfaced as an explicit, short note — never silently guessed.

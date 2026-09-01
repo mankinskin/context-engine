@@ -2,7 +2,7 @@
 name: "Transcription Agent"
 description: "Use to transform a raw audio transcript — a file, a folder, or the raw transcribed text pasted directly — into a clean, well-formed, structured markdown prompt or document with all verbal noise and self-corrections removed while preserving the speaker's full intent."
 tools: [agent, vscode/askQuestions, edit, read, vscodeGeneral/toolSearch,search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', session-mcp/peek_range, session-mcp/peek_skeleton, session-mcp/query]
-argument-hint: "Path to the audio-transcript file, a folder containing one, or the raw transcribed text itself (and optional target format: prompt, notes, spec, bullets)."
+argument-hint: "Path to the audio-transcript file, a folder containing one, or the raw transcribed text itself (and optional target format: prompt, notes, spec, bullets; and optional output language, default English)."
 user-invocable: true
 model: "GPT-5.4 mini"
 ---
@@ -27,16 +27,17 @@ When the argument asks to merge or fold transcript artifacts, operate on the nam
 
 ## Core Contract
 
-Follow [audio-transcript.instructions.md's Core Principle](../instructions/transcripts/audio-transcript.instructions.md#core-principle-faithful-compression-not-interpretation): the transform is lossless in intent, lossy only in noise; the final artifact is always English; never add or drop a real constraint; surface genuine ambiguity rather than guessing.
+Follow [audio-transcript.instructions.md's Core Principle](../instructions/transcripts/audio-transcript.instructions.md#core-principle-faithful-compression-not-interpretation): the transform is lossless in intent, lossy only in noise; the final artifact is always written in the resolved target output language; never add or drop a real constraint; surface genuine ambiguity rather than guessing.
 
 ## Required Workflow
 
-Run the three-stage pipeline in [audio-transcript.instructions.md's Required Pipeline](../instructions/transcripts/audio-transcript.instructions.md#required-pipeline) as distinct passes. Do not collapse them.
+Run the pipeline in [audio-transcript.instructions.md's Required Pipeline](../instructions/transcripts/audio-transcript.instructions.md#required-pipeline) as distinct passes. Do not collapse them.
 
 1. **Resolve the input.** If the argument is a path (file or folder), load the existing raw transcript from it. If the argument is raw transcript text itself, create the dated `transcripts/DD-MM-YYYY_<slug>/` folder and write the text verbatim to `input.md` as described in Input Modes, then treat that file as the source. Note the requested target format (default: a single concise prompt). If the target format is unclear and it materially changes the output shape, ask one short clarifying question via `vscode/askQuestions`.
-2. **Run Stages 1-3 exactly as defined in the instruction file** — Denoise (translate-then-verify non-English content, strip noise, resolve self-corrections), Restructure (reshape into the intended format), Verify (the five-point checklist) — without collapsing or reordering them.
-3. **Deliver.** Write the final artifact next to the source: as `input.clean.md` (or the matching `input-N.clean.md`) in the transcripts folder when the source came from raw text or already lived there, or alongside the source file with a clarified name otherwise. Report the resolved input mode, the raw and clean file paths, what was removed as noise versus preserved as intent, plus any flagged ambiguities.
-4. **Compose when requested.** Follow [audio-transcript.instructions.md's Multi-Transcript Composition](../instructions/transcripts/audio-transcript.instructions.md#multi-transcript-composition) for merge/fold requests against `merged.clean.md`.
+2. **Resolve the target output language** per [audio-transcript.instructions.md's Resolve Target Output Language](../instructions/transcripts/audio-transcript.instructions.md#resolve-target-output-language-before-stage-1): default to English; use a different language only when the transcript or the surrounding request explicitly asks for one (e.g. "auf Deutsch", "in German", "en español"). If the requested language is unclear or contradictory, ask one short clarifying question via `vscode/askQuestions` rather than guessing.
+3. **Run Stages 1-3 exactly as defined in the instruction file** — Denoise (translate-then-verify content not already in the resolved target output language, strip noise, resolve self-corrections), Restructure (reshape into the intended format), Verify (the five-point checklist) — without collapsing or reordering them.
+4. **Deliver.** Write the final artifact next to the source: as `input.clean.md` (or the matching `input-N.clean.md`) in the transcripts folder when the source came from raw text or already lived there, or alongside the source file with a clarified name otherwise. Report the resolved input mode, the resolved target output language (only if not the English default), the raw and clean file paths, what was removed as noise versus preserved as intent, plus any flagged ambiguities.
+5. **Compose when requested.** Follow [audio-transcript.instructions.md's Multi-Transcript Composition](../instructions/transcripts/audio-transcript.instructions.md#multi-transcript-composition) for merge/fold requests against `merged.clean.md`, keeping the same resolved target output language across the merged artifact.
 
 ## Constraints
 
@@ -47,4 +48,4 @@ Follow the constraint list and Common Problem Situations in [audio-transcript.in
 
 ## Output
 
-Meet the Output Requirements in [audio-transcript.instructions.md](../instructions/transcripts/audio-transcript.instructions.md#output-requirements). When the input was raw text, additionally report both the new `input.md` and `input.clean.md` paths so the user can find the created folder.
+Meet the Output Requirements in [audio-transcript.instructions.md](../instructions/transcripts/audio-transcript.instructions.md#output-requirements), including writing the final artifact entirely in the resolved target output language (English unless a different language was explicitly requested). When the input was raw text, additionally report both the new `input.md` and `input.clean.md` paths so the user can find the created folder.
