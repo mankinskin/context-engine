@@ -95,3 +95,8 @@ attempt. Record the command and execution id or PID before waiting for a result.
   process. Never delete a lock file while its owner may still be alive.
 - Keep Cargo and rustc from one toolchain in a validation attempt; record
   `cargo -vV` and `rustc -vV` once when a mismatch is suspected.
+- A benchmark run gets an explicit expected-runtime estimate and a bounded
+  timeout before launch; do not wait on it indefinitely. See
+  [benchmarks.instructions.md](../testing/benchmarks.instructions.md#timeout-discipline-for-benchmark-runs)
+  for the estimate-then-bound rule and what to register when a run overruns
+  its budget.
