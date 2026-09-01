@@ -1,1 +1,0 @@
-Provides the checked preflight/apply/resume/rollback migration and relocates production stores, fixture stores, and configuration only after resolver and transport behavior is verified.

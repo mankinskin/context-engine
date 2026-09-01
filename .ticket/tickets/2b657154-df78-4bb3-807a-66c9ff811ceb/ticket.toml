@@ -1,8 +1,0 @@
-id = "2b657154-df78-4bb3-807a-66c9ff811ceb"
-created_at = "2026-08-04T22:42:53.783315100+00:00"
-title = "Handle unregistered worktree debris during removal"
-state = "ready"
-component = "tooling"
-priority = "high"
-type = "bug"
-validation_summary = "Merged to local main as `00e2ddd` (`fix(worktree): remove unregistered debris safely`). Passed: `bash -n tools/worktree/worktree.sh`; temporary unregistered debris removal before merge; registered-worktree dry run; `git diff --check`; post-merge `bash -n`. Ticket state remains `ready`: the ticket store rejected the configured `ready -> in-review` transition because no next states are permitted."

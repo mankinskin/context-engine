@@ -1,7 +1,0 @@
-The current agent corpus is 101 guidance files totaling ~103,750 tokens. `.agents/agents/**` (17 templates) alone accounts for 24,168 tokens; files loaded unconditionally every session total 3,641 tokens; the 5 orchestration instruction files total 16,898 tokens. There are 15 colliding template pairs (overlapping trigger conditions) and 10 orphan files (never referenced by routing).
-
-Session telemetry across 226 sessions shows: median 2 turns, p90 6 turns, max 29 turns, zero sessions exceeding 50 turns. There were 744 sub-agent dispatches, and the same file was re-read 20-40 times within a single session in observed cases.
-
-**The corpus size is NOT the dominant cost.** Raw token volume (~103K) is not what drives inefficiency — sessions are short (median 2 turns) and would tolerate a larger corpus if routing were deterministic. The dominant costs are: (1) fan-out rediscovery — the same files are re-read repeatedly across and within sessions because there is no shared-context bundle or role-scoped tool grant to prevent it; and (2) non-deterministic routing — AGENTS.md and the 17 templates route by prompt-text semantic similarity, never by a stable agent-template identity, so the same request can resolve to different templates/tool grants across sessions, defeating caching and audit.
-
-This spec's taxonomy and routing contract targets the second cost (routing) directly, and reduces the first (rediscovery) as a side effect of collapsing 17 colliding templates into 9 non-overlapping ones.

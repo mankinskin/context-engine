@@ -1,1 +1,0 @@
-Review pass: all 5 ACs met; template MCP tool grants are verified.

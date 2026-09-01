@@ -1,1 +1,0 @@
-Add repository hook entries to the canonical registry and generated catalog. Record source, trigger, ownership, safety, and supported install-ctl actions. Third-party hook-manager support is excluded.

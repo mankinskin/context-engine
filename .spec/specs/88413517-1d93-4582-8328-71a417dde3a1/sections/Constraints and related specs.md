@@ -1,8 +1,0 @@
-This spec is binding-compatible with, and does not restate the contracts of, the following related specs:
-
-- **ec3b13f1-ae9f-4f11-b3f9-e8fa3877afbd** (reviewed) — Per-template MCP tool grants. BINDING: every one of the 9 templates authored under C2/C3 must declare either an explicit tool list or a wildcard grant plus a one-line role justification. This spec's per-role "allowed write scope" (section 2) constrains what that grant may include; it does not replace the grant-schema spec.
-- **7c9757a7-739f-4dfe-a4de-26f187f3b5aa** (draft) — Default agent tool suite (five token-bounded tool categories). Templates rely on this baseline suite before adding role-specific grants.
-- **a4d61b8c-df1c-454d-ab56-4bce5706eb15** (draft) and **39983ddf-1f7e-4081-a060-6b8258eb4c41** (draft) — Model cost awareness / tiered routing and orchestrator-mode price enforcement. The "default model tier" column in section 2 must resolve against these specs' tier definitions, not invent new tier names.
-- **b71658f1-8de2-444a-9be1-64b1d8ecce70** (reviewed) — Iteration Loop Workflow. The Closer template's R5 subset (iteration/handoff/commit) must implement this workflow's Review→Interview→Commit→Handoff loop rather than defining a competing loop.
-
-Binding constraint restated: **Orchestrator must never acquire write tools.** Any tool-grant change to the Orchestrator template that adds a write-capable tool (ticket/spec/doc mutation, file write, git push, etc.) is a spec violation regardless of role justification, and must be rejected in review.

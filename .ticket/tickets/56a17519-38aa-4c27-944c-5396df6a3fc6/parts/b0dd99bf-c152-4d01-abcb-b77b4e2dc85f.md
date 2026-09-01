@@ -1,1 +1,0 @@
-Merged into canonical ticket a57886e4-e076-4542-8b16-87dde43d62b0, which now carries the synthesized plan including the open cli/mcp scope question. Cancelling this duplicate.

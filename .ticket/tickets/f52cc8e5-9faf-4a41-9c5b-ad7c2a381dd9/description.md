@@ -1,9 +1,0 @@
-Design and implement the versioned registry schema, repository inventory, Markdown catalog generator, and freshness validation. The registry covers Cargo binaries, executable scripts, services, extensions, and hooks. External tool discovery is excluded.
-
-## Status update — AC5 repair and installer bootstrap fix
-
-- AC5 repaired: `parse_registry_v2` inspect-only enforcement now triggers on `entry.kind == EntryKind::Hook || entry.category == EntryCategory::Hook` (tools/install/install-ctl/src/registry.rs:266-268), closing the bypass where `kind = "hook"` with a non-hook `category` escaped the rule.
-- Regression test `registry_hook_kind_with_non_hook_category_rejects_mutating_action` added to the inline `registry_v2_tests` module; mutation-proven (fails when the condition is reverted to the category-only form, panic at registry.rs:653).
-- `cargo test -p install-ctl`: 23 passed, 0 failed.
-- Installer bootstrap defect fixed: `resolve_install_ctl()` in install-tools.sh preferred a PATH-installed `install-ctl`, so a stale binary could not parse the migrated artifacts.toml and all 23 installs failed with `missing field 'path'` with no self-healing path. It now always runs install-ctl from source via `cargo run --manifest-path tools/install/install-ctl/Cargo.toml`. Proven by placing a deliberately failing fake `install-ctl` first on PATH: `bash ./install-tools.sh --list` still exits 0 and never invokes the fake.
-- Full `bash ./install-tools.sh` run: requested=23, succeeded=22, failed=1. The single failure (`copilot-capture-hook`) is caused by an unrelated in-progress rename inside the `memory-api` submodule by another agent, not by this track.

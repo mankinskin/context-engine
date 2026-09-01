@@ -1,1 +1,0 @@
-Add a reusable transcription workflow for creating numbered raw/clean pairs, merging cleaned artifacts, and folding later cleaned transcripts into a maintained merged artifact.

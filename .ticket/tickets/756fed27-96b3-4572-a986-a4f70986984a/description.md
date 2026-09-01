@@ -1,1 +1,0 @@
-Starting shared transport tracing implementation: extract a reusable memory-api tracing initializer from current ticket-http/main patterns and wire it into representative HTTP and MCP tools first.

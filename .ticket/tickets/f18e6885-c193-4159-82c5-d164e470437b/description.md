@@ -1,1 +1,0 @@
-Add generated spec-system guidance instructions and a Spec Agent workflow so spec creation/update work consistently links tests, tickets, and related specs. Update rule targets and canonical rule entries, then regenerate outputs and verify target generation.

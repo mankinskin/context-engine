@@ -1,1 +1,0 @@
-Make install-ctl consume the canonical registry for list, install, uninstall, start, restart, and stop actions declared by entries. Preserve dry-run and reject unsupported actions. This work follows the existing install-ctl foundation ticket.

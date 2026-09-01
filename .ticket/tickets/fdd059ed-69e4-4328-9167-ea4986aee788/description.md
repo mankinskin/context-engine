@@ -1,1 +1,0 @@
-Change Terminal Command Agent planning to select only catalog-registered commands and templates. Keep the fixed client tool inventory and user confirmation gate; commands absent from the catalog are not inferred.

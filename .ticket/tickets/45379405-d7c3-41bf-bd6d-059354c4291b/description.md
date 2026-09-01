@@ -1,1 +1,0 @@
-Split rule-target configs into thematic files under rule-targets/ directories across the root, memory-viewers, memory-api, and viewer-api workspaces, and extend rule-api imports so parent workspaces can import those organized configs from submodules without flattening them back into a single file.

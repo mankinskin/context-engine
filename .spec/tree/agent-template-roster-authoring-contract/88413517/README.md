@@ -7,7 +7,7 @@
 - component: agent-tooling
 - scope: internal
 - state: agent-tooling
-- index_ref: `C:/Users/linus/git/2/context-engine/.spec/specs/88413517-1d93-4582-8328-71a417dde3a1/spec.toml`
+- index_ref: `C:/Users/linus/git/2/./.workflow-tools/spec/specs/88413517-1d93-4582-8328-71a417dde3a1/spec.toml`
 
 ## Summary
 

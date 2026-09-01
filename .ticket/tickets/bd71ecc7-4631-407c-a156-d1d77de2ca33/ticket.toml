@@ -1,9 +1,0 @@
-id = "bd71ecc7-4631-407c-a156-d1d77de2ca33"
-created_at = "2026-07-27T02:39:48.842402500+00:00"
-title = "repo-wide search: bounded counts-first search tool suite (api + cli + mcp)"
-state = "open"
-component = "agent-tooling"
-depends_on = ["244c3113-e28f-44d7-b9a8-f5dd45d2895c"]
-parts = [{ id = "e6880611-3dd0-444f-bfbd-a566c4e047cb", kind = "objective", path = "parts/e6880611-3dd0-444f-bfbd-a566c4e047cb.md", frozen = false, created_at = "2026-07-30T21:05:26.551067600Z" }, { id = "202e22aa-40d4-447f-b0e7-f6cfb32f720a", kind = "validation", path = "parts/202e22aa-40d4-447f-b0e7-f6cfb32f720a.md", frozen = false, created_at = "2026-07-30T21:05:26.554514400Z" }]
-status_summary = "## Blocked — Awaiting Filesystem Operations\n\nThis ticket depends on [244c3113 filesystem operations](../244c3113-e28f-44d7-b9a8-f5dd45d2895c/ticket.toml), which moved to `in-review` on 2026-07-27 after passing independent audit.\n\n**Blocker status**: Implementation complete, validation passed (56 tests), security design approved (GO verdict after three audit rounds). Awaiting human review before unblocking this ticket.\n\n**What changes when unblocked**: Once 244c3113 closes, this ticket becomes actionable and should move from `new` to `ready`."
-type = "task"

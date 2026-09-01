@@ -29,7 +29,8 @@ binaries=(
   peek-mcp rule rule-mcp session session-capture-hook session-mcp spec spec-mcp
   spec-viewer test test-mcp ticket ticket-mcp ticket-viewer worktree-ctl
 )
-stores=(.ticket .spec .rule .audit .session .test .feedback .doc)
+# Kept in sync with STORE_MARKERS in workflow-tools/memory-kernel/src/discovery.rs.
+stores=(.ticket .spec .rule .audit .session .test .feedback)
 missing_binaries=()
 missing_stores=()
 cargo_check_failed=false

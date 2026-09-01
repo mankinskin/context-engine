@@ -1,1 +1,0 @@
-Review pass: all 7 ACs met; structured ticket-spec links are verified.

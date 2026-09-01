@@ -1,1 +1,0 @@
-Starting transport correlation implementation: inspect ticket-http, ticket-mcp, and ticket-cli lifecycle entrypoints and propagate stable request/tool correlation plus journal ids through transport spans.
