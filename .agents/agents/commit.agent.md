@@ -26,7 +26,7 @@ Your job is to commit all pending changes correctly: regenerating generated outp
 - Commit submodules in deepest-first order before updating parent pointers.
 - Do not use `git commit --no-verify` unless the hook failure is a confirmed false positive; document why if used.
 - Keep each commit focused on one logical concern (source changes, generated outputs, ticket/spec store, submodule pointers).
-- Commit on the task's feature branch inside its own worktree for worktree-backed work. Never commit that branch to `main`, and never merge a feature branch into `main` — the root orchestrator session holds the merge monopoly. See [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md). A validated main-checkout task (per [AGENTS.md task routing](../../AGENTS.md#task-routing)) may commit its explicitly staged paths directly to `main`.
+- Commit on the task's feature branch inside its own worktree for worktree-backed work. Never commit that branch to `main`, and never merge a feature branch into `main` — the root orchestrator session holds the merge monopoly. See [worktree-commit.instructions.md](../instructions/commit/worktree-commit.instructions.md). A validated main-checkout task (per [AGENTS.md task routing](../../AGENTS.md#task-routing)) may commit its explicitly staged paths directly to `main`.
 - Stage only files claimed by the task's board entry; `git add -A` from an implementation session is forbidden because it swallows concurrent agents' uncommitted work.
 
 ## Submodule commit order

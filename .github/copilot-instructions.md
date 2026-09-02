@@ -115,7 +115,7 @@ live under `viewer-api/viewer-api/frontend/dioxus/e2e/shared/`.
   (`agent/<session-uuid>/<slug>`) cut from `main`.
 - **Small main-checkout changes.** A single self-contained file change or one new
   file may use the main checkout after checking that no board entry owns the path.
-  See AGENTS.md and `.agents/instructions/commit/branch-worktree.instructions.md`.
+  See AGENTS.md and `.agents/instructions/commit/worktree-workflow.instructions.md`.
 - **`--toon` output.** Repo CLIs support a compact `--toon` format in addition to
   `--json`; prefer `--toon` for machine-readable output and the `rtk` proxy
   (`rtk <cmd> --toon ...`) to reduce token cost of shell command output.

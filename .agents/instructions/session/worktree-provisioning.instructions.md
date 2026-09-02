@@ -56,4 +56,4 @@ For hook diagnostics, inspect the tracing log at `$TMPDIR/session-capture-hook/s
 
 ## Worktree Lifecycle
 
-[branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) owns branch creation, check-in, rebase, merge, and teardown. `worktree-ctl` supports `new`, `bootstrap`, `list`, `rebase`, `merge`, `sync`, `rename`, `finish`, `remove`, and `doctor`; run lifecycle mutations from the main checkout.
+[worktree-workflow.instructions.md](../commit/worktree-workflow.instructions.md) owns branch creation, check-in, rebase, merge, and teardown. `worktree-ctl` supports `new`, `bootstrap`, `list`, `rebase`, `merge`, `sync`, `rename`, `finish`, `remove`, and `doctor`; run lifecycle mutations from the main checkout.

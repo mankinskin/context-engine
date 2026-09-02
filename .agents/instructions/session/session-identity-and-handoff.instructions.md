@@ -76,7 +76,7 @@ further read, write, build, or validation command.
 
 ## Claim Order
 
-For a worktree-backed task, bootstrap the worktree, rename to the topic slug, run `session_check_in` and `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) is the canonical owner of the commands. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<uuid>/session` placeholder. A main-checkout task skips those worktree-specific claims after checking that no active board entry owns the path.
+For a worktree-backed task, bootstrap the worktree, rename to the topic slug, run `session_check_in` and `board_check_in`, then make the first edit. The rename must precede `session_check_in`, or the stored path is stranded. [worktree-claim.instructions.md](../commit/worktree-claim.instructions.md) is the canonical owner of the claim commands, and [worktree-bootstrap.instructions.md](../commit/worktree-bootstrap.instructions.md) owns the rename sequence. [worktree-provisioning.instructions.md](worktree-provisioning.instructions.md) explains how the hook provisions the `<uuid>/session` placeholder. A main-checkout task skips those worktree-specific claims after checking that no active board entry owns the path.
 
 ### Check-in registers an explicit worktree
 

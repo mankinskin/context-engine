@@ -12,4 +12,4 @@ Before extracting a crate, map dependencies across the source repository and eve
 
 Do not extract the test or log tool until the relevant ticket or spec records a remediation decision. See [69eb4118](../../../.ticket/tickets/69eb4118-19ec-4b5b-bb12-30e314029cc5/ticket.toml) and [858c5286](../../../.ticket/tickets/858c5286-6c2b-4a05-a0f3-4e8f6b90b75e/ticket.toml).
 
-This file owns extraction architecture: [branch-worktree.instructions.md](../commit/branch-worktree.instructions.md) covers branch mechanics, and [submodule.instructions.md](../commit/submodule.instructions.md) would incorrectly restrict the check to submodules.
+This file owns extraction architecture: [worktree-workflow.instructions.md](../commit/worktree-workflow.instructions.md) covers branch mechanics, and [submodule.instructions.md](../commit/submodule.instructions.md) would incorrectly restrict the check to submodules.

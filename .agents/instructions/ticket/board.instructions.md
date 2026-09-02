@@ -54,7 +54,7 @@ risk. A worktree-backed task additionally claims the authoritative
 session-to-worktree-to-branch assignment with `session_check_in`. A conflict on
 an applicable claim is an escalation per
 [escalation-gate.instructions.md](../orchestration/escalation-gate.instructions.md), not something to work around. See
-[branch-worktree.instructions.md](../commit/branch-worktree.instructions.md).
+[worktree-claim.instructions.md](../commit/worktree-claim.instructions.md).
 
 ### WIP Limit
 

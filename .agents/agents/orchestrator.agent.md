@@ -198,9 +198,9 @@ See `.agents/instructions/orchestration/pre-dispatch-gates.instructions.md` for 
 
 Every implementation unit runs in its own git worktree on a branch cut from `main`. Before dispatching an implementation unit, delegate UUID, worktree, session check-in, and board check-in to `session-bootstrap.agent.md`, then name the resolved worktree and branch in the implementation unit's compiled prompt (as part of execution identity).
 
-After a unit reports ready, you hold the merge monopoly: no worker touches `main`, because merge order across concurrent branches is a global decision. Delegate bottom-up fast-forward integration and worktree teardown to `merge.agent.md`; that agent follows the canonical sequence and gitlink invariants in [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical). If integration cannot fast-forward, send the branch back for a fresh rebase rather than resolving a conflict on `main`.
+After a unit reports ready, you hold the merge monopoly: no worker touches `main`, because merge order across concurrent branches is a global decision. Delegate bottom-up fast-forward integration and worktree teardown to `merge.agent.md`; that agent follows the canonical sequence and gitlink invariants in [worktree-merge.instructions.md](../instructions/commit/worktree-merge.instructions.md#bottom-up-integration-sequence-canonical). If integration cannot fast-forward, send the branch back for a fresh rebase rather than resolving a conflict on `main`.
 
-Full protocol: [branch-worktree.instructions.md](../instructions/commit/branch-worktree.instructions.md).
+Full protocol: [worktree-workflow.instructions.md](../instructions/commit/worktree-workflow.instructions.md).
 
 ## The Red Thread
 

@@ -30,7 +30,7 @@ and stop.
 
 ## Constraints
 
-Follow the [canonical bottom-up integration sequence](../instructions/commit/branch-worktree.instructions.md#bottom-up-integration-sequence-canonical).
+Follow the [canonical bottom-up integration sequence](../instructions/commit/worktree-merge.instructions.md#bottom-up-integration-sequence-canonical).
 Follow [submodule.instructions.md](../instructions/commit/submodule.instructions.md)
 for submodule ordering and superproject pointer updates.
 Follow [worktree-provisioning.instructions.md](../instructions/session/worktree-provisioning.instructions.md)

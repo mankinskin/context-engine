@@ -20,6 +20,15 @@ the precedence table there.
 | [commit/pre-commit](.agents/instructions/commit/pre-commit.instructions.md) | Troubleshooting or configuring the pre-commit hook. |
 | [commit/submodule](.agents/instructions/commit/submodule.instructions.md) | Committing changes involving Git submodules or nested repos. |
 | [commit/workflow](.agents/instructions/commit/workflow.instructions.md) | Running the repository commit workflow end to end. |
+| [commit/worktree-workflow](.agents/instructions/commit/worktree-workflow.instructions.md) | Deciding whether a task needs worktree isolation; entry point/loop overview, naming, escalation triggers. |
+| [commit/worktree-bootstrap](.agents/instructions/commit/worktree-bootstrap.instructions.md) | Creating or renaming a session worktree (worktree-ctl bootstrap/new, submodule population). |
+| [commit/worktree-submodule-branch-check](.agents/instructions/commit/worktree-submodule-branch-check.instructions.md) | Verifying every submodule (recursively) is on the expected feature branch before editing. |
+| [commit/worktree-claim](.agents/instructions/commit/worktree-claim.instructions.md) | Claiming a worktree-backed task with session_check_in/board_check_in before the first edit. |
+| [commit/worktree-work](.agents/instructions/commit/worktree-work.instructions.md) | Working-directory discipline and entity-store targeting inside a worktree-backed task. |
+| [commit/worktree-commit](.agents/instructions/commit/worktree-commit.instructions.md) | Committing changes inside a worktree-backed task. |
+| [commit/worktree-rebase](.agents/instructions/commit/worktree-rebase.instructions.md) | Rebasing a worktree-backed feature branch onto updated main. |
+| [commit/worktree-merge](.agents/instructions/commit/worktree-merge.instructions.md) | Marking a worktree-backed branch ready and merging it into main (bottom-up integration sequence). |
+| [commit/worktree-submodules](.agents/instructions/commit/worktree-submodules.instructions.md) | A worktree-backed task touches a Git submodule. |
 | [engine/context-http](.agents/instructions/engine/context-http.instructions.md) | Editing context-http: RPC dispatch, trace capture, state access, HTTP error mapping. |
 | [engine/core-crates](.agents/instructions/engine/core-crates.instructions.md) | Editing context-engine core crates (trace/search/insert/read/api). |
 | [frontend/frontend](.agents/instructions/frontend/frontend.instructions.md) | Editing frontend packages or generated TypeScript types. |
