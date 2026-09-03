@@ -56,6 +56,8 @@ the precedence table there.
 | [spec/spec-system](.agents/instructions/spec/spec-system.instructions.md) | Creating or updating specs and their traceability links. |
 | [testing/assertions](.agents/instructions/testing/assertions.instructions.md) | Writing test assertions or reviewing test quality. |
 | [testing/benchmarks](.agents/instructions/testing/benchmarks.instructions.md) | Running Criterion benchmarks or adding performance measurements. |
+| [testing/benchmarks-timeout](.agents/instructions/testing/benchmarks-timeout.instructions.md) | Before starting or while waiting on any cargo bench invocation. |
+| [testing/benchmarks-criterion-calibration](.agents/instructions/testing/benchmarks-criterion-calibration.instructions.md) | A Criterion benchmark group covers a heterogeneous scenario matrix. |
 | [testing/http-stress](.agents/instructions/testing/http-stress.instructions.md) | Running HTTP stress tests or concurrency sweeps. |
 | [testing/test-debugging](.agents/instructions/testing/test-debugging.instructions.md) | Test failures, tracing setup, and test-log debugging. |
 | [testing/test-execution](.agents/instructions/testing/test-execution.instructions.md) | Running tests, choosing scope, executing validation commands. |

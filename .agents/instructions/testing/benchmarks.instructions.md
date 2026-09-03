@@ -20,13 +20,7 @@ The fixture builds 360 tickets + ~630 edges once per process (via `OnceLock`).
 
 When adding a new storage-layer optimization, add a matching Criterion benchmark that shows the before/after comparison.
 
-## Timeout Discipline for Benchmark Runs
+## Related Guidance
 
-Before starting any `cargo bench` invocation (including `--test` smoke mode), estimate its expected wall time from the scenario count and sample/measurement settings (e.g. `sample_size × measurement_time × scenario_count`), and set a hard timeout at that estimate plus a modest buffer. Use an explicit `timeout` on the run, or background it and poll on a schedule bounded by that same budget. Never wait unboundedly on a benchmark process — see [tool-output.instructions.md](../orchestration/tool-output.instructions.md#long-running-process-ownership) for the general long-running-process rules this specializes.
-
-When a run exceeds its budgeted timeout:
-- Stop waiting on it (kill or detach) instead of continuing to poll indefinitely.
-- Register whatever evidence it produced up to that point (partial scenario results, log tail) as the validation record, and name exactly which scenarios were not reached.
-- Treat the remaining coverage gap as a follow-up, not a reason to silently re-launch the same exhaustive run hoping it finishes faster.
-
-`--test` (fast smoke) mode is a correctness proxy, not a substitute for an acceptance criterion that literally requires Criterion statistical output. State that distinction explicitly in the validation evidence rather than treating smoke-mode success as sufficient on its own.
+- [benchmarks-timeout.instructions.md](benchmarks-timeout.instructions.md) — estimate expected wall time, set a hard timeout, and handle overruns for any `cargo bench` run.
+- [benchmarks-criterion-calibration.instructions.md](benchmarks-criterion-calibration.instructions.md) — per-scenario Criterion configuration for a benchmark group whose scenarios vary widely in cost (entity count, link density, etc.).
