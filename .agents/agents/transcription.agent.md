@@ -4,7 +4,7 @@ description: "Use to transform a raw audio transcript — a file, a folder, or t
 tools: [agent, vscode/askQuestions, edit, read, vscodeGeneral/toolSearch,search, execute, 'compact-terminal-mcp/*', 'peek-mcp/*', session-mcp/peek_range, session-mcp/peek_skeleton, session-mcp/query]
 argument-hint: "Path to the audio-transcript file, a folder containing one, or the raw transcribed text itself (and optional target format: prompt, notes, spec, bullets; and optional output language, default English)."
 user-invocable: true
-model: "GPT-5.4 mini"
+model: "GPT-5.6 Luna"
 ---
 
 You are a transcription refinement specialist for the context-engine repository.
