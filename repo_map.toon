@@ -4,12 +4,12 @@ usage: Read this before opening source files for structural orientation
 refresh_command: "cargo run -p peek-cli -- . --repo-map --output repo_map.toon"
 workspace:
   root: "//?/C:/Users/linus/git/3/meta-workspace/context-engine"
-top_level_dirs[8]: config,"context-stack","duplication-reviews","memory-api","memory-viewers",tools,transcripts,"viewer-api"
+top_level_dirs[7]: config,"context-stack","duplication-reviews","memory-api","memory-viewers",tools,transcripts
 crates:
   name: crates
   kind: dir
   path: crates
-  children[4]:
+  children[3]:
     - name: "context-stack"
       kind: dir
       path: "crates/context-stack"
@@ -112,16 +112,6 @@ crates:
           kind: dir
           path: "crates/tools/tracing-analyzer"
           note: "crate=tracing-analyzer"
-    - name: "viewer-api"
-      kind: dir
-      path: "crates/viewer-api"
-      note: "crate=viewer-api"
-      children[1]:
-        - name: frontend
-          kind: dir
-          path: "crates/viewer-api/frontend"
-          children[1]{name,kind,path,note}:
-            dioxus,dir,"crates/viewer-api/frontend/dioxus","crate=viewer-api-dioxus"
 agent_guidance:
   name: "agent-guidance"
   kind: dir
@@ -146,7 +136,7 @@ agent_files:
         - name: prompts
           kind: dir
           path: "agent-files/.agents/prompts"
-          children[30]{name,kind,path}:
+          children[31]{name,kind,path}:
             audit.prompt.md,file,"agent-files/.agents/prompts/audit.prompt.md"
             "build-validate-tools.prompt.md",file,"agent-files/.agents/prompts/build-validate-tools.prompt.md"
             commit.prompt.md,file,"agent-files/.agents/prompts/commit.prompt.md"
@@ -155,7 +145,6 @@ agent_files:
             "duplication-cleanup.prompt.md",file,"agent-files/.agents/prompts/duplication-cleanup.prompt.md"
             "duplication-consolidation.prompt.md",file,"agent-files/.agents/prompts/duplication-consolidation.prompt.md"
             "duplication-review.prompt.md",file,"agent-files/.agents/prompts/duplication-review.prompt.md"
-            "epic-db6980d1.prompt.md",file,"agent-files/.agents/prompts/epic-db6980d1.prompt.md"
             "execute-roadmap.prompt.md",file,"agent-files/.agents/prompts/execute-roadmap.prompt.md"
             "handoff-tickets.prompt.md",file,"agent-files/.agents/prompts/handoff-tickets.prompt.md"
             handoff.prompt.md,file,"agent-files/.agents/prompts/handoff.prompt.md"
@@ -169,6 +158,8 @@ agent_files:
             research.prompt.md,file,"agent-files/.agents/prompts/research.prompt.md"
             reviews.prompt.md,file,"agent-files/.agents/prompts/reviews.prompt.md"
             spec.prompt.md,file,"agent-files/.agents/prompts/spec.prompt.md"
+            "substantiated-review.prompt.md",file,"agent-files/.agents/prompts/substantiated-review.prompt.md"
+            "substantiated-roast.prompt.md",file,"agent-files/.agents/prompts/substantiated-roast.prompt.md"
             "sync-model-prices.prompt.md",file,"agent-files/.agents/prompts/sync-model-prices.prompt.md"
             tdd.prompt.md,file,"agent-files/.agents/prompts/tdd.prompt.md"
             "ticket-next.prompt.md",file,"agent-files/.agents/prompts/ticket-next.prompt.md"

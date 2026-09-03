@@ -44,18 +44,7 @@ A single raw prompt is refined iteratively as the standard mode of use, not an e
 
 ## Roadmap Compilation and Versioning
 
-`ROADMAP.md` is the single, current, most-refined artifact the pipeline produces. It is the entry point a fresh executing session reads first — it must be self-contained enough that a session starting cold from `ROADMAP.md` alone (plus the cited artifact ids/paths) can begin work without re-reading the whole dossier. See [roadmap-execution.instructions.md](roadmap-execution.instructions.md#purpose) for how an executing session treats and walks the compiled roadmap; the requirements below define what that roadmap must contain.
-
-**Required contents, in order**:
-
-1. **Outcome summary** — two to four sentences stating what this roadmap achieves and why, so a reader grasps the objective before reading anything else. Not a restatement of the raw prompt; state the destination in the reader's terms.
-2. **Relevant artifact IDs** — pull forward the rows from `ARTIFACTS.md` that the current roadmap depends on: ticket ids, spec ids/slugs, doc paths, code/config file paths. Reference by id/path only; do not re-paste artifact bodies.
-3. **Active blockers** — anything currently unresolved that would stop an executing session cold: missing decisions, unmet preconditions. A blocker that requires human judgment belongs to the Stage 5 interview loop, not this list — by the time `ROADMAP.md` is final it should carry none.
-4. **Validation gates** — the most important commands/checks that must pass during and after execution (test commands, `sync-targets --check`, browser verification, spec/ticket linkage checks). Name exact commands where they exist; do not leave a gate as "run the tests."
-5. **Roadmap Waypoints** — the complete ordered route: each waypoint is one scoped stop with a single, clearly measurable objective (one outcome, one acceptance check — not a bundle of loosely related changes). Order waypoints by dependency — see [roadmap-execution.instructions.md's Required Procedure](roadmap-execution.instructions.md#required-procedure) for how an executing session walks that order. For each waypoint, size it: one completable in one session is marked single-session; one too large for one session, or with internal dependencies complex enough to need cross-session tracking, is **not** decomposed inline in `ROADMAP.md` — it is turned into a ticket (see "Ticket Creation During Refinement" below), and the roadmap carries only the ticket id and a one-line summary.
-6. **Heads-up notes** — a flat list of quirks, gotchas, and good-to-know information gathered during research (surprising existing behavior, known broken tooling, naming inconsistencies, things that looked like bugs but are documented behavior) that would otherwise cost a fresh session time to rediscover.
-
-**Size constraint**: `ROADMAP.md` is a root anchor for the entire effort, not an exhaustive plan — keep it readable in one pass. If compiling it produces a sprawling waypoint list or deeply nested sub-tasks, that is a signal to push the complexity into tickets (item 5 above) rather than growing the file. The roadmap should read like a table of contents with status, not a full project plan.
+`ROADMAP.md` is the single, current, most-refined artifact the pipeline produces. It is the entry point a fresh executing session reads first — it must be self-contained enough that a session starting cold from `ROADMAP.md` alone (plus the cited artifact ids/paths) can begin work without re-reading the whole dossier. See [roadmap-execution.instructions.md](roadmap-execution.instructions.md#purpose) for how an executing session treats and walks the compiled roadmap, and [roadmap-authoring.instructions.md](roadmap-authoring.instructions.md) for the required structure, waypoint scoping thresholds, and syntax rules a compiled roadmap must follow — this stage produces that structure, it does not redefine it.
 
 **Iteration rule**: `ROADMAP.md` is expected to be revised as research deepens or execution surfaces new information. Never overwrite a prior iteration in place. Before writing an improved version, rename the existing `ROADMAP.md` to a versioned name (`ROADMAP.v1.md`, `ROADMAP.v2.md`, ...) inside the same dossier folder, then write the new, more refined content to `ROADMAP.md`. Only one file is ever named `ROADMAP.md` — it is always the most current, most refined iteration. The dossier's `README.md` index must point at `ROADMAP.md`, not at a versioned snapshot.
 
@@ -72,13 +61,7 @@ A compiled roadmap is a draft until it has been dry-run at least once. Repeat th
    - **Informational gap** — something the session could stumble on but is not fully blocking (an ambiguous acceptance check, a missing heads-up note, an unclear ownership boundary between two waypoints).
 4. Fix cheap findings directly in `ROADMAP.md`: reorder a waypoint, sharpen an objective to be single-outcome, add a missing validation command, add a heads-up note. Route expensive findings to a ticket per "Ticket Creation During Refinement" below instead of expanding the roadmap prose.
 
-**Structural advice for even flow and dependency resolution**:
-
-- Prefer a roadmap that reads as a dependency-ordered route with no forward references — a waypoint must never depend on something only introduced by a later waypoint.
-- Split any waypoint that bundles more than one measurable objective; merge trivially small fragments that only exist because a split was too aggressive.
-- Flag waypoints that all depend on the same upstream blocker or artifact — they are candidates for parallel execution once that blocker clears, and the roadmap should say so rather than force a false sequential order.
-- Watch for a waypoint whose real dependency is implicit (undeclared code coupling, an unstated shared file) rather than declared — the artifact inventory (`ARTIFACTS.md`) is the source to check this against.
-- A roadmap with an uneven flow — a few tiny waypoints followed by one sprawling one — is a decomposition defect: push the sprawling waypoint's internal complexity into a ticket rather than leaving it lumpy in the roadmap.
+Apply [roadmap-authoring.instructions.md's Scoping Guidelines](roadmap-authoring.instructions.md#scoping-guidelines) during this dry-run pass — forward references, bundled objectives, hidden parallelism, implicit dependencies, and uneven waypoint flow are exactly the defects that section defines and this loop exists to catch.
 
 ## Ticket Creation During Refinement
 
@@ -109,6 +92,15 @@ Run it before `tickets.prompt.md`, `spec.prompt.md`, or any multi-file implement
 - ambiguous about whether it is one request or several interleaved concerns.
 
 Skip it for an already-bounded, single-file fix or an ask that already names its acceptance criteria — running the full pipeline on a two-line, unambiguous prompt is pure overhead.
+
+## Related Dossier Workflows
+
+This file owns the six-stage shell for turning one raw prompt into one dossier. Related but distinct dossier workflows live in their own files rather than as sections here:
+
+- [roadmap-authoring.instructions.md](roadmap-authoring.instructions.md) — the structure, scoping thresholds, and syntax rules a compiled `ROADMAP.md` must follow.
+- [dossier-external-references.instructions.md](dossier-external-references.instructions.md) — how a dossier cites a ticket, spec, file, other dossier, or true external source.
+- [dossier-porting.instructions.md](dossier-porting.instructions.md) — copying a bounded finding or artifact from one dossier into an unrelated one, short of a full [dossier-merge.instructions.md](dossier-merge.instructions.md).
+- [dossier-idea-workspace.instructions.md](dossier-idea-workspace.instructions.md) — running a dossier as an open-ended idea workspace before committing to roadmap compilation.
 
 ## Cost Note
 
