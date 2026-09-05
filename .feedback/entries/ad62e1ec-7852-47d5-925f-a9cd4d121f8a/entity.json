@@ -1,0 +1,24 @@
+{
+  "id": "ad62e1ec-7852-47d5-925f-a9cd4d121f8a",
+  "legacy_append_ordinal": 143462,
+  "entry": {
+    "id": "ad62e1ec-7852-47d5-925f-a9cd4d121f8a",
+    "schema_version": 2,
+    "source": "agent",
+    "target": {
+      "workspace": "default",
+      "store": "ticket",
+      "entity": "6a47ab0f-7e42-463e-afe0-bf51b85249c9"
+    },
+    "rating": "not-helpful",
+    "note_text": ".agents/instructions/orchestration/model-routing.instructions.md — the \"When NOT to Delegate (The Floor)\" section is advisory and was not honored: a 3-line edit was delegated and cost 20 min (session 51701334 events.json L80467). Needs an enforced, concrete delegation floor (min task size/scope) and a mandatory verify-before-accept gate; \"Verify Subagent Output Before Acting\" was ignored while sub-agents reported PASS with shipped defects.",
+    "note_kind": "suggestion",
+    "provenance": {
+      "session_id": "51701334-cf77-4a4b-97f3-5df8753631e1",
+      "author": "review-agent",
+      "executed_at": "2026-07-26T12:48:59.809998500+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "5c63a07a47a25426df4925158ac9acd98ff0107694fe90ad37391286a6ef4481"
+}

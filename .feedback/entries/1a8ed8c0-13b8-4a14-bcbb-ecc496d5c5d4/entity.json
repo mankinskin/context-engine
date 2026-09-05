@@ -1,0 +1,23 @@
+{
+  "id": "1a8ed8c0-13b8-4a14-bcbb-ecc496d5c5d4",
+  "legacy_append_ordinal": 143466,
+  "entry": {
+    "id": "1a8ed8c0-13b8-4a14-bcbb-ecc496d5c5d4",
+    "schema_version": 2,
+    "source": "agent",
+    "target": {
+      "workspace": "default",
+      "store": "ticket",
+      "entity": "9e450826-60e1-437f-b236-2c8839e4ab9e"
+    },
+    "rating": "not-helpful",
+    "note_text": "RETURN (track-readiness-review): plan output has no durable artifact location or approval record, so 7ef3f8db cannot consume a fixed contract.",
+    "note_kind": "note",
+    "provenance": {
+      "author": "review-agent",
+      "executed_at": "2026-08-06T02:10:50.640397400+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "c2517072c350188fde9e9e6c8d29cc74ea1cd69dbc9005a8e8288360b34d44d0"
+}

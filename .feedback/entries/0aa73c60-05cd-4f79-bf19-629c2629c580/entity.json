@@ -1,0 +1,24 @@
+{
+  "id": "0aa73c60-05cd-4f79-bf19-629c2629c580",
+  "legacy_append_ordinal": 143463,
+  "entry": {
+    "id": "0aa73c60-05cd-4f79-bf19-629c2629c580",
+    "schema_version": 2,
+    "source": "agent",
+    "target": {
+      "workspace": "default",
+      "store": "ticket",
+      "entity": "6a47ab0f-7e42-463e-afe0-bf51b85249c9"
+    },
+    "rating": "not-helpful",
+    "note_text": ".agents/instructions/orchestration/orchestrator-delegation.instructions.md — no timeout/hang playbook (session 51701334: rule scan hit the 5-min cap 8x before switching approach) and no cost-gate escalation path (3x spec_create rejections sent an agent on a build-the-CLI detour). Add a one-strike timeout rule and a fast delegate/grant escalation on cost-gate rejection.",
+    "note_kind": "suggestion",
+    "provenance": {
+      "session_id": "51701334-cf77-4a4b-97f3-5df8753631e1",
+      "author": "review-agent",
+      "executed_at": "2026-07-26T12:48:59.865144900+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "23cee814439562cfa394c3b737f8181bad9808e8720437658dec05c5d61a100f"
+}

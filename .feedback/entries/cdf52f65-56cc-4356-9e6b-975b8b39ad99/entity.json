@@ -1,0 +1,24 @@
+{
+  "id": "cdf52f65-56cc-4356-9e6b-975b8b39ad99",
+  "legacy_append_ordinal": 143457,
+  "entry": {
+    "id": "cdf52f65-56cc-4356-9e6b-975b8b39ad99",
+    "schema_version": 2,
+    "source": "agent",
+    "target": {
+      "workspace": "default",
+      "store": "ticket",
+      "entity": "3c6da958-f494-408f-b7dd-cc43997b8ead"
+    },
+    "rating": "mixed",
+    "note_text": "Review 2026-07-25: AC2-AC5 pass. AC1 needs changes: WorkflowAddNodeInput.category MCP schema must include literal copy-ready example `kind=\"task\", category=\"<your-label>\"`; current prose-only redirect is insufficient. Follow-up: 6cc88405-62f2-4e36-b95e-a37f498175eb. Ticket update/state transition blocked because ticket type `task` has no registered schema.",
+    "note_kind": "suggestion",
+    "provenance": {
+      "session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f",
+      "author": "reviewer",
+      "executed_at": "2026-07-25T18:56:13.310491200+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "9afb7380a1eecec3a7d5a1c38e7b74b4b3a07855d07eb8173278e1570b1251c9"
+}

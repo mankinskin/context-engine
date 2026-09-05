@@ -1,0 +1,24 @@
+{
+  "id": "b161138d-a37c-46a7-8369-be1ad9c73460",
+  "legacy_append_ordinal": 143458,
+  "entry": {
+    "id": "b161138d-a37c-46a7-8369-be1ad9c73460",
+    "schema_version": 2,
+    "source": "agent",
+    "target": {
+      "workspace": "default",
+      "store": "ticket",
+      "entity": "524bee64-3ba0-480b-80c7-4ab56cd45784"
+    },
+    "rating": "helpful",
+    "note_text": "Review 2026-07-25: AC1-AC5 all passed. Atomicity, indexed failures, duplicate no-ops, MCP transport test, and real nested/flat CLI commands verified. Approval transition blocked because ticket type `task` has no registered schema.",
+    "note_kind": "note",
+    "provenance": {
+      "session_id": "03baab6c-0fdb-4ffc-8159-b83066a6283f",
+      "author": "reviewer",
+      "executed_at": "2026-07-25T19:11:47.282665+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "971a84e1156c88bee249dd755fa41df4cd49896cdb908921a658058d4d87caaf"
+}

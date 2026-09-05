@@ -1,0 +1,23 @@
+{
+  "id": "bc27310e-1687-413f-93fb-33438db3c3c2",
+  "legacy_append_ordinal": 123438,
+  "entry": {
+    "id": "bc27310e-1687-413f-93fb-33438db3c3c2",
+    "schema_version": 2,
+    "source": "transcript-mined",
+    "target": {
+      "workspace": "default",
+      "store": "rule",
+      "entity": "723ec03d-9a3a-4986-86e9-06c7b4715002"
+    },
+    "rating": "mixed",
+    "note_text": "Transcript mining detected likely rule confusion for 723ec03d-9a3a-4986-86e9-06c7b4715002 at sequence 4",
+    "note_kind": "suggestion",
+    "provenance": {
+      "author": "copilot-capture-hook",
+      "executed_at": "2026-07-13T20:40:59.633677700+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "1b4bab24ca7bbf8709b0896859158882f01e1fdf6092a11610f7af94e281640c"
+}

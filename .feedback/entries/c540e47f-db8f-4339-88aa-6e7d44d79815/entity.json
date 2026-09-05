@@ -1,0 +1,23 @@
+{
+  "id": "c540e47f-db8f-4339-88aa-6e7d44d79815",
+  "legacy_append_ordinal": 120832,
+  "entry": {
+    "id": "c540e47f-db8f-4339-88aa-6e7d44d79815",
+    "schema_version": 2,
+    "source": "transcript-mined",
+    "target": {
+      "workspace": "default",
+      "store": "rule",
+      "entity": "eaa176c7-4d98-4f0f-aea6-97ab1a2f72a4"
+    },
+    "rating": "mixed",
+    "note_text": "Transcript mining detected likely rule confusion for eaa176c7-4d98-4f0f-aea6-97ab1a2f72a4 at sequence 5",
+    "note_kind": "suggestion",
+    "provenance": {
+      "author": "copilot-capture-hook",
+      "executed_at": "2026-07-13T20:40:48.561645500+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "8d6c2131eb5b0dc95d445d929e0eff689459c7dacddfd1c4eab4244dead53506"
+}

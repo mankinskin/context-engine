@@ -1,0 +1,23 @@
+{
+  "id": "dba278ea-5535-43f2-84e0-abbbfa45654b",
+  "legacy_append_ordinal": 43716,
+  "entry": {
+    "id": "dba278ea-5535-43f2-84e0-abbbfa45654b",
+    "schema_version": 2,
+    "source": "transcript-mined",
+    "target": {
+      "workspace": "default",
+      "store": "rule",
+      "entity": "205e682a-f52b-4624-abe1-2affc6f20217"
+    },
+    "rating": "mixed",
+    "note_text": "Transcript mining detected likely rule confusion for 205e682a-f52b-4624-abe1-2affc6f20217 at sequence 59",
+    "note_kind": "suggestion",
+    "provenance": {
+      "author": "copilot-capture-hook",
+      "executed_at": "2026-07-13T19:54:47.345664700+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "985ad4175b860dd20a04ce9a9ccbdac0d73d0c68861b8b14544ae43f4b8273b1"
+}

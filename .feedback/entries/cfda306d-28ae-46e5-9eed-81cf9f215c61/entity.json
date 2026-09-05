@@ -1,0 +1,23 @@
+{
+  "id": "cfda306d-28ae-46e5-9eed-81cf9f215c61",
+  "legacy_append_ordinal": 70507,
+  "entry": {
+    "id": "cfda306d-28ae-46e5-9eed-81cf9f215c61",
+    "schema_version": 2,
+    "source": "transcript-mined",
+    "target": {
+      "workspace": "default",
+      "store": "rule",
+      "entity": "c7803a26-fb05-46c2-a8a9-4681e645a988"
+    },
+    "rating": "mixed",
+    "note_text": "Transcript mining detected likely rule confusion for c7803a26-fb05-46c2-a8a9-4681e645a988 at sequence 52",
+    "note_kind": "suggestion",
+    "provenance": {
+      "author": "copilot-capture-hook",
+      "executed_at": "2026-07-13T19:57:24.872656700+00:00"
+    },
+    "status": "new"
+  },
+  "digest": "fe8601cf2107b382bfdffb38f2502dfeb7d2e6e95e9ee4f0ee4c8ec84cdf54bf"
+}
