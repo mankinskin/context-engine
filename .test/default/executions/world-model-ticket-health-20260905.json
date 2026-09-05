@@ -1,0 +1,19 @@
+{
+  "id": "world-model-ticket-health-20260905",
+  "validation_spec_id": "world-model-ticket-health",
+  "outcome": "passed",
+  "executed_at": "2026-09-04T23:45:41.843530700Z",
+  "duration_ms": 160,
+  "detail": "ticket health 97463359 passed with zero findings after adding effort metadata and the completed W1 depends_on prerequisite.",
+  "links": {
+    "ticket_ids": [
+      "97463359"
+    ]
+  },
+  "provenance": {
+    "domain": "ticket",
+    "operation": "health",
+    "transport": "cli",
+    "run_id": "world-model-implementation"
+  }
+}

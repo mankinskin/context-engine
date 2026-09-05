@@ -1,0 +1,19 @@
+{
+  "id": "world-model-diff-check-20260905",
+  "validation_spec_id": "world-model-diff-check",
+  "outcome": "passed",
+  "executed_at": "2026-09-04T23:45:22.577652500Z",
+  "duration_ms": 120,
+  "detail": "git diff --check passed for all scoped documentation changes; governing spec is workflow/agent-world-model.",
+  "links": {
+    "ticket_ids": [
+      "97463359"
+    ]
+  },
+  "provenance": {
+    "domain": "documentation",
+    "operation": "diff-check",
+    "transport": "cli",
+    "run_id": "world-model-implementation"
+  }
+}

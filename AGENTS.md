@@ -14,7 +14,7 @@ Global working rules for this repository. Keep this file small and stable.
 - Use Unix-style paths (`/`) in commands and docs.
 - Read test logs in `target/test-logs/` for debugging instead of relying on truncated test stdout.
 - Keep scope tight: do not add extra features or broad refactors unless requested.
-- Declare the session identity and execution checkout at the start of each session, then repeat both in the final response; use the main checkout unless the session has an explicitly registered worktree. Follow [session-identity-and-handoff.instructions.md](.agents/instructions/session/session-identity-and-handoff.instructions.md).
+- Declare the session identity and execution checkout at the start of each session, then repeat both in the final response; use the main checkout unless the session has an explicitly registered worktree. Follow the [agent world-model narrative](../workflow-tools/.agents/instructions/workflow/agent-world-model.instructions.md) for the lifecycle and return contract.
 
 ## Checkout Resolution
 
@@ -58,10 +58,11 @@ Use static references as support:
 - **Ticket threshold**: a ticket is required only when the work is large enough to plausibly span multiple sessions — a feature, a cross-cutting refactor, a multi-file/multi-component change, or anything with unclear scope. A ticket is NOT required for a small, self-contained change: one existing file, or the addition of one new file, completable in the current session. Do not create a ticket for a small refactor just because it touches guidance, docs, or config rather than application code — the file type does not change the size threshold.
 - Small, self-contained change (no ticket needed): may be made in the main checkout without a ticket or spec update. Verify that no active board entry owns the path, stage only the changed path, and validate before committing. It does not require worktree provisioning, `session_check_in`, or `board_check_in`.
 - Simple fix (1-2 files, behavior requirements unchanged): gather context, implement, validate, and update docs directly — no ticket required.
-- Bug fix: if it stays within the small-change threshold above, fix directly; otherwise create the tracking ticket first and follow `.agents/prompts/debug-test.prompt.md` when available.
-- Feature or refactor (>5 files, >100 LOC, spans multiple sessions, or unclear scope): create or update the spec first — directly from the free-form request or dossier, capturing the goal and its definition of success, via `.agents/prompts/spec.prompt.md` — then use `.agents/prompts/tickets.prompt.md` to establish the implementation ticket(s) that reference the spec and plan how to reach it. Do not create a ticket to author spec content; a ticket describes how to get to the goal, not the goal itself, and referencing the spec (not restating it) is the ticket's responsibility.
-- Worktrees are an opt-in isolation tool, not a ticket-size threshold. Default to the main checkout after checking the board for overlapping ownership. Create a worktree only when concurrent edits would conflict, the requester requires branch isolation, or the planned Git operation requires an independent branch. A ticket, a multi-file change, a submodule, or a risky change alone does not require a worktree. For worktree-backed work, claim the session and board and use `worktree-ctl` for bootstrap, rebase, merge, and teardown; see [worktree-workflow.instructions.md](.agents/instructions/commit/worktree-workflow.instructions.md). Rebase and integrate affected submodules before the superproject.
-- Unfamiliar module or unclear behavior: follow `.agents/prompts/research.prompt.md` when available before locking the spec or implementation plan.
+- Bug fix: if it stays within the small-change threshold above, fix directly; otherwise create the tracking ticket first and capture the reproduction and validation evidence in the ticket.
+- Feature or refactor (>5 files, >100 LOC, spans multiple sessions, or unclear scope): create or update the spec first, then establish implementation ticket(s) that reference the spec and plan how to reach it. Do not create a ticket to author spec content; a ticket describes how to get to the goal, not the goal itself, and referencing the spec (not restating it) is the ticket's responsibility.
+- Worktrees are an opt-in isolation tool, not a ticket-size threshold. Default to the main checkout after checking the board for overlapping ownership. Create a worktree only when concurrent edits would conflict, the requester requires branch isolation, or the planned Git operation requires an independent branch. A ticket, a multi-file change, a submodule, or a risky change alone does not require a worktree. For worktree-backed work, follow the [repository workflow](../workflow-tools/.agents/instructions/repository/workflow.instructions.md). Rebase and integrate affected submodules before the superproject.
+- Unfamiliar module or unclear behavior: follow the [research prompt](../workflow-tools/.agents/prompts/research.prompt.md) when available before locking the spec or implementation plan.
+- Planning and implementation order are owned by [phase-separation.instructions.md](../workflow-tools/.agents/instructions/workflow/phase-separation.instructions.md); this section keeps only the ticket and spec size thresholds.
 
 ## Quality Gates
 
@@ -88,10 +89,10 @@ let _tracing = init_test_tracing!(&graph);
 - When dedicated test, doc, or cross-store-link tooling is missing or partial, use the strongest available command or manual check and call out the limitation explicitly in the status summary and spec traceability.
 - Follow `.github/hooks/` reminders when they fire.
 - Scratch notes belong in temporary files only; do not commit ephemeral notes.
-- Follow the closed-loop iteration workflow: Review→Interview→Commit→Handoff. See [loop-closure.instructions.md](.agents/instructions/orchestration/loop-closure.instructions.md).
-- Follow the production workflow cycle: request → spec → tickets → tests → implementation → validated response → next iteration. See [core-cycle.instructions.md](.agents/instructions/orchestration/core-cycle.instructions.md).
-- When a handoff package is incomplete or requirements are ambiguous, escalate rather than clarifying inline during implementation. See [escalation-gate.instructions.md](.agents/instructions/orchestration/escalation-gate.instructions.md).
-- Never commit directly to `main` for worktree-backed work — all such commits land on the feature branch. After the branch is rebased clean and validation passes, the session merges its own feature branch into `main` (bottom-up: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on the feature branch, then fast-forward each `main`). A validated main-checkout task may commit its explicitly staged paths directly to `main`. See [worktree-merge.instructions.md](.agents/instructions/commit/worktree-merge.instructions.md#bottom-up-integration-sequence-canonical).
+- Follow the closed-loop iteration workflow: Review→Interview→Commit→Handoff. See [loop-closure.instructions.md](../workflow-tools/.agents/instructions/workflow/loop-closure.instructions.md).
+- Follow the production workflow cycle: request → spec → tickets → tests → implementation → validated response → next iteration. See [core-cycle.instructions.md](../workflow-tools/.agents/instructions/workflow/core-cycle.instructions.md).
+- When a handoff package is incomplete or requirements are ambiguous, escalate rather than clarifying inline during implementation. See [escalation-gate.instructions.md](../workflow-tools/.agents/instructions/workflow/escalation-gate.instructions.md).
+- Never commit directly to `main` for worktree-backed work — all such commits land on the feature branch. After the branch is rebased clean and validation passes, the session merges its own feature branch into `main` (bottom-up: rebase every affected submodule then the superproject onto updated `main`, resolve conflicts on the feature branch, then fast-forward each `main`). A validated main-checkout task may commit its explicitly staged paths directly to `main`. See the [repository workflow](../workflow-tools/.agents/instructions/repository/workflow.instructions.md) for commit and integration rules.
 
 ## Feedback Workflow
 
@@ -105,8 +106,8 @@ let _tracing = init_test_tracing!(&graph);
 
 ## Escalation Rules
 
-- If blocked by ambiguity after focused research (10-15 minutes), ask the user.
-- If evidence conflicts or architecture tradeoffs are required, ask before committing to a direction.
+Clarification and ambiguity blocking are owned by [escalation-gate.instructions.md](../workflow-tools/.agents/instructions/workflow/escalation-gate.instructions.md); question construction is owned by [question-quality.instructions.md](../workflow-tools/.agents/instructions/workflow/question-quality.instructions.md).
+
 - In multi-agent workspaces, treat unrelated workspace changes as expected background activity and continue.
 - Before worktree-backed editing, claim ownership of the files you will touch; commit only your owned changes, and release ownership when done. Before a small main-checkout change, inspect the board and do not touch a path actively owned by another agent.
 - Ignore unrelated changes by default; do not interrupt work solely because they exist.
@@ -115,7 +116,7 @@ let _tracing = init_test_tracing!(&graph);
 
 ## Token-Efficient Output
 
-See token-efficient workflow guidance in [.agents/instructions/orchestration/](.agents/instructions/orchestration/) covering compact output, bounded file inspection, tool output handling, differential patching, and model-cost-aware routing. For ticket reads, default to the narrowest `--view` profile (`summary` to orient, `plan` to implement, `review` to verify) instead of pulling a whole ticket — see [ticket/workflow.instructions.md](.agents/instructions/ticket/workflow.instructions.md).
+See the canonical [workflow instructions](../workflow-tools/.agents/instructions/workflow/) for compact output, bounded file inspection, tool output handling, and model-cost-aware routing. For ticket reads, default to the narrowest `--view` profile (`summary` to orient, `plan` to implement, `review` to verify).
 
 ## Clickable Reference Policy
 

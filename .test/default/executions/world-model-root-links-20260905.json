@@ -1,0 +1,19 @@
+{
+  "id": "world-model-root-links-20260905",
+  "validation_spec_id": "world-model-root-links",
+  "outcome": "passed",
+  "executed_at": "2026-09-04T23:45:28.466104900Z",
+  "duration_ms": 80,
+  "detail": "No dead root-relative guidance links remain in context-engine/AGENTS.md; the four roadmap-listed stale references and the final worktree pointer were repaired.",
+  "links": {
+    "ticket_ids": [
+      "97463359"
+    ]
+  },
+  "provenance": {
+    "domain": "documentation",
+    "operation": "link-cleanup",
+    "transport": "cli",
+    "run_id": "world-model-implementation"
+  }
+}

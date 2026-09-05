@@ -1,0 +1,14 @@
+{
+  "id": "world-model-diff-check",
+  "title": "World-model scoped documentation diff check",
+  "command": "git diff --check",
+  "detail": "Whitespace and patch-integrity check across the dossier README, context-engine AGENTS.md, and canonical workflow narrative.",
+  "links": {
+    "spec_ids": [
+      "0e19abd2-fcc2-4b1a-aa43-f6b6594c28d6"
+    ],
+    "ticket_ids": [
+      "97463359"
+    ]
+  }
+}
