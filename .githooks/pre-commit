@@ -190,4 +190,37 @@ if staged_matches '^(viewer-api/rule-targets\.yaml|viewer-api/\.rule/.*|viewer-a
     check_rule_targets 'viewer-api/rule-targets.yaml'
 fi
 
+check_markdown_links() {
+    local auditor="${AUDIT_BIN:-}"
+
+    if [[ -z "$auditor" ]]; then
+        for candidate in \
+            "$repo_root/../workflow-tools/target/debug/audit.exe" \
+            "$repo_root/../workflow-tools/target/debug/audit"; do
+            if [[ -x "$candidate" ]]; then
+                auditor="$candidate"
+                break
+            fi
+        done
+    fi
+
+    if [[ -z "$auditor" ]]; then
+        auditor="$(command -v audit || true)"
+    fi
+
+    if [[ -z "$auditor" ]]; then
+        echo "pre-commit: audit links command unavailable; build audit-cli or set AUDIT_BIN" >&2
+        exit 1
+    fi
+
+    if ! "$auditor" links "$repo_root"; then
+        echo "pre-commit: Markdown link-coherence check failed; repair the reported guidance links" >&2
+        exit 1
+    fi
+}
+
+if staged_matches '(^|/)\.agents/.*\.md$|(^|/)AGENTS\.md$'; then
+    check_markdown_links
+fi
+
 exit 0
