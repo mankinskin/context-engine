@@ -1,114 +1,163 @@
-# Roadmap — Spec-System Redesign and Full Workflow-Cycle Implementation
+# Roadmap - Stage 4 Spec-System Workflow-Cycle Route
 
 ## Outcome Summary
 
-Implement, test, and document a new component-oriented specification system — components, measurable acceptance criteria, external evidence references, and directed consumer/provider contract edges (permitting cycles) — specified as dogmatically as possible using the *current* (old) spec tooling, then used to specify the full production workflow cycle (request → spec → tickets → tests → implementation → validated response → next iteration) and its adjacent tooling (tickets, docs, tests). The new system then becomes authoritative: the spec system's own specification migrates into it, its technical documentation (crate README/HIGH_LEVEL_GUIDE) is updated, the presentation deck gains a diagram of the finished cycle, and agent guidance is updated to teach the new system and cycle — the three legs of actually facing the user with the results, not just shipping code. The main outcome is a better-specified, better-verified basis for defining goals on both new and existing products — not a documentation exercise.
-
-This roadmap supersedes both source dossiers' own `ROADMAP.md` files as the current, most-refined artifact for this combined effort; see `sources/*/ROADMAP.md` for each dossier's original, narrower plan.
+This route reaches a verifiable component-oriented specification system by first completing every unresolved prerequisite that blocks W6.1. The route then executes W6.1 migration tooling, the remaining W6.x closure, dogfood migration, documentation and guidance, and an evidence-backed response. The roadmap remains planning-only until the requester explicitly approves it.
 
 ## Relevant Artifact IDs
 
-See [ARTIFACTS.md](ARTIFACTS.md) for the full union with state and relevance. Load-bearing ids repeated here for convenience:
-
-- Ticket-depends-on-spec gating edge — cited by both source dossiers as ticket `5b50329b`, but a dry-run probe of this roadmap found that id does not resolve in the current ticket store (see Active Blockers). Genuinely distinct from the contract-edge model below (ticket-level vs. component-level; see duplication-review verdict below).
-- [2ccde9ee Presentation System spec](../../.spec/specs/2ccde9ee-85ac-4c87-9601-f6099f5be01c/spec.toml) — shared case-study anchor for the monolithic-shape problem; **no longer the migration target** (see Resolved Decisions).
-- [0ee95228 presentation epic](../../.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml) — coordinate with, do not bypass, for the presentation-deck waypoint.
-- [workflow-tools/spec/crates/spec-api/](../../workflow-tools/spec/crates/spec-api/) — current (old) spec tooling: `manifest.rs`, `schemas/specification.toml`, `store/sections.rs`, `store/hierarchy.rs`, `ticket_ref.rs`, `tests/schema_test.rs`.
-- [duplication-reviews/22-08-2026_spec-system-workflow-cycle-merge/](../../duplication-reviews/22-08-2026_spec-system-workflow-cycle-merge/) — this merge's duplication-review workspace.
-
-## Duplication-Review Consolidation Verdict
-
-A scoped duplication review (workspace above) compared both source dossiers' key artifacts and resolved three open questions before this roadmap was compiled:
-
-- Both dossiers describe overlapping views of "the spec system" (same Presentation System spec id, same test-api evidence-linking capability, same confirmed absence of ticket→spec gating) — consolidated once each into [ARTIFACTS.md](ARTIFACTS.md) instead of restated per-waypoint.
-- The **directed contract edge** (Dossier B, component-to-component, within one spec) and the **ticket-depends-on-spec gating edge** (Dossier A, ticket-to-spec, ticket 5b50329b) are **genuinely distinct** and are kept as two separate waypoints below, not merged.
-- Both source `ROADMAP.md` files independently referenced the same Presentation System spec id and the same `[[refs]]`-is-informational-only caution — this was intentional cross-dossier coordination, not accidental duplication, and is preserved as a single statement here.
+- Ticket store: `.workflow-tools/ticket/tickets/`.
+- Spec store: `.workflow-tools/spec/specs/`.
+- `30bbbace` W6.1: `.workflow-tools/ticket/tickets/30bbbace-7ce3-4f7e-acb4-202d08cf91d7/ticket.toml`.
+- `73b2cd22`: `.workflow-tools/ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/ticket.toml`.
+- `35cd05c1`: `.workflow-tools/ticket/tickets/35cd05c1-45f7-4d65-b943-7c000570928f/ticket.toml`.
+- `aa94d02e`: `.workflow-tools/ticket/tickets/aa94d02e-9620-4db6-9974-36699cd56537/ticket.toml`.
+- `bce26d30`: `.workflow-tools/ticket/tickets/bce26d30-0a79-40b4-812a-c14b4a246de5/ticket.toml`.
+- `f1b8f01a`: `.workflow-tools/spec/specs/f1b8f01a-c7da-4a71-97c5-39519a7d7f38/spec.toml`.
+- W6 downstream tickets: `c61d8b27`, `17aa8220`, `b3626b87`, and `50dc45df` under `.workflow-tools/ticket/tickets/`.
+- Implementation surface: `workflow-tools/spec/crates/spec-api/`.
+- Work packages: [06](06-prerequisite-wave-1.md), [07](07-prerequisite-wave-2.md), [08](08-prerequisite-wave-3.md), [09](09-prerequisite-wave-4.md), and [01](01-migration-tooling.md) through [05](05-final-validation.md).
 
 ## Active Blockers
 
-None. Ticket `5b50329b` was intentionally deleted by the requester, not lost: it was created before its own governing spec existed, which the corrected spec-before-ticket ordering (see Resolved Decisions) makes premature — deleting it was the correct action, not a defect to fix by recreating it. Waypoint 12 records this below as a dependency (spec first), not as a blocker.
-
-The contract-ownership decision left open by Dossier B is resolved (see Resolved Decisions); that is not a blocker.
-
-## Review And Approval Status
-
-On 2026-08-23, the user reviewed and approved the Waypoint 3-4 specifications
-and the bounded Waypoint 5a Worktree Control Component Pilot as
-implementation-ready for Waypoint 6 ticket planning. The approved owning specs
-are [f1b8f01a Component-Oriented Specification System](../../.spec/specs/f1b8f01a-c7da-4a71-97c5-39519a7d7f38/body.md)
-and [fa6e85c8 Worktree Control Component Pilot](../../.spec/specs/fa6e85c8-866c-4d53-bb50-b78bd651e8ce/body.md).
-
-The approval covers the target contracts only. It does not claim that v2 typed
-persistence, migration, component edges, templates, `TypedTarget`, annotations,
-health/hook enforcement, the shared operation journal, document resolution, or
-proportional ticket gating are implemented. Waypoints 5 and 5a are approved,
-and Waypoint 6 is unblocked for ticket planning.
-
-## Resolved Decisions
-
-- **Contract ownership** (from Dossier B): each component declares only its own outward-facing contract (owned acceptance criteria); a consuming component's edge references the provider's owned criteria rather than restating them.
-- **Migration target** (superseding Dossier B's original Presentation-System-first pilot): per this merge's directing instructions, the first migration target is **the spec system's own specification** — the new system must be able to describe itself before any other spec migrates into it. The Presentation System spec remains the illustrative case study for the monolithic-shape problem and a candidate for a *later* migration, not the first pilot.
-- **Spec-before-ticket ordering** (corrects `AGENTS.md`'s prior Task Routing text, already fixed there as of this iteration): the spec is authored first, directly from a free-form request or dossier, and captures the goal/definition of success. The implementation ticket is created second, referencing the spec, and plans how to reach that goal — it must never be created merely to author or restate spec content, since that responsibility belongs to spec authoring, not ticket authoring. Waypoints 3-4 below are direct spec-authoring steps for exactly this reason, not ticket-wrapped work.
-- **Criterion validation is best-effort, not mandatory.** Documenting an acceptance criterion without an executable check is a valid, complete outcome — a criterion with no `validated_by` entry is not a defect. Add automated validation wherever feasible, but do not block a spec's review or a criterion's acceptance on finding one.
-- **Ticket 5b50329b's deletion was correct, not a regression.** The requester confirmed it was deleted deliberately: it was created before a spec existed for the ticket-api gating-edge change it describes, which is exactly the ordering mistake the spec-before-ticket correction above targets. Do not recreate it as a standalone fix; Waypoint 12 now depends on a governing spec existing first (see Waypoint 12).
-- **Audited for other premature tickets: none found.** Every `transcripts/**/*.md` roadmap in the repository was searched for the same "ticket created during roadmap compilation, per the ticket-creation exception" pattern. `5b50329b` was the only ticket ever created that way — no other dossier-driven ticket exists without a spec behind it. Separately, 84 of the 86 epic/feature tickets store-wide currently have no `spec` field at all, but auditing those is a materially larger, separate question (most predate any spec-first practice) and was intentionally left out of scope here rather than silently expanded into.
+- **2026-09-11 — W1 and W2:** tickets `35cd05c1` and `aa94d02e` are dependency-actionable, but neither ticket has a governing spec link. The implementation readiness gate requires spec coverage before a ticket-backed code change can start. Impact: the two wave-1 tickets cannot enter implementation; every later waypoint remains blocked. Required resolution: replan the route to author or identify governing specs for the memory-kernel journal-envelope and log-api live-indexing scopes, then link those specs to the tickets before execution resumes.
 
 ## Validation Gates
 
-- `cargo test -p spec-api --test schema_test` — must keep passing as `format_version = 2` gains canonical typed tables, explicit migration-map handling, and ordinary parent-owned composition criteria.
-- `./target/debug/spec.exe health --all` — structural health check across all specs, including v2 version/table enforcement, migration-map diagnostics, component/criterion/evidence/contract-edge specs, and parent composition criteria.
-- `./target/debug/spec.exe health --all --json` reports policy-classified findings without a findings-only failure; PostToolUse validates changed relevant roots plus impacted composition ancestors, blocks policy-error findings, and fails closed on validator failure. Only the known `9f0b9e30` baseline is accepted.
-- Template fixtures cover root-local `.spec/criterion-templates.toml`, immutable ids, integer versions, only `string`/`identifier`/`component_id` parameters, literal `${parameter}` substitution in id/statement/measurement, lexical bindings, and review-required migrations without automatic rewrite.
-- Typed-reference fixtures cover `TypedTarget` parsing for spec/code/ticket/document/component/criterion, malformed-request rejection, recognized unsupported kind/version, and `spec links <id> --json` source-field/normalized-target/resolution/failure-detail output.
-- A representative two-component cycle example (each serving and consuming the other) assigns every criterion, provider obligation, and consumer claim exactly once under the adopted ownership rule; its parent asserts direct-child ids, required child shape, and required inter-child edges through ordinary `CriterionArtifact` records without restating child criteria.
-- Proc-macro compile fixtures reject malformed `#[implements]` and `#[validates]` syntax, and offline resolver/health fixtures discover their emitted registration metadata; local variables remain excluded.
-- User review sign-off recorded (e.g. via a Review Agent pass or explicit approval in the owning ticket/spec) before Waypoint 5's specs are treated as implementation-ready.
-- Every ticket created under Waypoint 6 reaches `done` through the standard lifecycle (`in-review` → Review Gate → `done`), each with its own passing tests, before Waypoint 7 is considered satisfied — ticket creation alone does not satisfy Waypoint 7.
-- Doc-viewer re-indexes and passes its health/validation check against the updated `spec-api` README/HIGH_LEVEL_GUIDE.md (exact command to be confirmed against `memory-viewers/doc-viewer`'s current tooling at pickup time — do not invent one here).
-- `npm run build`/`npm run dev` in `.presentation/` succeeds and the new cycle diagram renders — manual visual check in an external fullscreen browser per `AGENTS.md`'s browser-verification rule.
-- Post-migration: `./target/debug/spec.exe get <spec-system-spec-id> --json` and `spec.exe health --all` both pass against the migrated spec-system spec.
-- Standard ticket quality gates (`.agents/instructions/ticket/lifecycle.instructions.md`'s Review Gate) for every ticket created in Waypoints 6, 8, and 12.
-- A response summarizing Waypoints 1-11's outcomes was actually returned to the user (Waypoint 13), with the user's satisfied/follow-up judgment recorded — not silently assumed.
+- `cargo test -p spec-api --test schema_test`
+- `cargo test -p spec-api --lib`
+- `./target/debug/spec.exe health --all`
+- `./target/debug/spec.exe get f1b8f01a-c7da-4a71-97c5-39519a7d7f38 --json`
+
+`./target/debug/spec.exe migrate --dry-run --all` is a future W6.1 gate, not an available command. Each of `35cd05c1`, `aa94d02e`, `bce26d30`, and `73b2cd22` requires a pre-execution validation-discovery gate: read the canonical ticket manifest and its validation parts, record the declared command(s), then run the ticket lifecycle review gate before closure.
 
 ## Roadmap Waypoints
 
-1. **[Single-session] Document the closed-loop cycle as a named instruction file.** New file (suggested: `.agents/instructions/core-cycle.instructions.md`) stating the 7-step cycle (request → spec → tickets → tests → implementation → validated response → next iteration), folding in the test-evidence cross-link (test-api already links `spec_ids`/`ticket_ids`/`acceptance_criterion_ids`). One cross-reference line added to `AGENTS.md`. No code changes. *(From Dossier A waypoints 1 and 4, merged — the test-evidence note was always meant to live inside this file, not stand alone.)*
-2. **[Single-session] Finalize the target artifact contract model.** Confirm the component/criterion/evidence-reference/directed-contract-edge shapes and the resolved ownership decision above cover the current spec-api manifest fields without contradiction. The new layout is manifest `format_version = 2` with canonical typed tables; v2 is recognized only by that explicit version. A reviewed explicit legacy-spec-UUID-to-immutable-`component_id` mapping file drives journaled, idempotent migration, with no inferred identities. Parent components own ordinary `CriterionArtifact` composition assertions for direct-child ids, child shape, and required inter-child provider/consumer edges; these use the normal validation/evidence shape and never restate child-internal/provider criteria. Confirm the criterion artifact's `validated_by` field is optional, not required — an unvalidated-but-documented criterion is a valid outcome; automate validation wherever feasible, but do not gate criterion acceptance on it. Validation: the two-component cycle check. *(From Dossier B waypoint 1.)*
-3. **[Direct spec authoring, no ticket] Specify the full workflow cycle's components in the current spec system.** Using the current (old) spec tooling as dogmatically as the model from Waypoint 2 allows, author spec entities directly from this dossier (via `.agents/prompts/spec.prompt.md`/Spec Agent) for each cycle component named in Waypoint 1 (request, spec, ticket, test, implementation, validated response, next iteration), including their contract edges to one another. Not ticket-wrapped: the spec captures the goal and definition of success; a ticket describing spec content would duplicate that responsibility. Depends on Waypoints 1-2.
-4. **[Direct spec authoring, no ticket] Specify the new spec system itself, and adjacent tooling, in the current spec system.** Author specs for: the new spec system's own components (component, ordinary criterion including parent composition criteria, evidence-reference, contract-edge artifacts, v2 manifest/migration-map enforcement, and the specified-but-not-built `workflow-tools/spec/crates/spec-annotation` proc-macro crate), and specs for adjacent tooling — tickets, docs, and tests — as components with their own contract edges into/out of the spec system. The macro validates supported Rust-item attribute syntax at compile time and emits discoverable metadata for offline resolver/health; local variables remain out of scope. Same no-ticket rationale as Waypoint 3. Depends on Waypoint 2; can run in parallel with Waypoint 3.
-5. **[Approved review gate, not a ticket] Review the specs from Waypoints 3-4 with the user until satisfactory.** Approved by explicit user sign-off on 2026-08-23; the review confirms target-contract readiness for Waypoint 6 planning and does not claim implementation. Depends on Waypoints 3-4.
-5a. **[Approved bounded review, not a ticket] Author and review the Worktree Control Component Pilot.** The code-first `worktree-ctl` parent and its CLI lifecycle, provisioning policy, synchronization/integration, and gitlink integrity child component specs were approved by explicit user sign-off on 2026-08-23 as the bounded pilot for Waypoint 6 planning. The approval does not implement annotations or change `worktree-ctl` code. Depends on Waypoint 5 and completes before broad ticket planning.
-6. **[Ticket, likely an epic with sub-tickets] Create implementation tickets for the new spec system and adjacent tooling.** Covers both tests and production code for the v2 manifest/tables, reviewed UUID-to-immutable-`component_id` migration map and journal, ordinary parent composition criteria, component/criterion/evidence/contract-edge storage, health enforcement, dedicated `spec-annotation` macro crate, and any adjacent-tooling changes the Waypoint 4 specs require. Each ticket references the reviewed specs from Waypoints 3-4 and the reviewed Waypoint 5a pilot (plans how to reach their goal) rather than restating spec content. User approval on 2026-08-23 unblocks ticket planning; size and split per `AGENTS.md`'s Task Routing. Depends on Waypoints 5 and 5a.
-7. **[Not single-session — execution of Waypoint 6's ticket set, tracked to completion] Implement and validate the new spec system and adjacent tooling.** Work every ticket created under Waypoint 6 through the standard ticket lifecycle to `done`: production code plus its tests, explicit v2/table and mapping-migration coverage, proc-macro compile and offline-registration/health coverage, `cargo test -p spec-api --test schema_test` passing, and `spec.exe health --all` clean across the new artifact kinds. This waypoint is the one that actually delivers the roadmap's stated outcome ("implemented, tested, and documented") — Waypoint 6 only creates the tracking tickets; this waypoint is what closes them. Depends on Waypoint 6; do not treat Waypoint 6 as complete until every ticket it created reaches `done`.
-8. **[Ticket] Migrate the spec system's own specification to the new format.** Dogfood the now-implemented system (Waypoint 7) by migrating its own governing spec into manifest `format_version = 2` and the new component/ordinary-criterion/evidence/contract-edge shape. Use the reviewed explicit legacy UUID-to-immutable-`component_id` mapping file and journaled idempotent migration; preserve the legacy spec until the migrated result passes health and traceability validation. Depends on Waypoint 7 — the new system must actually exist and pass its own validation gates before anything migrates into it, not merely have tickets open.
-9. **[Single-session] Update the spec system's technical documentation.** Update `workflow-tools/spec/crates/spec-api`'s `README.md`/`HIGH_LEVEL_GUIDE.md` (and any doc-viewer-indexed docs) to describe `format_version = 2`, canonical typed tables, reviewed explicit migration mappings, ordinary parent composition criteria, the dedicated annotation macro/registration model, and the resulting workflow — per `AGENTS.md`'s Quality Gates: "If public behavior or docs changed, update the docs and run doc validation workflows." Depends on Waypoint 7 (the docs should describe the real, implemented system, not the plan).
-10. **[Single-session] Update the presentation deck with a diagram of the finished workflow cycle.** Add the cycle diagram to the root `.presentation/` (`id = "context-engine"`) deck, coordinating with the existing [2ccde9ee Presentation System](../../.spec/specs/2ccde9ee-85ac-4c87-9601-f6099f5be01c/spec.toml) spec and [0ee95228 epic](../../.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml) rather than bypassing them. Depends on Waypoint 7, not just Waypoint 3 — this waypoint is one of the ways the roadmap faces the user with the actual results, so it presents the implemented system, not only the early conceptual cycle shape.
-11. **[Single-session] Update agent guidance files for the new spec system and full cycle.** Extend `AGENTS.md` and the relevant `.agents/instructions/` files to teach agents that parents may own ordinary composition criteria but must not restate child-internal/provider criteria; teach explicit v2/version and reviewed-mapping migration rules; and teach the specified annotation macro boundary and local-variable exclusion alongside the full cycle from Waypoint 1. Depends on Waypoint 7 (guidance should describe the real, working, implemented system, not just its tickets).
-12. **[Ticket, deliberately not created yet — see Resolved Decisions] Ticket-depends-on-spec gating edge.** Genuinely distinct architecture-level `ticket-api` change (see Duplication-Review Consolidation Verdict above): a ticket can depend on/fulfill a spec as a gating relationship, not just an informational `[[refs]]` pointer. The id `5b50329b` both source dossiers originally cited was correctly deleted because it was created before its own governing spec existed. Do not recreate it until a spec for this change exists — it belongs naturally inside Waypoint 4's adjacent-tooling specs (ticket-api is explicitly one of the "adjacent tooling" domains specified there). Depends on Waypoint 4 producing that spec; can otherwise be picked up independently of Waypoints 1-11.
-13. **[Single-session, gate] Close the loop: deliver the validated response and capture the next-iteration judgment.** Once Waypoints 1-11 (or the currently in-scope subset) reach `done`/`deferred`, compile an evidence-backed summary back to the user — validation-gate results, links to closed tickets/specs, the updated technical docs, the updated deck, and the updated guidance — rather than letting the effort trail off silently. Record the user's judgment of that outcome (satisfied, or follow-up needed); that judgment either closes this roadmap or seeds the next pass through the cycle (e.g. specifying the *next* product/feature using the newly implemented system instead of the old tooling), which is the cycle's own "next iteration" step applied to this roadmap itself. Depends on Waypoints 1-11 reaching a terminal state; Waypoint 12 is independent and does not gate this waypoint.
+### W1. Complete prerequisite ticket 35cd05c1
 
-## Settled Contract Scope
+Status: blocked
+Scope: ticket 35cd05c1
+Session package: prerequisite-wave-1-35cd05c1
+Prompt: Complete ticket `35cd05c1` from `.workflow-tools/ticket/tickets/35cd05c1-45f7-4d65-b943-7c000570928f/ticket.toml`; first discover and run only ticket-declared validation, collect review evidence, and close the ticket. The only prerequisite, `6c859ac3`, is satisfied. Do not start `bce26d30` or alter dependencies.
+Validate: spec-coverage and validation-discovery gate from the canonical `35cd05c1` ticket manifest and validation parts
+Commit checkpoint: after passing ticket-declared validation and lifecycle review; use the approved ticket's conventional commit scope.
 
-- **Waypoint 2:** the artifact model includes provider-owned root-local edges with deterministic `edge-<consumer>-consumes-<provider>-<name>` identity, unique ids and `(consumer, provider, name)`, lexically ordered unique criterion ids, disjoint claims for named rows, and cross-root/workspace rejection; it also includes root-local exact-version templates, shared `TypedTarget`, and health policy v1.
-- **Waypoint 4:** the direct spec-authoring set includes the edge, criterion/template, query/reference, health, validation-hook, root, and store contracts updated by these decisions.
-- **Waypoint 6:** implementation tickets must cover edge identity/claim validation, template definition and review-required binding-map migrations, shared target parsing/projection, and policy-driven hook enforcement; no ticket is created by this roadmap edit.
-- **Waypoint 7:** completion requires focused tests for those contracts, with health JSON diagnostic behavior and hook fail-closed behavior proven in addition to the existing schema and health gates.
-- **Waypoint 8:** dogfooding migrates persisted edges, exact template bindings, typed references, and health policy only after Waypoint 7 implements their migration and validation behavior.
-- **Waypoint 9:** technical documentation describes the implemented edge, template, typed-reference, and health-policy workflows rather than this draft contract alone.
-- **Waypoint 11:** agent guidance includes these contracts while preserving the interview term-grounding rule already added to the Interview Agent and Question Quality instruction.
+### W2. Complete prerequisite ticket aa94d02e
 
-Without Waypoint 13, this roadmap would stop at Waypoint 11 and never actually close the cycle it is building — the same gap the Waypoint 6/7 split fixed earlier in this dossier's history (see `ROADMAP.v1.md`), applied here to the roadmap's own final two cycle stages (validated response, next iteration).
+Status: blocked
+Scope: ticket aa94d02e
+Session package: prerequisite-wave-1-aa94d02e
+Prompt: Complete ticket `aa94d02e` from `.workflow-tools/ticket/tickets/aa94d02e-9620-4db6-9974-36699cd56537/ticket.toml`; first discover and run only ticket-declared validation, collect review evidence, and close the ticket. All direct prerequisites are satisfied. Do not start `bce26d30` or alter dependencies.
+Validate: spec-coverage and validation-discovery gate from the canonical `aa94d02e` ticket manifest and validation parts
+Commit checkpoint: after passing ticket-declared validation and lifecycle review; use the approved ticket's conventional commit scope.
+
+W1 and W2 form wave 1 and may run in parallel. See [Work Package 6](06-prerequisite-wave-1.md).
+
+### W3. Complete prerequisite ticket bce26d30
+
+Status: pending
+Scope: ticket bce26d30
+Depends: W1, W2
+Session package: prerequisite-wave-2-bce26d30
+Prompt: Complete ticket `bce26d30` from `.workflow-tools/ticket/tickets/bce26d30-0a79-40b4-812a-c14b4a246de5/ticket.toml`; first discover and run only ticket-declared validation, collect review evidence, and close the ticket. `35cd05c1` and `aa94d02e` are the only remaining open prerequisites; `2e41c96d`, `3041d7e3`, `cc78d33d`, and `ff6637f5` are satisfied. Do not start `73b2cd22` or alter dependencies.
+Validate: pre-execution validation-discovery gate from the canonical `bce26d30` ticket manifest and validation parts
+Commit checkpoint: after passing ticket-declared validation and lifecycle review; use the approved ticket's conventional commit scope.
+
+See [Work Package 7](07-prerequisite-wave-2.md).
+
+### W4. Complete prerequisite ticket 73b2cd22
+
+Status: pending
+Scope: ticket 73b2cd22
+Depends: W3
+Session package: prerequisite-wave-3-73b2cd22
+Prompt: Complete ticket `73b2cd22` from `.workflow-tools/ticket/tickets/73b2cd22-942b-4205-86e5-333df2373211/ticket.toml`; first discover and run only ticket-declared validation, collect review evidence, and close the aggregator ticket. The 19 direct prerequisites are represented in the prerequisite appendix. Do not begin W6.1 or change dependencies.
+Validate: pre-execution validation-discovery gate from the canonical `73b2cd22` ticket manifest and validation parts
+Commit checkpoint: after passing ticket-declared validation and lifecycle review; use the approved ticket's conventional commit scope.
+
+See [Work Package 8](08-prerequisite-wave-3.md).
+
+### W5. Complete W6.1 migration tooling
+
+Status: pending
+Scope: ticket 30bbbace
+Depends: W4
+Session package: prerequisite-wave-4-w6-1
+Prompt: Complete W6.1 ticket `30bbbace` using [Work Package 9](09-prerequisite-wave-4.md) and [Work Package 1](01-migration-tooling.md). Implement only the authoritative legacy UUID-to-immutable-`component_id` mapping and journaled, idempotent migration runner in `workflow-tools/spec/crates/spec-api/`; validate the existing spec-api tests and health command, then run migration dry-run only after the command exists. Do not begin downstream W6.x closure or dogfood migration.
+Validate: cargo test -p spec-api --test schema_test
+Validate: cargo test -p spec-api --lib
+Validate: ./target/debug/spec.exe health --all
+Commit checkpoint: after W6.1 validation and lifecycle review; use the approved ticket's conventional commit scope.
+
+### W6. Close downstream W6.x tickets
+
+Status: pending
+Scope: single-session
+Depends: W5
+Session package: w6-closure-readiness
+Prompt: Execute [Work Package 2](02-w6-closure-readiness.md) in the declared dependency order for `c61d8b27`, `17aa8220`, `b3626b87`, and `50dc45df`; discover and run each ticket's own validation, apply review gates, and retain W6.1 evidence. Do not create replacement tickets or modify declared edges.
+Validate: cargo test -p spec-api --test schema_test
+Validate: cargo test -p spec-api --lib
+Validate: ./target/debug/spec.exe health --all
+Commit checkpoint: after each independently reviewable ticket closure; use each approved ticket's conventional commit scope.
+
+### W7. Dogfood the spec-system migration
+
+Status: pending
+Scope: single-session
+Depends: W6
+Session package: spec-system-dogfood-migration
+Prompt: Execute [Work Package 3](03-spec-system-dogfood-migration.md) against `.workflow-tools/spec/specs/f1b8f01a-c7da-4a71-97c5-39519a7d7f38/`, retaining the legacy source until health and traceability checks pass. Do not use the Presentation System first or change a spec lifecycle state outside approved work.
+Validate: ./target/debug/spec.exe migrate --dry-run --all
+Validate: ./target/debug/spec.exe get f1b8f01a-c7da-4a71-97c5-39519a7d7f38 --json
+Validate: ./target/debug/spec.exe health --all
+Commit checkpoint: after passing migration and review evidence; use the approved migration commit scope.
+
+### W8. Publish documentation and guidance
+
+Status: pending
+Scope: single-session
+Depends: W7
+Session package: documentation-and-guidance
+Prompt: Execute [Work Package 4](04-documentation-and-guidance.md) for verified v2 behavior only, using `workflow-tools/spec/crates/spec-api/`, `AGENTS.md`, and relevant `.agents/instructions/` paths. Resolve the doc-viewer index command before relying on it. Do not document planned behavior as available.
+Validate: cargo test -p spec-api --lib
+Validate: ./target/debug/spec.exe health --all
+Commit checkpoint: after documentation review and validation; use the approved documentation commit scope.
+
+### W9. Produce final evidence and request a decision
+
+Status: pending
+Scope: single-session
+Depends: W8
+Session package: final-validation-response
+Prompt: Execute [Work Package 5](05-final-validation.md): collect the completed W6, migration, dogfood, and documentation evidence; run final validation; provide the evidence-backed response; then ask the requester for exactly `approve` or `replan`. Do not infer approval from any command result.
+Validate: cargo test -p spec-api --test schema_test
+Validate: cargo test -p spec-api --lib
+Validate: ./target/debug/spec.exe health --all
+Validate: ./target/debug/spec.exe get f1b8f01a-c7da-4a71-97c5-39519a7d7f38 --json
+Commit checkpoint: none (the package produces the final evidence and explicit decision gate).
+
+Final explicit gate: `approve` authorizes the next dependency-satisfied execution waypoint; `replan` returns to Stage 4 planning. Neither planning evidence nor passing validation substitutes for the requester decision.
+
+## Prerequisite Appendix
+
+`30bbbace` depends on `73b2cd22`. `73b2cd22` has 19 direct prerequisites; 16 are satisfied evidence and three remain open. The satisfied entries are not execution waypoints.
+
+| Ticket | State | Disposition |
+|---|---|---|
+| `15ce7eab`, `1dffcf23`, `2e41c96d`, `3041d7e3` | done | Satisfied evidence |
+| `363e26d6`, `6c859ac3`, `756fed27`, `84673399` | done | Satisfied evidence |
+| `8ad77570`, `cc78d33d`, `d3349747`, `d760a9bb` | done | Satisfied evidence |
+| `dda04f91`, `e813f958`, `efdcbb83`, `ff6637f5` | done | Satisfied evidence |
+| `35cd05c1` | open | W1; depends only on done `6c859ac3` |
+| `aa94d02e` | open | W2; all direct prerequisites are done |
+| `bce26d30` | open | W3; waits for W1 and W2; four other dependencies are done |
+
+Completion waves are: wave 1, W1 and W2 in parallel; wave 2, W3; wave 3, W4; wave 4, W5. Only then may W6 through W9 proceed.
 
 ## Heads-up Notes
 
-- The mechanical pieces most of this roadmap builds on (spec store, ticket store, `[[refs]]`, test-api's `spec_ids`/`ticket_ids` linkage) **already exist** — Waypoints 1-2 are naming/modeling, not new capability; the new capability is delivered across Waypoints 6-7 (tickets created, then actually closed out).
-- Waypoint 6 (create tickets) and Waypoint 7 (implement and close them) are deliberately separate waypoints, not one — an earlier draft of this roadmap collapsed them, which left no waypoint that actually delivered working code; do not re-collapse them.
-- `[[refs]]` (`kind = spec`) and the observed `spec_refs` field already let a ticket point at a spec today, but neither gates readiness — do not confuse this with Waypoint 12's proposed gating edge.
-- The Presentation System spec ([2ccde9ee](../../.spec/specs/2ccde9ee-85ac-4c87-9601-f6099f5be01c/spec.toml)) is the illustrative case study throughout, but the first real migration target is the spec system's own specification (Waypoint 8) — do not default back to Dossier B's original Presentation-System-first plan.
-- The root `.presentation/` deck composes `workflow-tools`'s deck (`composes = ["workflow-tools"]`); Waypoint 10 scopes the diagram to the composing (root) deck, matching the original transcript's "our complete cycle" framing.
-- A prior dossier at [transcripts/20-08-2026_presentation-automation-planning/](../20-08-2026_presentation-automation-planning/) already tracks presentation-system work via [2ccde9ee](../../.spec/specs/2ccde9ee-85ac-4c87-9601-f6099f5be01c/spec.toml) and [0ee95228](../../.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml) — Waypoint 10 extends that tracked system rather than editing the deck ad hoc.
-- Waypoints 9, 10, and 11 (technical docs, presentation, agent guidance) all deliberately wait on Waypoint 7 rather than running early — they are how the roadmap faces the user with the *finished* results, not with the plan; do not pull them forward to run alongside Waypoints 1-4 just because they are single-session.
-- Waypoints 4, 6, and 8 are deliberately not decomposed further inline (Waypoint 3 is a direct spec-authoring waypoint, not a ticket, and does not need this exception) — each spans multiple sessions and/or ambiguous internal sub-dependencies; ticket creation at pickup time is where that decomposition happens, per the ticket-creation exception this pipeline allows during roadmap compilation. Waypoint 7 is also not decomposed inline, but for a different reason: it is the execution of tickets already decomposed under Waypoint 6, tracked via the ticket store's own state machine rather than via new sub-waypoints here.
-- This dossier (including this merge) does not itself author the Waypoint 3/4 specs, create the Waypoint 6/8/12 tickets, close out Waypoint 7's tickets, update the Waypoint 9/10/11 docs/deck/guidance, or create or edit any other spec. It compiles the route; `/spec` (Waypoints 3, 4, and again for Waypoint 8 against the new system), `/tickets` (Waypoints 6, 8, 12), and an implementation session (Waypoints 7, 9, 10, 11) are the separate, later steps that execute it.
-- `AGENTS.md`'s Task Routing previously read "create or update the tracking ticket(s) first, then... spec.prompt.md to update the spec" — the reverse of the ordering this roadmap follows. That line was corrected in the same session that added this note, ahead of Waypoint 11, so Waypoint 11 now only needs to extend the corrected baseline for the new spec system rather than fix the ordering itself.
-- No waypoint here creates a top-level epic ticket anchoring the implementation-sized Waypoints 6/7/8 the way [0ee95228](../../.ticket/tickets/0ee95228-475d-4706-a108-fd208f7c4098/ticket.toml) anchors the presentation epic. This is a deliberate omission, not an oversight — whether one is worth creating is a Scoping Agent/Ticket Refinement Agent judgment call to make when Waypoint 6 is actually picked up, informed by how large the ticket set turns out to be once scoped, not a decision this dossier should preempt.
+- `f1b8f01a` and `fa6e85c8` remain draft; their planning status is not a lifecycle transition.
+- `spec migrate` is not currently available and must never be claimed as a completed check before W6.1 implements it.
+- The ticket store's `depends_on` edges are authoritative. The route does not authorize dependency mutation.
+- [ROADMAP.v8.md](ROADMAP.v8.md) preserves the superseded active roadmap; [ROADMAP.v1.md](ROADMAP.v1.md) through [ROADMAP.v7.md](ROADMAP.v7.md) retain earlier planning history.

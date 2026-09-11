@@ -1,0 +1,1 @@
+Continue from the existing spec-system workflow-cycle dossier, reconcile the roadmap with the live repository state, and require explicit approval before executing any roadmap waypoint.
