@@ -1,0 +1,44 @@
+{
+  "id": "1f2ed5b8-ac68-4a69-947a-2b6b10a39bd9",
+  "entity_id": "e90f8f86-648e-4190-9026-0afd3742d822",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session",
+  "source_entity_path": "context-engine/.session/sessions/e90f8f86-648e-4190-9026-0afd3742d822",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/e90f8f86-648e-4190-9026-0afd3742d822",
+  "phase": "Validated",
+  "created_at": "2026-09-03T20:38:53.208203Z",
+  "updated_at": "2026-09-03T20:38:53.220767600Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/entity-e90f8f86-648e-4190-9026-0afd3742d822.lock",
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-e90f8f86-648e-4190-9026-0afd3742d822.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 1
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

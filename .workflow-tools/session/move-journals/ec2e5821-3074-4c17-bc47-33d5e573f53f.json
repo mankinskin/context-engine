@@ -1,0 +1,47 @@
+{
+  "id": "ec2e5821-3074-4c17-bc47-33d5e573f53f",
+  "entity_id": "427ef91b-434a-4745-a01d-d1960d7a318b",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.session",
+  "source_entity_path": "context-engine/.session/sessions/427ef91b-434a-4745-a01d-d1960d7a318b",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.session/sessions/427ef91b-434a-4745-a01d-d1960d7a318b",
+  "phase": "RolledBack",
+  "created_at": "2026-09-01T01:43:24.566157100Z",
+  "updated_at": "2026-09-01T01:43:31.525190400Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership",
+    "rolled back entity folder to source store"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/entity-427ef91b-434a-4745-a01d-d1960d7a318b.lock",
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-427ef91b-434a-4745-a01d-d1960d7a318b.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "rollback_scan_source_ms": 0,
+    "rollback_scan_target_ms": 0,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 0
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

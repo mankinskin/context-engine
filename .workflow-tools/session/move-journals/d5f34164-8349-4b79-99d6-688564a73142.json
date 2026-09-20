@@ -1,0 +1,50 @@
+{
+  "id": "d5f34164-8349-4b79-99d6-688564a73142",
+  "entity_id": "470fb360-8426-4f79-bdda-8ba89a81cf4b",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session",
+  "source_entity_path": "context-engine/.session/sessions/470fb360-8426-4f79-bdda-8ba89a81cf4b",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/470fb360-8426-4f79-bdda-8ba89a81cf4b",
+  "phase": "Validated",
+  "created_at": "2026-09-03T20:35:36.829301Z",
+  "updated_at": "2026-09-03T20:35:36.842735300Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "recorded 1 manual path-reference follow-ups",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/entity-470fb360-8426-4f79-bdda-8ba89a81cf4b.lock",
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-470fb360-8426-4f79-bdda-8ba89a81cf4b.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [],
+  "manual_followups": [
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/470fb360-8426-4f79-bdda-8ba89a81cf4b/events.json",
+      "reason": "tracked reference file missing on disk"
+    }
+  ],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 0
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

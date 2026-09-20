@@ -1,0 +1,93 @@
+{
+  "id": "040c05e2-f00c-4b71-a35c-7e3bd1642c7c",
+  "entity_id": "910b25a7-3917-42c6-bf5f-d860221ac7e2",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.session",
+  "source_entity_path": "context-engine/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2",
+  "phase": "RolledBack",
+  "created_at": "2026-09-01T01:45:12.174134600Z",
+  "updated_at": "2026-09-01T01:45:20.437240700Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 4 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership",
+    "rolled back entity folder to source store"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/entity-910b25a7-3917-42c6-bf5f-d860221ac7e2.lock",
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-910b25a7-3917-42c6-bf5f-d860221ac7e2.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/1f89f2d9-6f8d-437b-afa3-ced40625b0b2/events.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/1f89f2d9-6f8d-437b-afa3-ced40625b0b2/events.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2",
+          "after": "C:/Users/linus/git/3/meta-workspace/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/1f89f2d9-6f8d-437b-afa3-ced40625b0b2/transcript.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/1f89f2d9-6f8d-437b-afa3-ced40625b0b2/transcript.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2",
+          "after": "C:/Users/linus/git/3/meta-workspace/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/2199296a-0e3b-4d2b-8b83-b8c40ab4bce8/events.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/2199296a-0e3b-4d2b-8b83-b8c40ab4bce8/events.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2",
+          "after": "C:/Users/linus/git/3/meta-workspace/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/3bac8bc7-3d10-4ad6-85d3-2d6224c4f4f1/events.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/3bac8bc7-3d10-4ad6-85d3-2d6224c4f4f1/events.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2",
+          "after": "C:/Users/linus/git/3/meta-workspace/.session/sessions/910b25a7-3917-42c6-bf5f-d860221ac7e2"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 10,
+    "rollback_scan_source_ms": 0,
+    "rollback_scan_target_ms": 0,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 0
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

@@ -1,0 +1,55 @@
+{
+  "id": "4f1cf33d-c571-4e83-bb99-0e8ecaa5550b",
+  "entity_id": "390f050b-6064-4751-8036-f7562da1a8b8",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session",
+  "source_entity_path": "context-engine/.session/sessions/390f050b-6064-4751-8036-f7562da1a8b8",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/390f050b-6064-4751-8036-f7562da1a8b8",
+  "phase": "TargetScanned",
+  "created_at": "2026-09-03T20:35:13.536968200Z",
+  "updated_at": "2026-09-03T20:35:13.550670700Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 1 tracked path reference files",
+    "scanned source store",
+    "scanned target store"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/entity-390f050b-6064-4751-8036-f7562da1a8b8.lock",
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-390f050b-6064-4751-8036-f7562da1a8b8.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/.session/sessions/a31dc2fc-a390-4cad-8c59-f416c1ef9438/events.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": ".session/sessions/a31dc2fc-a390-4cad-8c59-f416c1ef9438/events.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/390f050b-6064-4751-8036-f7562da1a8b8",
+          "after": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/390f050b-6064-4751-8036-f7562da1a8b8"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 3,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0
+  },
+  "failure": "failed to deserialize session data from C:/Users/linus/git/3/meta-workspace\\.workflow-tools\\session\\sessions\\390f050b-6064-4751-8036-f7562da1a8b8\\session.json: missing field `workspace_slug` at line 7 column 16",
+  "next_recovery_step": "run rollback_move for safety, or resume_move to retry"
+}

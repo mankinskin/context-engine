@@ -1,0 +1,60 @@
+{
+  "id": "0f6f2cd7-ec85-4e7d-9c28-77d2aee665dd",
+  "entity_id": "41966513-a8fa-4b44-98fa-9c57f0437cc0",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.session",
+  "source_entity_path": "context-engine/.session/sessions/41966513-a8fa-4b44-98fa-9c57f0437cc0",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.session/sessions/41966513-a8fa-4b44-98fa-9c57f0437cc0",
+  "phase": "RolledBack",
+  "created_at": "2026-09-01T01:43:24.126155200Z",
+  "updated_at": "2026-09-01T01:43:31.502964800Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 1 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership",
+    "rolled back entity folder to source store"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/entity-41966513-a8fa-4b44-98fa-9c57f0437cc0.lock",
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-41966513-a8fa-4b44-98fa-9c57f0437cc0.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/cde58731-b449-4b71-b64e-280cbed872ff/transcript.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/cde58731-b449-4b71-b64e-280cbed872ff/transcript.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/41966513-a8fa-4b44-98fa-9c57f0437cc0",
+          "after": "C:/Users/linus/git/3/meta-workspace/.session/sessions/41966513-a8fa-4b44-98fa-9c57f0437cc0"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 1,
+    "rollback_scan_source_ms": 0,
+    "rollback_scan_target_ms": 0,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 0
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

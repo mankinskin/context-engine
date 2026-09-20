@@ -1,0 +1,53 @@
+{
+  "id": "7ddc7682-cab1-4b0c-8517-986080f5a79b",
+  "entity_id": "5e2ce195-6e5d-4c41-9c27-c06746509b72",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.session",
+  "source_entity_path": "context-engine/.session/sessions/5e2ce195-6e5d-4c41-9c27-c06746509b72",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.session/sessions/5e2ce195-6e5d-4c41-9c27-c06746509b72",
+  "phase": "RolledBack",
+  "created_at": "2026-09-01T01:43:56.836129Z",
+  "updated_at": "2026-09-01T01:43:58.785655Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "recorded 1 manual path-reference follow-ups",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership",
+    "rolled back entity folder to source store"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/entity-5e2ce195-6e5d-4c41-9c27-c06746509b72.lock",
+    "C:/Users/linus/git/3/meta-workspace/.session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-5e2ce195-6e5d-4c41-9c27-c06746509b72.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [],
+  "manual_followups": [
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/5e2ce195-6e5d-4c41-9c27-c06746509b72/events.json",
+      "reason": "tracked reference file missing on disk"
+    }
+  ],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 0,
+    "rollback_scan_source_ms": 0,
+    "rollback_scan_target_ms": 0,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 2
+  },
+  "failure": null,
+  "next_recovery_step": null
+}

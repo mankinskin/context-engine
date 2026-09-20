@@ -1,0 +1,79 @@
+{
+  "id": "1f2893f6-58d8-4a48-a748-1e3667f01b05",
+  "entity_id": "01246bdc-dd6b-4807-bda3-38cf6aa780de",
+  "source_store_root": "context-engine/.session",
+  "target_store_root": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session",
+  "source_entity_path": "context-engine/.session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de",
+  "destination_entity_path": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de",
+  "phase": "Validated",
+  "created_at": "2026-09-03T20:34:15.561209Z",
+  "updated_at": "2026-09-03T20:34:15.583591800Z",
+  "steps": [
+    "created move journal",
+    "acquired source/target store locks and move entity lock",
+    "moved entity folder",
+    "rewrote 3 tracked path reference files",
+    "scanned source store",
+    "scanned target store",
+    "validated move ownership"
+  ],
+  "rollback_steps": [
+    "rename destination entity folder back to source path",
+    "restore migrated board history rows to source store",
+    "scan source and target stores"
+  ],
+  "lock_paths": [
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/entity-01246bdc-dd6b-4807-bda3-38cf6aa780de.lock",
+    "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/move-locks/store.lock",
+    "context-engine/.session/move-locks/entity-01246bdc-dd6b-4807-bda3-38cf6aa780de.lock",
+    "context-engine/.session/move-locks/store.lock"
+  ],
+  "migrated_board_entries": [],
+  "rewritten_path_files": [
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/2199296a-0e3b-4d2b-8b83-b8c40ab4bce8/events.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/2199296a-0e3b-4d2b-8b83-b8c40ab4bce8/events.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de",
+          "after": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/2199296a-0e3b-4d2b-8b83-b8c40ab4bce8/transcript.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/2199296a-0e3b-4d2b-8b83-b8c40ab4bce8/transcript.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de",
+          "after": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de"
+        }
+      ]
+    },
+    {
+      "path": "C:/Users/linus/git/3/meta-workspace/context-engine/.session/sessions/d38d0ad2-d994-4ef9-92a5-4bb4b4d8513a/transcript.json",
+      "repo_root": "C:/Users/linus/git/3/meta-workspace",
+      "repo_relative_path": "context-engine/.session/sessions/d38d0ad2-d994-4ef9-92a5-4bb4b4d8513a/transcript.json",
+      "replacements": [
+        {
+          "before": "context-engine/.session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de",
+          "after": "C:/Users/linus/git/3/meta-workspace/.workflow-tools/session/sessions/01246bdc-dd6b-4807-bda3-38cf6aa780de"
+        }
+      ]
+    }
+  ],
+  "manual_followups": [],
+  "phase_timings_ms": {
+    "lock_acquisition_ms": 1,
+    "migrate_board_history_ms": 0,
+    "rename_entity_ms": 0,
+    "rewrite_path_refs_ms": 9,
+    "scan_source_ms": 0,
+    "scan_target_ms": 0,
+    "validate_move_ms": 2
+  },
+  "failure": null,
+  "next_recovery_step": null
+}
