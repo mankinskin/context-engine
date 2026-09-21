@@ -8,6 +8,9 @@ set -euo pipefail
 
 RTK_BIN=""
 for candidate in \
+    "${RTK_BIN_OVERRIDE:-}" \
+    "${HOME:-}/.local/rtk/bin/rtk.exe" \
+    "${HOME:-}/.local/rtk/bin/rtk" \
     "${HOME:-}/.cargo/bin/rtk.exe" \
     "${HOME:-}/.cargo/bin/rtk" \
     "${USERPROFILE:-}\\.cargo\\bin\\rtk.exe" \
