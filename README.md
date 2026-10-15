@@ -108,6 +108,15 @@ commit-pinned workflow-tools bundle before running commands that require
 
 ## Workspace Validation
 
+Run the active hook regression suite to exercise every command in the enabled
+root and `context-engine` hook configurations. External `rtk` and
+`session-capture-hook` commands are stubbed, so no login or credentials are
+needed:
+
+```bash
+bash tools/agent-hooks/test-active-hooks.sh
+```
+
 ```bash
 cargo test --workspace
 cargo doc --workspace --open

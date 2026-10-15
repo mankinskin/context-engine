@@ -28,9 +28,9 @@ if [[ -z "$RTK_BIN" ]]; then
     RTK_BIN="$(command -v rtk 2>/dev/null || true)"
 fi
 
-if read -t 0; then
+if IFS= read -r -N 1 -t 0.1 first_char; then
     if [[ -n "$RTK_BIN" ]]; then
-        "$RTK_BIN" hook copilot
+        { printf '%s' "$first_char"; cat; } | "$RTK_BIN" hook copilot
     else
         echo "[rtk-hook-copilot] WARN: rtk not found; skipping rtk hook copilot" >&2
     fi
