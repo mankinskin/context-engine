@@ -215,6 +215,15 @@ while IFS=$'\t' read -r config_path workspace_root cwd event command; do
         "session-capture-hook --from-hook-stdin")
             test_capture_hook "$cwd" "$command" "$event"
             ;;
+        *run-configured-hook.sh*rtk-hook-copilot.sh*)
+            test_rtk_hook "$cwd" "$command"
+            ;;
+        *run-configured-hook.sh*session-capture-hook*)
+            test_capture_hook "$cwd" "$command" "$event"
+            ;;
+        *run-configured-hook.sh*preflight-write.sh*)
+            test_preflight_hook "$cwd" "$command"
+            ;;
         "bash "*)
             case "${command#bash }" in
                 context-engine/tools/agent-hooks/rtk-hook-copilot.sh|tools/agent-hooks/rtk-hook-copilot.sh)
