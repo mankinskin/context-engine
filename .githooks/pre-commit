@@ -172,9 +172,8 @@ fi
 
 # Root AGENTS.md, .github/copilot-instructions.md, and everything under
 # .agents/** are hand-owned (not produced by rule-targets.yaml); do NOT trigger
-# the sync-targets drift gate on them. Only the still-generated outputs
-# (.clinerules/** and the rule store) gate here.
-if staged_matches '^(rule-targets\.yaml|\.rule/.*|\.clinerules/.*|\.github/README\.md)$'; then
+# the sync-targets drift gate on them. Only the rule store gates here.
+if staged_matches '^(rule-targets\.yaml|\.rule/.*|\.github/README\.md)$'; then
     check_rule_targets 'rule-targets.yaml'
 fi
 
