@@ -2,7 +2,7 @@
 # Session sync hook for persisting agent chat transcripts through session-api
 #
 # Canonical location: tools/agent-hooks/session-capture-stop.sh
-# Referenced by: .github/hooks/hooks.json, .clinerules/hooks/hooks.json
+# Referenced by: .github/hooks/hooks.json
 
 set -euo pipefail
 

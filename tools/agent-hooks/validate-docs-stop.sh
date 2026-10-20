@@ -3,7 +3,7 @@
 # Blocks completion if doc-viewer was modified without doc validation
 #
 # Canonical location: tools/agent-hooks/validate-docs-stop.sh
-# Referenced by: .github/hooks/hooks.json, .clinerules/hooks/hooks.json
+# Referenced by: .github/hooks/hooks.json
 
 # Path patterns for matching
 DOC_VIEWER_SRC_PATTERN="memory-viewers/doc-viewer/src/"
