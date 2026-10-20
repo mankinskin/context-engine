@@ -11,3 +11,9 @@ Traceability:
 
 Notes:
 - Workspace: C:/Users/linus/git/context-engine/.ticket
+
+## 2026-10-13 repair evidence
+
+Fixed no-worktree package-path validation in nested `workflow-tools/session` commit `cddadba3dcf12c1a6dfaf9096efd18abf3189e6e`. The validation root now derives from the explicit owning session-store root; active assigned worktrees retain precedence. Regression coverage exercises canonical `.workflow-tools/session`, legacy `.session`, and relocated roots. Focused test and `cargo test -p session-api --lib` passed; the actual rebuilt `session.exe --workspace C:\Users\linus\git\3\meta-workspace handoff` accepted `context-agent/Cargo.toml`, read back from `.workflow-tools/session/sessions/29ad8d96-9400-4627-a032-e02a3d8bd971/handoffs/678c5d45-86bf-4731-afbf-fc339b7d1e8a/handoff.json`.
+
+Canonical validation evidence: `.workflow-tools/test/specs/session-handoff-owning-root-regression.json`; `.workflow-tools/test/executions/exec-session-handoff-owning-root-20261013.json`.

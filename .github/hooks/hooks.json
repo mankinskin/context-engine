@@ -35,19 +35,19 @@
     "PreToolUse": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/run-configured-hook.sh wrapper \"bash tools/agent-hooks/rtk-hook-copilot.sh\" -- bash tools/agent-hooks/rtk-hook-copilot.sh",
+        "command": "bash ../workflow-tools/tools/agent-hooks/run-configured-hook.sh wrapper \"bash ../workflow-tools/tools/agent-hooks/rtk-hook-copilot.sh\" -- bash ../workflow-tools/tools/agent-hooks/rtk-hook-copilot.sh",
         "cwd": ".",
         "timeout": 5
       },
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/run-configured-hook.sh \"another configured hook\" \"bash tools/agent-hooks/preflight-write.sh\" -- bash tools/agent-hooks/preflight-write.sh",
+        "command": "bash ../workflow-tools/tools/agent-hooks/run-configured-hook.sh \"another configured hook\" \"bash ../workflow-tools/tools/agent-hooks/preflight-write.sh\" -- bash ../workflow-tools/tools/agent-hooks/preflight-write.sh",
         "cwd": ".",
         "timeout": 30
       },
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/run-configured-hook.sh \"another configured hook\" \"session-capture-hook --from-hook-stdin\" -- session-capture-hook --from-hook-stdin",
+        "command": "bash ../workflow-tools/tools/agent-hooks/run-configured-hook.sh \"another configured hook\" \"session-capture-hook --from-hook-stdin\" -- session-capture-hook --from-hook-stdin",
         "cwd": ".",
         "timeout": 120
       }
@@ -55,13 +55,13 @@
     "PostToolUse": [
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/validate-docs.sh",
+        "command": "bash ../workflow-tools/tools/agent-hooks/validate-docs.sh",
         "cwd": ".",
         "timeout": 30
       },
       {
         "type": "command",
-        "command": "bash tools/agent-hooks/terminal-pwd.sh",
+        "command": "bash ../workflow-tools/tools/agent-hooks/terminal-pwd.sh",
         "cwd": ".",
         "timeout": 5
       },
