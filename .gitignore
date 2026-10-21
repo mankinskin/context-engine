@@ -87,3 +87,7 @@ entities/
 .audit/
 
 .rule/
+
+# Live session event telemetry stays local; transcripts and handoffs stay tracked.
+/.workflow-tools/session/sessions/**/events.json
+/.session/sessions/**/events.json
