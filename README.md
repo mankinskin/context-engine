@@ -34,6 +34,14 @@ bash init.sh
 bash tools/verify-bootstrap.sh
 ```
 
+## Copilot CLI MCP Configuration
+
+Copilot CLI reads the repository-root [.mcp.json](.mcp.json), migrated from
+the previous `.github/mcp.json` location. Start the CLI from this repository
+root so the relative MCP environment paths resolve correctly. All 11 existing
+server definitions are retained, with `tools: ["*"]` enabling their tools.
+The legacy VS Code MCP configuration has also been removed.
+
 ## Repository Map
 
 The root-level `repo_map.toon` file is the compact structural index for this repository.
