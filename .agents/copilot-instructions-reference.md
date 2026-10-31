@@ -4,11 +4,11 @@
 ## Source of Truth
 
 All behavioral and workflow guidance (ticket/spec workflow, worktree/branch protocol,
-model routing, escalation rules) lives in [AGENTS.md](../AGENTS.md). This file adds
+model routing, escalation rules) lives in [AGENTS.md](../.github/copilot-instructions.md). This file adds
 concrete build/architecture facts AGENTS.md does not restate.
 
-Path-scoped guidance lives in [.agents/instructions/](../.agents/instructions/).
-Workflow prompts live in [.agents/prompts/](./prompts/).
+Path-scoped guidance lives in .agents/instructions/ (`../.agents/instructions/`).
+Workflow prompts live in .agents/prompts/ (`./prompts/`).
 
 ## Repository Shape
 
@@ -29,7 +29,7 @@ buildable workspace:
   implementation is `memory-api/crates/ticket`: `ticket` (`cli`), `ticket-mcp`
   (`mcp`), and `ticket-http` (`http`). The remaining `tools/cli/*`, `tools/mcp/*`,
   and `tools/http/*` paths are legacy layouts for unmigrated tools; see
-  [0da6894c Single domain crate per tool](../.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml).
+  0da6894c Single domain crate per tool (`../.ticket/tickets/0da6894c-dcbb-4196-8ac7-b6fae7c40ec9/ticket.toml`).
 - `viewer-api/` — shared viewer runtime (tracing, CORS, static-file serving, SSE,
   dev proxy) reused by every viewer binary.
 - `memory-viewers/` — viewer binaries (`ticket-viewer`, `spec-viewer`, `doc-viewer`,
@@ -43,9 +43,9 @@ buildable workspace:
   submodule tracks `github.com/mankinskin/memory-kernel` and has a separate push
   cycle; the root Cargo patch substitutes the checked-out kernel and harness only
   for this development workspace. See
-  [kernel layering guidance](../.agents/instructions/engine/kernel-layering.instructions.md).
+  kernel layering guidance (`../.agents/instructions/engine/kernel-layering.instructions.md`).
 
-All of the above are registered as workspace members in the root [Cargo.toml](../Cargo.toml),
+All of the above are registered as workspace members in the root Cargo.toml (`../Cargo.toml`),
 so `cargo build`/`cargo test` from the repo root builds/tests everything unless scoped
 with `-p <crate>`.
 
@@ -136,7 +136,7 @@ See [context-mcp README](../context-stack/tools/mcp/context-mcp/README.md) for t
 
 ## Hooks
 
-Hook reminders are configured in [.github/hooks/](./hooks/).
+Hook reminders are configured in .github/hooks/ (`./hooks/`).
 
 # RTK — Token-Optimized CLI
 
