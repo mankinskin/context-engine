@@ -73,7 +73,7 @@ public domain crate.
 
 ## Reference Workspace
 
-[`workflow-tools-contract-reference`](workflow-tools-contract-reference) is the
+[`workflow-tools-contract-reference`](https://github.com/mankinskin/workflow-tools/blob/main/contract-reference/README.md) is the
 compiling reference implementation. It uses an `example-api` internal crate,
 an `example` facade crate, and gated CLI, MCP, and HTTP binaries that consume
 the production harness from the sibling `memory-kernel` repository.

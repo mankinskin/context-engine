@@ -1,7 +1,7 @@
 # Table of contents
 
 * [🌟 Motivation](../README.md)
-* [Hypergraph Context Model](<README (1).md>)
+* `README (1).md`
   * [🏞 Hypergraph Model Overview](hypergraph-context-model/hypergraph-model-overview.md)
   * [🏗 Crate Architecture](hypergraph-context-model/crate-architecture.md)
   * [🧦 Matching Patterns](hypergraph-context-model/matching-patterns.md)

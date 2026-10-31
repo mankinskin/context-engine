@@ -71,7 +71,7 @@ context-stack child READMEs:
 memory-viewers child READMEs:
 
 - [memory-api/README.md](memory-api/README.md)
-- [viewer-api/README.md](viewer-api/README.md)
+- [viewer-api/README.md](https://github.com/mankinskin/viewer-api/blob/main/README.md)
 
 ## Installable Tools
 
@@ -93,13 +93,13 @@ repo-wide developer dependencies listed in [Getting Started](#getting-started).
 
 The companion installer in [install-extensions.sh](install-extensions.sh) packages and installs the workspace's VS Code extensions into your local VS Code profile:
 
-- [memory-api/ticket-vscode/package.json](memory-api/ticket-vscode/package.json) exposes the `ticket-vscode` extension package and the repo-local VSIX install workflow.
+- [memory-api/ticket-vscode/package.json](https://github.com/mankinskin/ticket/blob/main/ticket-vscode/package.json) exposes the `ticket-vscode` extension package and the repo-local VSIX install workflow.
 
 - [memory-viewers/README.md](memory-viewers/README.md) covers the top-level viewer workflows and the `spec-viewer` and `ticket-viewer` binaries.
-- [viewer-api/README.md](viewer-api/README.md) covers the `install-ctl` binary and the `trunk`-backed frontend toolchain.
+- [viewer-api/README.md](https://github.com/mankinskin/viewer-api/blob/main/README.md) covers the `install-ctl` binary and the `trunk`-backed frontend toolchain.
 - [memory-api/README.md](memory-api/README.md) covers the `rule`, `spec`, `ticket`, and `audit` CLIs, the `cargo llvm-cov` coverage collector used by `audit`, and the MCP and HTTP surfaces behind them.
-- [memory-viewers/doc-viewer/README.md](memory-viewers/doc-viewer/README.md) covers the `doc-viewer` binary.
-- [memory-viewers/log-viewer/README.md](memory-viewers/log-viewer/README.md) covers the `log-viewer` binary.
+- [memory-viewers/doc-viewer/README.md](https://github.com/mankinskin/doc/blob/main/crates/doc-viewer/README.md) covers the `doc-viewer` binary.
+- [memory-viewers/log-viewer/README.md](https://github.com/mankinskin/log/blob/main/crates/log-viewer/README.md) covers the `log-viewer` binary.
 
 ## Working With Submodules
 
